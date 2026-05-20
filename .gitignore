@@ -1,0 +1,39 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# ============================================
+# 敏感抓包数据 - 切勿上传
+# ============================================
+*.har.txt
+*.txt
+
+# ============================================
+# 构建产物与临时文件
+# ============================================
+build.log
+temp_check.jar
+*.bak
+version.properties
+
+# ============================================
+# 开发计划文档 - 不上传 GitHub
+# ============================================
+plans/
+
+# ============================================
+# IDE 配置（完整忽略整个 .idea 目录）
+# ============================================
+.idea/
