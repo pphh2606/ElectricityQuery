@@ -12,6 +12,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +52,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -153,9 +157,10 @@ fun LoginScreen(
         }
     }
 
-    // 拦截系统返回（包括侧滑手势和物理返回键），确保与点击返回按钮行为一致
-    BackHandler {
-        onBack()
+    // 拦截系统返回（包括侧滑手势和物理返回键）
+    // 加载中拦截，防止登录请求中误触退出导致状态丢失
+    BackHandler(enabled = uiState.isLoading) {
+        snackbar.show("正在登录，请稍候...", ToastUtils.Type.ERROR)
     }
 
     // 收集一次性事件（替代 LaunchedEffect(uiState.error/loginResult/autoLoginResult)）
@@ -377,7 +382,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 密码输入框
+                // 密码输入框（带显隐切换，仅手动输入密码时可用）
                 TextField(
                     value = uiState.password,
                     onValueChange = { loginViewModel.updatePassword(it) },
@@ -385,8 +390,12 @@ fun LoginScreen(
                     placeholder = { Text("请输入密码") },
                     singleLine = true,
                     enabled = !uiState.isLoading,
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (uiState.passwordRevealed)
+                        VisualTransformation.None
+                    else
+                        PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
+                        // 始终使用 Password keyboardType，防止切换 IME 导致输入法重启
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
@@ -396,6 +405,21 @@ fun LoginScreen(
                             loginViewModel.login()
                         }
                     ),
+                    trailingIcon = {
+                        // 仅用户手动输入的密码才可切换显示
+                        if (!uiState.passwordFromStorage && uiState.password.isNotEmpty()) {
+                            IconButton(onClick = { loginViewModel.togglePasswordRevealed() }) {
+                                Icon(
+                                    imageVector = if (uiState.passwordRevealed)
+                                        Icons.Default.VisibilityOff
+                                    else
+                                        Icons.Default.Visibility,
+                                    contentDescription = if (uiState.passwordRevealed) "隐藏密码" else "显示密码",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
@@ -403,7 +427,37 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 记住密码复选框
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = uiState.rememberPassword,
+                        onCheckedChange = { loginViewModel.setRememberPassword(it) },
+                        enabled = !uiState.isLoading,
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                    Text(
+                        text = "记住密码",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            loginViewModel.setRememberPassword(!uiState.rememberPassword)
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // 登录按钮（无加载动画，文字固定）
                 Button(
@@ -695,9 +749,8 @@ fun LoginScreen(
                 TextButton(onClick = {
                     loginViewModel.removeAccount(account)
                     deleteConfirmAccount = null
-                    if (uiState.savedAccounts.size <= 1) {
-                        showAccountDropdown = false
-                    }
+                    // 直接关闭下拉菜单，不依赖异步更新的列表大小判断
+                    showAccountDropdown = false
                 }) {
                     Text(
                         text = "删除",
