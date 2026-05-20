@@ -26,7 +26,6 @@ local.properties
 build.log
 temp_check.jar
 *.bak
-version.properties
 
 # ============================================
 # 开发计划文档 - 不上传 GitHub
