@@ -54,8 +54,7 @@ import edu.cqwu.electricity.data.model.HourDataRecord
 import edu.cqwu.electricity.data.model.MeterDataItem
 import edu.cqwu.electricity.data.model.UsageRecord
 import edu.cqwu.electricity.data.model.UsageResponse
-import edu.cqwu.electricity.ui.electricity.DetailState
-import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
+import edu.cqwu.electricity.ui.electricity.DetailViewModel
 import edu.cqwu.electricity.util.ToastUtils
 
 // 三点菜单
@@ -78,7 +77,7 @@ import java.io.OutputStream
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    viewModel: ElectricityViewModel,
+    viewModel: DetailViewModel,
     detailType: DetailType,
     onBack: () -> Unit
 ) {
@@ -95,7 +94,6 @@ fun DetailScreen(
     }
 
     // Composable 退出时自动清除详情数据，避免下次进入时显示旧数据
-    // 覆盖系统返回键/手势、导航栏自动 popBackStack 等所有退出路径
     DisposableEffect(Unit) {
         onDispose {
             viewModel.clearDetailData()

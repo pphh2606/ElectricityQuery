@@ -49,6 +49,7 @@ import edu.cqwu.electricity.ui.notice.NoticeViewModel
 import edu.cqwu.electricity.ui.electricity.BuildingSelectionScreen
 import edu.cqwu.electricity.ui.electricity.DashboardScreen
 import edu.cqwu.electricity.ui.electricity.DetailScreen
+import edu.cqwu.electricity.ui.electricity.DetailViewModel
 import edu.cqwu.electricity.ui.electricity.ElectricityMainScreen
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
 import edu.cqwu.electricity.ui.login.LoginScreen
@@ -86,10 +87,10 @@ object Routes {
     const val BUILDING_SELECTION = "building_selection"
     const val ELECTRICITY_MAIN = "electricity_main"
     const val DASHBOARD = "dashboard"
-    const val DETAIL = "detail/{detailType}"
+    const val DETAIL = "detail/{detailType}/{roomId}"
     const val RECHARGE = "recharge"
     const val PAYMENT_SELECTION = "payment_selection"
-    const val RECHARGE_RECORD = "recharge_record"
+    const val RECHARGE_RECORD = "recharge_record/{roomId}"
 
     /** 扫码页面 */
     const val SCAN = "scan"
@@ -137,9 +138,14 @@ object Routes {
     /** H5 WebView 路由（URL 固定，无需参数）*/
     const val RECHARGE_H5_WEBVIEW = "recharge_h5_webview"
 
+    /** 构建充值记录页路径 */
+    fun rechargeRecordRoute(roomId: String): String {
+        return "recharge_record/$roomId"
+    }
+
     /** 构建详情页路径 */
-    fun detailRoute(detailType: DetailType): String {
-        return "detail/${detailType.name.lowercase()}"
+    fun detailRoute(detailType: DetailType, roomId: String): String {
+        return "detail/${detailType.name.lowercase()}/$roomId"
     }
 
     /** 配置页 */
@@ -376,10 +382,10 @@ fun AppNavGraph(
                 myRoomViewModel = myRoomViewModel,
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
-                onNavigateToDetail = { detailType -> navController.navigate(Routes.detailRoute(detailType)) },
+                onNavigateToDetail = { detailType, roomId -> navController.navigate(Routes.detailRoute(detailType, roomId)) },
                 onNavigateToPayment = { navController.navigate(Routes.PAYMENT_SELECTION) },
                 onNavigateToH5Recharge = { navController.navigate(Routes.RECHARGE_H5_WEBVIEW) },
-                onNavigateToRechargeRecord = { navController.navigate(Routes.RECHARGE_RECORD) },
+                onNavigateToRechargeRecord = { roomId -> navController.navigate(Routes.rechargeRecordRoute(roomId)) },
                 onReLogin = { navController.navigate(Routes.LOGIN) },
             )
         }
@@ -405,24 +411,38 @@ fun AppNavGraph(
                 error = s.error,
                 onRefresh = { viewModel.refreshBalance() },
                 onBackToSelection = { navController.popBackStack(Routes.BUILDING_SELECTION, false) },
-                onNavigateToDetail = { detailType -> navController.navigate(Routes.detailRoute(detailType)) },
+                onNavigateToDetail = { detailType ->
+                    val roomId = s.selectedRoom?.id ?: ""
+                    navController.navigate(Routes.detailRoute(detailType, roomId))
+                },
                 onNavigateToAccountSelection = { navController.navigate(Routes.RECHARGE) },
                 onNavigateToH5Recharge = { navController.navigate(Routes.RECHARGE_H5_WEBVIEW) },
-                onNavigateToRechargeRecord = { navController.navigate(Routes.RECHARGE_RECORD) },
+                onNavigateToRechargeRecord = {
+                    val roomId = s.selectedRoom?.id ?: ""
+                    navController.navigate(Routes.rechargeRecordRoute(roomId))
+                },
             )
         }
 
         animatedComposable(
             settings = animationSettings,
             route = Routes.DETAIL,
-            arguments = listOf(navArgument("detailType") { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument("detailType") { type = NavType.StringType },
+                navArgument("roomId") { type = NavType.StringType },
+            ),
         ) { backStackEntry ->
             val detailTypeStr = backStackEntry.arguments?.getString("detailType") ?: ""
             val detailType = remember(detailTypeStr) {
                 DetailType.values().firstOrNull { it.name.lowercase() == detailTypeStr }
                     ?: DetailType.SIX_MONTH_USAGE
             }
-            DetailScreen(viewModel = viewModel, detailType = detailType, onBack = { navController.popBackStack() })
+            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+            val detailViewModel: DetailViewModel = viewModel(
+                key = "detail_${detailType.name}_$roomId",
+                factory = DetailViewModel.Factory(roomId)
+            )
+            DetailScreen(viewModel = detailViewModel, detailType = detailType, onBack = { navController.popBackStack() })
         }
 
         animatedComposable(settings = animationSettings, route = Routes.RECHARGE) {
@@ -442,8 +462,17 @@ fun AppNavGraph(
             )
         }
 
-        animatedComposable(settings = animationSettings, route = Routes.RECHARGE_RECORD) {
-            RechargeRecordScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
+        animatedComposable(
+            settings = animationSettings,
+            route = Routes.RECHARGE_RECORD,
+            arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+            RechargeRecordScreen(
+                viewModel = rechargeViewModel,
+                roomId = roomId,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         // H5 WebView 路由

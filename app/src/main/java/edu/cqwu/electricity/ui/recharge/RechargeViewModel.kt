@@ -3,8 +3,10 @@ package edu.cqwu.electricity.ui.recharge
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.BalanceResponse
+import edu.cqwu.electricity.data.model.BuyRecord
 import edu.cqwu.electricity.data.model.OrderStatusResponse
 import edu.cqwu.electricity.data.model.PaymentMethod
+import edu.cqwu.electricity.data.model.RechargeTimeRange
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.repository.ElectricityRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * 充值页面独立状态
@@ -48,9 +53,25 @@ data class RechargeUiState(
 )
 
 /**
+ * 充值记录独立状态。
+ * 生命周期跟随 RECHARGE_RECORD 路由，不受 ElectricityViewModel 影响。
+ */
+data class RechargeRecordState(
+    val isQuerying: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val error: String? = null,
+    val list: List<BuyRecord> = emptyList(),
+    val timeRange: Int = 0,
+    val hasQueried: Boolean = false,
+    val roomId: String = "",
+)
+
+/**
  * 充值页面 ViewModel
  *
- * 管理学号查询、金额选择、订单创建、支付方式选择等充值全流程状态。
+ * 管理学号查询、金额选择、订单创建、支付方式选择等充值全流程状态，
+ * 以及充值记录查询（独立 [RechargeRecordState]）。
+ *
  * 与 [ElectricityViewModel] 解耦，不共享任何状态。
  */
 class RechargeViewModel(
@@ -59,6 +80,9 @@ class RechargeViewModel(
 
     private val _uiState = MutableStateFlow(RechargeUiState())
     val uiState: StateFlow<RechargeUiState> = _uiState.asStateFlow()
+
+    private val _recordState = MutableStateFlow(RechargeRecordState())
+    val recordState: StateFlow<RechargeRecordState> = _recordState.asStateFlow()
 
     // ================================================================
     //  充值金额
@@ -233,16 +257,11 @@ class RechargeViewModel(
     }
 
     /**
-     * 查询账号绑定的房间列表
-     * 流程：学号 → userId → 房间列表
+     * 内部方法：查询学号对应的房间列表并自动选择第一个房间。
+     * 由 [queryAccountRoomList] 和 [refreshRechargeData] 共用。
      */
-    fun queryAccountRoomList() {
-        val studentId = _uiState.value.studentId.trim()
-        if (studentId.isBlank()) {
-            _uiState.update { it.copy(error = "请输入学号") }
-            return
-        }
-
+    private fun fetchRooms(studentId: String) {
+        if (studentId.isBlank()) return
         viewModelScope.launch {
             _uiState.update { it.copy(isQuerying = true, isRefreshing = true) }
             queryRoomsByStudentId(studentId)
@@ -252,9 +271,12 @@ class RechargeViewModel(
                             it.copy(isQuerying = false, isRefreshing = false, error = "该账号下未绑定任何房间")
                         }
                     } else {
+                        // 自动选择第一个房间：即使 roomList 内容与之前相同（LaunchedEffect key 不变），
+                        // 也通过直接 selectAccountRoom 确保充值内容显示
                         _uiState.update {
                             it.copy(isQuerying = false, isRefreshing = false, roomList = rooms, selectedRoom = null, fullName = "")
                         }
+                        selectAccountRoom(rooms[0])
                     }
                 }
                 .onFailure { e ->
@@ -263,6 +285,19 @@ class RechargeViewModel(
                     }
                 }
         }
+    }
+
+    /**
+     * 查询账号绑定的房间列表
+     * 流程：学号 → userId → 房间列表
+     */
+    fun queryAccountRoomList() {
+        val studentId = _uiState.value.studentId.trim()
+        if (studentId.isBlank()) {
+            _uiState.update { it.copy(error = "请输入学号") }
+            return
+        }
+        fetchRooms(studentId)
     }
 
     /**
@@ -307,27 +342,7 @@ class RechargeViewModel(
             _uiState.update { it.copy(isRefreshing = false) }
             return
         }
-
-        viewModelScope.launch {
-            _uiState.update { it.copy(isQuerying = true, isRefreshing = true) }
-            queryRoomsByStudentId(studentId)
-                .onSuccess { rooms ->
-                    if (rooms.isEmpty()) {
-                        _uiState.update {
-                            it.copy(isQuerying = false, isRefreshing = false, error = "该账号下未绑定任何房间")
-                        }
-                    } else {
-                        _uiState.update {
-                            it.copy(isQuerying = false, isRefreshing = false, roomList = rooms, selectedRoom = null, fullName = "")
-                        }
-                    }
-                }
-                .onFailure { e ->
-                    _uiState.update {
-                        it.copy(isQuerying = false, isRefreshing = false, error = "查询失败: ${e.localizedMessage}")
-                    }
-                }
-        }
+        fetchRooms(studentId)
     }
 
     /**
@@ -373,5 +388,54 @@ class RechargeViewModel(
             setAccountStudentId(loggedInStudentId)
             queryAccountRoomList()
         }
+    }
+
+    // ================================================================
+    //  充值记录查询（独立 _recordState）
+    // ================================================================
+
+    /**
+     * 设置充值记录查询时间范围
+     */
+    fun setRechargeRecordTimeRange(index: Int) {
+        _recordState.update { it.copy(timeRange = index) }
+    }
+
+    /**
+     * 查询充值记录
+     * @param roomId 要查询的房间 ID
+     */
+    fun queryRechargeRecords(roomId: String) {
+        if (roomId.isBlank()) {
+            _recordState.update { it.copy(error = "未选择房间") }
+            return
+        }
+        viewModelScope.launch {
+            _recordState.update {
+                it.copy(isQuerying = true, isRefreshing = true, error = null, list = emptyList(), roomId = roomId)
+            }
+            val calendar = Calendar.getInstance()
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val endTime = dateFormat.format(calendar.time)
+            val timeRange = RechargeTimeRange.fromIndex(_recordState.value.timeRange)
+            calendar.add(Calendar.DAY_OF_YEAR, -timeRange.days.toInt())
+            val beginTime = dateFormat.format(calendar.time)
+            val buyResult = repository.queryBuyList(roomId, "0", beginTime, endTime)
+            val buyData = buyResult.getOrNull()
+            if (buyData == null || buyData.ifSuccess != "Y") {
+                val errorMsg = buyData?.resultMsg ?: "查询充值记录失败"
+                _recordState.update { it.copy(isQuerying = false, isRefreshing = false, hasQueried = true, error = errorMsg) }
+                return@launch
+            }
+            val records = buyData.buyObj ?: emptyList()
+            _recordState.update { it.copy(isQuerying = false, isRefreshing = false, hasQueried = true, list = records) }
+        }
+    }
+
+    /**
+     * 清除充值记录查询状态
+     */
+    fun clearRechargeRecordState() {
+        _recordState.update { RechargeRecordState() }
     }
 }

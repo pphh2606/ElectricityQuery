@@ -101,19 +101,12 @@ fun ElectricityMainScreen(
     myRoomViewModel: MyRoomViewModel,
     onBack: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
-    onNavigateToDetail: (DetailType) -> Unit,
+    onNavigateToDetail: (DetailType, String) -> Unit,
     onNavigateToPayment: () -> Unit,
     onNavigateToH5Recharge: () -> Unit,
-    onNavigateToRechargeRecord: () -> Unit,
+    onNavigateToRechargeRecord: (String) -> Unit,
     onReLogin: () -> Unit = {},
 ) {
-    // ── 退出 3 Tab 页面时重置所有 ViewModel 状态 ──
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.resetToInitial()
-        }
-    }
-
     val pagerState = rememberPagerState(pageCount = { electricityTabs.size })
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -324,12 +317,14 @@ fun ElectricityMainScreen(
                             onBackToSelection = {
                                 viewModel.onReturnedFromDashboard()
                             },
-                            onNavigateToDetail = onNavigateToDetail,
+                            onNavigateToDetail = { detailType ->
+                                onNavigateToDetail(detailType, uiState.selectedRoom?.id ?: "")
+                            },
                             onNavigateToAccountSelection = {
                                 scope.launch { pagerState.animateScrollToPage(1) }
                             },
                             onNavigateToH5Recharge = onNavigateToH5Recharge,
-                            onNavigateToRechargeRecord = onNavigateToRechargeRecord,
+                            onNavigateToRechargeRecord = { onNavigateToRechargeRecord(uiState.selectedRoom?.id ?: "") },
                             showTopBar = false,
                         )
                     } else {
@@ -364,9 +359,11 @@ fun ElectricityMainScreen(
                         onSwitchToRecharge = {
                             scope.launch { pagerState.animateScrollToPage(1) }
                         },
-                        onNavigateToDetail = onNavigateToDetail,
+                        onNavigateToDetail = { detailType ->
+                            onNavigateToDetail(detailType, myRoomState.selectedRoom?.id ?: "")
+                        },
                         onNavigateToH5Recharge = onNavigateToH5Recharge,
-                        onNavigateToRechargeRecord = onNavigateToRechargeRecord,
+                        onNavigateToRechargeRecord = { onNavigateToRechargeRecord(myRoomState.selectedRoom?.id ?: "") },
                         showRoomSwitchSheet = showRoomSwitchSheet,
                         onShowRoomSwitchSheetChange = { showRoomSwitchSheet = it },
                     )
@@ -415,7 +412,7 @@ private fun MyRoomDashboardTab(
     onSwitchToRecharge: () -> Unit,
     onNavigateToDetail: (DetailType) -> Unit,
     onNavigateToH5Recharge: () -> Unit,
-    onNavigateToRechargeRecord: () -> Unit,
+    onNavigateToRechargeRecord: (String) -> Unit,
     showRoomSwitchSheet: Boolean = false,
     onShowRoomSwitchSheetChange: (Boolean) -> Unit = {},
 ) {
@@ -477,7 +474,7 @@ private fun MyRoomDashboardTab(
             onNavigateToDetail = onNavigateToDetail,
             onNavigateToAccountSelection = onSwitchToRecharge,
             onNavigateToH5Recharge = onNavigateToH5Recharge,
-            onNavigateToRechargeRecord = onNavigateToRechargeRecord,
+            onNavigateToRechargeRecord = { onNavigateToRechargeRecord(uiState.selectedRoom?.id ?: "") },
             onSwitchRoom = { viewModel.switchToMyRoom(it) },
             showTopBar = false,
         )

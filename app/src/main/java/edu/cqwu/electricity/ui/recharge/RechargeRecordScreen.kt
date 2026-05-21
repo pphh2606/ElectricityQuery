@@ -51,8 +51,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.model.BuyRecord
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
-import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
-import edu.cqwu.electricity.ui.electricity.RecordState
 import edu.cqwu.electricity.util.ToastUtils
 
 // 三点菜单
@@ -87,15 +85,17 @@ import androidx.compose.material.icons.filled.Info
  * - 标题栏：← 返回按钮 + "查询充值记录" + ⋮ 三点菜单（复制/导出）
  * - 查询时间范围下拉菜单（一个月 / 三个月 / 一年 / 四年）
  * - 充值记录结果列表（支持下拉刷新）
- * - 进入页面自动以 userId=0 查询当前房间全部充值记录
+ * - 进入页面自动查询指定房间的全部充值记录
+ *
+ * 与 [RechargeViewModel] 绑定，不依赖 [ElectricityViewModel]。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RechargeRecordScreen(
-    viewModel: ElectricityViewModel,
+    viewModel: RechargeViewModel,
+    roomId: String,
     onBack: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val recordState by viewModel.recordState.collectAsState()
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
@@ -132,32 +132,28 @@ fun RechargeRecordScreen(
         }
     }
 
-    // 进入页面自动查询充值记录（仅在首次进入时触发）
-    val isFirstLoad = remember { mutableStateOf(true) }
+    // 进入页面自动查询充值记录
+    // LaunchedEffect(Unit) 天然只在首次 composition 时执行一次
     LaunchedEffect(Unit) {
-        if (isFirstLoad.value) {
-            isFirstLoad.value = false
-            viewModel.queryRechargeRecords()
-        }
+        viewModel.queryRechargeRecords(roomId)
     }
 
-    // 页面离开时清除充值记录查询状态（不拦截返回手势，让预测性返回动画正常工作）
+    // 页面离开时清除充值记录查询状态
     DisposableEffect(Unit) {
         onDispose {
             viewModel.clearRechargeRecordState()
         }
     }
 
-    // 检测房间是否已切换：如果当前房间与上次查询的房间不同，自动重新查询
-    val currentRoomId = uiState.selectedRoom?.id
-    LaunchedEffect(currentRoomId) {
-        if (currentRoomId != null
+    // 检测房间是否已切换：如果传入的 roomId 与上次查询的房间不同，自动重新查询
+    LaunchedEffect(roomId) {
+        if (roomId.isNotEmpty()
             && recordState.hasQueried
             && recordState.roomId.isNotEmpty()
-            && currentRoomId != recordState.roomId
+            && roomId != recordState.roomId
         ) {
             viewModel.clearRechargeRecordState()
-            viewModel.queryRechargeRecords()
+            viewModel.queryRechargeRecords(roomId)
         }
     }
 
@@ -229,7 +225,7 @@ fun RechargeRecordScreen(
     ) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = recordState.isRefreshing,
-            onRefresh = { viewModel.queryRechargeRecords() },
+            onRefresh = { viewModel.queryRechargeRecords(roomId) },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -262,7 +258,7 @@ fun RechargeRecordScreen(
                             singleLine = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                             modifier = Modifier
-                                .menuAnchor() // menuAnchor() is deprecated but still works
+                                .menuAnchor()
                                 .width(160.dp),
                             enabled = !recordState.isQuerying,
                             colors = TextFieldDefaults.colors(
@@ -356,7 +352,6 @@ fun RechargeRecordScreen(
     }
 
 }
-
     // ========== 提示弹窗 - Bottom Sheet ==========
     if (showInfoDialog) {
         BottomSheetDialog(
@@ -443,7 +438,7 @@ private fun RechargeRecordCard(record: BuyRecord) {
 /**
  * 生成充值记录的纯文本内容（用于复制和导出）
  */
-private fun getRechargeRecordTextContent(recordState: RecordState): String {
+private fun getRechargeRecordTextContent(recordState: RechargeRecordState): String {
     val sb = StringBuilder()
     sb.appendLine("查询充值记录")
     sb.appendLine("=".repeat(40))
