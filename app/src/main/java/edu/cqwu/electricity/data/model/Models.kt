@@ -65,10 +65,7 @@ data class BalanceResponse(
  */
 enum class SelectionStep {
     AREA,       // 选择校区
-    BUILDING,   // 选择楼栋
     ROOM_GRID,  // 展开式房间分组视图（楼栋→楼层分组+房间网格）
-    FLOOR,      // 选择楼层（保留兼容）
-    ROOM,       // 选择房间（保留兼容）
     DONE        // 已完成选择
 }
 
@@ -282,6 +279,25 @@ data class NoticeDetailResponse(
     val attchList: List<Any>? = null,
     val list: List<NoticeDetailQp>? = null
 )
+
+// ==================== 充值记录时间范围枚举 ====================
+
+/**
+ * 充值记录查询的时间范围枚举。
+ * 替代 [ElectricityUiState.rechargeRecordTimeRange] 中的魔法数字。
+ */
+enum class RechargeTimeRange(val days: Long) {
+    ONE_MONTH(30L),
+    THREE_MONTHS(90L),
+    ONE_YEAR(365L),
+    FOUR_YEARS(1460L);
+
+    companion object {
+        /** 通过索引值（0=一个月, 1=三个月, 2=一年, 3=四年）获取枚举 */
+        fun fromIndex(index: Int): RechargeTimeRange =
+            entries.getOrElse(index) { ONE_MONTH }
+    }
+}
 
 // ==================== 卡挂失相关模型 ====================
 

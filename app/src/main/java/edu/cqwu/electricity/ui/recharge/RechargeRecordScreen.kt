@@ -51,8 +51,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.model.BuyRecord
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
-import edu.cqwu.electricity.ui.electricity.ElectricityUiState
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
+import edu.cqwu.electricity.ui.electricity.RecordState
 import edu.cqwu.electricity.util.ToastUtils
 
 // 三点菜单
@@ -96,6 +96,7 @@ fun RechargeRecordScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val recordState by viewModel.recordState.collectAsState()
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
     // 下拉菜单状态
@@ -151,9 +152,9 @@ fun RechargeRecordScreen(
     val currentRoomId = uiState.selectedRoom?.id
     LaunchedEffect(currentRoomId) {
         if (currentRoomId != null
-            && uiState.rechargeRecordHasQueried
-            && uiState.rechargeRecordRoomId.isNotEmpty()
-            && currentRoomId != uiState.rechargeRecordRoomId
+            && recordState.hasQueried
+            && recordState.roomId.isNotEmpty()
+            && currentRoomId != recordState.roomId
         ) {
             viewModel.clearRechargeRecordState()
             viewModel.queryRechargeRecords()
@@ -205,7 +206,7 @@ fun RechargeRecordScreen(
                                 leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    val text = getRechargeRecordTextContent(uiState)
+                                    val text = getRechargeRecordTextContent(recordState)
                                     copyToClipboard(context, text, "查询充值记录", snackbar)
                                 }
                             )
@@ -214,7 +215,7 @@ fun RechargeRecordScreen(
                                 leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    pendingExportText = getRechargeRecordTextContent(uiState)
+                                    pendingExportText = getRechargeRecordTextContent(recordState)
                                     pendingExportLabel = "查询充值记录"
                                     saveFileLauncher.launch("electricity_recharge_record.txt")
                                 }
@@ -227,7 +228,7 @@ fun RechargeRecordScreen(
         }
     ) { paddingValues ->
         PullToRefreshBox(
-            isRefreshing = uiState.rechargeRecordIsRefreshing,
+            isRefreshing = recordState.isRefreshing,
             onRefresh = { viewModel.queryRechargeRecords() },
             modifier = Modifier
                 .fillMaxSize()
@@ -255,7 +256,7 @@ fun RechargeRecordScreen(
                         onExpandedChange = { dropdownExpanded = !dropdownExpanded }
                     ) {
                         TextField(
-                            value = timeRangeOptions[uiState.rechargeRecordTimeRange],
+                            value = timeRangeOptions[recordState.timeRange],
                             onValueChange = {},
                             readOnly = true,
                             singleLine = true,
@@ -263,7 +264,7 @@ fun RechargeRecordScreen(
                             modifier = Modifier
                                 .menuAnchor() // menuAnchor() is deprecated but still works
                                 .width(160.dp),
-                            enabled = !uiState.rechargeRecordIsQuerying,
+                            enabled = !recordState.isQuerying,
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = Color.Transparent,
                                 unfocusedContainerColor = Color.Transparent,
@@ -295,7 +296,7 @@ fun RechargeRecordScreen(
 
                 // ========== 查询结果区域 ==========
                 when {
-                    uiState.rechargeRecordError != null -> {
+                    recordState.error != null -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -303,15 +304,15 @@ fun RechargeRecordScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = uiState.rechargeRecordError ?: "未知错误",
+                                text = recordState.error ?: "未知错误",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
                     }
 
-                    uiState.rechargeRecordList.isNotEmpty() -> {
-                        val reversedList = uiState.rechargeRecordList.reversed()
+                    recordState.list.isNotEmpty() -> {
+                        val reversedList = recordState.list.reversed()
                         val total = reversedList.sumOf { it.buyTotal }
                         // 有数据，显示充值记录列表
                         LazyColumn(
@@ -442,15 +443,15 @@ private fun RechargeRecordCard(record: BuyRecord) {
 /**
  * 生成充值记录的纯文本内容（用于复制和导出）
  */
-private fun getRechargeRecordTextContent(uiState: ElectricityUiState): String {
+private fun getRechargeRecordTextContent(recordState: RecordState): String {
     val sb = StringBuilder()
     sb.appendLine("查询充值记录")
     sb.appendLine("=".repeat(40))
 
-    if (uiState.rechargeRecordList.isEmpty()) {
+    if (recordState.list.isEmpty()) {
         sb.appendLine("未查询到充值记录")
     } else {
-        val reversedList = uiState.rechargeRecordList.reversed()
+        val reversedList = recordState.list.reversed()
         val total = reversedList.sumOf { it.buyTotal }
         // 合计放到最前面
         sb.appendLine("合计充值：${String.format("%.2f", total)} 元（共 ${reversedList.size} 笔）")

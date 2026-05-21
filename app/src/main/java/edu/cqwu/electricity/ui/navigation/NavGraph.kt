@@ -390,7 +390,6 @@ fun AppNavGraph(
             BuildingSelectionScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
-                onRoomSelected = { _, _ -> navController.navigate(Routes.DASHBOARD) },
                 onNavigateToAccountSelection = { navController.navigate(Routes.RECHARGE) },
             )
         }

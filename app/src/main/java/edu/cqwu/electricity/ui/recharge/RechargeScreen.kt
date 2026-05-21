@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -45,12 +44,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import edu.cqwu.electricity.ui.theme.LocalTopBarState
-import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -77,6 +72,7 @@ import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.network.AccountManager
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.TabScaffold
 import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.navigation.Routes
@@ -105,7 +101,6 @@ fun RechargeScreen(
     val recharge by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
     // 房间切换弹窗状态
     var showRoomSwitchDialog by remember { mutableStateOf(false) }
@@ -154,22 +149,6 @@ fun RechargeScreen(
         }
     }
 
-    // ── 查询后自动选择第一个房间 ──
-    LaunchedEffect(recharge.roomList) {
-        val rooms = recharge.roomList
-        if (rooms.isNotEmpty() && recharge.selectedRoom == null) {
-            viewModel.selectAccountRoom(rooms[0])
-        }
-    }
-
-    // ── 房间选择后加载余额 ──
-    LaunchedEffect(recharge.selectedRoom) {
-        if (recharge.selectedRoom != null) {
-            viewModel.loadRechargeBalance()
-        }
-    }
-
-
     // 是否有有效金额
     val hasValidAmount = recharge.selectedAmount != null
             || recharge.customAmount.trim().toDoubleOrNull()?.let { it > 0 } == true
@@ -181,61 +160,26 @@ fun RechargeScreen(
     // 是否可以切换账户（仅账号模式有多房间时允许切换）
     val canSwitchAccount = recharge.roomList.size > 1
 
-    if (showTopBar) {
-        Box(Modifier.fillMaxSize()) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text("充值", fontWeight = FontWeight.Bold) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                viewModel.clearRechargeState()
-                                viewModel.clearAccountRechargeState()
-                                onBack()
-                            }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "返回",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        },
-                        actions = {
-                            // 提示按钮始终显示
-                            IconButton(onClick = { showInfoDialog = true }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Info,
-                                    contentDescription = "提示",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        },
-                        colors = topBarColors
-                    )
-                }
-            ) { paddingValues ->
-                RechargeContent(
-                    viewModel = viewModel,
-                    recharge = recharge,
-                    showInfoDialog = showInfoDialog,
-                    onShowInfoDialogChange = { showInfoDialog = it },
-                    showOtherRechargeDialog = showOtherRechargeDialog,
-                    onShowOtherRechargeDialogChange = { showOtherRechargeDialog = it },
-                    showRoomSwitchDialog = showRoomSwitchDialog,
-                    onShowRoomSwitchDialogChange = { showRoomSwitchDialog = it },
-                    paddingValues = paddingValues,
-                    hasValidAmount = hasValidAmount,
-                    accountName = accountName,
-                    canSwitchAccount = canSwitchAccount,
-                    hasQueriedSuccess = hasQueriedSuccess,
-                    showRechargeContent = showRechargeContent,
-                    onNavigateToPayment = onNavigateToPayment,
-                    onNavigateToH5Recharge = onNavigateToH5Recharge,
+    // 使用统一 TabScaffold
+    TabScaffold(
+        showTopBar = showTopBar,
+        title = "充值",
+        onBack = {
+            viewModel.clearRechargeState()
+            viewModel.clearAccountRechargeState()
+            onBack()
+        },
+        actions = {
+            // 提示按钮始终显示
+            IconButton(onClick = { showInfoDialog = true }) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = "提示",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
-    } else {
-        // 无 TopAppBar/Scaffold 模式（用于底部导航栏 Tab 内嵌）
+    ) { paddingValues ->
         RechargeContent(
             viewModel = viewModel,
             recharge = recharge,
@@ -245,7 +189,7 @@ fun RechargeScreen(
             onShowOtherRechargeDialogChange = { showOtherRechargeDialog = it },
             showRoomSwitchDialog = showRoomSwitchDialog,
             onShowRoomSwitchDialogChange = { showRoomSwitchDialog = it },
-            paddingValues = PaddingValues(0.dp),
+            paddingValues = paddingValues,
             hasValidAmount = hasValidAmount,
             accountName = accountName,
             canSwitchAccount = canSwitchAccount,

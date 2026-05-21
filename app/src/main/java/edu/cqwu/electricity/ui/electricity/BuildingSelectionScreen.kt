@@ -27,17 +27,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import edu.cqwu.electricity.ui.theme.LocalTopBarState
-import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +55,7 @@ import edu.cqwu.electricity.data.model.displayName
 import edu.cqwu.electricity.data.network.AccountManager
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.util.ToastUtils
+import edu.cqwu.electricity.ui.components.TabScaffold
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
 import edu.cqwu.electricity.ui.electricity.FloorRoomLoadState
 
@@ -71,7 +68,6 @@ import edu.cqwu.electricity.ui.electricity.FloorRoomLoadState
 fun BuildingSelectionScreen(
     viewModel: ElectricityViewModel,
     onBack: () -> Unit,
-    onRoomSelected: (roomId: String, roomName: String) -> Unit,
     onNavigateToAccountSelection: () -> Unit = {},
     showTopBar: Boolean = true
 ) {
@@ -87,6 +83,7 @@ fun BuildingSelectionScreen(
 
     // 进入页面时加载校区列表
     LaunchedEffect(Unit) {
+        android.util.Log.d("DEBUG_expand", "BuildingSelectionScreen LaunchedEffect: areas.isEmpty=${uiState.areas.isEmpty()}, expandedAreaIds=${uiState.expandedAreaIds}, currentStep=${uiState.currentStep}")
         if (uiState.areas.isEmpty()) {
             viewModel.loadAreas()
         }
@@ -100,51 +97,25 @@ fun BuildingSelectionScreen(
         }
     }
 
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-
-    // 被其他 Composable 嵌套使用时（如底部导航栏 Tab），跳过 TopAppBar/Scaffold
-    if (showTopBar) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("电费查询", fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "返回",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    actions = {
-                        // 我的寝室快捷入口
-                        // 充值入口
-                        IconButton(onClick = onNavigateToAccountSelection) {
-                            Icon(
-                                imageVector = Icons.Default.ShoppingCart,
-                                contentDescription = "充值电费"
-                            )
-                        }
-                    },
-                    colors = topBarColors
+    // 使用统一 TabScaffold（独立页面显示 TopAppBar，Tab 内嵌时不自带）
+    TabScaffold(
+        showTopBar = showTopBar,
+        title = "电费查询",
+        onBack = onBack,
+        actions = {
+            IconButton(onClick = onNavigateToAccountSelection) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = "充值电费"
                 )
             }
-        ) { paddingValues ->
-            ContentArea(
-                viewModel = viewModel,
-                uiState = uiState,
-                snackbar = snackbar,
-                paddingValues = paddingValues
-            )
         }
-    } else {
-        // 无 TopAppBar/Scaffold 模式（用于底部导航栏 Tab 内嵌）
+    ) { paddingValues ->
         ContentArea(
             viewModel = viewModel,
             uiState = uiState,
             snackbar = snackbar,
-            paddingValues = PaddingValues(0.dp)
+            paddingValues = paddingValues
         )
     }
 }
@@ -163,90 +134,106 @@ private fun ContentArea(
     // 仅在校区列表步骤启用下拉刷新（ROOM_GRID 无网络请求，禁用以免用户困惑）
     val pullToRefreshEnabled = uiState.currentStep == SelectionStep.AREA
 
-    // Column + weight(1f) 确保内容区域收到有限约束，
-    // 避免 HorizontalPager 传递无限高度导致 LazyColumn 崩溃
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 16.dp)
-    ) {
-        // 面包屑导航栏（固定不动）
-        BreadcrumbBar(
-            currentStep = uiState.currentStep,
-            selectedArea = uiState.selectedArea,
-            selectedBuilding = uiState.selectedBuilding,
-            selectedFloor = uiState.selectedFloor,
-            onNavigate = { targetStep -> viewModel.navigateToStep(targetStep) }
-        )
+    // ═══ 返回楼栋选择 FAB 是否显示 ═══
+    val showBackFab = uiState.currentStep == SelectionStep.ROOM_GRID
 
-        Spacer(modifier = Modifier.height(4.dp))
-
-        // 可滚动的列表区域 + 下拉刷新
-        Box(modifier = Modifier.weight(1f)) {
-            PullToRefreshBox(
-                isRefreshing = uiState.isRefreshing && pullToRefreshEnabled,
-                onRefresh = {
-                    when (uiState.currentStep) {
-                        SelectionStep.AREA -> viewModel.refreshAreas()
-                        SelectionStep.ROOM_GRID -> viewModel.refreshRoomGrid()
-                        else -> {}
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+    // 使用 Box 包裹内容区域 + FAB 叠加层
+    // 避免 FAB 被 Column 的 horizontal padding 裁剪
+    Box(modifier = Modifier.fillMaxSize()) {
+        // ── 主要内容区域 ──
+        // Column + weight(1f) 确保内容区域收到有限约束，
+        // 避免 HorizontalPager 传递无限高度导致 LazyColumn 崩溃
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+        ) {
+            // 可滚动的列表区域 + 下拉刷新
+            Box(modifier = Modifier.weight(1f)) {
+                PullToRefreshBox(
+                    isRefreshing = uiState.isRefreshing && pullToRefreshEnabled,
+                    onRefresh = {
+                        when (uiState.currentStep) {
+                            SelectionStep.AREA -> viewModel.refreshAreas()
+                            SelectionStep.ROOM_GRID -> viewModel.refreshRoomGrid()
+                            else -> {}
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
                 ) {
-            // ── 列表内容（按步骤分发，标题和面包屑已在外层 Column 固定显示）──
-            when (uiState.currentStep) {
-                SelectionStep.AREA -> {
-                    if (uiState.areas.isEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                // ── 列表内容（按步骤分发）──
+                when (uiState.currentStep) {
+                    SelectionStep.AREA -> {
+                        if (uiState.areas.isEmpty()) {
+                            item(key = "empty") {
+                                EmptyStateText("暂无校区数据")
+                            }
+                        } else {
+                            android.util.Log.d("DEBUG_expand", "Rendering AREA step: areas=${uiState.areas.size}, expandedAreaIds=${uiState.expandedAreaIds}")
+                            items(uiState.areas, key = { it.id }) { area ->
+                                AreaBuildingGroup(
+                                    area = area,
+                                    isExpanded = uiState.expandedAreaIds.contains(area.id),
+                                    onToggle = { viewModel.toggleArea(area.id) },
+                                    onBuildingClick = { building, areaId ->
+                                        viewModel.selectBuilding(building, areaId)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    SelectionStep.ROOM_GRID -> {
+                        if (uiState.floors.isEmpty()) {
+                            item(key = "empty") {
+                                EmptyStateText("该楼栋下无楼层数据")
+                            }
+                        } else {
+                            // 直接在外层 LazyColumn 中 items
+                            items(uiState.floors, key = { it.id }) { floor ->
+                                FloorRoomGroup(
+                                    floor = floor,
+                                    loadState = uiState.floorRoomsMap[floor.id],
+                                    isExpanded = uiState.expandedFloorIds.contains(floor.id),
+                                    onToggle = { viewModel.toggleFloorExpanded(floor.id) },
+                                    onRoomClick = { room -> viewModel.selectRoom(room) },
+                                    onLoadFloor = { floor -> viewModel.loadRoomsForFloor(floor) },
+                                    refreshVersion = uiState.floorRoomRefreshVersion
+                                )
+                            }
+                        }
+                    }
+                    SelectionStep.DONE -> {
                         item(key = "empty") {
-                            EmptyStateText("暂无校区数据")
-                        }
-                    } else {
-                        items(uiState.areas, key = { it.id }) { area ->
-                            AreaBuildingGroup(
-                                area = area,
-                                isExpanded = uiState.expandedAreaIds.contains(area.id),
-                                onToggle = { viewModel.toggleArea(area.id) },
-                                onBuildingClick = { building, areaId ->
-                                    viewModel.selectBuilding(building, areaId)
-                                }
-                            )
+                            EmptyStateText("")
                         }
                     }
-                }
-                SelectionStep.ROOM_GRID -> {
-                    if (uiState.floors.isEmpty()) {
-                        item(key = "empty") {
-                            EmptyStateText("该楼栋下无楼层数据")
                         }
-                    } else {
-                        // 直接在外层 LazyColumn 中 items
-                        items(uiState.floors, key = { it.id }) { floor ->
-                            FloorRoomGroup(
-                                floor = floor,
-                                loadState = uiState.floorRoomsMap[floor.id],
-                                onRoomClick = { room -> viewModel.selectRoom(room) },
-                                onLoadFloor = { floor -> viewModel.loadRoomsForFloor(floor) },
-                                refreshVersion = uiState.floorRoomRefreshVersion
-                            )
-                        }
-                    }
-                }
-                SelectionStep.DONE -> {
-                    item(key = "empty") {
-                        EmptyStateText("")
-                    }
-                }
-                else -> { /* BUILDING/FLOOR/ROOM 已废弃 */ }
                     }
                 }
             }
+        }
+
+        // ── 返回楼栋选择 FAB（叠加层，不受 Column padding 影响）──
+        if (showBackFab) {
+            ExtendedFloatingActionButton(
+                onClick = { viewModel.goBack() },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                icon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null
+                    )
+                },
+                text = { Text("返回楼栋选择") },
+            )
         }
     }
 }
@@ -309,103 +296,6 @@ private fun EmptyStateText(text: String) {
 }
 
 /**
- * MD3 风格面包屑导航栏
- * 使用 Surface 容器 + 芯片风格的 crumbs，符合 Material Design 3 规范。
- * 当前步骤以 secondaryContainer 色标注，历史步骤可点击跳转。
- */
-@Composable
-private fun BreadcrumbBar(
-    currentStep: SelectionStep,
-    selectedArea: BuildingNode?,
-    selectedBuilding: BuildingNode?,
-    selectedFloor: BuildingNode?,
-    onNavigate: (SelectionStep) -> Unit
-) {
-    data class Crumb(val label: String, val targetStep: SelectionStep, val isActive: Boolean)
-
-    // 面包屑活跃步骤（在 AREA 之后）：ROOM_GRID = 浏览楼层, DONE = 已选房间
-    val activeSteps = setOf(SelectionStep.ROOM_GRID, SelectionStep.DONE)
-
-    val crumbs = remember(selectedArea, selectedBuilding, selectedFloor, currentStep) {
-        buildList {
-            add(Crumb("全部校区", SelectionStep.AREA, currentStep == SelectionStep.AREA))
-            if (selectedArea != null && currentStep in activeSteps) {
-                add(Crumb(selectedArea.name, SelectionStep.AREA, false))
-            }
-            // 注意：BUILDING 枚举已被合并到 AREA 展开式选择中，所以 target 设为 AREA。
-            // 点击楼栋名称会退回到校区选择页（因为楼栋没有独立页面）。
-            if (selectedBuilding != null && currentStep in activeSteps) {
-                val isActive = currentStep == SelectionStep.ROOM_GRID
-                add(Crumb(selectedBuilding.name, SelectionStep.AREA, isActive))
-            }
-            // 楼层名点击 → 回到 ROOM_GRID（展开式楼层分组视图）
-            if (selectedFloor != null && currentStep in activeSteps) {
-                val isActive = currentStep == SelectionStep.DONE
-                add(Crumb(selectedFloor.name, SelectionStep.ROOM_GRID, isActive))
-            }
-        }
-    }
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 4.dp),
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        tonalElevation = 1.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            crumbs.forEachIndexed { index, crumb ->
-                if (index > 0) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(horizontal = 2.dp)
-                            .size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                if (crumb.isActive) {
-                    // 当前步骤：secondaryContainer 填充色芯片
-                    Surface(
-                        shape = MaterialTheme.shapes.small,
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                    ) {
-                        Text(
-                            text = crumb.label,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                } else {
-                    // 历史步骤：可点击 chip
-                    Surface(
-                        onClick = { onNavigate(crumb.targetStep) },
-                        shape = MaterialTheme.shapes.small,
-                        color = MaterialTheme.colorScheme.surface,
-                    ) {
-                        Text(
-                            text = crumb.label,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
  * 可展开分组的通用头部行
  */
 @Composable
@@ -444,11 +334,12 @@ private fun ExpandableGroupHeader(
 private fun FloorRoomGroup(
     floor: BuildingNode,
     loadState: FloorRoomLoadState?,
+    isExpanded: Boolean,
+    onToggle: () -> Unit,
     onRoomClick: (BuildingNode) -> Unit,
     onLoadFloor: (BuildingNode) -> Unit,
     refreshVersion: Int = 0
 ) {
-    var expanded by remember(refreshVersion) { mutableStateOf(false) }
     val displayName = floor.displayName
 
     Column(
@@ -456,13 +347,13 @@ private fun FloorRoomGroup(
     ) {
         ExpandableGroupHeader(
             name = displayName,
-            isExpanded = expanded,
+            isExpanded = isExpanded,
             onClick = {
-                expanded = !expanded
-                if (expanded && loadState == null) onLoadFloor(floor)
+                onToggle()
+                if (!isExpanded && loadState == null) onLoadFloor(floor)
             },
             trailingContent = {
-                if (expanded) {
+                if (isExpanded) {
                     when (loadState) {
                         is FloorRoomLoadState.Loading -> { }
                         is FloorRoomLoadState.Success -> {
@@ -481,7 +372,7 @@ private fun FloorRoomGroup(
             }
         )
 
-        AnimatedVisibility(visible = expanded) {
+        AnimatedVisibility(visible = isExpanded) {
             Column {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 when (loadState) {

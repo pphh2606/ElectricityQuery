@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.ui.electricity
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.DisposableEffect
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,9 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,6 +54,8 @@ import edu.cqwu.electricity.data.model.DetailType
 import edu.cqwu.electricity.data.model.SelectionStep
 import edu.cqwu.electricity.data.network.AccountManager
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
 import edu.cqwu.electricity.ui.recharge.RechargeScreen
 import edu.cqwu.electricity.ui.recharge.RechargeViewModel
@@ -101,11 +107,22 @@ fun ElectricityMainScreen(
     onNavigateToRechargeRecord: () -> Unit,
     onReLogin: () -> Unit = {},
 ) {
+    // ── 退出 3 Tab 页面时重置所有 ViewModel 状态 ──
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetToInitial()
+        }
+    }
+
     val pagerState = rememberPagerState(pageCount = { electricityTabs.size })
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    val myRoomState by myRoomViewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
+
+    // ── 我的寝室 Tab 控制状态 ──
+    var showRoomSwitchSheet by remember { mutableStateOf(false) }
 
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
@@ -121,8 +138,9 @@ fun ElectricityMainScreen(
         else -> tabTitles[pagerState.currentPage]
     }
 
-    // ── 三点菜单状态 ──
+    // ── 三点菜单状态（查询 Tab 和我的 Tab 各自独立）──
     var showMenu by remember { mutableStateOf(false) }
+    var showMyRoomMenu by remember { mutableStateOf(false) }
 
     // ── 文件导出启动器 ──
     var pendingExportText by remember { mutableStateOf("") }
@@ -185,8 +203,8 @@ fun ElectricityMainScreen(
                     }
                 },
                 actions = {
-                    // 查询 Tab 显示余额结果时：三点菜单（复制/导出）
-                    if (showQueryResult) {
+                    // ── Tab 0：查询 Tab 显示余额结果时，显示三点菜单 ──
+                    if (pagerState.currentPage == 0 && showQueryResult) {
                         Box {
                             IconButton(onClick = { showMenu = true }) {
                                 Icon(
@@ -214,6 +232,51 @@ fun ElectricityMainScreen(
                                     onClick = {
                                         showMenu = false
                                         pendingExportText = getDashboardTextContent(room, balance)
+                                        pendingExportLabel = "电费查询结果"
+                                        saveFileLauncher.launch("electricity_dashboard.txt")
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    // ── Tab 2：我的寝室 Tab 显示切换寝室按钮和三点菜单 ──
+                    if (pagerState.currentPage == 2 && myRoomState.selectedRoom != null) {
+                        // 切换寝室按钮（仅多房间时显示）
+                        if (myRoomState.myRoomList.size > 1) {
+                            IconButton(onClick = { showRoomSwitchSheet = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.SwapHoriz,
+                                    contentDescription = "切换寝室"
+                                )
+                            }
+                        }
+                        Box {
+                            IconButton(onClick = { showMyRoomMenu = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "更多选项",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showMyRoomMenu,
+                                onDismissRequest = { showMyRoomMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("复制") },
+                                    leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                                    onClick = {
+                                        showMyRoomMenu = false
+                                        val text = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
+                                        copyToClipboard(context, text, "电费查询结果", snackbar)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("导出") },
+                                    leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
+                                    onClick = {
+                                        showMyRoomMenu = false
+                                        pendingExportText = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
                                         pendingExportLabel = "电费查询结果"
                                         saveFileLauncher.launch("electricity_dashboard.txt")
                                     }
@@ -273,7 +336,6 @@ fun ElectricityMainScreen(
                         BuildingSelectionScreen(
                             viewModel = viewModel,
                             onBack = {},
-                            onRoomSelected = { _, _ -> },
                             onNavigateToAccountSelection = {
                                 scope.launch { pagerState.animateScrollToPage(1) }
                             },
@@ -305,8 +367,35 @@ fun ElectricityMainScreen(
                         onNavigateToDetail = onNavigateToDetail,
                         onNavigateToH5Recharge = onNavigateToH5Recharge,
                         onNavigateToRechargeRecord = onNavigateToRechargeRecord,
+                        showRoomSwitchSheet = showRoomSwitchSheet,
+                        onShowRoomSwitchSheetChange = { showRoomSwitchSheet = it },
                     )
                 }
+            }
+        }
+    }
+
+    // ── 我的寝室房间切换 BottomSheet ──
+    if (showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty()) {
+        BottomSheetDialog(
+            onDismissRequest = { showRoomSwitchSheet = false },
+            title = "选择寝室"
+        ) {
+            Text(
+                text = "请选择要查看的寝室：",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            myRoomState.myRoomList.forEach { room ->
+                BottomSheetItem(
+                    icon = Icons.Default.Home,
+                    title = room.fullName.ifBlank { room.roomName },
+                    onClick = {
+                        myRoomViewModel.switchToMyRoom(room)
+                        showRoomSwitchSheet = false
+                    }
+                )
             }
         }
     }
@@ -327,6 +416,8 @@ private fun MyRoomDashboardTab(
     onNavigateToDetail: (DetailType) -> Unit,
     onNavigateToH5Recharge: () -> Unit,
     onNavigateToRechargeRecord: () -> Unit,
+    showRoomSwitchSheet: Boolean = false,
+    onShowRoomSwitchSheetChange: (Boolean) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -338,9 +429,10 @@ private fun MyRoomDashboardTab(
         }
     }
 
-    // 每次显示时自动查询当前登录用户的寝室
+    // 仅在首次查询（无缓存数据）时自动查询当前登录用户的寝室
+    // 后续切换到其他 Tab 再回来时，使用缓存数据，不再重复查询
     LaunchedEffect(Unit) {
-        if (loggedInStudentId != null) {
+        if (loggedInStudentId != null && uiState.selectedRoom == null) {
             viewModel.fastQueryMyRoom(loggedInStudentId)
         }
     }

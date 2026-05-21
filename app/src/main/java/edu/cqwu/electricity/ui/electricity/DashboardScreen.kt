@@ -44,15 +44,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.TabScaffold
 import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.data.model.UserRoomInfo
-import edu.cqwu.electricity.ui.theme.LocalTopBarState
-import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -140,91 +137,55 @@ fun DashboardScreen(
         }
     }
 
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-
-    if (showTopBar) {
-        Box(Modifier.fillMaxSize()) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text("电费查询结果", fontWeight = FontWeight.Bold) },
-                        navigationIcon = {
-                            IconButton(onClick = { onBackToSelection() }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "返回"
-                                )
-                            }
-                        },
-                        actions = {
-                            // 我的寝室切换按钮（仅多房间时显示）
-                            if (myRoomList.size > 1) {
-                                IconButton(onClick = { showRoomSwitchSheet = true }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Home,
-                                        contentDescription = "切换寝室"
-                                    )
-                                }
-                            }
-                            Box {
-                                IconButton(onClick = { showMenu = true }) {
-                                    Icon(
-                                        imageVector = Icons.Default.MoreVert,
-                                        contentDescription = "更多选项"
-                                    )
-                                }
-                                DropdownMenu(
-                                    expanded = showMenu,
-                                    onDismissRequest = { showMenu = false }
-                                ) {
-                                    DropdownMenuItem(
-                                        text = { Text("复制") },
-                                        leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
-                                        onClick = {
-                                            showMenu = false
-                                            val text = getDashboardTextContent(room, balance)
-                                            copyToClipboard(context, text, "电费查询结果", snackbar)
-                                        }
-                                    )
-                                    DropdownMenuItem(
-                                        text = { Text("导出") },
-                                        leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
-                                        onClick = {
-                                            showMenu = false
-                                            pendingExportText = getDashboardTextContent(room, balance)
-                                            pendingExportLabel = "电费查询结果"
-                                            saveFileLauncher.launch("electricity_dashboard.txt")
-                                        }
-                                    )
-                                }
-                            }
-                        },
-                        colors = topBarColors
+    // 使用统一 TabScaffold
+    TabScaffold(
+        showTopBar = showTopBar,
+        title = "电费查询结果",
+        onBack = { onBackToSelection() },
+        actions = {
+            // 我的寝室切换按钮（仅多房间时显示）
+            if (myRoomList.size > 1) {
+                IconButton(onClick = { showRoomSwitchSheet = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "切换寝室"
                     )
                 }
-            ) { paddingValues ->
-                DashboardContent(
-                    myRoomList = myRoomList,
-                    room = room,
-                    balance = balance,
-                    isRefreshing = isRefreshing,
-                    isLoading = isLoading,
-                    error = error,
-                    snackbar = snackbar,
-                    paddingValues = paddingValues,
-                    showRoomSwitchSheet = showRoomSwitchSheet,
-                    onShowRoomSwitchSheetChange = { showRoomSwitchSheet = it },
-                    onRefresh = onRefresh,
-                    onBackToSelection = onBackToSelection,
-                    onNavigateToDetail = onNavigateToDetail,
-                    onNavigateToH5Recharge = onNavigateToH5Recharge,
-                    onNavigateToRechargeRecord = onNavigateToRechargeRecord,
-                    onSwitchRoom = onSwitchRoom,
-                )
+            }
+            Box {
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "更多选项"
+                    )
+                }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("复制") },
+                        leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                        onClick = {
+                            showMenu = false
+                            val text = getDashboardTextContent(room, balance)
+                            copyToClipboard(context, text, "电费查询结果", snackbar)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("导出") },
+                        leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
+                        onClick = {
+                            showMenu = false
+                            pendingExportText = getDashboardTextContent(room, balance)
+                            pendingExportLabel = "电费查询结果"
+                            saveFileLauncher.launch("electricity_dashboard.txt")
+                        }
+                    )
+                }
             }
         }
-    } else {
-        // 无 TopAppBar/Scaffold 模式（用于底部导航栏 Tab 内嵌）
+    ) { paddingValues ->
         DashboardContent(
             myRoomList = myRoomList,
             room = room,
@@ -233,7 +194,7 @@ fun DashboardScreen(
             isLoading = isLoading,
             error = error,
             snackbar = snackbar,
-            paddingValues = PaddingValues(0.dp),
+            paddingValues = paddingValues,
             showRoomSwitchSheet = showRoomSwitchSheet,
             onShowRoomSwitchSheetChange = { showRoomSwitchSheet = it },
             onRefresh = onRefresh,

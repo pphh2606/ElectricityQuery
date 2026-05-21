@@ -54,7 +54,7 @@ import edu.cqwu.electricity.data.model.HourDataRecord
 import edu.cqwu.electricity.data.model.MeterDataItem
 import edu.cqwu.electricity.data.model.UsageRecord
 import edu.cqwu.electricity.data.model.UsageResponse
-import edu.cqwu.electricity.ui.electricity.ElectricityUiState
+import edu.cqwu.electricity.ui.electricity.DetailState
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
 import edu.cqwu.electricity.util.ToastUtils
 
@@ -82,7 +82,7 @@ fun DetailScreen(
     detailType: DetailType,
     onBack: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val detailState by viewModel.detailState.collectAsState()
 
     // 进入页面时自动加载数据
     LaunchedEffect(detailType) {
@@ -170,7 +170,7 @@ fun DetailScreen(
                                 leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    val text = getDetailTextContent(detailType, uiState)
+                                    val text = getDetailTextContent(detailType, detailState)
                                     copyToClipboard(context, text, title, snackbar)
                                 }
                             )
@@ -179,7 +179,7 @@ fun DetailScreen(
                                 leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    pendingExportText = getDetailTextContent(detailType, uiState)
+                                    pendingExportText = getDetailTextContent(detailType, detailState)
                                     pendingExportLabel = title
                                     saveFileLauncher.launch("electricity_detail.txt")
                                 }
@@ -192,7 +192,7 @@ fun DetailScreen(
         }
     ) { paddingValues ->
         PullToRefreshBox(
-            isRefreshing = uiState.isDetailRefreshing,
+            isRefreshing = detailState.isRefreshing,
             onRefresh = {
                 when (detailType) {
                     DetailType.SIX_MONTH_USAGE -> viewModel.loadSixMonthUsage()
@@ -209,7 +209,7 @@ fun DetailScreen(
                     .padding(16.dp)
             ) {
                 when {
-                    uiState.detailError != null -> {
+                    detailState.error != null -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -217,7 +217,7 @@ fun DetailScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = uiState.detailError ?: "未知错误",
+                                text = detailState.error ?: "未知错误",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -227,16 +227,16 @@ fun DetailScreen(
                     else -> {
                         when (detailType) {
                             DetailType.SIX_MONTH_USAGE -> {
-                                SixMonthUsageContent(uiState.sixMonthUsage)
+                                SixMonthUsageContent(detailState.sixMonthUsage)
                             }
                             DetailType.MONTH_DAILY_USAGE -> {
-                                MonthDailyUsageContent(uiState.monthDailyUsage)
+                                MonthDailyUsageContent(detailState.monthDailyUsage)
                             }
                             DetailType.HOURLY_USAGE -> {
-                                HourlyUsageContent(uiState.currentData)
+                                HourlyUsageContent(detailState.currentData)
                             }
                             DetailType.METER_STATUS -> {
-                                MeterStatusContent(uiState.currentData)
+                                MeterStatusContent(detailState.currentData)
                             }
                         }
                     }
@@ -536,9 +536,9 @@ private fun MeterGroupCard(groupName: String, items: List<MeterDataItem>, unit: 
 // ============================================================
 
 /**
- * 根据详情类型和当前 UI 状态，生成格式化的纯文本内容（用于复制和导出）
+ * 根据详情类型和详情状态，生成格式化的纯文本内容（用于复制和导出）
  */
-private fun getDetailTextContent(detailType: DetailType, uiState: ElectricityUiState): String {
+private fun getDetailTextContent(detailType: DetailType, detailState: DetailState): String {
     val sb = StringBuilder()
 
     when (detailType) {
@@ -547,7 +547,7 @@ private fun getDetailTextContent(detailType: DetailType, uiState: ElectricityUiS
             sb.appendLine("=".repeat(40))
             sb.appendLine(String.format("%-20s %-10s %-10s", "时间", "用电量(度)", "费用(元)"))
             sb.appendLine("-".repeat(40))
-            uiState.sixMonthUsage?.costObj?.forEach { record ->
+            detailState.sixMonthUsage?.costObj?.forEach { record ->
                 sb.appendLine(
                     String.format("%-20s %-10.2f %-10.2f",
                         record.costTime ?: "未知",
@@ -562,7 +562,7 @@ private fun getDetailTextContent(detailType: DetailType, uiState: ElectricityUiS
             sb.appendLine("=".repeat(40))
             sb.appendLine(String.format("%-20s %-10s %-10s", "时间", "用电量(度)", "费用(元)"))
             sb.appendLine("-".repeat(40))
-            uiState.monthDailyUsage?.costObj?.forEach { record ->
+            detailState.monthDailyUsage?.costObj?.forEach { record ->
                 sb.appendLine(
                     String.format("%-20s %-10.2f %-10.2f",
                         record.costTime ?: "未知",
@@ -577,7 +577,7 @@ private fun getDetailTextContent(detailType: DetailType, uiState: ElectricityUiS
             sb.appendLine("=".repeat(40))
             sb.appendLine(String.format("%-20s %-10s", "时间", "用电量(度)"))
             sb.appendLine("-".repeat(30))
-            uiState.currentData?.hourDataObj?.forEach { record ->
+            detailState.currentData?.hourDataObj?.forEach { record ->
                 sb.appendLine(
                     String.format("%-20s %-10.2f",
                         record.dataTime ?: "未知",
@@ -591,7 +591,7 @@ private fun getDetailTextContent(detailType: DetailType, uiState: ElectricityUiS
             sb.appendLine("=".repeat(40))
 
             // 电流
-            val currentItems = uiState.currentData?.exp4
+            val currentItems = detailState.currentData?.exp4
             if (!currentItems.isNullOrEmpty()) {
                 sb.appendLine("\n【电流】")
                 currentItems.forEach { item ->
@@ -600,7 +600,7 @@ private fun getDetailTextContent(detailType: DetailType, uiState: ElectricityUiS
             }
 
             // 电压
-            val voltageItems = uiState.currentData?.exp3
+            val voltageItems = detailState.currentData?.exp3
             if (!voltageItems.isNullOrEmpty()) {
                 sb.appendLine("\n【电压】")
                 voltageItems.forEach { item ->
@@ -609,19 +609,19 @@ private fun getDetailTextContent(detailType: DetailType, uiState: ElectricityUiS
             }
 
             // 功率/累计值
-            if (!uiState.currentData?.exp2.isNullOrBlank()) {
+            if (!detailState.currentData?.exp2.isNullOrBlank()) {
                 sb.appendLine("\n【当前功率/累计值】")
-                sb.appendLine("  ${uiState.currentData?.exp2}")
+                sb.appendLine("  ${detailState.currentData?.exp2}")
             }
 
             // 电源状态
-            if (!uiState.currentData?.exp5.isNullOrBlank()) {
+            if (!detailState.currentData?.exp5.isNullOrBlank()) {
                 sb.appendLine("\n【电源状态】")
-                sb.appendLine("  ${uiState.currentData?.exp5}")
+                sb.appendLine("  ${detailState.currentData?.exp5}")
             }
 
             if (currentItems.isNullOrEmpty() && voltageItems.isNullOrEmpty()
-                && uiState.currentData?.exp2.isNullOrBlank() && uiState.currentData?.exp5.isNullOrBlank()) {
+                && detailState.currentData?.exp2.isNullOrBlank() && detailState.currentData?.exp5.isNullOrBlank()) {
                 sb.appendLine("暂无电表数据")
             }
         }
