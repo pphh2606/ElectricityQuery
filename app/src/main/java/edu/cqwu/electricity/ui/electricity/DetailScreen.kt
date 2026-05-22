@@ -1,12 +1,13 @@
 package edu.cqwu.electricity.ui.electricity
 
+// 三点菜单
+
+// 剪贴板与文件导出
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,24 +17,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import edu.cqwu.electricity.ui.theme.LocalTopBarState
-import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,21 +58,10 @@ import edu.cqwu.electricity.data.model.HourDataRecord
 import edu.cqwu.electricity.data.model.MeterDataItem
 import edu.cqwu.electricity.data.model.UsageRecord
 import edu.cqwu.electricity.data.model.UsageResponse
-import edu.cqwu.electricity.ui.electricity.DetailViewModel
-import edu.cqwu.electricity.util.ToastUtils
-
-// 三点菜单
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-
-// 剪贴板与文件导出
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
-import edu.cqwu.electricity.ui.components.SnackbarController
-import java.io.OutputStream
+import edu.cqwu.electricity.ui.theme.LocalTopBarState
+import edu.cqwu.electricity.ui.theme.toTopAppBarColors
+import edu.cqwu.electricity.util.ToastUtils
 
 /**
  * 详情展示页面

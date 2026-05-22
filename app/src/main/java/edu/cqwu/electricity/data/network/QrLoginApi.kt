@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.data.network
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
@@ -310,12 +309,6 @@ class QrLoginApi {
             Result.failure(e)
         }
     }
-
-    /**
-     * 暴露内部的独立 cookieStore，供外部在扫码登录成功后
-     * 将 CASTGC 导入到 AccountManager 的该用户 Cookie 存储。
-     */
-    fun getCookieStore(): UserCookieStore = cookieStore
 
     // ==================== 辅助方法 ====================
 

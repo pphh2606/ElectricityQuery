@@ -104,12 +104,6 @@ object WebViewUrlUtil {
     fun isShowselectUrl(url: String): Boolean =
         url.contains(PATH_PAY_PRE_SERVICE) || url.contains(PATH_SHOWSELECT) || url.contains(DOMAIN_PAY_CQWU)
 
-    /**
-     * 判断 URL 是否属于微信域名（wx.tenpay.com / mch.tenpay.com）。
-     */
-    fun isWechatDomain(url: String): Boolean =
-        url.contains(DOMAIN_WX_TENPAY) || url.contains(DOMAIN_MCH_TENPAY)
-
     // ──────────── 外部 Intent 打开 ────────────
 
     /**

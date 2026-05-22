@@ -7,13 +7,6 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import edu.cqwu.electricity.data.model.CustomServiceEntry
-import edu.cqwu.electricity.data.model.HomeAppIds
-import edu.cqwu.electricity.ui.components.CustomWebsiteDialog
-import edu.cqwu.electricity.ui.components.BottomSheetDialog
-import edu.cqwu.electricity.ui.components.LocalSnackbarController
-import edu.cqwu.electricity.util.ToastUtils
-import edu.cqwu.electricity.util.WebViewUrlUtil
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,21 +27,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -87,11 +73,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import edu.cqwu.electricity.data.model.CustomServiceEntry
 import edu.cqwu.electricity.data.model.HomeApp
-import edu.cqwu.electricity.ui.components.AboutDialog
-import edu.cqwu.electricity.ui.home.HomeViewModel
+import edu.cqwu.electricity.data.model.HomeAppIds
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.CustomWebsiteDialog
+import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
+import edu.cqwu.electricity.util.ToastUtils
+import edu.cqwu.electricity.util.WebViewUrlUtil
 
 /**
  * 首页 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
@@ -108,8 +99,6 @@ fun HomeTopBar(
     onCloseSearch: () -> Unit,
 ) {
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-    var showMenu by remember { mutableStateOf(false) }
-    var showAboutDialog by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -205,42 +194,9 @@ fun HomeTopBar(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Box {
-                    IconButton(onClick = { showMenu = true }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "更多选项",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("关于") },
-                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
-                            onClick = {
-                                showMenu = false
-                                showAboutDialog = true
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("捐赠（开发中）") },
-                            leadingIcon = { Icon(Icons.Default.FavoriteBorder, contentDescription = null) },
-                            onClick = { showMenu = false },
-                            enabled = false
-                        )
-                    }
-                }
             },
             colors = topBarColors
         )
-    }
-
-    // ✅ AboutDialog 放在 if-else 分支外部，不受搜索/编辑模式切换影响
-    if (showAboutDialog) {
-        AboutDialog(onDismiss = { showAboutDialog = false })
     }
 }
 
@@ -300,7 +256,6 @@ fun HomePageContent(
     val handleAppClickInternal: (HomeApp) -> Unit = { app ->
         handleAppClick(
             app = app,
-            context = context,
             onNavigateToBuildingSelection = onNavigateToBuildingSelection,
             onNavigateToWebView = onNavigateToWebView,
             onNavigateToQrCode = onNavigateToQrCode,
@@ -531,7 +486,6 @@ private const val TAG = "HomeScreen"
 
 private fun handleAppClick(
     app: HomeApp,
-    context: android.content.Context,
     onNavigateToBuildingSelection: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
     onNavigateToQrCode: (type: edu.cqwu.electricity.data.network.QrCodeType) -> Unit,
@@ -801,7 +755,7 @@ private fun CustomServiceIconItem(
                         .padding(6.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Fit,
-                    onError = { useFallbackIcon = true }
+                    onError = { }
                 )
             }
         } else {
@@ -1046,7 +1000,7 @@ private fun AppIconItem(
  */
 private fun getFaviconUrl(url: String): String? {
     return try {
-        val uri = android.net.Uri.parse(url)
+        val uri = Uri.parse(url)
         val host = uri.host ?: return null
         val port = uri.port
         val scheme = uri.scheme ?: "https"

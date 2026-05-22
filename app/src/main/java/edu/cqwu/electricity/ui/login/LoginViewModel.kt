@@ -6,9 +6,7 @@ import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.local.CredentialExporter
 import edu.cqwu.electricity.data.network.AccountManager
-import edu.cqwu.electricity.data.network.LoginResult
 import edu.cqwu.electricity.data.network.SessionValidator
-import edu.cqwu.electricity.data.network.UserCookieStore
 import edu.cqwu.electricity.data.repository.LoginRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -337,40 +335,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     // ==================== 扫码登录回调 ====================
 
-    /**
-     * 扫码登录成功后保存用户信息。
-     * 由 QrLoginScreen 在扫码成功时调用。
-     *
-     * @param username 从 /authserver/index.do 提取的学号
-     * @param cookieStore 扫码登录使用的独立 UserCookieStore（含 CASTGC）
-     */
-    fun onQrLoginSuccess(username: String, cookieStore: UserCookieStore) {
-        // 1. 保存到 AccountStore（无密码，不记住密码）
-        accountStore.saveAccount(
-            username = username,
-            password = null,
-            rememberPassword = false
-        )
-
-        // 2. 将独立 Cookie 存储的 CASTGC 导入 AccountManager
-        val userStore = AccountManager.getCookiesForUser(username)
-        val castgc = cookieStore.getCookie("https://authserver.cqwu.edu.cn")
-        if (castgc != null) {
-            userStore.setCookie("https://authserver.cqwu.edu.cn", castgc)
-            userStore.setCookie("https://authserver.cqwu.edu.cn/authserver/login", castgc)
-        }
-
-        // 3. 切换为该用户的 Cookie 环境
-        AccountManager.switchToUser(username)
-
-        // 4. 刷新已保存的学号列表
-        _uiState.update {
-            it.copy(savedAccounts = accountStore.getAllAccountNames())
-        }
-
-        android.util.Log.d("LoginViewModel", "扫码登录用户[$username] 已保存到 AccountManager")
-    }
-
     // ==================== 凭据导出 ====================
 
     /**
@@ -454,6 +418,5 @@ sealed interface LoginEvent {
  */
 sealed class CredentialResult {
     data class ExportSuccess(val encryptedString: String) : CredentialResult()
-    data class ImportSuccess(val accounts: List<Pair<String, String>>) : CredentialResult()
     data class Error(val message: String) : CredentialResult()
 }

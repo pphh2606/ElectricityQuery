@@ -154,7 +154,6 @@ fun OpenUrlDialog(
                     if (isValidUrl(urlInput)) {
                         onConfirm(normalizeUrl(urlInput), isInternal)
                     } else {
-                        urlError = "请输入有效的网址，如 example.com"
                     }
                 },
                 enabled = urlInput.isNotBlank() && isValidUrl(urlInput)

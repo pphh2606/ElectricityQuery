@@ -405,10 +405,7 @@ fun UnifiedWebViewScreen(
                                     val url = request?.url?.toString() ?: return false
                                     Log.d("WebView_DIAG", "shouldOverrideUrlLoading: $url")
 
-                                    if (view?.context != null && WebViewUrlUtil.openCustomSchemeUrl(view.context, url, "WebView_DIAG")) {
-                                        return true
-                                    }
-                                    return false
+                                    return view?.context != null && WebViewUrlUtil.openCustomSchemeUrl(view.context, url, "WebView_DIAG")
                                 }
 
                                 override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {

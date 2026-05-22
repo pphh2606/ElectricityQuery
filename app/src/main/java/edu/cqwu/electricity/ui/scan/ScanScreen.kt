@@ -27,13 +27,12 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -64,9 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.foundation.layout.Column
 import androidx.core.app.ActivityCompat
-import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -82,6 +79,7 @@ import com.google.zxing.NotFoundException
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
+import edu.cqwu.electricity.ui.components.LocalSnackbarController
 
 private fun Context.findActivity(): Activity? {
     var ctx = this
@@ -104,7 +102,7 @@ private const val ANALYSIS_HEIGHT = 720
 private sealed class CameraPermissionState {
     data object Unknown : CameraPermissionState()
     data object Granted : CameraPermissionState()
-    data class Denied(val canRequestAgain: Boolean) : CameraPermissionState()
+    data object Denied : CameraPermissionState()
     data object PermanentlyDenied : CameraPermissionState()
 }
 
@@ -344,7 +342,7 @@ fun ScanScreen(
 
     // ── 响应式权限状态（可观察，非 remember-only） ──
     var permissionState by remember {
-        mutableStateOf<CameraPermissionState>(
+        mutableStateOf(
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED
             ) CameraPermissionState.Granted
@@ -359,7 +357,7 @@ fun ScanScreen(
                 permissionState = when {
                     ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                             == PackageManager.PERMISSION_GRANTED -> CameraPermissionState.Granted
-                    else -> CameraPermissionState.Denied(canRequestAgain = false)
+                    else -> CameraPermissionState.Denied
                 }
             }
         }
@@ -397,7 +395,7 @@ fun ScanScreen(
                 ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.CAMERA)
             } ?: false
             if (canRequestAgain) {
-                CameraPermissionState.Denied(canRequestAgain = true)
+                CameraPermissionState.Denied
             } else {
                 CameraPermissionState.PermanentlyDenied
             }

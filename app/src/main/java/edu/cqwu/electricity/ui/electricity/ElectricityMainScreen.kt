@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.ui.electricity
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.DisposableEffect
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -18,11 +17,9 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.SwapHoriz
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -53,9 +50,9 @@ import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.model.DetailType
 import edu.cqwu.electricity.data.model.SelectionStep
 import edu.cqwu.electricity.data.network.AccountManager
-import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.BottomSheetItem
+import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
 import edu.cqwu.electricity.ui.recharge.RechargeScreen
 import edu.cqwu.electricity.ui.recharge.RechargeViewModel
@@ -63,7 +60,6 @@ import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
 import kotlinx.coroutines.launch
-import java.io.OutputStream
 
 /**
  * Tab 数据模型
@@ -100,12 +96,10 @@ fun ElectricityMainScreen(
     rechargeViewModel: RechargeViewModel,
     myRoomViewModel: MyRoomViewModel,
     onBack: () -> Unit,
-    onNavigateToWebView: (url: String, title: String) -> Unit,
     onNavigateToDetail: (DetailType, String) -> Unit,
     onNavigateToPayment: () -> Unit,
     onNavigateToH5Recharge: () -> Unit,
     onNavigateToRechargeRecord: (String) -> Unit,
-    onReLogin: () -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = { electricityTabs.size })
     val scope = rememberCoroutineScope()
@@ -364,8 +358,6 @@ fun ElectricityMainScreen(
                         },
                         onNavigateToH5Recharge = onNavigateToH5Recharge,
                         onNavigateToRechargeRecord = { onNavigateToRechargeRecord(myRoomState.selectedRoom?.id ?: "") },
-                        showRoomSwitchSheet = showRoomSwitchSheet,
-                        onShowRoomSwitchSheetChange = { showRoomSwitchSheet = it },
                     )
                 }
             }
@@ -413,8 +405,6 @@ private fun MyRoomDashboardTab(
     onNavigateToDetail: (DetailType) -> Unit,
     onNavigateToH5Recharge: () -> Unit,
     onNavigateToRechargeRecord: (String) -> Unit,
-    showRoomSwitchSheet: Boolean = false,
-    onShowRoomSwitchSheetChange: (Boolean) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current

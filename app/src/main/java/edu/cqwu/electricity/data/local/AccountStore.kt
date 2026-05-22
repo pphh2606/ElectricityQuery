@@ -194,13 +194,6 @@ class AccountStore(context: Context) {
         }
     }
 
-    /**
-     * 清除所有账号
-     */
-    fun clearAll() {
-        prefs.edit().remove(KEY_ACCOUNTS).apply()
-    }
-
     companion object {
         /**
          * 新的加密 SP 文件名。

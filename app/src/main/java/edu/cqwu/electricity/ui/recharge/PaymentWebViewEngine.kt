@@ -260,16 +260,6 @@ class PaymentWebViewEngine(
     }
 
     /**
-     * 获取检测到的 mwebUrl
-     */
-    fun getDetectedMwebUrl(): String? = detectedMwebUrl
-
-    /**
-     * 获取 WebView 实例
-     */
-    fun getWebView(): WebView = webView
-
-    /**
      * 释放资源
      */
     fun destroy() {

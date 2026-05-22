@@ -347,7 +347,6 @@ data class BillPageInfo(
     val totalPages: Int
 ) {
     val hasNext: Boolean get() = currentPage < totalPages
-    val hasPrev: Boolean get() = currentPage > 1
 }
 
 /**

@@ -23,13 +23,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -42,25 +41,26 @@ import edu.cqwu.electricity.ui.cardcenter.BillScreen
 import edu.cqwu.electricity.ui.cardcenter.BillViewModel
 import edu.cqwu.electricity.ui.cardcenter.CardCenterScreen
 import edu.cqwu.electricity.ui.cardcenter.CardLostScreen
-import edu.cqwu.electricity.ui.feedback.FeedbackScreen
-import edu.cqwu.electricity.ui.notice.NoticeDetailScreen
-import edu.cqwu.electricity.ui.notice.NoticeScreen
-import edu.cqwu.electricity.ui.notice.NoticeViewModel
 import edu.cqwu.electricity.ui.electricity.BuildingSelectionScreen
 import edu.cqwu.electricity.ui.electricity.DashboardScreen
 import edu.cqwu.electricity.ui.electricity.DetailScreen
 import edu.cqwu.electricity.ui.electricity.DetailViewModel
 import edu.cqwu.electricity.ui.electricity.ElectricityMainScreen
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
+import edu.cqwu.electricity.ui.feedback.FeedbackScreen
 import edu.cqwu.electricity.ui.login.LoginScreen
-import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
-import edu.cqwu.electricity.ui.recharge.RechargeViewModel
 import edu.cqwu.electricity.ui.login.QrLoginScreen
+import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
+import edu.cqwu.electricity.ui.notice.NoticeDetailScreen
+import edu.cqwu.electricity.ui.notice.NoticeScreen
+import edu.cqwu.electricity.ui.notice.NoticeViewModel
 import edu.cqwu.electricity.ui.qrcode.QrCodeDisplayScreen
 import edu.cqwu.electricity.ui.recharge.PaymentSelectionScreen
 import edu.cqwu.electricity.ui.recharge.RechargeRecordScreen
 import edu.cqwu.electricity.ui.recharge.RechargeScreen
+import edu.cqwu.electricity.ui.recharge.RechargeViewModel
 import edu.cqwu.electricity.ui.scan.ScanScreen
+import edu.cqwu.electricity.ui.settings.AboutScreen
 import edu.cqwu.electricity.ui.settings.ConfigScreen
 import edu.cqwu.electricity.ui.settings.PersonalizationScreen
 import edu.cqwu.electricity.ui.settings.QrCodeSettingsScreen
@@ -147,6 +147,9 @@ object Routes {
     fun detailRoute(detailType: DetailType, roomId: String): String {
         return "detail/${detailType.name.lowercase()}/$roomId"
     }
+
+    /** 关于页 */
+    const val ABOUT = "about"
 
     /** 配置页 */
     const val CONFIG = "config"
@@ -381,12 +384,10 @@ fun AppNavGraph(
                 rechargeViewModel = rechargeViewModel,
                 myRoomViewModel = myRoomViewModel,
                 onBack = { navController.popBackStack() },
-                onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
                 onNavigateToDetail = { detailType, roomId -> navController.navigate(Routes.detailRoute(detailType, roomId)) },
                 onNavigateToPayment = { navController.navigate(Routes.PAYMENT_SELECTION) },
                 onNavigateToH5Recharge = { navController.navigate(Routes.RECHARGE_H5_WEBVIEW) },
                 onNavigateToRechargeRecord = { roomId -> navController.navigate(Routes.rechargeRecordRoute(roomId)) },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
             )
         }
 
@@ -434,7 +435,7 @@ fun AppNavGraph(
         ) { backStackEntry ->
             val detailTypeStr = backStackEntry.arguments?.getString("detailType") ?: ""
             val detailType = remember(detailTypeStr) {
-                DetailType.values().firstOrNull { it.name.lowercase() == detailTypeStr }
+                DetailType.entries.firstOrNull { it.name.lowercase() == detailTypeStr }
                     ?: DetailType.SIX_MONTH_USAGE
             }
             val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
@@ -523,6 +524,14 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() },
                 onNavigateToPersonalization = { navController.navigate(Routes.PERSONALIZATION) },
                 onNavigateToConfig = { navController.navigate(Routes.CONFIG) },
+                onNavigateToAbout = { navController.navigate(Routes.ABOUT) },
+            )
+        }
+
+        // 关于页面
+        animatedComposable(settings = animationSettings, route = Routes.ABOUT) {
+            AboutScreen(
+                onBack = { navController.popBackStack() },
             )
         }
 

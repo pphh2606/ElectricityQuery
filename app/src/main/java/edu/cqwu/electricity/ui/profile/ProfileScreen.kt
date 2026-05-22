@@ -117,7 +117,6 @@ fun ProfileTopBar(
 @Composable
 fun ProfilePageContent(
     onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
-    onNavigateToSettings: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onNavigateToFeedback: () -> Unit = {},
 ) {

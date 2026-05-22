@@ -390,7 +390,6 @@ private fun PaymentWebViewOverlay(
                         }
 
                         Log.d(TAG_OVERLAY, ">>> WebView 导航到 returnUrl: $targetUrl")
-                        pendingReturnUrl = targetUrl
                         isNavigatingToReturnUrl = true
                         statusText = "支付成功，正在进行到账处理..."
 
@@ -412,7 +411,6 @@ private fun PaymentWebViewOverlay(
                             Log.d(TAG_OVERLAY, ">>> CAS 认证完成，返回 Dashboard")
                         }
 
-                        pendingReturnUrl = ""
                         onPaymentComplete()
                         break
                     }

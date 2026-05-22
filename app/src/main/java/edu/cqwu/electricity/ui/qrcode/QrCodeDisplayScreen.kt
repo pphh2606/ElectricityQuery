@@ -27,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -104,9 +103,11 @@ fun QrCodeDisplayScreen(
     }
     // 深色模式下 MD3 primary 偏浅（为深色背景设计），在白色背景上需加深
     val qrEffectivePrimaryColor = if (isDarkTheme && qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE) {
-        val c = qrPrimaryColor
         val darkenFactor = 0.45f
-        Color(c.red * darkenFactor, c.green * darkenFactor, c.blue * darkenFactor, c.alpha)
+        Color(
+            qrPrimaryColor.red * darkenFactor,
+            qrPrimaryColor.green * darkenFactor, qrPrimaryColor.blue * darkenFactor,
+            qrPrimaryColor.alpha)
     } else {
         qrPrimaryColor
     }
@@ -121,6 +122,8 @@ fun QrCodeDisplayScreen(
     var balance by rememberSaveable { mutableStateOf<String?>(null) }
     // 前台状态（防止后台时继续倒计费和请求）
     var isAppInForeground by remember { mutableStateOf(true) }
+    // 标记是否真正进入后台（按 Home 键/锁屏），用于避免子页面 pop 回来重复刷新
+    var wasBackgrounded by remember { mutableStateOf(false) }
     // 刷新请求 Job（用于取消上一个未完成的请求，避免并发）
     var fetchJob by remember { mutableStateOf<Job?>(null) }
 
@@ -217,18 +220,23 @@ fun QrCodeDisplayScreen(
     }
 
     // 监听 Activity 生命周期：从后台/锁屏切回前台时刷新二维码
+    // 注意使用 ON_STOP 而非 ON_PAUSE 来区分"真正进入后台"和"导航到子页面"，
+    // 避免用户从设置页返回时二维码被重复刷新。
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
                     isAppInForeground = true
-                    // 已有二维码内容时刷新（避免首次加载时重复请求）
-                    if (qrCodeContent != null) {
+                    // 仅当确实从后台（按 Home 键/锁屏）恢复时才刷新，
+                    // 避免子页面 pop 回来重复触发
+                    if (wasBackgrounded && qrCodeContent != null) {
                         fetchQrCode()
+                        wasBackgrounded = false
                     }
                 }
-                Lifecycle.Event.ON_PAUSE -> {
+                Lifecycle.Event.ON_STOP -> {
                     isAppInForeground = false
+                    wasBackgrounded = true
                 }
                 else -> {}
             }
@@ -424,7 +432,7 @@ fun QrCodeDisplayScreen(
                             ) {
                                 if (balance != null) {
                                     Text(
-                                        text = "剩余 ${balance} ￥",
+                                        text = "剩余 $balance ￥",
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary

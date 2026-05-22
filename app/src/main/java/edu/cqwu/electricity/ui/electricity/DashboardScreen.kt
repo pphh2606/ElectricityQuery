@@ -18,10 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
@@ -32,7 +30,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,10 +43,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import edu.cqwu.electricity.ui.components.BottomSheetDialog
-import edu.cqwu.electricity.ui.components.TabScaffold
-import edu.cqwu.electricity.ui.components.BottomSheetItem
-import edu.cqwu.electricity.data.model.UserRoomInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -65,8 +59,12 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.model.BalanceResponse
 import edu.cqwu.electricity.data.model.BuildingNode
 import edu.cqwu.electricity.data.model.DetailType
+import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.model.displayName
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.ui.components.TabScaffold
 import edu.cqwu.electricity.util.ToastUtils
 
 /**
@@ -193,7 +191,6 @@ fun DashboardScreen(
             isRefreshing = isRefreshing,
             isLoading = isLoading,
             error = error,
-            snackbar = snackbar,
             paddingValues = paddingValues,
             showRoomSwitchSheet = showRoomSwitchSheet,
             onShowRoomSwitchSheetChange = { showRoomSwitchSheet = it },
@@ -218,8 +215,7 @@ private fun DashboardContent(
     isRefreshing: Boolean,
     isLoading: Boolean,
     error: String?,
-    snackbar: edu.cqwu.electricity.ui.components.SnackbarController,
-    paddingValues: androidx.compose.foundation.layout.PaddingValues,
+    paddingValues: PaddingValues,
     showRoomSwitchSheet: Boolean,
     onShowRoomSwitchSheetChange: (Boolean) -> Unit,
     onRefresh: () -> Unit,
@@ -276,8 +272,7 @@ private fun DashboardContent(
                 item(key = "more_functions") {
                     MoreFunctionsSection(
                         onNavigateToDetail = onNavigateToDetail,
-                        onNavigateToRechargeRecord = onNavigateToRechargeRecord,
-                        onNavigateToH5Recharge = onNavigateToH5Recharge
+                        onNavigateToRechargeRecord = onNavigateToRechargeRecord
                     )
                 }
             }
@@ -559,8 +554,7 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
 @Composable
 private fun MoreFunctionsSection(
     onNavigateToDetail: (DetailType) -> Unit,
-    onNavigateToRechargeRecord: () -> Unit,
-    onNavigateToH5Recharge: () -> Unit
+    onNavigateToRechargeRecord: () -> Unit
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -800,7 +794,7 @@ private fun BalanceRow(label: String, amount: Double, unit: String) {
 /**
  * 根据当前房间和余额信息生成格式化的纯文本内容（用于复制和导出）
  */
-public fun getDashboardTextContent(room: BuildingNode?, balance: BalanceResponse?): String {
+fun getDashboardTextContent(room: BuildingNode?, balance: BalanceResponse?): String {
     val sb = StringBuilder()
     sb.appendLine("电费查询结果")
     sb.appendLine("=".repeat(40))
@@ -833,7 +827,7 @@ public fun getDashboardTextContent(room: BuildingNode?, balance: BalanceResponse
 /**
  * 将文本复制到系统剪贴板并显示提示（通过 ToastOverlay）
  */
-public fun copyToClipboard(
+fun copyToClipboard(
     context: android.content.Context,
     text: String,
     label: String,

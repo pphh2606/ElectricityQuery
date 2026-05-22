@@ -124,7 +124,6 @@ fun MainTabScreen(
                 }
                 2 -> ProfilePageContent(
                     onNavigateToWebView = onNavigateToWebView,
-                    onNavigateToSettings = onNavigateToSettings,
                     onNavigateToLogin = onNavigateToLogin,
                     onNavigateToFeedback = onNavigateToFeedback,
                 )

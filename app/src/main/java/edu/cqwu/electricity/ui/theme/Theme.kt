@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.ui.theme
 
 import android.os.Build
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme

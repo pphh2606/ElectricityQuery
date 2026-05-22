@@ -520,35 +520,6 @@ class ElectricityApi {
     }
 
     /**
-     * 获取账单交易记录（通过 POST 表单提交）。
-     *
-     * 注意：服务器 HTTP API 始终返回包含全部 4 个 zone 的完整 HTML，
-     * 无论提交的 tabNo 是什么。此方法仅解析当前 tabNo 对应的 zone。
-     *
-     * 推荐使用 [fetchBillsAllZones] 一次请求解析全部 zone。
-     *
-     * @param filter 筛选条件
-     * @return BillPageInfo 包含当前页记录和分页信息
-     */
-    suspend fun fetchBills(filter: BillFilter): Result<BillPageInfo> = withContext(Dispatchers.IO) {
-        try {
-            val html = postBillQuery(filter)
-            SessionChecker.checkAndThrow(html)
-            val allZones = parseAllZones(html)
-            val pageInfo = allZones[filter.tabNo]
-                ?: throw RuntimeException("账单解析失败：找不到 tabNo=${filter.tabNo} 的数据")
-            android.util.Log.d("ElectricityApi", "账单解析完成: ${pageInfo.records.size}条, 第${pageInfo.currentPage}/${pageInfo.totalPages}页")
-            Result.success(pageInfo)
-        } catch (e: SessionExpiredException) {
-            Result.failure(e)
-        } catch (e: Exception) {
-            if (e is kotlinx.coroutines.CancellationException) throw e
-            android.util.Log.e("ElectricityApi", "获取账单失败", e)
-            Result.failure(e)
-        }
-    }
-
-    /**
      * 获取全部 4 个标签页的账单数据（一次请求，四区解析）。
      *
      * 服务器 HTML API 总是返回包含全部 4 个 zone 的完整 HTML。

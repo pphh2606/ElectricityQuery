@@ -202,13 +202,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /**
-     * 判断指定 appId 是否已在我的服务中。
-     */
-    fun isMyService(appId: String): Boolean {
-        return appId in _uiState.value.myServiceIds
-    }
-
     // ── 自定义网站服务 ──
 
     /**

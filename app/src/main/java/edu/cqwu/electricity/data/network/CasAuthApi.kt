@@ -77,7 +77,7 @@ object SharedHttpClient {
     }
 
     fun init(context: Context) {
-        CookieStore.init(context)
+        CookieStore.init()
     }
 
     /**

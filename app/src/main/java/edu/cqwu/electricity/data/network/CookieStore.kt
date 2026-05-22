@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.data.network
 
-import android.content.Context
 import android.webkit.CookieManager
 
 /**
@@ -31,7 +30,7 @@ object CookieStore {
      * 初始化 CookieStore
      * - 必须在 Application.onCreate() 中调用
      */
-    fun init(context: Context) {
+    fun init() {
         if (isInitialized) return
         CookieManager.getInstance().setAcceptCookie(true)
         isInitialized = true
@@ -82,28 +81,12 @@ object CookieStore {
     }
 
     /**
-     * 删除指定 URL 的特定 Cookie
-     * CookieManager 没有直接删除单个 Cookie 的 API，
-     * 通过设置过期时间来实现删除
-     */
-    fun removeCookie(url: String, name: String) {
-        setCookie(url, "$name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/")
-    }
-
-    /**
      * 清除所有 Cookie
      */
     fun removeAllCookies() {
         checkInitialized()
         CookieManager.getInstance().removeAllCookies(null)
         CookieManager.getInstance().flush()
-    }
-
-    /**
-     * 检查指定 URL 是否有有效的会话 Cookie
-     */
-    fun hasSessionCookie(url: String): Boolean {
-        return getCookie(url) != null
     }
 
     /**
@@ -231,7 +214,7 @@ class UserCookieStore {
      * 将该用户的 Cookie 同步到系统 CookieManager（供 WebView 使用）
      */
     fun syncToCookieManager() {
-        val cm = android.webkit.CookieManager.getInstance()
+        val cm = CookieManager.getInstance()
         for ((url, domainCookies) in cookieMap) {
             for ((name, value) in domainCookies) {
                 cm.setCookie(url, "$name=$value")
@@ -244,7 +227,7 @@ class UserCookieStore {
      * 从系统 CookieManager 导入 Cookie 到本用户存储
      */
     fun syncFromCookieManager() {
-        val cm = android.webkit.CookieManager.getInstance()
+        val cm = CookieManager.getInstance()
         val knownDomains = listOf(
             "https://authserver.cqwu.edu.cn",
             "https://electricitypay.cqwu.edu.cn",
@@ -298,7 +281,7 @@ object AccountManager {
      */
     fun switchToUser(username: String) {
         // 清除系统 CookieManager
-        val cm = android.webkit.CookieManager.getInstance()
+        val cm = CookieManager.getInstance()
         cm.removeAllCookies(null)
         cm.flush()
 

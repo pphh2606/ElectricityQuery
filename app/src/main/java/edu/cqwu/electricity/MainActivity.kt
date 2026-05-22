@@ -16,12 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
-import edu.cqwu.electricity.data.local.NightMode
-import edu.cqwu.electricity.data.local.QrCodeColorMode
 import edu.cqwu.electricity.data.local.SettingsPreferences
 import edu.cqwu.electricity.data.local.ThemeColorSource
 import edu.cqwu.electricity.ui.navigation.AppShell
-import edu.cqwu.electricity.data.local.TopBarStyle
 import edu.cqwu.electricity.ui.theme.AnimationSettings
 import edu.cqwu.electricity.ui.theme.ColorSourceState
 import edu.cqwu.electricity.ui.theme.LocalAnimationSettings

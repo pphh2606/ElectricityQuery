@@ -241,15 +241,4 @@ class ElectricityViewModel(
         )
     }
 
-    /**
-     * 重置建筑选择流程状态到初始值。
-     * 在 [ElectricityMainScreen] 退出时调用，确保下次进入时重新加载。
-     *
-     * 仅重置 [ElectricityUiState]，不影响：
-     * - 详情数据（[DetailViewModel] 管理）
-     * - 充值记录数据（[RechargeViewModel] 管理）
-     */
-    fun resetToInitial() {
-        _uiState.update { ElectricityUiState() }
-    }
 }

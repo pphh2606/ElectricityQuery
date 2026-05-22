@@ -6,7 +6,6 @@ import edu.cqwu.electricity.data.model.NoticeDetailQp
 import edu.cqwu.electricity.data.model.NoticeDetailResponse
 import edu.cqwu.electricity.data.model.NoticeItem
 import edu.cqwu.electricity.data.model.NoticeResponse
-import edu.cqwu.electricity.data.network.ApiConfig
 import edu.cqwu.electricity.data.network.SharedHttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

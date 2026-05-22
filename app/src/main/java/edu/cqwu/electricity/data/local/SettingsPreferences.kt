@@ -293,10 +293,3 @@ val NightMode.displayName: String
         NightMode.DARK -> "深色模式"
     }
 
-/** 夜间模式的描述文案 */
-val NightMode.description: String
-    get() = when (this) {
-        NightMode.SYSTEM -> "自动跟随系统夜间模式设置"
-        NightMode.LIGHT -> "始终使用浅色主题"
-        NightMode.DARK -> "始终使用深色主题"
-    }

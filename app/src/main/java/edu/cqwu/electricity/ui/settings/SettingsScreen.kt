@@ -29,16 +29,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import edu.cqwu.electricity.ui.components.AboutDialog
 
 /**
  * 设置页面 — 与项目其他页面统一风格
@@ -49,8 +44,8 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onNavigateToPersonalization: () -> Unit,
     onNavigateToConfig: () -> Unit = {},
+    onNavigateToAbout: () -> Unit = {},
 ) {
-    var showAboutDialog by remember { mutableStateOf(false) }
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
     Scaffold(
@@ -104,15 +99,11 @@ fun SettingsScreen(
                         icon = Icons.Default.Info,
                         title = "关于",
                         subtitle = "应用版本、开发者信息",
-                        onClick = { showAboutDialog = true },
+                        onClick = onNavigateToAbout,
                     )
                 }
             }
         }
-    }
-
-    if (showAboutDialog) {
-        AboutDialog(onDismiss = { showAboutDialog = false })
     }
 }
 

@@ -4,11 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.BillFilter
 import edu.cqwu.electricity.data.model.BillPageInfo
-import edu.cqwu.electricity.data.model.BillRecord
 import edu.cqwu.electricity.data.network.ElectricityApi
 import edu.cqwu.electricity.data.network.SessionExpiredException
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 账单页面 UI 状态数据类
@@ -640,11 +637,6 @@ class BillViewModel : ViewModel() {
 
     fun onExpenseCheckedChange(value: Boolean) {
         _uiState.update { it.copy(tempExpense = value) }
-    }
-
-    /** 清除错误状态 */
-    fun clearError() {
-        _uiState.update { it.copy(errorMessage = null, requiresReLogin = false) }
     }
 
     /** 获取账单详情的完整 URL */

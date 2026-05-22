@@ -44,7 +44,7 @@ class HallFavoriteApi {
      *
      * @throws SessionExpiredException 用户未登录或 Cookie 过期
      */
-    suspend fun initEhallSession() {
+    fun initEhallSession() {
         Log.d("HallFavoriteApi", "初始化 ehall session: GET ${ApiConfig.EHALL_APP_SHOW_URL}（触发 CAS ticket 交换）")
         val initRequest = Request.Builder()
             .url(ApiConfig.EHALL_APP_SHOW_URL)
