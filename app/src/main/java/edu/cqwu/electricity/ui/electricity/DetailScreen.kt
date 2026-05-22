@@ -44,11 +44,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,6 +60,8 @@ import edu.cqwu.electricity.data.model.HourDataRecord
 import edu.cqwu.electricity.data.model.MeterDataItem
 import edu.cqwu.electricity.data.model.UsageRecord
 import edu.cqwu.electricity.data.model.UsageResponse
+import edu.cqwu.electricity.ui.components.ElectricityLineChartCard
+import edu.cqwu.electricity.ui.components.LineData
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
@@ -105,9 +109,9 @@ fun DetailScreen(
     val snackbar = LocalSnackbarController.current
     val context = LocalContext.current
 
-    // 文件导出启动器
-    var pendingExportText by remember { mutableStateOf("") }
-    var pendingExportLabel by remember { mutableStateOf("") }
+    // 2.3: 使用 rememberSaveable 持久化配置变更
+    var pendingExportText by rememberSaveable { mutableStateOf("") }
+    var pendingExportLabel by rememberSaveable { mutableStateOf("") }
     val saveFileLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/plain")
     ) { uri ->
@@ -126,7 +130,7 @@ fun DetailScreen(
     }
 
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-    Box(Modifier.fillMaxSize()) {
+    // 2.8: 移除冗余的 Box 包裹
     Scaffold(
         topBar = {
             TopAppBar(
@@ -236,56 +240,77 @@ fun DetailScreen(
         }
     }
 }
+
+// ============================================================
+//  2.6: 统一 Usage 列表 + 折线图组件（合并 SixMonthUsageContent 与 MonthDailyUsageContent）
+//       两者唯一区别是标题、X 轴标签格式、空提示文案
+// ============================================================
+
+/**
+ * 通用的用电记录列表（含顶部折线图）。
+ *
+ * @param data 用电数据
+ * @param emptyMessage 空数据提示文案
+ * @param xLabelTransform 将 [UsageRecord] 转换为 X 轴标签的函数
+ */
+@Composable
+private fun UsageListWithChart(
+    data: UsageResponse?,
+    emptyMessage: String,
+    xLabelTransform: (UsageRecord) -> String
+) {
+    val records = data?.costObj
+    if (records.isNullOrEmpty()) {
+        EmptyPlaceholder(emptyMessage)
+        return
+    }
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // 折线图
+        item(key = "chart") {
+            ElectricityLineChartCard(
+                xLabels = records.map(xLabelTransform),
+                lines = listOf(
+                    LineData("用电量(度)", records.map { it.consumeTotal ?: 0.0 }, Color(0xFF2196F3)),
+                    LineData("费用(元)", records.map { it.costTotal ?: 0.0 }, Color(0xFFE53935))
+                )
+            )
+        }
+
+        item {
+            SectionTitle("明细数据")
+        }
+
+        items(records) { record ->
+            UsageRecordCard(record)
+        }
+    }
 }
 
-// ============================================================
-//  最近6个月用电记录
-// ============================================================
-
+/**
+ * 最近6个月用电记录内容（委托给 [UsageListWithChart]）
+ */
 @Composable
 private fun SixMonthUsageContent(data: UsageResponse?) {
-    val records = data?.costObj
-    if (records.isNullOrEmpty()) {
-        EmptyPlaceholder("暂无用电记录")
-        return
-    }
-
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            SectionTitle("最近6个月用电记录")
-        }
-
-        items(records) { record ->
-            UsageRecordCard(record)
-        }
-    }
+    UsageListWithChart(
+        data = data,
+        emptyMessage = "暂无用电记录",
+        xLabelTransform = { it.costTime.takeLast(2) + "月" }
+    )
 }
 
-// ============================================================
-//  本月每日用电
-// ============================================================
-
+/**
+ * 本月每日用电内容（委托给 [UsageListWithChart]）
+ */
 @Composable
 private fun MonthDailyUsageContent(data: UsageResponse?) {
-    val records = data?.costObj
-    if (records.isNullOrEmpty()) {
-        EmptyPlaceholder("暂无每日用电数据")
-        return
-    }
-
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            SectionTitle("本月每日用电明细")
-        }
-
-        items(records) { record ->
-            UsageRecordCard(record)
-        }
-    }
+    UsageListWithChart(
+        data = data,
+        emptyMessage = "暂无每日用电数据",
+        xLabelTransform = { it.costTime.takeLast(5) }
+    )
 }
 
 // ============================================================
@@ -303,8 +328,18 @@ private fun HourlyUsageContent(data: CurrentDataResponse?) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        // 折线图（单线：仅用电量）
+        item(key = "chart") {
+            ElectricityLineChartCard(
+                xLabels = records.map { it.dataTime.takeLast(5) },
+                lines = listOf(
+                    LineData("用电量(度)", records.map { it.dataTotal ?: 0.0 }, Color(0xFF2196F3))
+                )
+            )
+        }
+
         item {
-            SectionTitle("近24h用电明细")
+            SectionTitle("明细数据")
         }
 
         items(records) { record ->
@@ -319,7 +354,11 @@ private fun HourlyUsageContent(data: CurrentDataResponse?) {
 
 @Composable
 private fun MeterStatusContent(data: CurrentDataResponse?) {
-    if (data == null) {
+    // 2.4: 提前判断空状态，避免列表先渲染标题再显示空提示
+    val currentItems = data?.exp4 ?: emptyList()
+    val voltageItems = data?.exp3 ?: emptyList()
+    if (currentItems.isEmpty() && voltageItems.isEmpty()
+        && data?.exp2.isNullOrBlank() && data?.exp5.isNullOrBlank()) {
         EmptyPlaceholder("暂无电表数据")
         return
     }
@@ -332,7 +371,6 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         }
 
         // 电流 (exp4)
-        val currentItems = data.exp4 ?: emptyList()
         if (currentItems.isNotEmpty()) {
             item {
                 MeterGroupCard("电流", currentItems, "A")
@@ -340,7 +378,6 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         }
 
         // 电压 (exp3)
-        val voltageItems = data.exp3 ?: emptyList()
         if (voltageItems.isNotEmpty()) {
             item {
                 MeterGroupCard("电压", voltageItems, "V")
@@ -348,24 +385,16 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         }
 
         // 当前功率/累计值 (exp2)
-        if (!data.exp2.isNullOrBlank()) {
+        if (!data?.exp2.isNullOrBlank()) {
             item {
-                SimpleValueCard("当前功率/累计值", data.exp2)
+                SimpleValueCard("当前功率/累计值", data!!.exp2!!)
             }
         }
 
         // 电源状态 (exp5)
-        if (!data.exp5.isNullOrBlank()) {
+        if (!data?.exp5.isNullOrBlank()) {
             item {
-                SimpleValueCard("电源状态", data.exp5)
-            }
-        }
-
-        // 全部为空
-        if (currentItems.isEmpty() && voltageItems.isEmpty()
-            && data.exp2.isNullOrBlank() && data.exp5.isNullOrBlank()) {
-            item {
-                EmptyPlaceholder("电表详细数据为空")
+                SimpleValueCard("电源状态", data!!.exp5!!)
             }
         }
     }
@@ -527,98 +556,102 @@ private fun MeterGroupCard(groupName: String, items: List<MeterDataItem>, unit: 
 // ============================================================
 
 /**
- * 根据详情类型和详情状态，生成格式化的纯文本内容（用于复制和导出）
+ * 2.2: 根据详情类型和详情状态，生成格式化的纯文本内容（用于复制和导出）。
+ * 提取通用表格生成逻辑，减少冗余。
  */
 private fun getDetailTextContent(detailType: DetailType, detailState: DetailState): String {
-    val sb = StringBuilder()
+    return buildString {
+        appendLine(getDetailTitle(detailType))
+        appendLine("=".repeat(40))
 
-    when (detailType) {
-        DetailType.SIX_MONTH_USAGE -> {
-            sb.appendLine("最近6个月用电记录")
-            sb.appendLine("=".repeat(40))
-            sb.appendLine(String.format("%-20s %-10s %-10s", "时间", "用电量(度)", "费用(元)"))
-            sb.appendLine("-".repeat(40))
-            detailState.sixMonthUsage?.costObj?.forEach { record ->
-                sb.appendLine(
-                    String.format("%-20s %-10.2f %-10.2f",
-                        record.costTime ?: "未知",
-                        record.consumeTotal ?: 0.0,
-                        record.costTotal ?: 0.0)
-                )
-            }
-        }
-
-        DetailType.MONTH_DAILY_USAGE -> {
-            sb.appendLine("本月每日用电")
-            sb.appendLine("=".repeat(40))
-            sb.appendLine(String.format("%-20s %-10s %-10s", "时间", "用电量(度)", "费用(元)"))
-            sb.appendLine("-".repeat(40))
-            detailState.monthDailyUsage?.costObj?.forEach { record ->
-                sb.appendLine(
-                    String.format("%-20s %-10.2f %-10.2f",
-                        record.costTime ?: "未知",
-                        record.consumeTotal ?: 0.0,
-                        record.costTotal ?: 0.0)
-                )
-            }
-        }
-
-        DetailType.HOURLY_USAGE -> {
-            sb.appendLine("近24h用电明细")
-            sb.appendLine("=".repeat(40))
-            sb.appendLine(String.format("%-20s %-10s", "时间", "用电量(度)"))
-            sb.appendLine("-".repeat(30))
-            detailState.currentData?.hourDataObj?.forEach { record ->
-                sb.appendLine(
-                    String.format("%-20s %-10.2f",
-                        record.dataTime ?: "未知",
-                        record.dataTotal ?: 0.0)
-                )
-            }
-        }
-
-        DetailType.METER_STATUS -> {
-            sb.appendLine("电表实时状态")
-            sb.appendLine("=".repeat(40))
-
-            // 电流
-            val currentItems = detailState.currentData?.exp4
-            if (!currentItems.isNullOrEmpty()) {
-                sb.appendLine("\n【电流】")
-                currentItems.forEach { item ->
-                    sb.appendLine(String.format("  %s: %.3f A", item.name, item.display))
+        when (detailType) {
+            DetailType.SIX_MONTH_USAGE,
+            DetailType.MONTH_DAILY_USAGE -> {
+                val records = when (detailType) {
+                    DetailType.SIX_MONTH_USAGE -> detailState.sixMonthUsage?.costObj
+                    else -> detailState.monthDailyUsage?.costObj
+                }
+                appendLine(String.format("%-20s %-10s %-10s", "时间", "用电量(度)", "费用(元)"))
+                appendLine("-".repeat(40))
+                records?.forEach { record ->
+                    appendLine(
+                        String.format("%-20s %-10.2f %-10.2f",
+                            record.costTime ?: "未知",
+                            record.consumeTotal ?: 0.0,
+                            record.costTotal ?: 0.0)
+                    )
                 }
             }
 
-            // 电压
-            val voltageItems = detailState.currentData?.exp3
-            if (!voltageItems.isNullOrEmpty()) {
-                sb.appendLine("\n【电压】")
-                voltageItems.forEach { item ->
-                    sb.appendLine(String.format("  %s: %.3f V", item.name, item.display))
+            DetailType.HOURLY_USAGE -> {
+                appendLine(String.format("%-20s %-10s", "时间", "用电量(度)"))
+                appendLine("-".repeat(30))
+                detailState.currentData?.hourDataObj?.forEach { record ->
+                    appendLine(
+                        String.format("%-20s %-10.2f",
+                            record.dataTime ?: "未知",
+                            record.dataTotal ?: 0.0)
+                    )
                 }
             }
 
-            // 功率/累计值
-            if (!detailState.currentData?.exp2.isNullOrBlank()) {
-                sb.appendLine("\n【当前功率/累计值】")
-                sb.appendLine("  ${detailState.currentData?.exp2}")
-            }
-
-            // 电源状态
-            if (!detailState.currentData?.exp5.isNullOrBlank()) {
-                sb.appendLine("\n【电源状态】")
-                sb.appendLine("  ${detailState.currentData?.exp5}")
-            }
-
-            if (currentItems.isNullOrEmpty() && voltageItems.isNullOrEmpty()
-                && detailState.currentData?.exp2.isNullOrBlank() && detailState.currentData?.exp5.isNullOrBlank()) {
-                sb.appendLine("暂无电表数据")
+            DetailType.METER_STATUS -> {
+                appendMeterStatusText(detailState)
             }
         }
     }
+}
 
-    return sb.toString()
+/**
+ * 获取详情标题。
+ */
+private fun getDetailTitle(detailType: DetailType): String = when (detailType) {
+    DetailType.SIX_MONTH_USAGE -> "最近6个月用电记录"
+    DetailType.MONTH_DAILY_USAGE -> "本月每日用电"
+    DetailType.HOURLY_USAGE -> "近24h用电明细"
+    DetailType.METER_STATUS -> "电表实时状态"
+}
+
+/**
+ * 生成电表状态的纯文本内容。
+ */
+private fun StringBuilder.appendMeterStatusText(detailState: DetailState) {
+    val data = detailState.currentData ?: return
+
+    // 电流
+    val currentItems = data.exp4
+    if (!currentItems.isNullOrEmpty()) {
+        appendLine("\n【电流】")
+        currentItems.forEach { item ->
+            appendLine(String.format("  %s: %.3f A", item.name, item.display))
+        }
+    }
+
+    // 电压
+    val voltageItems = data.exp3
+    if (!voltageItems.isNullOrEmpty()) {
+        appendLine("\n【电压】")
+        voltageItems.forEach { item ->
+            appendLine(String.format("  %s: %.3f V", item.name, item.display))
+        }
+    }
+
+    // 功率/累计值
+    if (!data.exp2.isNullOrBlank()) {
+        appendLine("\n【当前功率/累计值】")
+        appendLine("  ${data.exp2}")
+    }
+
+    // 电源状态
+    if (!data.exp5.isNullOrBlank()) {
+        appendLine("\n【电源状态】")
+        appendLine("  ${data.exp5}")
+    }
+
+    if (currentItems.isNullOrEmpty() && voltageItems.isNullOrEmpty()
+        && data.exp2.isNullOrBlank() && data.exp5.isNullOrBlank()) {
+        appendLine("暂无电表数据")
+    }
 }
 
 /**
