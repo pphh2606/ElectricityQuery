@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -346,7 +347,13 @@ private fun FloorRoomGroup(
             trailingContent = {
                 if (isExpanded) {
                     when (loadState) {
-                        is FloorRoomLoadState.Loading -> { }
+                        is FloorRoomLoadState.Loading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                         is FloorRoomLoadState.Success -> {
                             Text("${loadState.rooms.size} 间", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -368,7 +375,20 @@ private fun FloorRoomGroup(
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 when (loadState) {
                     null -> Spacer(Modifier.height(8.dp))
-                    is FloorRoomLoadState.Loading -> Spacer(Modifier.height(8.dp))
+                    is FloorRoomLoadState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.5.dp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                     is FloorRoomLoadState.Success -> {
                         if (loadState.rooms.isEmpty()) {
                             Text("暂无房间", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 8.dp))

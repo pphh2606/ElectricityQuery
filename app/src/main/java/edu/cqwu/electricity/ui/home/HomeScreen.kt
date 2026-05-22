@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -441,6 +442,7 @@ fun HomePageContent(
         BottomSheetDialog(
             onDismissRequest = { pendingExternalIntent = null },
             title = "打开外部应用",
+            icon = Icons.Default.OpenInBrowser,
             leadingButton = {
                 TextButton(onClick = { pendingExternalIntent = null }) {
                     Text("取消")

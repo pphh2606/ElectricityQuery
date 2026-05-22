@@ -1,18 +1,24 @@
 package edu.cqwu.electricity.ui.electricity
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.FileDownload
@@ -41,6 +47,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -110,6 +122,9 @@ fun ElectricityMainScreen(
 
     // ── 我的寝室 Tab 控制状态 ──
     var showRoomSwitchSheet by remember { mutableStateOf(false) }
+
+    // ── 充值 Tab 提示弹窗状态 ──
+    var showRechargeInfoDialog by remember { mutableStateOf(false) }
 
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
@@ -224,6 +239,16 @@ fun ElectricityMainScreen(
                                     }
                                 )
                             }
+                        }
+                    }
+                    // ── Tab 1：充值 Tab 显示提示按钮 ──
+                    if (pagerState.currentPage == 1) {
+                        IconButton(onClick = { showRechargeInfoDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "提示",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                     // ── Tab 2：我的寝室 Tab 显示切换寝室按钮和三点菜单 ──
@@ -360,6 +385,68 @@ fun ElectricityMainScreen(
                         onNavigateToRechargeRecord = { onNavigateToRechargeRecord(myRoomState.selectedRoom?.id ?: "") },
                     )
                 }
+            }
+        }
+    }
+
+    // ── 充值 Tab 提示信息弹窗 - Bottom Sheet ──
+    if (showRechargeInfoDialog) {
+        BottomSheetDialog(
+            onDismissRequest = { showRechargeInfoDialog = false },
+            title = "提示"
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // 第1条：外部链接
+                val link1Text = buildAnnotatedString {
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append("1.如果获取用户失败，请先")
+                    }
+                    pushLink(
+                        LinkAnnotation.Clickable(
+                            tag = "url",
+                            styles = TextLinkStyles(
+                                SpanStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    textDecoration = TextDecoration.Underline
+                                )
+                            )
+                        ) {
+                            try {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login")
+                                )
+                                context.startActivity(intent)
+                            } catch (_: ActivityNotFoundException) {
+                                snackbar.show("未找到可用的浏览器应用")
+                            }
+                        }
+                    )
+                    append("点击此处")
+                    pop()
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append("在平台注册。")
+                    }
+                }
+                Text(
+                    text = link1Text,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                // 第2条：纯文本
+                Text(
+                    text = "2.若注册后还是提示获取用户信息失败，请尝试填写寝室管理员学号/寝室内第一个注册了平台的学号。",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                // 第3条：纯文本
+                Text(
+                    text = "3.充值记录会记录在学号所对应的用户头上。如介意请查看其他充值方式。",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

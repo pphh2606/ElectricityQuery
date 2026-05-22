@@ -2,6 +2,7 @@ package edu.cqwu.electricity.ui.components
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.compositionLocalOf
 import edu.cqwu.electricity.util.ToastUtils
@@ -54,11 +55,36 @@ class SnackbarController {
      * @param type 类型（SUCCESS / ERROR），影响背景颜色
      */
     fun show(message: String, type: ToastUtils.Type = ToastUtils.Type.ERROR) {
+        show(message = message, type = type, actionLabel = null, onAction = null)
+    }
+
+    /**
+     * 显示一条带 Action 按钮的 Snackbar 消息
+     *
+     * @param message 显示文本
+     * @param type 类型（SUCCESS / ERROR），影响背景颜色
+     * @param actionLabel 操作按钮文字（如"打开"），null 时不显示按钮
+     * @param onAction 点击操作按钮时的回调
+     */
+    fun show(
+        message: String,
+        type: ToastUtils.Type = ToastUtils.Type.ERROR,
+        actionLabel: String? = null,
+        onAction: (() -> Unit)? = null
+    ) {
         scope.launch {
             hostState.currentSnackbarData?.dismiss()
-            hostState.showSnackbar(
-                CustomSnackbarVisuals(message = message, type = type)
+            val result = hostState.showSnackbar(
+                CustomSnackbarVisuals(
+                    message = message,
+                    type = type,
+                    actionLabel = actionLabel,
+                    duration = if (actionLabel != null) SnackbarDuration.Long else SnackbarDuration.Short
+                )
             )
+            if (result == SnackbarResult.ActionPerformed) {
+                onAction?.invoke()
+            }
         }
     }
 

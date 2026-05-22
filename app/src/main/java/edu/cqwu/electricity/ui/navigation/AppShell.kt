@@ -94,6 +94,7 @@ fun AppShell(
                             snackbarData = data,
                             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                             contentColor = contentColor,
+                            actionColor = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(8.dp),
                         )
                     }

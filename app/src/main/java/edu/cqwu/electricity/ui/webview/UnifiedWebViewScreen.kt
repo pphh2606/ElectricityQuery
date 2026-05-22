@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.ui.webview
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -319,7 +320,26 @@ fun UnifiedWebViewScreen(
                                         val host = Uri.parse(url).host
                                         if (host != null && host.endsWith(".campusphere.net")) {
                                             campusphereToastShown = true
-                                            snackbar.show("正在访问今日校园专属内容，可能有不兼容现象，推荐使用今日校园打开")
+                                            val currentUrl = url
+                                            snackbar.show(
+                                                message = "正在访问今日校园专属内容，可能存在不兼容现象，建议使用今日校园APP打开",
+                                                actionLabel = "打开",
+                                                onAction = {
+                                                    try {
+                                                        // 优先尝试打开今日校园 App
+                                                        val campusIntent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
+                                                        context.startActivity(campusIntent)
+                                                    } catch (_: ActivityNotFoundException) {
+                                                        // 降级：用浏览器打开当前链接
+                                                        try {
+                                                            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(currentUrl))
+                                                            context.startActivity(browserIntent)
+                                                        } catch (_: ActivityNotFoundException) {
+                                                            snackbar.show("未找到可用的浏览器应用")
+                                                        }
+                                                    }
+                                                }
+                                            )
                                         }
                                     }
 

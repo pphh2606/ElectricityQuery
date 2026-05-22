@@ -156,13 +156,18 @@ class ElectricityViewModel(
             it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Loading))
         }
         viewModelScope.launch {
-            repository.getRooms(floor.id)
-                .onSuccess { rooms ->
-                    _uiState.update { it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Success(rooms))) }
+            kotlinx.coroutines.withTimeout(15_000L) {
+                repository.getRooms(floor.id)
+            }.onSuccess { rooms ->
+                _uiState.update { it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Success(rooms))) }
+            }.onFailure { e ->
+                val msg = if (e is kotlinx.coroutines.TimeoutCancellationException) {
+                    "请求超时，请重试"
+                } else {
+                    e.message ?: "加载失败"
                 }
-                .onFailure { e ->
-                    _uiState.update { it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Error(e.message ?: "加载失败"))) }
-                }
+                _uiState.update { it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Error(msg))) }
+            }
         }
     }
 
@@ -226,8 +231,12 @@ class ElectricityViewModel(
 
     fun refreshRoomGrid() {
         _uiState.update { current ->
-            val clearedMap = current.floorRoomsMap.filterValues { it !is FloorRoomLoadState.Success }
-            current.copy(isRefreshing = false, floorRoomsMap = clearedMap, floorRoomRefreshVersion = current.floorRoomRefreshVersion + 1)
+            current.copy(
+                isRefreshing = false,
+                floorRoomsMap = emptyMap(),
+                expandedFloorIds = emptySet(),
+                floorRoomRefreshVersion = current.floorRoomRefreshVersion + 1
+            )
         }
     }
 

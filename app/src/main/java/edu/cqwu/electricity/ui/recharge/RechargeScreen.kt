@@ -230,7 +230,7 @@ private fun RechargeContent(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -448,25 +448,25 @@ private fun RechargeContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ── 其他充值方式 ──
+            Text(
+                text = "其他充值方式",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onShowOtherRechargeDialogChange(true) }
+                    .padding(vertical = 10.dp),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             // ── 重要提示 ──
             ImportantNotesCard()
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // ── 其他充值方式（始终显示，无需查询） ──
-        Text(
-            text = "其他充值方式",
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onShowOtherRechargeDialogChange(true) }
-                .padding(vertical = 12.dp),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 } // PullToRefreshBox
 
