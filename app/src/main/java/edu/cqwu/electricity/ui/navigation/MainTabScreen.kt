@@ -51,6 +51,7 @@ fun MainTabScreen(
     onNavigateToNotice: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToFeedback: () -> Unit = {},
+    onNavigateToFeeServiceHall: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val pagerState = rememberPagerState(pageCount = { bottomNavTabs.size })
@@ -89,7 +90,13 @@ fun MainTabScreen(
                         selected = pagerState.currentPage == index,
                         onClick = {
                             if (pagerState.currentPage != index) {
-                                scope.launch { pagerState.animateScrollToPage(index) }
+                                scope.launch {
+                                    if (userScrollEnabled) {
+                                        pagerState.animateScrollToPage(index)
+                                    } else {
+                                        pagerState.scrollToPage(index)
+                                    }
+                                }
                             }
                         },
                         icon = { Icon(tab.icon, contentDescription = tab.label) },
@@ -112,6 +119,7 @@ fun MainTabScreen(
                     onNavigateToQrCode = onNavigateToQrCode,
                     onNavigateToCardCenter = onNavigateToCardCenter,
                     onNavigateToNotice = onNavigateToNotice,
+                    onNavigateToFeeServiceHall = onNavigateToFeeServiceHall,
                     homeViewModel = homeViewModel,
                 )
                 1 -> {

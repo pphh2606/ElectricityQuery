@@ -214,6 +214,7 @@ fun HomePageContent(
     onNavigateToQrCode: (edu.cqwu.electricity.data.network.QrCodeType) -> Unit,
     onNavigateToCardCenter: () -> Unit,
     onNavigateToNotice: () -> Unit,
+    onNavigateToFeeServiceHall: () -> Unit = {},
     homeViewModel: HomeViewModel = viewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
@@ -262,6 +263,7 @@ fun HomePageContent(
             onNavigateToQrCode = onNavigateToQrCode,
             onNavigateToCardCenter = onNavigateToCardCenter,
             onNavigateToNotice = onNavigateToNotice,
+            onNavigateToFeeServiceHall = onNavigateToFeeServiceHall,
             onExternalIntent = { url, name -> pendingExternalIntent = name to url }
         )
     }
@@ -493,6 +495,7 @@ private fun handleAppClick(
     onNavigateToQrCode: (type: edu.cqwu.electricity.data.network.QrCodeType) -> Unit,
     onNavigateToCardCenter: () -> Unit,
     onNavigateToNotice: () -> Unit,
+    onNavigateToFeeServiceHall: () -> Unit = {},
     onExternalIntent: (url: String, appName: String) -> Unit
 ) {
     // 支付码 → 原生二维码显示
@@ -518,6 +521,11 @@ private fun handleAppClick(
     // 通知公告 → 原生通知公告列表页
     if (app.appId == HomeAppIds.NOTICE) {
         onNavigateToNotice()
+        return
+    }
+    // 缴费服务大厅 → 打开原生页面
+    if (app.appId == HomeAppIds.FEE_SERVICE_HALL) {
+        onNavigateToFeeServiceHall()
         return
     }
 

@@ -48,6 +48,7 @@ import edu.cqwu.electricity.ui.electricity.DetailViewModel
 import edu.cqwu.electricity.ui.electricity.ElectricityMainScreen
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
 import edu.cqwu.electricity.ui.feedback.FeedbackScreen
+import edu.cqwu.electricity.ui.feeservicehall.FeeServiceHallScreen
 import edu.cqwu.electricity.ui.login.LoginScreen
 import edu.cqwu.electricity.ui.login.QrLoginScreen
 import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
@@ -170,6 +171,9 @@ object Routes {
     fun unifiedWebViewRoute(url: String, title: String = ""): String {
         return "unified_webview/${java.net.URLEncoder.encode(url, "UTF-8")}/${java.net.URLEncoder.encode(title, "UTF-8")}"
     }
+
+    /** 缴费服务大厅 */
+    const val FEE_SERVICE_HALL = "fee_service_hall"
 }
 
 /** 从动画设置生成过渡 EnterTransition */
@@ -289,6 +293,15 @@ fun AppNavGraph(
                 onNavigateToNotice = { navController.navigate(Routes.NOTICE) },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
                 onNavigateToFeedback = { navController.navigate(Routes.FEEDBACK) },
+                onNavigateToFeeServiceHall = { navController.navigate(Routes.FEE_SERVICE_HALL) },
+            )
+        }
+
+        // 缴费服务大厅
+        animatedComposable(settings = animationSettings, route = Routes.FEE_SERVICE_HALL) {
+            FeeServiceHallScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
             )
         }
 

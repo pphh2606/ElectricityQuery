@@ -21,4 +21,7 @@ object HomeAppIds {
 
     /** 通知公告 → 原生通知公告列表页 */
     const val NOTICE = "4804236383747498"
+
+    /** 缴费服务大厅 → 打开原生页面 */
+    const val FEE_SERVICE_HALL = "5350760556213516"
 }

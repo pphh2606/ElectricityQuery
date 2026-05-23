@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.ui.webview
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -9,13 +10,17 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
+import android.webkit.DownloadListener
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.webkit.WebResourceError
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -99,6 +104,18 @@ fun UnifiedWebViewScreen(
     // 控制三点溢出菜单
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    // ═══ 文件上传回调 ═══
+    var fileUploadCallback by remember { mutableStateOf<ValueCallback<Array<Uri>>?>(null) }
+    // 文件选择器：使用 GetContent 避免 .png 扩展名崩溃，始终用 */* 匹配所有文件类型
+    val fileUploadLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        fileUploadCallback?.let { callback ->
+            callback.onReceiveValue(if (uri != null) arrayOf(uri) else null)
+            fileUploadCallback = null
+        }
+    }
 
     // SwipeRefreshLayout 顶部旋转指示器状态（仅初始加载时显示，不响应下拉手势）
     var isWebViewRefreshing by remember { mutableStateOf(true) }
@@ -448,6 +465,17 @@ fun UnifiedWebViewScreen(
                                 }
                             }
 
+                            // ═══ 文件下载支持 ═══
+                            setDownloadListener { downloadUrl, userAgent, contentDisposition, mimeType, contentLength ->
+                                Log.d("WebView_DIAG", "下载请求: $downloadUrl, mime=$mimeType")
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
+                                    context.startActivity(intent)
+                                } catch (e: ActivityNotFoundException) {
+                                    snackbar.show("未找到可用的下载工具", ToastUtils.Type.ERROR)
+                                }
+                            }
+
                             webChromeClient = object : WebChromeClient() {
                                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                                     progress = newProgress
@@ -470,6 +498,19 @@ fun UnifiedWebViewScreen(
                                             }
                                         } catch (_: Exception) { }
                                     }
+                                }
+
+                                // ═══ 文件上传支持（<input type="file">）═══
+                                override fun onShowFileChooser(
+                                    webView: WebView?,
+                                    filePathCallback: ValueCallback<Array<Uri>>?,
+                                    fileChooserParams: FileChooserParams?
+                                ): Boolean {
+                                    Log.d("WebView_DIAG", "onShowFileChooser")
+                                    fileUploadCallback = filePathCallback
+                                    // 始终用 */* 避免 WebView 传 .png 等扩展名导致崩溃
+                                    fileUploadLauncher.launch("*/*")
+                                    return true
                                 }
                             }
 
