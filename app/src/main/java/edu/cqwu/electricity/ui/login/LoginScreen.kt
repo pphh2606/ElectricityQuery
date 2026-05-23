@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
@@ -731,35 +732,34 @@ fun LoginScreen(
 
     // ── 删除账号确认弹窗 ──
     deleteConfirmAccount?.let { account ->
-        AlertDialog(
+        BottomSheetDialog(
             onDismissRequest = { deleteConfirmAccount = null },
-            title = {
-                Text(
-                    text = "删除账号",
-                    fontWeight = FontWeight.Bold,
-                )
+            title = "删除账号",
+            icon = Icons.Default.Delete,
+            leadingButton = {
+                TextButton(onClick = { deleteConfirmAccount = null }) {
+                    Text("取消")
+                }
             },
-            text = {
-                Text("确定要删除学号「$account」及其所有本地数据吗？\n\n删除后如需使用该账号需重新登录。")
-            },
-            confirmButton = {
+            trailingButton = {
                 TextButton(onClick = {
                     loginViewModel.removeAccount(account)
-                    deleteConfirmAccount = null  // ← 关闭弹窗
-                    showAccountDropdown = false   // ← 关闭下拉菜单
+                    deleteConfirmAccount = null
+                    showAccountDropdown = false
                 }) {
                     Text(
                         text = "删除",
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { deleteConfirmAccount = null }) {
-                    Text("取消")
-                }
             }
-        )
+        ) {
+            Text(
+                text = "确定要删除学号「$account」及其所有本地数据吗？\n\n删除后如需使用该账号需重新登录。",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 
 }

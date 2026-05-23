@@ -1,12 +1,13 @@
 package edu.cqwu.electricity.ui.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.StudentInfo
 import edu.cqwu.electricity.data.network.CampusphereApi
 import edu.cqwu.electricity.data.network.MenuCategory
-import edu.cqwu.electricity.data.network.NotLoggedInException
 import edu.cqwu.electricity.data.network.SessionExpiredException
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,7 @@ data class MyInfoUiState(
     val studentInfo: StudentInfo? = null,
     val menuCategories: List<MenuCategory> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val error: String? = null,
     val needsLogin: Boolean = false,
 )
@@ -28,48 +30,69 @@ class MyInfoViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MyInfoUiState())
     val uiState: StateFlow<MyInfoUiState> = _uiState.asStateFlow()
 
-    private var hasLoaded = false
-
     fun loadIfNeeded() {
-        if (!hasLoaded) {
-            hasLoaded = true
+        val current = _uiState.value
+        if (current.studentInfo == null && !current.isLoading && !current.isRefreshing) {
             loadStudentInfo()
         }
     }
 
     fun loadStudentInfo() {
-        if (_uiState.value.isLoading) return
+        if (_uiState.value.isRefreshing) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null, needsLogin = false) }
+            val isInitialLoad = _uiState.value.studentInfo == null
+            _uiState.update {
+                it.copy(
+                    isLoading = isInitialLoad,
+                    isRefreshing = true,
+                    error = null,
+                    needsLogin = false,
+                )
+            }
 
-            api.fetchStudentInfo()
-                .onSuccess { info ->
-                    _uiState.update {
-                        it.copy(studentInfo = info, isLoading = false, error = null, needsLogin = false)
+            // 并行请求学生信息和菜单列表，互不阻塞
+            kotlinx.coroutines.coroutineScope {
+                val infoDeferred = async { api.fetchStudentInfo() }
+                val menuDeferred = async { api.fetchMenuList() }
+
+                infoDeferred.await()
+                    .onSuccess { info ->
+                        _uiState.update {
+                            it.copy(
+                                studentInfo = info,
+                                isLoading = false,
+                                isRefreshing = false,
+                                error = null,
+                                needsLogin = false,
+                            )
+                        }
                     }
-                    loadMenuCategories()
-                }
-                .onFailure { e ->
-                    val needsLogin = e is SessionExpiredException
-                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "加载失败", needsLogin = needsLogin) }
-                }
-        }
-    }
+                    .onFailure { e ->
+                        val needsLogin = e is SessionExpiredException
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                error = e.message ?: "加载失败",
+                                needsLogin = needsLogin,
+                            )
+                        }
+                    }
 
-    private fun loadMenuCategories() {
-        viewModelScope.launch {
-            api.fetchMenuList().onSuccess { categories ->
-                _uiState.update { it.copy(menuCategories = categories) }
-            }.onFailure { e ->
-                android.util.Log.w("MyInfoViewModel", "加载菜单列表失败", e)
+                menuDeferred.await()
+                    .onSuccess { categories ->
+                        _uiState.update { it.copy(menuCategories = categories) }
+                    }
+                    .onFailure { e ->
+                        Log.w("MyInfoViewModel", "加载菜单列表失败", e)
+                    }
             }
         }
     }
 
     fun reset() {
-        hasLoaded = false
         _uiState.value = MyInfoUiState()
-        loadIfNeeded()
+        loadStudentInfo()
     }
 }

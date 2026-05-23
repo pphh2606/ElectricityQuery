@@ -137,7 +137,7 @@ fun ProfilePageContent(
         "?"
     }
     val displayStudentId = username ?: "未登录"
-    val displayName = "未设置" // 占位，后续与 API 联动
+    val displayName = ""
 
     Column(
         modifier = Modifier
@@ -183,23 +183,29 @@ fun ProfilePageContent(
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // ── 中间：姓名 + 学号 ──
+                // ── 中间：姓名（可选）+ 学号 ──
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Text(
-                        text = displayName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    if (displayName.isNotEmpty()) {
+                        Text(
+                            text = displayName,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
                     Text(
                         text = displayStudentId,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = if (displayName.isEmpty())
+                            MaterialTheme.typography.titleMedium
+                        else
+                            MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (displayName.isEmpty()) FontWeight.Bold else FontWeight.Normal,
                         color = if (isLoggedIn)
                             MaterialTheme.colorScheme.onSurfaceVariant
                         else

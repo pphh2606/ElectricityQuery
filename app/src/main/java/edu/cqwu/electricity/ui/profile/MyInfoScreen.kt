@@ -39,7 +39,7 @@ import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -52,6 +52,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -98,15 +99,14 @@ fun MyInfoScreen(
             )
         },
     ) { innerPadding ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(innerPadding),
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = { viewModel.loadStudentInfo() },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
         ) {
             when {
-                uiState.isLoading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
                 uiState.needsLogin -> {
                     ReLoginContent(
                         errorMessage = "登录已过期，请重新登录",
@@ -115,7 +115,7 @@ fun MyInfoScreen(
                         onRetry = { viewModel.loadStudentInfo() },
                     )
                 }
-                uiState.error != null -> {
+                uiState.error != null && uiState.studentInfo == null -> {
                     ReLoginContent(
                         errorMessage = uiState.error,
                         requiresReLogin = false,
@@ -131,9 +131,12 @@ fun MyInfoScreen(
                     )
                 }
                 else -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+                    // 初次加载无数据：空的可滚动容器，PullToRefreshBox 指示器展示加载动画
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                    )
                 }
             }
         }
@@ -184,31 +187,33 @@ private fun MyInfoContent(
         // ── 详细信息列表 ──
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
             Spacer(Modifier.height(12.dp))
-            InfoRow("性别", studentInfo.sex)
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("年级", studentInfo.grade)
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("院系", studentInfo.dwmc)
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("专业", studentInfo.zymc)
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("班级", studentInfo.bjmc)
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("手机号", studentInfo.mobile)
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("校区", studentInfo.schoolZone.ifBlank { "-" })
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("学生类别", studentInfo.degree)
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(start = 16.dp))
-            InfoRow("在校情况", studentInfo.userType)
+
+            // 使用列表循环代替手动重复的 InfoRow + Divider
+            val infoItems = remember(studentInfo) {
+                listOf(
+                    "性别" to studentInfo.sex,
+                    "年级" to studentInfo.grade,
+                    "院系" to studentInfo.dwmc,
+                    "专业" to studentInfo.zymc,
+                    "班级" to studentInfo.bjmc,
+                    "手机号" to studentInfo.mobile,
+                    "校区" to studentInfo.schoolZone.ifBlank { "-" },
+                    "学生类别" to studentInfo.degree,
+                    "在校情况" to studentInfo.userType,
+                )
+            }
+
+            infoItems.forEachIndexed { index, (label, value) ->
+                InfoRow(label, value)
+                if (index < infoItems.lastIndex) {
+                    HorizontalDivider(
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier.padding(start = 16.dp),
+                    )
+                }
+            }
+
             Spacer(Modifier.height(24.dp))
         }
 
@@ -253,10 +258,12 @@ private fun CollapsibleMenuSection(
 
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
         withChildren.forEach { category ->
-            CollapsibleCategoryCard(
-                category = category,
-                onNavigateToWebView = onNavigateToWebView,
-            )
+            key(category.formCode) {
+                CollapsibleCategoryCard(
+                    category = category,
+                    onNavigateToWebView = onNavigateToWebView,
+                )
+            }
             Spacer(Modifier.height(8.dp))
         }
     }
@@ -321,6 +328,7 @@ private fun CollapsibleCategoryCard(
                             .fillMaxWidth()
                             .clickable {
                                 // 构建 H5 详情 URL
+                                // formName=1 表示需要渲染完整表单（含字段名），0=只渲染值
                                 val url = "$H5_BASE_URL?formCode=${child.formCode}&formName=1"
                                 onNavigateToWebView(url, child.formName)
                             }

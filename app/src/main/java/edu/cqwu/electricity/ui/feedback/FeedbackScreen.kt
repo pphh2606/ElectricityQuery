@@ -18,8 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,14 +43,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
+import androidx.core.content.FileProvider
 import edu.cqwu.electricity.util.CrashHandler
 import edu.cqwu.electricity.util.ToastUtils
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val FEEDBACK_EMAIL = "2606841932@qq.com"
 
 /**
  * 意见反馈页面
@@ -99,6 +104,7 @@ fun FeedbackScreen(
     var previewLogText by remember { mutableStateOf("") }
 
     val canSend = content.isNotBlank() && !isSending
+    val canShareLogs = !isSending
 
     // 合并 PackageInfo 查询，只查一次
     val pkgInfo = remember(context) {
@@ -109,38 +115,37 @@ fun FeedbackScreen(
         }
     }
 
-    // 启动时检查是否有崩溃记录
+    // 创建页面时立即预加载日志，确保发送/分享时日志可用
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            hasCrashReports = CrashHandler.hasCrashReports()
-            crashReportCount = CrashHandler.crashReportCount()
+        isLogsLoading = true
+        val (hasReports, count, logs) = withContext(Dispatchers.IO) {
+            Triple(
+                CrashHandler.hasCrashReports(),
+                CrashHandler.crashReportCount(),
+                LogCapture.getRecentLogs()
+            )
         }
+        hasCrashReports = hasReports
+        crashReportCount = count
+        cachedLogs = logs
+        isLogsLoading = false
     }
 
-    // 日志开关打开或关闭时，重新加载/清空缓存
-    LaunchedEffect(includeLogs) {
-        if (includeLogs || hasCrashReports) {
-            isLogsLoading = true
-            cachedLogs = withContext(Dispatchers.IO) { LogCapture.getRecentLogs() }
-            isLogsLoading = false
-        } else {
-            cachedLogs = null
-        }
+    /** 获取需要附带的日志内容 */
+    suspend fun getLogsToAttach(): String {
+        if (!includeLogs && !hasCrashReports) return ""
+        val raw = cachedLogs ?: withContext(Dispatchers.IO) { LogCapture.getRecentLogs() }
+        return raw.takeIf { it.isNotBlank() && it != "(未获取到日志)" } ?: "(未获取到日志)"
     }
 
-    fun sendFeedback() {
+    fun sendByEmail() {
         if (isSending || !canSend) return
         isSending = true
 
         scope.launch {
-            // 使用缓存日志，不再重复执行 logcat
-            // 如果日志还在加载中则等待一下（极低概率，因为预加载在 LaunchedEffect 中已完成）
-            val logs = if (includeLogs || hasCrashReports) {
-                if (cachedLogs != null) cachedLogs!!
-                else withContext(Dispatchers.IO) { LogCapture.getRecentLogs() }
-            } else ""
+            val logs = getLogsToAttach()
 
-            val deviceInfo = buildString {
+            val emailBody = buildString {
                 appendLine("--- 反馈内容 ---")
                 if (title.isNotBlank()) appendLine(title)
                 appendLine(content)
@@ -157,7 +162,6 @@ fun FeedbackScreen(
                 }
                 appendLine("App 版本: $versionName ($versionCode)")
                 appendLine()
-
                 if (logs.isNotBlank()) {
                     appendLine("--- 日志 ---")
                     append(logs)
@@ -165,15 +169,58 @@ fun FeedbackScreen(
             }
 
             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = android.net.Uri.parse("mailto:2606841932@qq.com")
+                data = android.net.Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(FEEDBACK_EMAIL))
                 putExtra(Intent.EXTRA_SUBJECT, "电费查询 App 反馈${if (title.isNotBlank()) "：$title" else ""}")
-                putExtra(Intent.EXTRA_TEXT, deviceInfo)
+                putExtra(Intent.EXTRA_TEXT, emailBody)
             }
 
             try {
                 context.startActivity(intent)
             } catch (e: Exception) {
                 snackbar.show("未找到邮件应用，请安装邮箱客户端", ToastUtils.Type.ERROR)
+            } finally {
+                isSending = false
+            }
+        }
+    }
+
+    fun shareLogs() {
+        if (isSending) return
+        if (!includeLogs && !hasCrashReports) {
+            snackbar.show("请先开启日志开关", ToastUtils.Type.ERROR)
+            return
+        }
+        isSending = true
+
+        scope.launch {
+            val logs = getLogsToAttach()
+
+            // 日志写入缓存文件作为附件
+            val logFile = withContext(Dispatchers.IO) {
+                val logDir = File(context.cacheDir, "logs")
+                logDir.mkdirs()
+                val file = File(logDir, "app_logs.txt")
+                file.writeText(logs)
+                file
+            }
+
+            val logUri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                logFile
+            )
+
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_STREAM, logUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            try {
+                context.startActivity(Intent.createChooser(intent, "分享日志"))
+            } catch (e: Exception) {
+                snackbar.show("分享失败", ToastUtils.Type.ERROR)
             } finally {
                 isSending = false
             }
@@ -191,35 +238,24 @@ fun FeedbackScreen(
         }
     }
 
-    // ── 日志预览对话框 ──
+    // ── 日志预览弹窗（下滑或点击外部关闭） ──
     if (showLogPreview) {
-        AlertDialog(
+        BottomSheetDialog(
             onDismissRequest = { showLogPreview = false },
-            title = {
-                Text("日志预览", fontWeight = FontWeight.Bold)
-            },
-            text = {
-                Column(
+            title = "日志预览",
+        ) {
+            // 外层 BottomSheetDialog(fullscreen=true) 已包含 fillMaxHeight + 滚动，
+            // 内容只需 fillMaxWidth，不要固定高度和内层滚动，避免冲突
+            SelectionContainer {
+                Text(
+                    text = previewLogText,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(400.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    // 支持长按选择复制日志内容
-                    SelectionContainer {
-                        Text(
-                            text = previewLogText,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showLogPreview = false }) {
-                    Text("关闭")
-                }
-            },
-        )
+                        .padding(horizontal = 16.dp),
+                )
+            }
+        }
     }
 
     Scaffold(
@@ -248,12 +284,21 @@ fun FeedbackScreen(
                         )
                     } else {
                         IconButton(
-                            onClick = { sendFeedback() },
+                            onClick = { sendByEmail() },
                             enabled = canSend,
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = "发送反馈",
+                                contentDescription = "发送邮件",
+                            )
+                        }
+                        IconButton(
+                            onClick = { shareLogs() },
+                            enabled = canShareLogs,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "分享日志",
                             )
                         }
                     }
@@ -261,7 +306,6 @@ fun FeedbackScreen(
                 colors = topBarColors,
             )
         },
-        modifier = Modifier.navigationBarsPadding(),
     ) { innerPadding ->
         Column(
             modifier = Modifier

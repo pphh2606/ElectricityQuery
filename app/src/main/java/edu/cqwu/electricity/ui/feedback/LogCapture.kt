@@ -40,9 +40,7 @@ object LogCapture {
         // ── 优先级 1：持久化崩溃文件 ──
         val crashReports = CrashHandler.getCrashReports(maxFiles = 10)
         if (crashReports.isNotBlank()) {
-            parts.add("═══════════════════════════════════════════════════════")
-            parts.add("  崩溃记录（持久化文件）")
-            parts.add("═══════════════════════════════════════════════════════")
+            parts.add("═══ 崩溃记录（持久化文件） ═══")
             parts.add("")
             parts.add(crashReports)
         }
@@ -50,9 +48,7 @@ object LogCapture {
         // ── 优先级 2：当前进程 logcat ──
         val currentLogs = getCurrentProcessLogs(lineCount)
         if (currentLogs.isNotBlank()) {
-            parts.add("═══════════════════════════════════════════════════════")
-            parts.add("  当前进程日志 (logcat --pid)")
-            parts.add("═══════════════════════════════════════════════════════")
+            parts.add("═══ 当前进程日志 (logcat --pid) ═══")
             parts.add("")
             parts.add(currentLogs)
         }
@@ -60,9 +56,7 @@ object LogCapture {
         // ── 优先级 3：crash 缓冲区（补充） ──
         val crashBufferLogs = getCrashBufferLogs(lineCount)
         if (crashBufferLogs.isNotBlank()) {
-            parts.add("═══════════════════════════════════════════════════════")
-            parts.add("  crash 缓冲区日志 (logcat -b crash)")
-            parts.add("═══════════════════════════════════════════════════════")
+            parts.add("═══ crash 缓冲区日志 (logcat -b crash) ═══")
             parts.add("")
             parts.add(crashBufferLogs)
         }
@@ -74,44 +68,47 @@ object LogCapture {
         }
     }
 
+    /** 执行 logcat 命令并返回输出文本 */
+    private fun executeLogCommand(command: Array<String>): String {
+        return try {
+            val process = ProcessBuilder(*command)
+                .redirectErrorStream(true)
+                .start()
+            if (!process.waitForSafe(LOG_TIMEOUT_MS)) {
+                process.destroy()
+                return ""
+            }
+            process.inputStream.bufferedReader().use { it.readText() }.trim()
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
     /**
      * 获取当前进程的 logcat 日志。
      * 使用 `--pid` 精确过滤当前进程，API < 24 手动匹配 PID。
      */
     private fun getCurrentProcessLogs(lineCount: Int): String {
-        return try {
-            val pid = Process.myPid()
+        val pid = Process.myPid()
 
-            // API 24+ 直接用 --pid 过滤；旧版本全量抓取后手动过滤
-            val command = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                arrayOf("logcat", "-d", "--pid=$pid", "-t", lineCount.toString(), "-v", "threadtime")
-            } else {
-                // 旧设备多抓 3 倍量，过滤后可能只剩目标行数
-                arrayOf("logcat", "-d", "-t", (lineCount * 3).toString(), "-v", "threadtime")
-            }
+        // API 24+ 直接用 --pid 过滤；旧版本全量抓取后手动过滤
+        val command = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            arrayOf("logcat", "-d", "--pid=$pid", "-t", lineCount.toString(), "-v", "threadtime")
+        } else {
+            // 旧设备多抓 3 倍量，过滤后可能只剩目标行数
+            arrayOf("logcat", "-d", "-t", (lineCount * 3).toString(), "-v", "threadtime")
+        }
 
-            val process = ProcessBuilder(*command)
-                .redirectErrorStream(true)
-                .start()
+        val output = executeLogCommand(command)
 
-            if (!process.waitForSafe(LOG_TIMEOUT_MS)) {
-                process.destroy()
-                return ""
-            }
-
-            val output = process.inputStream.bufferedReader().use { it.readText() }
-
-            // API < 24 手动过滤当前进程（logcat threadtime 格式中 PID 前后都是空格）
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                output.lineSequence()
-                    .filter { it.contains(" $pid ") }
-                    .take(lineCount)
-                    .joinToString("\n")
-            } else {
-                output
-            }
-        } catch (e: Exception) {
-            ""
+        // API < 24 手动过滤当前进程（logcat threadtime 格式中 PID 前后都是空格）
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            output.lineSequence()
+                .filter { it.contains(" $pid ") }
+                .take(lineCount)
+                .joinToString("\n")
+        } else {
+            output
         }
     }
 
@@ -122,23 +119,9 @@ object LogCapture {
      * crash 缓冲区可能为空或被重定向到别处，因此此方法仅作补充。
      */
     private fun getCrashBufferLogs(lineCount: Int): String {
-        return try {
-            val command = arrayOf("logcat", "-d", "-b", "crash", "-t", lineCount.toString(), "-v", "threadtime")
-
-            val process = ProcessBuilder(*command)
-                .redirectErrorStream(true)
-                .start()
-
-            if (!process.waitForSafe(LOG_TIMEOUT_MS)) {
-                process.destroy()
-                return ""
-            }
-
-            val output = process.inputStream.bufferedReader().use { it.readText() }
-            output.trim()
-        } catch (e: Exception) {
-            ""
-        }
+        return executeLogCommand(
+            arrayOf("logcat", "-d", "-b", "crash", "-t", lineCount.toString(), "-v", "threadtime")
+        )
     }
 
     /**
