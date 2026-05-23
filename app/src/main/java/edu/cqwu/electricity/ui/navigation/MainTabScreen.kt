@@ -52,6 +52,7 @@ fun MainTabScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToFeeServiceHall: () -> Unit = {},
+    onNavigateToMyInfo: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val pagerState = rememberPagerState(pageCount = { bottomNavTabs.size })
@@ -120,6 +121,7 @@ fun MainTabScreen(
                     onNavigateToCardCenter = onNavigateToCardCenter,
                     onNavigateToNotice = onNavigateToNotice,
                     onNavigateToFeeServiceHall = onNavigateToFeeServiceHall,
+                    onNavigateToMyInfo = onNavigateToMyInfo,
                     homeViewModel = homeViewModel,
                 )
                 1 -> {
@@ -134,6 +136,7 @@ fun MainTabScreen(
                     onNavigateToWebView = onNavigateToWebView,
                     onNavigateToLogin = onNavigateToLogin,
                     onNavigateToFeedback = onNavigateToFeedback,
+                    onNavigateToMyInfo = onNavigateToMyInfo,
                 )
             }
         }

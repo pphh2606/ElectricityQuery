@@ -119,6 +119,7 @@ fun ProfilePageContent(
     onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
     onNavigateToLogin: () -> Unit = {},
     onNavigateToFeedback: () -> Unit = {},
+    onNavigateToMyInfo: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
@@ -149,7 +150,7 @@ fun ProfilePageContent(
                 .fillMaxWidth()
                 .clickable {
                     if (isLoggedIn) {
-                        onNavigateToWebView(MY_INFO_URL, MY_INFO_TITLE)
+                        onNavigateToMyInfo()
                     } else {
                         onNavigateToLogin()
                     }
@@ -228,7 +229,7 @@ fun ProfilePageContent(
                 IconButton(
                     onClick = {
                         if (isLoggedIn) {
-                            onNavigateToWebView(MY_INFO_URL, MY_INFO_TITLE)
+                            onNavigateToMyInfo()
                         } else {
                             onNavigateToLogin()
                         }

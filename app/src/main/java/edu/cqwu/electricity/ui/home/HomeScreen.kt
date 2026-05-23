@@ -215,6 +215,7 @@ fun HomePageContent(
     onNavigateToCardCenter: () -> Unit,
     onNavigateToNotice: () -> Unit,
     onNavigateToFeeServiceHall: () -> Unit = {},
+    onNavigateToMyInfo: () -> Unit = {},
     homeViewModel: HomeViewModel = viewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
@@ -264,6 +265,7 @@ fun HomePageContent(
             onNavigateToCardCenter = onNavigateToCardCenter,
             onNavigateToNotice = onNavigateToNotice,
             onNavigateToFeeServiceHall = onNavigateToFeeServiceHall,
+            onNavigateToMyInfo = onNavigateToMyInfo,
             onExternalIntent = { url, name -> pendingExternalIntent = name to url }
         )
     }
@@ -496,6 +498,7 @@ private fun handleAppClick(
     onNavigateToCardCenter: () -> Unit,
     onNavigateToNotice: () -> Unit,
     onNavigateToFeeServiceHall: () -> Unit = {},
+    onNavigateToMyInfo: () -> Unit = {},
     onExternalIntent: (url: String, appName: String) -> Unit
 ) {
     // 支付码 → 原生二维码显示
@@ -526,6 +529,11 @@ private fun handleAppClick(
     // 缴费服务大厅 → 打开原生页面
     if (app.appId == HomeAppIds.FEE_SERVICE_HALL) {
         onNavigateToFeeServiceHall()
+        return
+    }
+    // 我的信息 → 打开原生页面
+    if (app.appId == HomeAppIds.MY_INFO) {
+        onNavigateToMyInfo()
         return
     }
 

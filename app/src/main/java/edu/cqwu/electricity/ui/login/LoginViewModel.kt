@@ -171,6 +171,13 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun removeAccount(username: String) {
         accountStore.removeAccount(username)
+
+        // 清除系统 CookieManager（必须在 removeUser 之前，因为 removeUser 会清空 activeUser）
+        val isActiveUser = username == AccountManager.getActiveUser()
+        if (isActiveUser) {
+            edu.cqwu.electricity.data.network.CookieStore.removeAllCookies()
+        }
+
         AccountManager.removeUser(username)
 
         _uiState.update {

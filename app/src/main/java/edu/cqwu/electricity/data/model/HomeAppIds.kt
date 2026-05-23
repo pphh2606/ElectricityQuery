@@ -24,4 +24,7 @@ object HomeAppIds {
 
     /** 缴费服务大厅 → 打开原生页面 */
     const val FEE_SERVICE_HALL = "5350760556213516"
+
+    /** 我的信息 → 打开原生页面 */
+    const val MY_INFO = "6204672076294065"
 }

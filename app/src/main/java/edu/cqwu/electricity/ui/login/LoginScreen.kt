@@ -745,8 +745,8 @@ fun LoginScreen(
             confirmButton = {
                 TextButton(onClick = {
                     loginViewModel.removeAccount(account)
-                    // 直接关闭下拉菜单，不依赖异步更新的列表大小判断
-                    showAccountDropdown = false
+                    deleteConfirmAccount = null  // ← 关闭弹窗
+                    showAccountDropdown = false   // ← 关闭下拉菜单
                 }) {
                     Text(
                         text = "删除",

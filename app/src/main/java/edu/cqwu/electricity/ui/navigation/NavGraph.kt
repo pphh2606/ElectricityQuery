@@ -49,6 +49,7 @@ import edu.cqwu.electricity.ui.electricity.ElectricityMainScreen
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
 import edu.cqwu.electricity.ui.feedback.FeedbackScreen
 import edu.cqwu.electricity.ui.feeservicehall.FeeServiceHallScreen
+import edu.cqwu.electricity.ui.profile.MyInfoScreen
 import edu.cqwu.electricity.ui.login.LoginScreen
 import edu.cqwu.electricity.ui.login.QrLoginScreen
 import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
@@ -174,6 +175,9 @@ object Routes {
 
     /** 缴费服务大厅 */
     const val FEE_SERVICE_HALL = "fee_service_hall"
+
+    /** 我的信息（原生页面） */
+    const val MY_INFO = "my_info"
 }
 
 /** 从动画设置生成过渡 EnterTransition */
@@ -294,6 +298,7 @@ fun AppNavGraph(
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
                 onNavigateToFeedback = { navController.navigate(Routes.FEEDBACK) },
                 onNavigateToFeeServiceHall = { navController.navigate(Routes.FEE_SERVICE_HALL) },
+                onNavigateToMyInfo = { navController.navigate(Routes.MY_INFO) },
             )
         }
 
@@ -301,6 +306,15 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.FEE_SERVICE_HALL) {
             FeeServiceHallScreen(
                 onBack = { navController.popBackStack() },
+                onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
+            )
+        }
+
+        // 我的信息（原生页面）
+        animatedComposable(settings = animationSettings, route = Routes.MY_INFO) {
+            MyInfoScreen(
+                onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
             )
         }
