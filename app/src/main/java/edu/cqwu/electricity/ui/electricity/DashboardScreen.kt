@@ -197,7 +197,6 @@ fun DashboardScreen(
             onRefresh = onRefresh,
             onBackToSelection = onBackToSelection,
             onNavigateToDetail = onNavigateToDetail,
-            onNavigateToH5Recharge = onNavigateToH5Recharge,
             onNavigateToRechargeRecord = onNavigateToRechargeRecord,
             onSwitchRoom = onSwitchRoom,
         )
@@ -221,7 +220,6 @@ private fun DashboardContent(
     onRefresh: () -> Unit,
     onBackToSelection: () -> Unit,
     onNavigateToDetail: (DetailType) -> Unit,
-    onNavigateToH5Recharge: () -> Unit,
     onNavigateToRechargeRecord: () -> Unit,
     onSwitchRoom: (UserRoomInfo) -> Unit,
 ) {

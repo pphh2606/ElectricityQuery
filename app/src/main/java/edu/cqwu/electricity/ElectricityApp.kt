@@ -23,7 +23,7 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         // 崩溃捕获必须在最前面注册，确保第三方 SDK 初始化前就已就绪
         CrashHandler.init(this)
         instance = this
-        SharedHttpClient.init(this)
+        SharedHttpClient.init()
     }
 
     companion object {

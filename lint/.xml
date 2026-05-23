@@ -1,0 +1,716 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ElectricityApp.kt</file>
+  <line>12</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ElectricityApp" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/MainActivity.kt</file>
+  <line>34</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.MainActivity" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>42</length>
+  <highlighted_element>class MainActivity : ComponentActivity() {</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>10</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.local.NightMode" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>枚举 从未使用。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>16</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.local.NightMode NightMode(java.lang.String value)" />
+  <language>kotlin</language>
+  <offset>20</offset>
+  <length>19</length>
+  <highlighted_element>(val value: String)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>230</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.local.PageTransition" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>15</length>
+  <highlighted_element>/** 页面过渡动画类型 */</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>枚举 从未使用。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>231</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.local.PageTransition PageTransition(java.lang.String value, java.lang.String displayName)" />
+  <language>kotlin</language>
+  <offset>25</offset>
+  <length>44</length>
+  <highlighted_element>(val value: String, val displayName: String)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>246</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.local.ReduceMotion" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>13</length>
+  <highlighted_element>/** 减少动画模式 */</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>枚举 从未使用。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>247</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.local.ReduceMotion ReduceMotion(java.lang.String value, java.lang.String displayName)" />
+  <language>kotlin</language>
+  <offset>23</offset>
+  <length>44</length>
+  <highlighted_element>(val value: String, val displayName: String)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>259</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.local.TopBarStyle" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>14</length>
+  <highlighted_element>/** 标题栏颜色样式 */</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>枚举 从未使用。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>260</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.local.TopBarStyle TopBarStyle(java.lang.String value, java.lang.String displayName)" />
+  <language>kotlin</language>
+  <offset>22</offset>
+  <length>44</length>
+  <highlighted_element>(val value: String, val displayName: String)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>276</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.local.QrCodeColorMode" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>14</length>
+  <highlighted_element>/** 二维码颜色模式 */</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>枚举 从未使用。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt</file>
+  <line>277</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.local</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.local.QrCodeColorMode QrCodeColorMode(java.lang.String value)" />
+  <language>kotlin</language>
+  <offset>26</offset>
+  <length>19</length>
+  <highlighted_element>(val value: String)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/HomeData.kt</file>
+  <line>17</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.HomeApp" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>19</length>
+  <highlighted_element>data class HomeApp(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/HomeData.kt</file>
+  <line>17</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.HomeApp HomeApp(java.lang.String appId, java.lang.String name, int appType, java.lang.String iconUrl, java.lang.String installUrl, java.lang.String openUrl, java.lang.String version, java.lang.Integer viewAuth, int accessAuth, java.lang.String fromPlatformType, java.lang.String fromPlatform, java.lang.String serverDomain, java.lang.String appState, java.lang.String developerId, int appSource, java.lang.String aliasName, java.lang.String nameLang)" />
+  <language>kotlin</language>
+  <offset>18</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>72</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.UsageRecord" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>75</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.UsageRecord UsageRecord(java.lang.String costTime, double consumeTotal, double costTotal)" />
+  <language>kotlin</language>
+  <offset>22</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>90</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.HourDataRecord" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>93</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.HourDataRecord HourDataRecord(java.lang.String dataTime, double dataTotal)" />
+  <language>kotlin</language>
+  <offset>25</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>98</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.MeterDataItem" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>101</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.MeterDataItem MeterDataItem(java.lang.String name, double display)" />
+  <language>kotlin</language>
+  <offset>24</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>154</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.BuyRecord" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>157</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.BuyRecord BuyRecord(java.lang.String userName, java.lang.String buyTime, double buyTotal, java.lang.String orderNum)" />
+  <language>kotlin</language>
+  <offset>20</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>182</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.UserRoomInfo" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>187</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.UserRoomInfo UserRoomInfo(int id, int userId, int nodeId, java.lang.String roomId, java.lang.String fullName, java.lang.String roomName)" />
+  <language>kotlin</language>
+  <offset>23</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>226</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.NoticeItem" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>229</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.NoticeItem NoticeItem(java.lang.String wid, java.lang.String noticeTitle, java.lang.String sendDepartment, java.lang.String sendTime, java.lang.String sendTimeDesc, java.lang.String clickNumber)" />
+  <language>kotlin</language>
+  <offset>21</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>256</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.NoticeDetailQp" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>262</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.NoticeDetailQp NoticeDetailQp(java.lang.String noticeTitle, java.lang.String noticeContent, java.lang.String sendDepartment, java.lang.String sendPeople, java.lang.String sendTime, java.lang.String sendTimeDesc, java.lang.String clickNumber, java.lang.String noticeDesc)" />
+  <language>kotlin</language>
+  <offset>25</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>395</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.data.model.H5BillItem" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>398</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.model.H5BillItem H5BillItem(java.lang.String id, java.lang.String refno, java.lang.String tradename, java.lang.String shopname, java.lang.String buyername, double amount, long createtime, long paytime, int tradedirect, int status, java.lang.String userid)" />
+  <language>kotlin</language>
+  <offset>21</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/ElectricityViewModel.kt</file>
+  <line>61</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.electricity.ElectricityViewModel" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/ElectricityViewModel.kt</file>
+  <line>70</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.electricity.ElectricityViewModel ElectricityViewModel(edu.cqwu.electricity.data.repository.ElectricityRepository repository)" />
+  <language>kotlin</language>
+  <offset>26</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/home/HomeViewModel.kt</file>
+  <line>34</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.home</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.home.HomeViewModel" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>79</length>
+  <highlighted_element>class HomeViewModel(application: Application) : AndroidViewModel(application) {</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/home/HomeViewModel.kt</file>
+  <line>34</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.home</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.home.HomeViewModel HomeViewModel(android.app.Application application)" />
+  <language>kotlin</language>
+  <offset>19</offset>
+  <length>26</length>
+  <highlighted_element>(application: Application)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt</file>
+  <line>41</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.login</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.login.LoginViewModel" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt</file>
+  <line>56</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.login</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.login.LoginViewModel LoginViewModel(android.app.Application application)" />
+  <language>kotlin</language>
+  <offset>20</offset>
+  <length>26</length>
+  <highlighted_element>(application: Application)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/myroom/MyRoomViewModel.kt</file>
+  <line>29</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.myroom</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.myroom.MyRoomViewModel" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/myroom/MyRoomViewModel.kt</file>
+  <line>35</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.myroom</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.myroom.MyRoomViewModel MyRoomViewModel(edu.cqwu.electricity.data.repository.ElectricityRepository repository)" />
+  <language>kotlin</language>
+  <offset>21</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/PaymentWebViewEngine.kt</file>
+  <line>131</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.recharge.PaymentWebViewEngine$-1 boolean shouldOverrideUrlLoading(android.webkit.WebView view, java.lang.String url)" />
+  <language>kotlin</language>
+  <offset>16</offset>
+  <length>33</length>
+  <highlighted_element>@Deprecated(&quot;Deprecated in Java&quot;)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>方法重写某个库方法，但&lt;ul&gt;&lt;li&gt;其类从未实例化，或者&lt;/li&gt;&lt;li&gt;其类实例化无法从入口点到达。&lt;/li&gt;&lt;/ul&gt;</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeViewModel.kt</file>
+  <line>69</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.recharge.RechargeViewModel" />
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>3</length>
+  <highlighted_element>/**</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>类 未实例化。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeViewModel.kt</file>
+  <line>77</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.recharge.RechargeViewModel RechargeViewModel(edu.cqwu.electricity.data.repository.ElectricityRepository repository)" />
+  <language>kotlin</language>
+  <offset>23</offset>
+  <length>1</length>
+  <highlighted_element>(</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>构造函数从未使用过。</description>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/webview/UnifiedWebViewScreen.kt</file>
+  <line>453</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.webview</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.webview.UnifiedWebViewScreenKt$-1 boolean shouldOverrideUrlLoading(android.webkit.WebView view, java.lang.String url)" />
+  <language>kotlin</language>
+  <offset>32</offset>
+  <length>33</length>
+  <highlighted_element>@Deprecated(&quot;Deprecated in Java&quot;)</highlighted_element>
+  <problem_class id="" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">未使用的声明</problem_class>
+  <hints>
+    <hint value="comment" />
+    <hint value="delete" />
+  </hints>
+  <description>方法重写某个库方法，但&lt;ul&gt;&lt;li&gt;其类从未实例化，或者&lt;/li&gt;&lt;li&gt;其类实例化无法从入口点到达。&lt;/li&gt;&lt;/ul&gt;</description>
+</problem>
+</problems>

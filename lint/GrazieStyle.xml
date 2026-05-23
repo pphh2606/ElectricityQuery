@@ -1,0 +1,86 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/账单.txt</file>
+  <line>670</line>
+  <module>电费查询</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/账单.txt" />
+  <problem_class id="GrazieStyle" severity="STYLE_SUGGESTION" attribute_key="TEXT_STYLE_SUGGESTION">样式</problem_class>
+  <description>American English uses 'gray'</description>
+  <highlighted_element>grey</highlighted_element>
+  <language>TEXT</language>
+  <offset>33</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/账单.txt</file>
+  <line>681</line>
+  <module>电费查询</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/账单.txt" />
+  <problem_class id="GrazieStyle" severity="STYLE_SUGGESTION" attribute_key="TEXT_STYLE_SUGGESTION">样式</problem_class>
+  <description>Make sure that 'tr' is an abbreviation for a word such as 'translator', 'treasurer' or 'trustee' and not a typing error. Did you mean try?</description>
+  <highlighted_element>tr</highlighted_element>
+  <language>TEXT</language>
+  <offset>13</offset>
+  <length>2</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/账单.txt</file>
+  <line>757</line>
+  <module>电费查询</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/账单.txt" />
+  <problem_class id="GrazieStyle" severity="STYLE_SUGGESTION" attribute_key="TEXT_STYLE_SUGGESTION">样式</problem_class>
+  <description>Make sure that 'tr' is an abbreviation for a word such as 'translator', 'treasurer' or 'trustee' and not a typing error. Did you mean try?</description>
+  <highlighted_element>tr</highlighted_element>
+  <language>TEXT</language>
+  <offset>11</offset>
+  <length>2</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/账单.txt</file>
+  <line>792</line>
+  <module>电费查询</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/账单.txt" />
+  <problem_class id="GrazieStyle" severity="STYLE_SUGGESTION" attribute_key="TEXT_STYLE_SUGGESTION">样式</problem_class>
+  <description>Make sure that 'tr' is an abbreviation for a word such as 'translator', 'treasurer' or 'trustee' and not a typing error. Did you mean try?</description>
+  <highlighted_element>tr</highlighted_element>
+  <language>TEXT</language>
+  <offset>11</offset>
+  <length>2</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/账单.txt</file>
+  <line>1248</line>
+  <module>电费查询</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/账单.txt" />
+  <problem_class id="GrazieStyle" severity="STYLE_SUGGESTION" attribute_key="TEXT_STYLE_SUGGESTION">样式</problem_class>
+  <description>Make sure that 'tr' is an abbreviation for a word such as 'translator', 'treasurer' or 'trustee' and not a typing error. Did you mean try?</description>
+  <highlighted_element>tr</highlighted_element>
+  <language>TEXT</language>
+  <offset>13</offset>
+  <length>2</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/账单.txt</file>
+  <line>1323</line>
+  <module>电费查询</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/账单.txt" />
+  <problem_class id="GrazieStyle" severity="STYLE_SUGGESTION" attribute_key="TEXT_STYLE_SUGGESTION">样式</problem_class>
+  <description>Make sure that 'tr' is an abbreviation for a word such as 'translator', 'treasurer' or 'trustee' and not a typing error. Did you mean try?</description>
+  <highlighted_element>tr</highlighted_element>
+  <language>TEXT</language>
+  <offset>11</offset>
+  <length>2</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/账单.txt</file>
+  <line>1385</line>
+  <module>电费查询</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/账单.txt" />
+  <problem_class id="GrazieStyle" severity="STYLE_SUGGESTION" attribute_key="TEXT_STYLE_SUGGESTION">样式</problem_class>
+  <description>数词与名词之间一般应存在量词，可能缺少量词。</description>
+  <highlighted_element>一卡通</highlighted_element>
+  <language>TEXT</language>
+  <offset>39</offset>
+  <length>3</length>
+</problem>
+</problems>

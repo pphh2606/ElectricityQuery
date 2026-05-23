@@ -1,0 +1,240 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/CasAuthApi.kt</file>
+  <line>274</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.network</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.network.CasAuthApi java.lang.String extractRegex(java.lang.String html, java.lang.String pattern)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;pattern&lt;/code&gt; 的值始终为 '&quot;var pwdDefaultEncryptSalt = \&quot;(.+?)\&quot;&quot;'</description>
+  <highlighted_element>pattern</highlighted_element>
+  <language>kotlin</language>
+  <offset>43</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/FeeServiceHallApi.kt</file>
+  <line>326</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.network</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.network.FeeServiceHallApi java.lang.Object fetchOrders(int pageCurrent, int pageSize, java.lang.String projectName, java.lang.String projectId, java.lang.String startDate, java.lang.String endDate, kotlin.coroutines.Continuation&lt;? super kotlin.Result&lt;? extends edu.cqwu.electricity.data.network.OrderPageData&gt;&gt; $completion)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;pageSize&lt;/code&gt; 的值始终为 '10'</description>
+  <highlighted_element>pageSize</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/FeeServiceHallApi.kt</file>
+  <line>328</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.network</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.network.FeeServiceHallApi java.lang.Object fetchOrders(int pageCurrent, int pageSize, java.lang.String projectName, java.lang.String projectId, java.lang.String startDate, java.lang.String endDate, kotlin.coroutines.Continuation&lt;? super kotlin.Result&lt;? extends edu.cqwu.electricity.data.network.OrderPageData&gt;&gt; $completion)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;projectId&lt;/code&gt; 的值始终为 '&quot;&quot;'</description>
+  <highlighted_element>projectId</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/QrCodeApi.kt</file>
+  <line>84</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.network</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.network.QrCodeApi java.lang.String extractInputValueById(java.lang.String html, java.lang.String id)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;id&lt;/code&gt; 的值始终为 '&quot;myText&quot;'</description>
+  <highlighted_element>id</highlighted_element>
+  <language>kotlin</language>
+  <offset>52</offset>
+  <length>2</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/QrLoginApi.kt</file>
+  <line>318</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.network</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.network.QrLoginApi java.lang.String getCookieValueFromStore(edu.cqwu.electricity.data.network.UserCookieStore store, java.lang.String url, java.lang.String name)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;url&lt;/code&gt; 的值始终为 '&quot;https://authserver.cqwu.edu.cn&quot;'</description>
+  <highlighted_element>url</highlighted_element>
+  <language>kotlin</language>
+  <offset>64</offset>
+  <length>3</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/QrLoginApi.kt</file>
+  <line>318</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.network</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.network.QrLoginApi java.lang.String getCookieValueFromStore(edu.cqwu.electricity.data.network.UserCookieStore store, java.lang.String url, java.lang.String name)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;name&lt;/code&gt; 的值始终为 '&quot;CASTGC&quot;'</description>
+  <highlighted_element>name</highlighted_element>
+  <language>kotlin</language>
+  <offset>77</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/repository/ElectricityRepository.kt</file>
+  <line>102</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.repository</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.data.repository.ElectricityRepository java.lang.Object queryBuyList(java.lang.String roomId, java.lang.String userId, java.lang.String beginTime, java.lang.String endTime, kotlin.coroutines.Continuation&lt;? super kotlin.Result&lt;? extends edu.cqwu.electricity.data.model.BuyListResponse&gt;&gt; $completion)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;userId&lt;/code&gt; 的值始终为 '&quot;0&quot;'</description>
+  <highlighted_element>userId</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt</file>
+  <line>221</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.cardcenter</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.cardcenter.CardCenterScreenKt void CardGrid(java.util.List&lt;edu.cqwu.electricity.ui.cardcenter.CardGridItem&gt; items, kotlin.jvm.functions.Function1&lt;? super edu.cqwu.electricity.ui.cardcenter.CardGridItem,kotlin.Unit&gt; onItemClick)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;items&lt;/code&gt; 的值始终为 'CardCenterScreenKt.cardCenterItems'</description>
+  <highlighted_element>items</highlighted_element>
+  <language>kotlin</language>
+  <offset>4</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt</file>
+  <line>770</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.electricity.DashboardScreenKt void BalanceRow(java.lang.String label, double amount, java.lang.String unit)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;unit&lt;/code&gt; 的值始终为 '&quot;元&quot;'</description>
+  <highlighted_element>unit</highlighted_element>
+  <language>kotlin</language>
+  <offset>54</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feedback/LogCapture.kt</file>
+  <line>153</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.feedback</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.feedback.LogCapture boolean waitForSafe(java.lang.Process $this$waitForSafe, long timeoutMs)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;timeoutMs&lt;/code&gt; 的值始终为 'LogCapture.LOG_TIMEOUT_MS'</description>
+  <highlighted_element>timeoutMs</highlighted_element>
+  <language>kotlin</language>
+  <offset>46</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallViewModel.kt</file>
+  <line>106</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.feeservicehall</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.feeservicehall.FeeServiceHallViewModel void loadOrders(boolean isRefresh)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;isRefresh&lt;/code&gt; 的值始终为 'true'</description>
+  <highlighted_element>isRefresh</highlighted_element>
+  <language>kotlin</language>
+  <offset>27</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/login/QrLoginScreen.kt</file>
+  <line>484</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.login</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.login.QrLoginScreenKt android.graphics.Bitmap generateQrCodeBitmap(java.lang.String content, int size)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;size&lt;/code&gt; 的值始终为 '512'</description>
+  <highlighted_element>size</highlighted_element>
+  <language>kotlin</language>
+  <offset>50</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt</file>
+  <line>467</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.recharge.RechargeRecordScreenKt void copyToClipboard(android.content.Context context, java.lang.String text, java.lang.String label, edu.cqwu.electricity.ui.components.SnackbarController snackbar)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;label&lt;/code&gt; 的值始终为 '&quot;查询充值记录&quot;'</description>
+  <highlighted_element>label</highlighted_element>
+  <language>kotlin</language>
+  <offset>60</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt</file>
+  <line>282</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.scan</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.scan.ScanScreenKt int computeInSampleSize(int rawWidth, int rawHeight, int reqWidth, int reqHeight)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;reqWidth&lt;/code&gt; 的值始终为 '1024'</description>
+  <highlighted_element>reqWidth</highlighted_element>
+  <language>kotlin</language>
+  <offset>4</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt</file>
+  <line>283</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.scan</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.scan.ScanScreenKt int computeInSampleSize(int rawWidth, int rawHeight, int reqWidth, int reqHeight)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;reqHeight&lt;/code&gt; 的值始终为 '1024'</description>
+  <highlighted_element>reqHeight</highlighted_element>
+  <language>kotlin</language>
+  <offset>4</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/settings/ConfigScreen.kt</file>
+  <line>91</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.settings</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.settings.ConfigScreenKt void ConfigEntry(androidx.compose.ui.graphics.vector.ImageVector icon, java.lang.String title, java.lang.String subtitle, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onClick)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;title&lt;/code&gt; 的值始终为 '&quot;浏览器标识&quot;'</description>
+  <highlighted_element>title</highlighted_element>
+  <language>kotlin</language>
+  <offset>4</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/settings/ConfigScreen.kt</file>
+  <line>92</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.settings</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.settings.ConfigScreenKt void ConfigEntry(androidx.compose.ui.graphics.vector.ImageVector icon, java.lang.String title, java.lang.String subtitle, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onClick)" />
+  <problem_class id="SameParameterValue" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">方法形参始终具有相同的值</problem_class>
+  <hints />
+  <description>形参 &lt;code&gt;subtitle&lt;/code&gt; 的值始终为 '&quot;设置 User-Agent&quot;'</description>
+  <highlighted_element>subtitle</highlighted_element>
+  <language>kotlin</language>
+  <offset>4</offset>
+  <length>8</length>
+</problem>
+</problems>

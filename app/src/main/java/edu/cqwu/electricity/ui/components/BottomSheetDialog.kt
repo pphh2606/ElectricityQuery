@@ -140,7 +140,7 @@ fun BottomSheetDialog(
                 .fillMaxWidth()
                 .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
                 .navigationBarsPadding()
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = 16.dp)
                 .padding(bottom = 24.dp)
                 .then(if (fullscreen) Modifier.verticalScroll(rememberScrollState()) else Modifier),
             verticalArrangement = Arrangement.spacedBy(4.dp)

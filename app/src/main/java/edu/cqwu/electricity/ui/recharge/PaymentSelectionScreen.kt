@@ -334,14 +334,13 @@ private fun PaymentWebViewOverlay(
     onPaymentComplete: () -> Unit,
     onShowToast: (String, ToastUtils.Type) -> Unit
 ) {
-    val context = LocalContext.current
+    LocalContext.current
 
     // 状态
     var phase by remember { mutableStateOf(OverlayPhase.LOADING) }
     var statusText by remember { mutableStateOf("正在初始化支付...") }
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
     val engineRef = remember { mutableStateOf<PaymentWebViewEngine?>(null) }
-    var pendingReturnUrl by remember { mutableStateOf("") }
     var isNavigatingToReturnUrl by remember { mutableStateOf(false) }
     var paymentSuccessDetected by remember { mutableStateOf(false) }
     var elapsedSeconds by remember { mutableStateOf(0) }

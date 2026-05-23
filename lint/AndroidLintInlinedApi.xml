@@ -1,0 +1,16 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeDetailScreen.kt</file>
+  <line>135</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.notice</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeDetailScreen.kt" />
+  <problem_class id="AndroidLintInlinedApi" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Using inlined constants on older versions</problem_class>
+  <hints />
+  <description>&lt;html&gt;Field requires API level 24 (current min is 23): &lt;code&gt;android.text.Html#FROM_HTML_MODE_LEGACY&lt;/code&gt;&lt;/html&gt;</description>
+  <highlighted_element>Html.FROM_HTML_MODE_LEGACY</highlighted_element>
+  <language>kotlin</language>
+  <offset>68</offset>
+  <length>26</length>
+</problem>
+</problems>

@@ -1,0 +1,28 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/theme/Theme.kt</file>
+  <line>124</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.theme</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.theme.ThemeKt void 电费查询Theme(edu.cqwu.electricity.data.local.NightMode nightMode, edu.cqwu.electricity.data.local.ThemeColorSource colorSource, boolean dynamicColor, androidx.compose.runtime.internal.ComposableFunction0&lt;kotlin.Unit&gt; content)" />
+  <problem_class id="NonAsciiCharacters" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">非 ASCII 字符</problem_class>
+  <description>ASCII 单词中的非 ASCII 符号</description>
+  <highlighted_element>电费查询</highlighted_element>
+  <language>kotlin</language>
+  <offset>4</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/theme/Theme.kt</file>
+  <line>124</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.theme</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.theme.ThemeKt void 电费查询Theme(edu.cqwu.electricity.data.local.NightMode nightMode, edu.cqwu.electricity.data.local.ThemeColorSource colorSource, boolean dynamicColor, androidx.compose.runtime.internal.ComposableFunction0&lt;kotlin.Unit&gt; content)" />
+  <problem_class id="NonAsciiCharacters" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">非 ASCII 字符</problem_class>
+  <description>非 ASCII 字符</description>
+  <highlighted_element>电费查询</highlighted_element>
+  <language>kotlin</language>
+  <offset>4</offset>
+  <length>4</length>
+</problem>
+</problems>

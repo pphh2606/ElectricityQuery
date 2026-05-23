@@ -73,9 +73,10 @@ fun QrCodeSettingsScreen(
     }
     // 深色模式下 MD3 primary 偏浅（为深色背景设计），在白色背景上需加深
     val effectivePrimaryColor = if (isDarkTheme && qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE) {
-        val c = primaryColor
         val darkenFactor = 0.45f
-        Color(c.red * darkenFactor, c.green * darkenFactor, c.blue * darkenFactor, c.alpha)
+        Color(
+            primaryColor.red * darkenFactor,
+            primaryColor.green * darkenFactor, primaryColor.blue * darkenFactor, primaryColor.alpha)
     } else {
         primaryColor
     }

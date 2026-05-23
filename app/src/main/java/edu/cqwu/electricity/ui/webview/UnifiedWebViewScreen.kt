@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.ui.webview
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -10,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
-import android.webkit.DownloadListener
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -46,8 +44,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import edu.cqwu.electricity.ui.theme.LocalTopBarState
-import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -62,6 +58,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.ui.theme.LocalTopBarState
+import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
 import edu.cqwu.electricity.util.WebViewUrlUtil
 import java.io.ByteArrayInputStream

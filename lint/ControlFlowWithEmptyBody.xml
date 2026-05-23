@@ -1,0 +1,15 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/components/OpenUrlDialog.kt</file>
+  <line>156</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.components</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.components.OpenUrlDialogKt void OpenUrlDialog(kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onDismiss, kotlin.jvm.functions.Function2&lt;? super java.lang.String,? super java.lang.Boolean,kotlin.Unit&gt; onConfirm)" />
+  <problem_class id="ControlFlowWithEmptyBody" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">带空体的控制流</problem_class>
+  <description>'else' 具有空体</description>
+  <highlighted_element>else</highlighted_element>
+  <language>kotlin</language>
+  <offset>22</offset>
+  <length>4</length>
+</problem>
+</problems>

@@ -214,7 +214,6 @@ fun PersonalizationScreen(
 
     if (showNightModeDialog) {
         NightModeSelectionDialog(
-            current = currentNightMode,
             onSelect = { mode -> onNightModeChange(mode); showNightModeDialog = false },
             onDismiss = { showNightModeDialog = false },
         )
@@ -334,7 +333,7 @@ private fun ThemeColorRow(icon: ImageVector, title: String, subtitle: String, se
 }
 
 @Composable
-private fun NightModeSelectionDialog(current: NightMode, onSelect: (NightMode) -> Unit, onDismiss: () -> Unit) {
+private fun NightModeSelectionDialog(onSelect: (NightMode) -> Unit, onDismiss: () -> Unit) {
     BottomSheetDialog(
         onDismissRequest = onDismiss,
         title = "夜间模式"

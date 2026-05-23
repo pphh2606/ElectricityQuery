@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.data.network
 
-import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Dns
@@ -76,7 +75,7 @@ object SharedHttpClient {
             .build()
     }
 
-    fun init(context: Context) {
+    fun init() {
         CookieStore.init()
     }
 

@@ -1,0 +1,324 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt</file>
+  <line>435</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.model</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/model/Models.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, amount)</highlighted_element>
+  <language>kotlin</language>
+  <offset>21</offset>
+  <length>29</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/ElectricityApi.kt</file>
+  <line>176</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.data.network</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/data/network/ElectricityApi.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, amount)</highlighted_element>
+  <language>kotlin</language>
+  <offset>28</offset>
+  <length>29</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt</file>
+  <line>447</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, balance.remainEletricCapacity)</highlighted_element>
+  <language>kotlin</language>
+  <offset>31</offset>
+  <length>52</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt</file>
+  <line>782</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, amount)</highlighted_element>
+  <language>kotlin</language>
+  <offset>22</offset>
+  <length>29</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt</file>
+  <line>811</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, balance.remainEletricCapacity)</highlighted_element>
+  <language>kotlin</language>
+  <offset>33</offset>
+  <length>52</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt</file>
+  <line>814</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, balance.userBalance)</highlighted_element>
+  <language>kotlin</language>
+  <offset>33</offset>
+  <length>42</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt</file>
+  <line>815</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, balance.subsidyBalance)</highlighted_element>
+  <language>kotlin</language>
+  <offset>33</offset>
+  <length>45</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt</file>
+  <line>816</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, balance.baseBalance)</highlighted_element>
+  <language>kotlin</language>
+  <offset>33</offset>
+  <length>42</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>453</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, record.consumeTotal ?: 0.0)</highlighted_element>
+  <language>kotlin</language>
+  <offset>35</offset>
+  <length>49</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>457</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, record.costTotal ?: 0.0)</highlighted_element>
+  <language>kotlin</language>
+  <offset>34</offset>
+  <length>46</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>488</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, record.dataTotal ?: 0.0)</highlighted_element>
+  <language>kotlin</language>
+  <offset>31</offset>
+  <length>46</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>539</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.3f&quot;, item.display)</highlighted_element>
+  <language>kotlin</language>
+  <offset>30</offset>
+  <length>35</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>578</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%-20s %-10.2f %-10.2f&quot;, record.costTime ?: &quot;未知&quot;, ...</highlighted_element>
+  <language>kotlin</language>
+  <offset>24</offset>
+  <length>200</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>591</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%-20s %-10.2f&quot;, record.dataTime ?: &quot;未知&quot;, ...</highlighted_element>
+  <language>kotlin</language>
+  <offset>24</offset>
+  <length>136</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>626</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot; %s: %.3f A&quot;, item.name, item.display)</highlighted_element>
+  <language>kotlin</language>
+  <offset>23</offset>
+  <length>54</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt</file>
+  <line>635</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot; %s: %.3f V&quot;, item.name, item.display)</highlighted_element>
+  <language>kotlin</language>
+  <offset>23</offset>
+  <length>54</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallOrderTab.kt</file>
+  <line>214</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.feeservicehall</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallOrderTab.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, order.amountYuan)</highlighted_element>
+  <language>kotlin</language>
+  <offset>21</offset>
+  <length>39</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/hall/HallScreen.kt</file>
+  <line>408</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.hall</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/hall/HallScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.1fk&quot;, value)</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>29</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt</file>
+  <line>317</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, total)</highlighted_element>
+  <language>kotlin</language>
+  <offset>51</offset>
+  <length>28</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt</file>
+  <line>422</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, record.buyTotal)</highlighted_element>
+  <language>kotlin</language>
+  <offset>27</offset>
+  <length>38</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt</file>
+  <line>449</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, total)</highlighted_element>
+  <language>kotlin</language>
+  <offset>30</offset>
+  <length>28</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt</file>
+  <line>455</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, record.buyTotal)</highlighted_element>
+  <language>kotlin</language>
+  <offset>34</offset>
+  <length>38</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeScreen.kt</file>
+  <line>383</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeScreen.kt" />
+  <problem_class id="AndroidLintDefaultLocale" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Implied default locale in case conversion</problem_class>
+  <hints />
+  <description>&lt;html&gt;Implicitly using the default locale is a common source of bugs: Use &lt;code&gt;String.format(Locale, ...)&lt;/code&gt; instead&lt;/html&gt;</description>
+  <highlighted_element>String.format(&quot;%.2f&quot;, it.userBalance)</highlighted_element>
+  <language>kotlin</language>
+  <offset>40</offset>
+  <length>37</length>
+</problem>
+</problems>

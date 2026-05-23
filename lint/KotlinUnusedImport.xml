@@ -1,0 +1,41 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallOrderTab.kt</file>
+  <line>49</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.feeservicehall</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallOrderTab.kt" />
+  <problem_class id="KotlinUnusedImport" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的 import 指令</problem_class>
+  <description>未使用的 import 指令</description>
+  <highlighted_element>import edu.cqwu.electricity.ui.theme.toTopAppBarColors</highlighted_element>
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>54</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/webview/UnifiedWebViewScreen.kt</file>
+  <line>4</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.webview</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/webview/UnifiedWebViewScreen.kt" />
+  <problem_class id="KotlinUnusedImport" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的 import 指令</problem_class>
+  <description>未使用的 import 指令</description>
+  <highlighted_element>import android.app.Activity</highlighted_element>
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>27</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/webview/UnifiedWebViewScreen.kt</file>
+  <line>13</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.webview</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/webview/UnifiedWebViewScreen.kt" />
+  <problem_class id="KotlinUnusedImport" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的 import 指令</problem_class>
+  <description>未使用的 import 指令</description>
+  <highlighted_element>import android.webkit.DownloadListener</highlighted_element>
+  <language>kotlin</language>
+  <offset>0</offset>
+  <length>38</length>
+</problem>
+</problems>

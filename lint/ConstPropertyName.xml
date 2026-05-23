@@ -1,0 +1,15 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/util/WebViewUrlUtil.kt</file>
+  <line>197</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.util</package>
+  <entry_point TYPE="field" FQNAME="edu.cqwu.electricity.util.WebViewUrlUtil tag" />
+  <problem_class id="ConstPropertyName" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">const 属性命名约定</problem_class>
+  <description>const 属性 名称 &lt;code&gt;tag&lt;/code&gt; 不应包含小写字母 #loc</description>
+  <highlighted_element>tag</highlighted_element>
+  <language>kotlin</language>
+  <offset>22</offset>
+  <length>3</length>
+</problem>
+</problems>

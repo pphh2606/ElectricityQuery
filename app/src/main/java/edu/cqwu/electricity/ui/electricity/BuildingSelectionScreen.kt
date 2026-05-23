@@ -70,7 +70,7 @@ fun BuildingSelectionScreen(
     val context = LocalContext.current
 
     // 获取当前登录学号
-    val loggedInStudentId = remember {
+    remember {
         AccountManager.getActiveUser()
             ?: AccountStore(context).getAllAccountNames().firstOrNull()
     }

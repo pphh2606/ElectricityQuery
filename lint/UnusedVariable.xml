@@ -1,0 +1,80 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/cardcenter/BillViewModel.kt</file>
+  <line>273</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.cardcenter</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.cardcenter.BillViewModel void launchHtmlLoad()" />
+  <problem_class id="UnusedVariable" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的变量</problem_class>
+  <description>未使用的变量</description>
+  <highlighted_element>currentBillInfo</highlighted_element>
+  <language>kotlin</language>
+  <offset>24</offset>
+  <length>15</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/components/LineChartCard.kt</file>
+  <line>167</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.components</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.components.LineChartCardKt void ElectricityLineChartCard(java.util.List&lt;java.lang.String&gt; xLabels, java.util.List&lt;edu.cqwu.electricity.ui.components.LineData&gt; lines, androidx.compose.ui.Modifier modifier)" />
+  <problem_class id="UnusedVariable" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的变量</problem_class>
+  <description>未使用的变量</description>
+  <highlighted_element>ratio</highlighted_element>
+  <language>kotlin</language>
+  <offset>24</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/electricity/BuildingSelectionScreen.kt</file>
+  <line>73</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.electricity</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.electricity.BuildingSelectionScreenKt void BuildingSelectionScreen(edu.cqwu.electricity.ui.electricity.ElectricityViewModel viewModel, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onBack, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onNavigateToAccountSelection, boolean showTopBar)" />
+  <problem_class id="UnusedVariable" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的变量</problem_class>
+  <description>未使用的变量</description>
+  <highlighted_element>loggedInStudentId</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>17</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/PaymentSelectionScreen.kt</file>
+  <line>337</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.recharge.PaymentSelectionScreenKt void PaymentWebViewOverlay(boolean show, java.lang.String payUrl, edu.cqwu.electricity.data.model.PaymentMethod selectedMethod, edu.cqwu.electricity.ui.recharge.RechargeViewModel viewModel, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onClose, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onPaymentComplete, kotlin.jvm.functions.Function2&lt;? super java.lang.String,? super edu.cqwu.electricity.util.ToastUtils.Type,kotlin.Unit&gt; onShowToast)" />
+  <problem_class id="UnusedVariable" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的变量</problem_class>
+  <description>未使用的变量</description>
+  <highlighted_element>context</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/PaymentSelectionScreen.kt</file>
+  <line>344</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.recharge.PaymentSelectionScreenKt void PaymentWebViewOverlay(boolean show, java.lang.String payUrl, edu.cqwu.electricity.data.model.PaymentMethod selectedMethod, edu.cqwu.electricity.ui.recharge.RechargeViewModel viewModel, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onClose, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onPaymentComplete, kotlin.jvm.functions.Function2&lt;? super java.lang.String,? super edu.cqwu.electricity.util.ToastUtils.Type,kotlin.Unit&gt; onShowToast)" />
+  <problem_class id="UnusedVariable" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的变量</problem_class>
+  <description>未使用的变量</description>
+  <highlighted_element>pendingReturnUrl</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>16</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/settings/UserAgentEditScreen.kt</file>
+  <line>64</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.settings</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.settings.UserAgentEditScreenKt void UserAgentEditScreen(java.lang.String entryId, kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt; onBack)" />
+  <problem_class id="UnusedVariable" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">未使用的变量</problem_class>
+  <description>未使用的变量</description>
+  <highlighted_element>name</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>4</length>
+</problem>
+</problems>

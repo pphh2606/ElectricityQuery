@@ -117,11 +117,10 @@ fun ElectricityLineChartCard(
 
                 val drawLeft = padLeft
                 val drawRight = size.width - padRight
-                val drawTop = padTop
                 val drawBottom = size.height - padBottom
 
                 val drawWidth = drawRight - drawLeft
-                val drawHeight = drawBottom - drawTop
+                val drawHeight = drawBottom - padTop
 
                 if (drawWidth <= 0 || drawHeight <= 0) return@Canvas
 
@@ -164,7 +163,7 @@ fun ElectricityLineChartCard(
                 // ── 绘制水平网格线（5 条） ──
                 val gridLines = 4
                 for (i in 0..gridLines) {
-                    val ratio = i.toFloat() / gridLines.toFloat()
+                    i.toFloat() / gridLines.toFloat()
                     val yValue = yMin + (yMax - yMin) * (gridLines - i).toDouble() / gridLines.toDouble()
                     val y = yToPixel(yValue)
 
@@ -219,7 +218,7 @@ fun ElectricityLineChartCard(
                 // ── 绘制 Y 轴 和 X 轴 ──
                 drawLine(
                     color = onSurface.copy(alpha = 0.4f),
-                    start = Offset(drawLeft, drawTop),
+                    start = Offset(drawLeft, padTop),
                     end = Offset(drawLeft, drawBottom),
                     strokeWidth = 2f
                 )

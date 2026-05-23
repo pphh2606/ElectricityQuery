@@ -1,0 +1,15 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt</file>
+  <line>109</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.login</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.login.LoginViewModel" />
+  <problem_class id="NestedLambdaShadowedImplicitParameter" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">嵌套 lambda 具有隐藏的隐式形参</problem_class>
+  <description>封闭 lambda 的隐式形参 'it' 已被隐藏</description>
+  <highlighted_element>it</highlighted_element>
+  <language>kotlin</language>
+  <offset>54</offset>
+  <length>2</length>
+</problem>
+</problems>

@@ -525,7 +525,7 @@ fun ScanScreen(
         },
         // Scaffold 不应用内边距，实现全屏预览
         modifier = Modifier.fillMaxSize(),
-    ) { innerPadding ->
+    ) { _ ->
         // ★ 外层 Box 全屏，不应用 padding，预览铺满整个画面
         Box(modifier = Modifier.fillMaxSize()) {
             when (permissionState) {

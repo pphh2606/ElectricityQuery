@@ -5,12 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -41,12 +44,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -54,9 +58,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import edu.cqwu.electricity.data.network.FeeItem
 import edu.cqwu.electricity.data.network.FeeServiceHallApi
+import edu.cqwu.electricity.data.network.OrderRecord
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import kotlinx.coroutines.launch
@@ -83,8 +87,19 @@ fun FeeServiceHallScreen(
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    var selectedOrder by remember { mutableStateOf<edu.cqwu.electricity.data.network.OrderRecord?>(null) }
 
     LaunchedEffect(Unit) { viewModel.loadIfNeeded() }
+
+    // 订单详情底部弹窗
+    selectedOrder?.let { order ->
+        BottomSheetDialog(
+            onDismissRequest = { selectedOrder = null },
+            fullscreen = true,
+        ) {
+            OrderDetailContent(order = order)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -148,7 +163,7 @@ fun FeeServiceHallScreen(
                     uiState = uiState,
                     onRefresh = { viewModel.refreshOrders() },
                     onLoadMore = { viewModel.loadMoreOrders() },
-                    onNavigateToWebView = onNavigateToWebView,
+                    onNavigateToOrderDetail = { order -> selectedOrder = order },
                     filterProjectName = uiState.filterProjectName,
                     filterStartDate = uiState.filterStartDate,
                     filterEndDate = uiState.filterEndDate,
@@ -204,7 +219,10 @@ private fun FeeServiceHallHomeTab(
                 }
             }
             else -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                ) {
                     uiState.categories.forEach { category ->
                         val items = category.children?.filter { it.type == "2" } ?: emptyList()
                         if (items.isNotEmpty()) {
@@ -234,14 +252,14 @@ private fun CategoryHeader(name: String) {
     Text(
         text = name, style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
     )
 }
 
 @Composable
 private fun FeeProjectItem(item: FeeItem, onClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 10.dp),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FeeProjectIcon(imgUrl = item.imgUrl, contentDescription = item.name)
@@ -255,17 +273,13 @@ private fun FeeProjectItem(item: FeeItem, onClick: () -> Unit) {
 
 @Composable
 private fun FeeProjectIcon(imgUrl: String?, contentDescription: String?, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
     Box(
         modifier = modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
         if (imgUrl != null) {
-            val imageRequest = remember(imgUrl) {
-                ImageRequest.Builder(context).data(imgUrl).size(128).crossfade(true).build()
-            }
             AsyncImage(
-                model = imageRequest, contentDescription = contentDescription,
+                model = imgUrl, contentDescription = contentDescription,
                 modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Fit,
             )

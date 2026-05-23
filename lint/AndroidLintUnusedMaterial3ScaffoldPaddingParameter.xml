@@ -1,0 +1,16 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt</file>
+  <line>528</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.scan</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt" />
+  <problem_class id="AndroidLintUnusedMaterial3ScaffoldPaddingParameter" severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Scaffold content should use the padding provided as a lambda parameter</problem_class>
+  <hints />
+  <description>&lt;html&gt;Content padding parameter innerPadding is not used&lt;/html&gt;</description>
+  <highlighted_element>innerPadding</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>12</length>
+</problem>
+</problems>

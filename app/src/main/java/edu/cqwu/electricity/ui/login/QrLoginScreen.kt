@@ -72,7 +72,7 @@ import kotlinx.coroutines.withContext
  */
 private sealed class QrLoginUiState {
     data object Initializing : QrLoginUiState()        // 初始化中（由 PullToRefreshBox 指示器替代加载动画）
-    data class Ready(val uuid: String, val lt: String, val execution: String) : QrLoginUiState()  // 已获取二维码
+    data class Ready(val lt: String, val execution: String) : QrLoginUiState()  // 已获取二维码
     data object Scanned : QrLoginUiState()             // 已扫码，待确认
     data object Confirmed : QrLoginUiState()           // 已确认，正在提交
     data class Error(val message: String) : QrLoginUiState()  // 错误
@@ -118,8 +118,9 @@ fun QrLoginScreen(
         QrCodeColorMode.MONOCHROME -> Color.Black
     }
     val qrEffectivePrimaryColor = if (isDarkTheme && qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE) {
-        val c = qrPrimaryColor
-        Color(c.red * 0.45f, c.green * 0.45f, c.blue * 0.45f, c.alpha)
+        Color(
+            qrPrimaryColor.red * 0.45f, qrPrimaryColor.green * 0.45f,
+            qrPrimaryColor.blue * 0.45f, qrPrimaryColor.alpha)
     } else {
         qrPrimaryColor
     }
@@ -186,7 +187,7 @@ fun QrLoginScreen(
             }
             qrCodeDecodedContent = decodeResult.getOrThrow()
 
-            uiState = QrLoginUiState.Ready(uuid = uuid, lt = pageData.lt, execution = pageData.execution)
+            uiState = QrLoginUiState.Ready(lt = pageData.lt, execution = pageData.execution)
             isRefreshing = false
 
             // Step 3: 轮询扫码状态（与 uiState 解耦，始终运行直到 break）

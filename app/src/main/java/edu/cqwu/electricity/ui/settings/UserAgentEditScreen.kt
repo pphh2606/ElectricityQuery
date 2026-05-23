@@ -61,7 +61,6 @@ fun UserAgentEditScreen(
         if (!isNew) UserAgentProvider.getEntryById(entryId) else null
     }
 
-    var name by remember { mutableStateOf(existingEntry?.name ?: "") }
     var userAgent by remember { mutableStateOf(existingEntry?.userAgent ?: "") }
     var note by remember { mutableStateOf(existingEntry?.note ?: "") }
     var showDeleteDialog by remember { mutableStateOf(false) }

@@ -19,10 +19,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,21 +34,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import edu.cqwu.electricity.data.network.FeeServiceHallApi
 import edu.cqwu.electricity.data.network.OrderRecord
-import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 
 /**
  * 订单 Tab 内容
@@ -58,7 +59,7 @@ internal fun FeeServiceHallOrderTab(
     uiState: FeeServiceHallUiState,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
-    onNavigateToWebView: (url: String, title: String) -> Unit,
+    onNavigateToOrderDetail: (OrderRecord) -> Unit,
     filterProjectName: String,
     filterStartDate: String,
     filterEndDate: String,
@@ -114,6 +115,20 @@ internal fun FeeServiceHallOrderTab(
                     }
                 }
                 else -> {
+                    val listState = rememberLazyListState()
+                    val shouldLoadMore by remember {
+                        derivedStateOf {
+                            val layoutInfo = listState.layoutInfo
+                            val totalItems = layoutInfo.totalItemsCount
+                            val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            totalItems > 0 && lastVisibleIndex >= totalItems - 3
+                                && uiState.orderHasMore && !uiState.isLoadingMoreOrders
+                        }
+                    }
+                    LaunchedEffect(shouldLoadMore) {
+                        if (shouldLoadMore) onLoadMore()
+                    }
+
                     Column(Modifier.fillMaxSize()) {
                         OrderStatsRow(
                             loadedCount = uiState.orders.size,
@@ -121,16 +136,14 @@ internal fun FeeServiceHallOrderTab(
                             totalPages = uiState.orderTotalPages,
                         )
                         LazyColumn(
+                            state = listState,
                             modifier = Modifier.fillMaxSize().weight(1f),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                         ) {
                             items(uiState.orders, key = { it.orderNo }) { order ->
                                 OrderListItem(
                                     order = order,
-                                    onClick = {
-                                        val url = FeeServiceHallApi.buildOrderDetailUrl(order.orderNo)
-                                        onNavigateToWebView(url, "订单详情")
-                                    },
+                                    onClick = { onNavigateToOrderDetail(order) },
                                 )
                                 HorizontalDivider(
                                     color = MaterialTheme.colorScheme.outlineVariant,
@@ -191,7 +204,7 @@ private fun OrderFilterPanel(
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             TextButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text("重置") }
-            TextButton(onClick = onApply, modifier = Modifier.weight(1f)) { Text("应用筛选") }
+            Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text("应用筛选") }
         }
     }
 }
@@ -224,17 +237,13 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val context = LocalContext.current
         Box(
             modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center,
         ) {
             if (order.imgUrl != null) {
-                val imageRequest = remember(order.imgUrl) {
-                    ImageRequest.Builder(context).data(order.imgUrl).size(128).crossfade(true).build()
-                }
                 AsyncImage(
-                    model = imageRequest, contentDescription = null,
+                    model = order.imgUrl, contentDescription = null,
                     modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Fit,
                 )
@@ -260,7 +269,7 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
             }
             Spacer(Modifier.height(2.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("订单号: ${order.orderNo.take(14)}...", style = MaterialTheme.typography.bodySmall,
+                Text("订单号: ${order.orderNo}", style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(8.dp))
@@ -286,7 +295,7 @@ private fun OrderFooterContent(uiState: FeeServiceHallUiState, onLoadMore: () ->
         } else if (uiState.orderHasMore) {
             Text(
                 "上滑加载更多",
-                modifier = Modifier.clickable { if (!uiState.isLoadingMoreOrders) onLoadMore() },
+                modifier = Modifier.clickable(onClick = onLoadMore),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
             )

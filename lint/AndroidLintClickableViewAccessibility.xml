@@ -1,0 +1,16 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt</file>
+  <line>490</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.scan</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt" />
+  <problem_class id="AndroidLintClickableViewAccessibility" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Accessibility in Custom Views</problem_class>
+  <hints />
+  <description>&lt;html&gt;&lt;code&gt;onTouch&lt;/code&gt; lambda should call &lt;code&gt;View#performClick&lt;/code&gt; when a click is detected&lt;/html&gt;</description>
+  <highlighted_element>{ v, event -&gt; if (event.action == MotionEvent.ACTION_DOWN) { val factory...</highlighted_element>
+  <language>kotlin</language>
+  <offset>57</offset>
+  <length>393</length>
+</problem>
+</problems>

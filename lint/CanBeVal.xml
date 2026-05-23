@@ -1,0 +1,15 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt</file>
+  <line>288</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.scan</package>
+  <entry_point TYPE="method" FQNAME="edu.cqwu.electricity.ui.scan.ScanScreenKt int computeInSampleSize(int rawWidth, int rawHeight, int reqWidth, int reqHeight)" />
+  <problem_class id="CanBeVal" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">本地 'var' 从未被修改，且可以声明为 'val'</problem_class>
+  <description>变量从未被修改，因此可以使用 'val' 声明</description>
+  <highlighted_element>var</highlighted_element>
+  <language>kotlin</language>
+  <offset>8</offset>
+  <length>3</length>
+</problem>
+</problems>

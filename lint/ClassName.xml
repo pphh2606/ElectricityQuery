@@ -1,0 +1,67 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt</file>
+  <line>153</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.cardcenter</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.cardcenter.CardAction.ACCOUNT_INFO" />
+  <problem_class id="ClassName" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">类命名约定</problem_class>
+  <description>类 名称 &lt;code&gt;ACCOUNT_INFO&lt;/code&gt; 不应包含下划线 #loc</description>
+  <highlighted_element>ACCOUNT_INFO</highlighted_element>
+  <language>kotlin</language>
+  <offset>16</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt</file>
+  <line>155</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.cardcenter</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.cardcenter.CardAction.QR_CODE_PAY" />
+  <problem_class id="ClassName" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">类命名约定</problem_class>
+  <description>类 名称 &lt;code&gt;QR_CODE_PAY&lt;/code&gt; 不应包含下划线 #loc</description>
+  <highlighted_element>QR_CODE_PAY</highlighted_element>
+  <language>kotlin</language>
+  <offset>16</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt</file>
+  <line>156</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.cardcenter</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.cardcenter.CardAction.QR_CODE_BUS" />
+  <problem_class id="ClassName" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">类命名约定</problem_class>
+  <description>类 名称 &lt;code&gt;QR_CODE_BUS&lt;/code&gt; 不应包含下划线 #loc</description>
+  <highlighted_element>QR_CODE_BUS</highlighted_element>
+  <language>kotlin</language>
+  <offset>16</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt</file>
+  <line>158</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.cardcenter</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.cardcenter.CardAction.CARD_LOST" />
+  <problem_class id="ClassName" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">类命名约定</problem_class>
+  <description>类 名称 &lt;code&gt;CARD_LOST&lt;/code&gt; 不应包含下划线 #loc</description>
+  <highlighted_element>CARD_LOST</highlighted_element>
+  <language>kotlin</language>
+  <offset>16</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt</file>
+  <line>162</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.cardcenter</package>
+  <entry_point TYPE="class" FQNAME="edu.cqwu.electricity.ui.cardcenter.CardAction.WEB_VIEW" />
+  <problem_class id="ClassName" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">类命名约定</problem_class>
+  <description>类 名称 &lt;code&gt;WEB_VIEW&lt;/code&gt; 不应包含下划线 #loc</description>
+  <highlighted_element>WEB_VIEW</highlighted_element>
+  <language>kotlin</language>
+  <offset>15</offset>
+  <length>8</length>
+</problem>
+</problems>

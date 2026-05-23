@@ -1,0 +1,58 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feedback/FeedbackScreen.kt</file>
+  <line>91</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.feedback</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/feedback/FeedbackScreen.kt" />
+  <problem_class id="AndroidLintAutoboxingStateCreation" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">State&lt;T&gt; will autobox values assigned to this state. Use a specialized state type instead.</problem_class>
+  <hints />
+  <description>&lt;html&gt;Prefer &lt;code&gt;mutableIntStateOf&lt;/code&gt; instead of &lt;code&gt;mutableStateOf&lt;/code&gt;&lt;/html&gt;</description>
+  <highlighted_element>mutableStateOf</highlighted_element>
+  <language>kotlin</language>
+  <offset>39</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeViewModel.kt</file>
+  <line>23</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.notice</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeViewModel.kt" />
+  <problem_class id="AndroidLintAutoboxingStateCreation" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">State&lt;T&gt; will autobox values assigned to this state. Use a specialized state type instead.</problem_class>
+  <hints />
+  <description>&lt;html&gt;Prefer &lt;code&gt;mutableIntStateOf&lt;/code&gt; instead of &lt;code&gt;mutableStateOf&lt;/code&gt;&lt;/html&gt;</description>
+  <highlighted_element>mutableStateOf</highlighted_element>
+  <language>kotlin</language>
+  <offset>23</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeViewModel.kt</file>
+  <line>25</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.notice</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeViewModel.kt" />
+  <problem_class id="AndroidLintAutoboxingStateCreation" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">State&lt;T&gt; will autobox values assigned to this state. Use a specialized state type instead.</problem_class>
+  <hints />
+  <description>&lt;html&gt;Prefer &lt;code&gt;mutableIntStateOf&lt;/code&gt; instead of &lt;code&gt;mutableStateOf&lt;/code&gt;&lt;/html&gt;</description>
+  <highlighted_element>mutableStateOf</highlighted_element>
+  <language>kotlin</language>
+  <offset>21</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/PaymentSelectionScreen.kt</file>
+  <line>347</line>
+  <module>电费查询.app.main</module>
+  <package>edu.cqwu.electricity.ui.recharge</package>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/app/src/main/java/edu/cqwu/electricity/ui/recharge/PaymentSelectionScreen.kt" />
+  <problem_class id="AndroidLintAutoboxingStateCreation" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">State&lt;T&gt; will autobox values assigned to this state. Use a specialized state type instead.</problem_class>
+  <hints />
+  <description>&lt;html&gt;Prefer &lt;code&gt;mutableIntStateOf&lt;/code&gt; instead of &lt;code&gt;mutableStateOf&lt;/code&gt;&lt;/html&gt;</description>
+  <highlighted_element>mutableStateOf</highlighted_element>
+  <language>kotlin</language>
+  <offset>37</offset>
+  <length>14</length>
+</problem>
+</problems>
