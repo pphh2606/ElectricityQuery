@@ -400,6 +400,9 @@ fun AppNavGraph(
                 initialTitle = title.ifBlank { "加载中..." },
                 onClose = { navController.popBackStack() },
                 onNavigateToLogin = { skipNextCasRedirect = false; navController.navigate(Routes.LOGIN) },
+                onNavigateToWebView = { newUrl, newTitle ->
+                    navController.navigate(Routes.unifiedWebViewRoute(newUrl, newTitle))
+                },
                 skipNextCasRedirect = skipNextCasRedirect,
                 onSkipConsumed = { skipNextCasRedirect = false },
             )

@@ -461,7 +461,7 @@ private fun UsageRecordCard(record: UsageRecord) {
             }
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -490,7 +490,7 @@ private fun HourDataCard(record: HourDataRecord) {
             )
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -510,7 +510,7 @@ private fun MeterGroupCard(groupName: String, items: List<MeterDataItem>, unit: 
             .clip(MaterialTheme.shapes.medium)
             .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
             .background(
-                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
                 shape = MaterialTheme.shapes.medium
             )
             .padding(12.dp)
@@ -674,7 +674,7 @@ private fun SimpleValueCard(label: String, value: String) {
             )
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
         modifier = Modifier
             .fillMaxWidth()

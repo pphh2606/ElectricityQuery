@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -66,128 +65,16 @@ fun CustomWebsiteDialog(
         iconUri = uri
     }
 
-    AlertDialog(
+    BottomSheetDialog(
         onDismissRequest = onDismiss,
-        icon = {
-            Icon(
-                imageVector = Icons.Default.Language,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        },
-        title = { Text("自定义网站") },
-        text = {
-            Column {
-                // ── 图标选择器 ──
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .clickable { imagePickerLauncher.launch("image/*") },
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (iconUri != null) {
-                        val context = LocalContext.current
-                        val request = remember(iconUri) {
-                            ImageRequest.Builder(context)
-                                .data(iconUri)
-                                .size(128)
-                                .crossfade(true)
-                                .build()
-                        }
-                        AsyncImage(
-                            model = request,
-                            contentDescription = "自定义图标",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Fit
-                        )
-                    } else {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "选择图标",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = "选择图标",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // ── 标题输入 ──
-                TextField(
-                    value = titleInput,
-                    onValueChange = {
-                        titleInput = it
-                        titleError = null
-                    },
-                    label = { Text("标题") },
-                    placeholder = { Text("例如：教务系统") },
-                    singleLine = true,
-                    isError = titleError != null,
-                    supportingText = titleError?.let {
-                        { Text(it, color = MaterialTheme.colorScheme.error) }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // ── 网址输入 ──
-                TextField(
-                    value = urlInput,
-                    onValueChange = {
-                        urlInput = it
-                        urlError = null
-                    },
-                    label = { Text("网址") },
-                    placeholder = { Text("example.com") },
-                    singleLine = true,
-                    isError = urlError != null,
-                    supportingText = urlError?.let {
-                        { Text(it, color = MaterialTheme.colorScheme.error) }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Uri,
-                        imeAction = ImeAction.Go
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onGo = {
-                            if (titleInput.isBlank()) {
-                                titleError = "请输入标题"
-                            } else if (isValidUrl(urlInput)) {
-                                onConfirm(titleInput.trim(), normalizeUrl(urlInput), iconUri?.toString())
-                            } else {
-                                urlError = "请输入有效的网址"
-                            }
-                        }
-                    )
-                )
+        title = "自定义网站",
+        icon = Icons.Default.Language,
+        leadingButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
             }
         },
-        confirmButton = {
+        trailingButton = {
             TextButton(
                 onClick = {
                     var hasError = false
@@ -204,13 +91,116 @@ fun CustomWebsiteDialog(
             ) {
                 Text("确认")
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("取消")
+        }
+    ) {
+        // ── 图标选择器 ──
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .clickable { imagePickerLauncher.launch("image/*") },
+            contentAlignment = Alignment.Center
+        ) {
+            if (iconUri != null) {
+                val context = LocalContext.current
+                val request = remember(iconUri) {
+                    ImageRequest.Builder(context)
+                        .data(iconUri)
+                        .size(128)
+                        .crossfade(true)
+                        .build()
+                }
+                AsyncImage(
+                    model = request,
+                    contentDescription = "自定义图标",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "选择图标",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "选择图标",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
-    )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── 标题输入 ──
+        TextField(
+            value = titleInput,
+            onValueChange = {
+                titleInput = it
+                titleError = null
+            },
+            label = { Text("标题") },
+            placeholder = { Text("例如：教务系统") },
+            singleLine = true,
+            isError = titleError != null,
+            supportingText = titleError?.let {
+                { Text(it, color = MaterialTheme.colorScheme.error) }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // ── 网址输入 ──
+        TextField(
+            value = urlInput,
+            onValueChange = {
+                urlInput = it
+                urlError = null
+            },
+            label = { Text("网址") },
+            placeholder = { Text("example.com") },
+            singleLine = true,
+            isError = urlError != null,
+            supportingText = urlError?.let {
+                { Text(it, color = MaterialTheme.colorScheme.error) }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Uri,
+                imeAction = ImeAction.Go
+            ),
+            keyboardActions = KeyboardActions(
+                onGo = {
+                    if (titleInput.isBlank()) {
+                        titleError = "请输入标题"
+                    } else if (isValidUrl(urlInput)) {
+                        onConfirm(titleInput.trim(), normalizeUrl(urlInput), iconUri?.toString())
+                    } else {
+                        urlError = "请输入有效的网址"
+                    }
+                }
+            )
+        )
+    }
 }
 
 private fun isValidUrl(url: String): Boolean {

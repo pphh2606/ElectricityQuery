@@ -36,6 +36,58 @@ import java.util.concurrent.TimeUnit
  */
 class ElectricityApi {
 
+    companion object {
+        const val BASE_URL = "https://electricitypay.cqwu.edu.cn"
+        const val BUILDING_API = "$BASE_URL/wechat/wx/wechatNode/getAddrByNode"
+        const val BALANCE_API = "$BASE_URL/wechat/wx/wechatData/getLeftValue"
+        const val SIX_MONTH_API = "$BASE_URL/wechat/wx/wechatData/getSixMonthValue"
+        const val MONTH_DAILY_API = "$BASE_URL/wechat/wx/wechatData/getRoomUsedData"
+        const val CURRENT_DATA_API = "$BASE_URL/wechat/wx/wechatData/getCurrentData"
+        const val RECHARGE_API = "$BASE_URL/wechat/wx/getCQPayOrder"
+        const val ROOM_LIST_API = "$BASE_URL/wechat/wx/findUserRoomList"
+        const val GET_USER_API = "$BASE_URL/wechat/wx/getWechatUserByOpenId"
+        const val BUY_LIST_API = "$BASE_URL/wechat/wx/wechatData/getRoomBuyList"
+        const val PAY_CASHIER_API = "https://pay.cqwu.edu.cn/pay/cashier"
+
+        /** 默认请求头（User-Agent 由拦截器自动注入） */
+        val HEADERS: Map<String, String> = mapOf(
+            "Accept" to "*/*",
+            "sec-ch-ua" to "\"Android WebView\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+            "sec-ch-ua-mobile" to "?1",
+            "sec-ch-ua-platform" to "\"Android\"",
+            "Origin" to "https://electricitypay.cqwu.edu.cn",
+            "Referer" to "https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add"
+        )
+
+        // ==================== EPay 常量 ====================
+        /** EPay 基础 URL（修复 C：统一收敛硬编码 IP） */
+        private const val EPAY_BASE = "http://218.194.176.214:8382"
+        /** EPay 账单查询 URL（HTML 版，支持筛选，速度慢 15-20s） */
+        private const val BILL_QUERY_URL = "$EPAY_BASE/epay/consume/query"
+        /** EPay 账单详情 URL 前缀 */
+        private const val BILL_DETAIL_PREFIX = EPAY_BASE
+        /** EPay 第三方应用基础路径 */
+        private const val EPAY_THIRDAPP = "$EPAY_BASE/epay/thirdapp"
+        /** H5 版账单 JSON API（速度快 ~3s，仅支持分页，不支持筛选） */
+        private const val H5_BILL_API = "$EPAY_BASE/epay/thirdapp/loadbill.json"
+
+        /** HTML 版账单查询专用 Client（超时 30 秒，基于 SharedHttpClient 构建确保 CookieJar 同步） */
+        private val billHtmlClient: OkHttpClient by lazy {
+            SharedHttpClient.client.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+        }
+
+        /**
+         * 获取账单详情的完整 URL。
+         */
+        fun getBillDetailUrl(relativePath: String): String {
+            return "$BILL_DETAIL_PREFIX$relativePath"
+        }
+    }
+
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
@@ -51,7 +103,7 @@ class ElectricityApi {
      */
     suspend fun getAreas(): Result<List<BuildingNode>> {
         return safeApiCall {
-            val url = "${ApiConfig.BUILDING_API}?level=build&nodeid=1&superid="
+            val url = "${BUILDING_API}?level=build&nodeid=1&superid="
             val json = executeGet(url)
             val response = gson.fromJson(json, BuildingResponse::class.java)
             response.buildingObj ?: emptyList()
@@ -64,7 +116,7 @@ class ElectricityApi {
      */
     suspend fun getRooms(floorId: String): Result<List<BuildingNode>> {
         return safeApiCall {
-            val url = "${ApiConfig.BUILDING_API}?level=room&nodeid=1&superid=$floorId"
+            val url = "${BUILDING_API}?level=room&nodeid=1&superid=$floorId"
             val json = executeGet(url)
             val response = gson.fromJson(json, BuildingResponse::class.java)
             response.buildingObj ?: emptyList()
@@ -77,7 +129,7 @@ class ElectricityApi {
      */
     suspend fun queryBalance(roomId: String, userId: String = "0"): Result<BalanceResponse> {
         return safeApiCall {
-            val urlString = "${ApiConfig.BALANCE_API}?roomId=$roomId&userId=$userId&nodeId=1"
+            val urlString = "${BALANCE_API}?roomId=$roomId&userId=$userId&nodeId=1"
             val authHeader = RSAEncrypt.buildAuthorization(urlString)
 
             val json = executeGet(
@@ -94,7 +146,7 @@ class ElectricityApi {
      */
     suspend fun querySixMonthUsage(roomId: String, userId: String = "0"): Result<UsageResponse> {
         return safeApiCall {
-            val urlString = "${ApiConfig.SIX_MONTH_API}?roomId=$roomId&userId=$userId&nodeId=1&costType=0"
+            val urlString = "${SIX_MONTH_API}?roomId=$roomId&userId=$userId&nodeId=1&costType=0"
             val authHeader = RSAEncrypt.buildAuthorization(urlString)
 
             val json = executeGet(
@@ -118,7 +170,7 @@ class ElectricityApi {
             calendar.set(Calendar.DAY_OF_MONTH, 1)
             val beginTime = dateFormat.format(calendar.time)
 
-            val urlString = "${ApiConfig.MONTH_DAILY_API}?roomId=$roomId&userId=$userId&nodeId=1&costType=0&dataType=1&beginTime=$beginTime&endTime=$endTime"
+            val urlString = "${MONTH_DAILY_API}?roomId=$roomId&userId=$userId&nodeId=1&costType=0&dataType=1&beginTime=$beginTime&endTime=$endTime"
             val authHeader = RSAEncrypt.buildAuthorization(urlString)
 
             val json = executeGet(
@@ -138,7 +190,7 @@ class ElectricityApi {
             // 从 roomId 推导 meterId：去掉首字母 'H'
             val effectiveMeterId = meterId ?: if (roomId.startsWith("H")) roomId.substring(1) else roomId
 
-            val urlString = "${ApiConfig.CURRENT_DATA_API}?meterId=$effectiveMeterId&userId=$userId&roomId=$roomId&nodeId=1&meterType=1"
+            val urlString = "${CURRENT_DATA_API}?meterId=$effectiveMeterId&userId=$userId&roomId=$roomId&nodeId=1&meterType=1"
             val authHeader = RSAEncrypt.buildAuthorization(urlString)
 
             val json = executeGet(
@@ -180,14 +232,14 @@ class ElectricityApi {
 
             val requestBody = jsonBody.toRequestBody("application/json; charset=UTF-8".toMediaType())
             val requestBuilder = Request.Builder()
-                .url(ApiConfig.RECHARGE_API)
+                .url(RECHARGE_API)
                 .post(requestBody)
 
             // 添加充值专用 headers（User-Agent 由拦截器自动注入）
             requestBuilder.addHeader("Content-Type", "application/json; charset=UTF-8")
             requestBuilder.addHeader("X-Requested-With", "XMLHttpRequest")
 
-            android.util.Log.d("ElectricityApi", "充值请求 URL: ${ApiConfig.RECHARGE_API}")
+            android.util.Log.d("ElectricityApi", "充值请求 URL: $RECHARGE_API")
             val response = client.newCall(requestBuilder.build()).execute()
             if (!response.isSuccessful) {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
@@ -216,7 +268,7 @@ class ElectricityApi {
      */
     suspend fun queryUseridByStudentId(studentId: String): Result<WechatUserResponse> {
         return safeApiCall {
-            val urlString = "${ApiConfig.GET_USER_API}?openId=$studentId"
+            val urlString = "${GET_USER_API}?openId=$studentId"
             val authHeader = RSAEncrypt.buildAuthorization(urlString)
 
             val json = executeGet(
@@ -234,7 +286,7 @@ class ElectricityApi {
      */
     suspend fun queryUserRoomList(userId: String): Result<List<UserRoomInfo>> {
         return safeApiCall {
-            val urlString = "${ApiConfig.ROOM_LIST_API}?userId=$userId"
+            val urlString = "${ROOM_LIST_API}?userId=$userId"
             val authHeader = RSAEncrypt.buildAuthorization(urlString)
             val json = executeGet(
                 url = urlString,
@@ -259,7 +311,7 @@ class ElectricityApi {
         endTime: String
     ): Result<BuyListResponse> {
         return safeApiCall {
-            val urlString = "${ApiConfig.BUY_LIST_API}?roomId=$roomId&userId=$userId&nodeId=1&beginTime=$beginTime&endTime=$endTime"
+            val urlString = "${BUY_LIST_API}?roomId=$roomId&userId=$userId&nodeId=1&beginTime=$beginTime&endTime=$endTime"
             val authHeader = RSAEncrypt.buildAuthorization(urlString)
 
             val json = executeGet(
@@ -279,7 +331,7 @@ class ElectricityApi {
      */
     suspend fun getOrderStatus(orderId: String): Result<OrderStatusResponse> {
         return safeApiCall {
-            val url = "${ApiConfig.PAY_CASHIER_API}/getOrderById/$orderId"
+            val url = "${PAY_CASHIER_API}/getOrderById/$orderId"
             android.util.Log.d("ElectricityApi", "查询订单状态: $url")
 
             val requestBuilder = Request.Builder()
@@ -289,7 +341,7 @@ class ElectricityApi {
                 .addHeader("X-Requested-With", "XMLHttpRequest")
 
             // 添加其他默认请求头（User-Agent 由拦截器自动注入）
-            ApiConfig.HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
+            HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
 
             val request = requestBuilder.build()
             val response = client.newCall(request).execute()
@@ -484,39 +536,6 @@ class ElectricityApi {
             cardNumber = extractValue("卡号"),
             cardStatus = extractValue("卡状态")
         )
-    }
-
-    // ==================== 账单查询 API ====================
-
-    companion object {
-        /** EPay 基础 URL（修复 C：统一收敛硬编码 IP） */
-        private const val EPAY_BASE = "http://218.194.176.214:8382"
-        /** EPay 账单查询 URL（HTML 版，支持筛选，速度慢 15-20s） */
-        private const val BILL_QUERY_URL = "$EPAY_BASE/epay/consume/query"
-        /** EPay 账单详情 URL 前缀 */
-        private const val BILL_DETAIL_PREFIX = EPAY_BASE
-
-        /** EPay 第三方应用基础路径 */
-        private const val EPAY_THIRDAPP = "$EPAY_BASE/epay/thirdapp"
-
-        /** H5 版账单 JSON API（速度快 ~3s，仅支持分页，不支持筛选） */
-        private const val H5_BILL_API = "$EPAY_BASE/epay/thirdapp/loadbill.json"
-
-        /** HTML 版账单查询专用 Client（超时 30 秒，基于 SharedHttpClient 构建确保 CookieJar 同步） */
-        private val billHtmlClient: OkHttpClient by lazy {
-            SharedHttpClient.client.newBuilder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .build()
-        }
-
-        /**
-         * 获取账单详情的完整 URL。
-         */
-        fun getBillDetailUrl(relativePath: String): String {
-            return "$BILL_DETAIL_PREFIX$relativePath"
-        }
     }
 
     /**
@@ -808,7 +827,7 @@ class ElectricityApi {
     private fun executeGet(url: String, extraHeaders: Map<String, String> = emptyMap()): String {
         val requestBuilder = Request.Builder().url(url).get()
         // 添加其他默认请求头（User-Agent 由拦截器自动注入）
-        ApiConfig.HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
+        HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
         extraHeaders.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
 
         android.util.Log.d("ElectricityApi", "请求 URL: $url")

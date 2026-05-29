@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import edu.cqwu.electricity.data.model.FavoriteAppResponse
 import edu.cqwu.electricity.data.model.HallItem
 import edu.cqwu.electricity.data.model.UserFavoritesResponse
-import edu.cqwu.electricity.data.network.ApiConfig
 import edu.cqwu.electricity.data.network.SessionChecker
 import edu.cqwu.electricity.data.network.SessionExpiredException
 import edu.cqwu.electricity.data.network.SharedHttpClient
@@ -17,17 +16,28 @@ import okhttp3.Request
  * 办事大厅收藏 API 请求封装。
  *
  * 流程（与 [edu.cqwu.electricity.data.network.QrCodeApi] 的 CAS ticket 交换模式一致）：
- * 1. 先 GET [ApiConfig.EHALL_INDEX_URL] 触发 ehall 的 CAS ticket 交换
+ * 1. 先 GET [EHALL_APP_SHOW_URL] 触发 ehall 的 CAS ticket 交换
  *     - ehall 检测到无有效 JSESSIONID → 302 重定向到 CAS
  *     - CAS 检测到现有 CASTGC Cookie → 自动授权 → 回调 ehall
  *     - ehall 下发已认证的 JSESSIONID
- * 2. 再请求 [ApiConfig.FAVORITE_APPS_URL] 获取收藏数据
+ * 2. 再请求 [FAVORITE_APPS_URL] 获取收藏数据
  *
  * 使用 [SharedHttpClient.client]（共享 CookieJar，自动携带登录态 Cookie）。
  *
  * 返回已筛选 [favorite=true] 的 [HallItem] 列表。
  */
 class HallFavoriteApi {
+
+    companion object {
+        /** 办事大厅受保护页面 URL（用于触发 CAS ticket 交换） */
+        const val EHALL_APP_SHOW_URL = "https://ehall.cqwu.edu.cn/appshow"
+        /** 用户收藏应用列表 API */
+        const val FAVORITE_APPS_URL = "https://ehall.cqwu.edu.cn/jsonp/userFavoriteApps.json"
+        /** 收藏单个应用的 API */
+        const val FAVORITE_APP_URL = "https://ehall.cqwu.edu.cn/jsonp/favoriteApp"
+        /** 取消收藏单个应用的 API */
+        const val UNFAVORITE_APP_URL = "https://ehall.cqwu.edu.cn/jsonp/unFaviroteApp"
+    }
 
     private val gson = Gson()
     private val client get() = SharedHttpClient.client
@@ -45,9 +55,9 @@ class HallFavoriteApi {
      * @throws SessionExpiredException 用户未登录或 Cookie 过期
      */
     fun initEhallSession() {
-        Log.d("HallFavoriteApi", "初始化 ehall session: GET ${ApiConfig.EHALL_APP_SHOW_URL}（触发 CAS ticket 交换）")
+        Log.d("HallFavoriteApi", "初始化 ehall session: GET $EHALL_APP_SHOW_URL（触发 CAS ticket 交换）")
         val initRequest = Request.Builder()
-            .url(ApiConfig.EHALL_APP_SHOW_URL)
+            .url(EHALL_APP_SHOW_URL)
             .get()
             .build()
 
@@ -78,7 +88,7 @@ class HallFavoriteApi {
             Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] initEhallSession 通过")
 
             // ═══ 步骤 2：请求收藏 API ═══
-            val url = "${ApiConfig.FAVORITE_APPS_URL}?_=${System.currentTimeMillis()}"
+            val url = "${FAVORITE_APPS_URL}?_=${System.currentTimeMillis()}"
             val request = Request.Builder()
                 .url(url)
                 .get()
@@ -135,7 +145,7 @@ class HallFavoriteApi {
             // 确保 ehall session 有效
             initEhallSession()
 
-            val baseUrl = if (addFavorite) ApiConfig.FAVORITE_APP_URL else ApiConfig.UNFAVORITE_APP_URL
+            val baseUrl = if (addFavorite) FAVORITE_APP_URL else UNFAVORITE_APP_URL
             val urlBuilder = StringBuilder("$baseUrl?appId=$appId&type=0&_=${System.currentTimeMillis()}")
             // 收藏 API 需要 favoriteFolderId 参数
             if (addFavorite) {

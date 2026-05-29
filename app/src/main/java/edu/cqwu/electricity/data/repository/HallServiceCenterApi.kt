@@ -4,7 +4,6 @@ import android.util.Log
 import com.google.gson.Gson
 import edu.cqwu.electricity.data.model.HallItem
 import edu.cqwu.electricity.data.model.ServiceCenterDataResponse
-import edu.cqwu.electricity.data.network.ApiConfig
 import edu.cqwu.electricity.data.network.SessionExpiredException
 import edu.cqwu.electricity.data.network.SharedHttpClient
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +13,7 @@ import okhttp3.Request
 /**
  * 办事大厅服务数据中心 API 请求封装。
  *
- * 请求 [ApiConfig.SERVICE_CENTER_DATA_URL] 获取全部应用列表，
+ * 请求 [SERVICE_CENTER_DATA_URL] 获取全部应用列表，
  * 包含 [HallItem.favorite] 和 [HallItem.favoriteCount] 等信息。
  *
  * 依赖于 [HallFavoriteApi.initEhallSession] 先完成 CAS ticket 交换，
@@ -26,6 +25,11 @@ import okhttp3.Request
  * 调用方必须通过此字段判断是否使用服务端数据，避免未登录时错误覆盖本地数据。
  */
 class HallServiceCenterApi {
+
+    companion object {
+        /** 服务大厅数据中心 API（全部应用列表，含 favorite/favoriteCount 信息） */
+        const val SERVICE_CENTER_DATA_URL = "https://ehall.cqwu.edu.cn/jsonp/serviceCenterData.json"
+    }
 
     private val gson = Gson()
     private val client get() = SharedHttpClient.client
@@ -39,7 +43,7 @@ class HallServiceCenterApi {
      */
     suspend fun fetchServiceData(): Result<List<HallItem>> = withContext(Dispatchers.IO) {
         try {
-            val url = "${ApiConfig.SERVICE_CENTER_DATA_URL}?_=${System.currentTimeMillis()}"
+            val url = "${SERVICE_CENTER_DATA_URL}?_=${System.currentTimeMillis()}"
             val request = Request.Builder()
                 .url(url)
                 .get()

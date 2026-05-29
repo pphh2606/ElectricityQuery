@@ -129,9 +129,8 @@ fun RechargeRecordScreen(
         }
     }
 
-    // 进入页面自动查询充值记录
-    // LaunchedEffect(Unit) 天然只在首次 composition 时执行一次
-    LaunchedEffect(Unit) {
+    // 进入页面自动查询充值记录，切换时间范围或房间时也自动重新查询
+    LaunchedEffect(roomId, recordState.timeRange) {
         viewModel.queryRechargeRecords(roomId)
     }
 
@@ -139,18 +138,6 @@ fun RechargeRecordScreen(
     DisposableEffect(Unit) {
         onDispose {
             viewModel.clearRechargeRecordState()
-        }
-    }
-
-    // 检测房间是否已切换：如果传入的 roomId 与上次查询的房间不同，自动重新查询
-    LaunchedEffect(roomId) {
-        if (roomId.isNotEmpty()
-            && recordState.hasQueried
-            && recordState.roomId.isNotEmpty()
-            && roomId != recordState.roomId
-        ) {
-            viewModel.clearRechargeRecordState()
-            viewModel.queryRechargeRecords(roomId)
         }
     }
 

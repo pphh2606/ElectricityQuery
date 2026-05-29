@@ -28,6 +28,13 @@ enum class QrCodeType {
  */
 class QrCodeApi {
 
+    companion object {
+        /** 支付码页面 URL */
+        const val TARGET_URL = "http://218.194.176.214:8382/epay/thirdconsume/qrcode"
+        /** 乘车码页面 URL */
+        const val BUS_TARGET_URL = "http://218.194.176.214:8382/epay/thirdconsume/busqrcode"
+    }
+
     /**
      * 获取二维码字符串
      * @param type 二维码类型（支付码/乘车码）
@@ -38,8 +45,8 @@ class QrCodeApi {
             val t0 = System.currentTimeMillis()
 
             val url = when (type) {
-                QrCodeType.PAY -> ApiConfig.TARGET_URL  // http://218.194.176.214:8382/epay/thirdconsume/qrcode
-                QrCodeType.BUS -> "http://218.194.176.214:8382/epay/thirdconsume/busqrcode"
+                QrCodeType.PAY -> TARGET_URL
+                QrCodeType.BUS -> BUS_TARGET_URL
             }
 
             Log.d("QrCodeApi", "GET $url")

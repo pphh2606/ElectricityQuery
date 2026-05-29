@@ -103,6 +103,12 @@ object SharedHttpClient {
 
 class CasAuthApi {
 
+    companion object {
+        /** CAS 统一认证登录页 */
+        const val LOGIN_URL = "https://authserver.cqwu.edu.cn/authserver/login"
+    }
+
+
     /**
      * 执行 CAS 登录（共享 CookieManager）。
      * 使用 SharedHttpClient.client（全局 CookieJar，Cookie 由 CookieManager 持久化）。
@@ -147,13 +153,13 @@ class CasAuthApi {
             val t0 = System.currentTimeMillis()
 
             // === 诊断日志：记录开始登录时的 Cookie 状态 ===
-            val preLoginCookie = cookieProvider(ApiConfig.LOGIN_URL) ?: "(null)"
+            val preLoginCookie = cookieProvider(LOGIN_URL) ?: "(null)"
             android.util.Log.d("CasAuthApi", "登录前Cookie状态$tag: $preLoginCookie")
 
             // 步骤 1：直接 GET CAS 登录页
-            android.util.Log.d("CasAuthApi", "步骤1$tag: GET ${ApiConfig.LOGIN_URL}")
+            android.util.Log.d("CasAuthApi", "步骤1$tag: GET $LOGIN_URL")
             val loginPageResp = client.newCall(
-                Request.Builder().url(ApiConfig.LOGIN_URL).get().build()
+                Request.Builder().url(LOGIN_URL).get().build()
             ).execute()
 
             // === 诊断日志：记录 GET 响应详情 ===
@@ -201,11 +207,11 @@ class CasAuthApi {
                 .build()
 
             // === 诊断日志：POST 前记录 ===
-            android.util.Log.d("CasAuthApi", "步骤4$tag: POST ${ApiConfig.LOGIN_URL} (username=$username, lt前4位=${lt.take(4)})")
+            android.util.Log.d("CasAuthApi", "步骤4$tag: POST $LOGIN_URL (username=$username, lt前4位=${lt.take(4)})")
 
             val loginResp = client.newCall(
                 Request.Builder()
-                    .url(ApiConfig.LOGIN_URL)
+                    .url(LOGIN_URL)
                     .post(formBody)
                     .build()
             ).execute()
@@ -219,7 +225,7 @@ class CasAuthApi {
             android.util.Log.d("CasAuthApi", "步骤4耗时$tag: ${t4 - t3}ms, 登录响应 code=${loginResp.code}, finalUrl=$postFinalUrl, bodyLen=$postBodyLen")
 
             // === 诊断日志：POST 后的 Cookie 状态 ===
-            val postLoginCookie = cookieProvider(ApiConfig.LOGIN_URL) ?: "(null)"
+            val postLoginCookie = cookieProvider(LOGIN_URL) ?: "(null)"
             android.util.Log.d("CasAuthApi", "登录后Cookie状态$tag: $postLoginCookie")
 
             // 如果响应体可读，检查是否包含错误提示
@@ -228,7 +234,7 @@ class CasAuthApi {
             }
 
             // 步骤 5：从 Cookie（全局 CookieManager 或 UserCookieStore）中提取 CASTGC
-            val cookieString = cookieProvider(ApiConfig.LOGIN_URL)
+            val cookieString = cookieProvider(LOGIN_URL)
             val castgc = cookieString.split(";")
                 .map { it.trim() }
                 .firstOrNull { it.startsWith("CASTGC=") }
@@ -253,14 +259,14 @@ class CasAuthApi {
             throw e
         } catch (e: java.net.SocketTimeoutException) {
             // === 诊断日志：超时时的 Cookie 状态 ===
-            val timeoutCookie = try { cookieProvider(ApiConfig.LOGIN_URL) ?: "(null)" } catch (ex: Exception) { "(获取失败: ${ex.message})" }
+            val timeoutCookie = try { cookieProvider(LOGIN_URL) ?: "(null)" } catch (ex: Exception) { "(获取失败: ${ex.message})" }
             android.util.Log.e("CasAuthApi", "=== Socket超时诊断 === 登录失败$tag, 超时时刻Cookie状态: $timeoutCookie")
             android.util.Log.e("CasAuthApi", "=== Socket超时诊断 === 异常信息: ${e.message}")
             android.util.Log.e("CasAuthApi", "登录失败$tag", e)
             Result.failure(e)
         } catch (e: Exception) {
             // === 诊断日志：异常时的 Cookie 状态 ===
-            val exceptionCookie = try { cookieProvider(ApiConfig.LOGIN_URL) ?: "(null)" } catch (ex: Exception) { "(获取失败: ${ex.message})" }
+            val exceptionCookie = try { cookieProvider(LOGIN_URL) ?: "(null)" } catch (ex: Exception) { "(获取失败: ${ex.message})" }
             android.util.Log.e("CasAuthApi", "=== 异常诊断 === 登录失败$tag, 异常类型=${e::class.simpleName}, 异常时刻Cookie状态: $exceptionCookie")
             android.util.Log.e("CasAuthApi", "登录失败$tag", e)
             Result.failure(e)

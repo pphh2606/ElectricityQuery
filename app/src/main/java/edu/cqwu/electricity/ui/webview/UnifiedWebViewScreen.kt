@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Refresh
@@ -57,7 +58,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import edu.cqwu.electricity.data.network.WebVpnEncoder
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.ui.components.WebViewErrorOverlay
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
@@ -83,6 +86,7 @@ fun UnifiedWebViewScreen(
     initialTitle: String = "加载中...",
     onClose: () -> Unit,
     onNavigateToLogin: () -> Unit = {},
+    onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
     skipNextCasRedirect: Boolean = false,
     onSkipConsumed: () -> Unit = {}
 ) {
@@ -91,6 +95,14 @@ fun UnifiedWebViewScreen(
 
     // 加载状态
     var isLoading by remember { mutableStateOf(true) }
+
+    // WebView 加载错误状态：null 表示无错误，非 null 表示显示自定义错误叠加层
+    data class WebViewError(
+        val errorCode: Int,
+        val description: String,
+        val isHttpError: Boolean = false
+    )
+    var webErrorState by remember { mutableStateOf<WebViewError?>(null) }
 
     // 跟踪 WebView 历史栈状态，动态控制 BackHandler
     var canGoBack by remember { mutableStateOf(false) }
@@ -271,6 +283,33 @@ fun UnifiedWebViewScreen(
                                     context.startActivity(intent)
                                 }
                             )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        if (WebVpnEncoder.isWebVpnUrl(webViewRef.value?.url ?: ""))
+                                            "切换为外网访问" else "切换为内网访问"
+                                    )
+                                },
+                                leadingIcon = { Icon(Icons.Default.SwapHoriz, contentDescription = null) },
+                                onClick = {
+                                    showMenu = false
+                                    val currentUrl = webViewRef.value?.url ?: return@DropdownMenuItem
+                                    val toggledUrl = try {
+                                        if (WebVpnEncoder.isWebVpnUrl(currentUrl)) {
+                                            WebVpnEncoder.decode(currentUrl)
+                                        } else {
+                                            WebVpnEncoder.transform(currentUrl)
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.e("WebView_DIAG", "URL 切换失败: ${e.message}")
+                                        snackbar.show("URL 切换失败", ToastUtils.Type.ERROR)
+                                        null
+                                    }
+                                    if (toggledUrl != null) {
+                                        onNavigateToWebView(toggledUrl, pageTitle)
+                                    }
+                                }
+                            )
                         }
                     }
                 },
@@ -283,18 +322,11 @@ fun UnifiedWebViewScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        // 网页加载进度条
-        if (progress < 100) {
-            LinearProgressIndicator(
-                progress = { progress / 100f },
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
-        }
+        // WebView 内容区（含进度条和错误叠加层）
+        Box(modifier = Modifier.fillMaxSize()) {
 
-        // WebView（立即渲染，无延迟）
-        AndroidView(
+            // WebView（立即渲染，无延迟）
+            AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
                     // SwipeRefreshLayout 仅作为"壳"保留加载旋转动画
@@ -328,6 +360,7 @@ fun UnifiedWebViewScreen(
                                     super.onPageStarted(view, url, favicon)
                                     Log.d("WebView_DIAG", "onPageStarted: $url")
                                     isLoading = true
+                                    webErrorState = null  // 新页面开始加载时清除错误状态
                                     canGoBack = view?.canGoBack() == true
 
                                     // ═══ campusphere.net 域名检测（仅一次） ═══
@@ -409,12 +442,33 @@ fun UnifiedWebViewScreen(
                                     error: WebResourceError?
                                 ) {
                                     super.onReceivedError(view, request, error)
-                                    // ERR_EMPTY_RESPONSE = -324（Chromium 网络错误码）
-                                    // 此类错误通常因非校园网环境导致服务器拒绝连接
-                                    if (request?.isForMainFrame == true && error?.errorCode == -324) {
-                                        Log.w("WebView_DIAG", ">>> 空响应错误（ERR_EMPTY_RESPONSE），提示用户切换网络")
+                                    if (request?.isForMainFrame == true && webErrorState == null) {
+                                        val code = error?.errorCode ?: -1
+                                        val desc = error?.description?.toString() ?: "未知错误"
+                                        Log.w("WebView_DIAG", ">>> 主框架加载错误: code=$code, desc=$desc")
                                         isLoading = false
-                                        snackbar.show("请使用校园网环境打开", ToastUtils.Type.ERROR)
+                                        webErrorState = WebViewError(
+                                            errorCode = code,
+                                            description = desc
+                                        )
+                                    }
+                                }
+
+                                override fun onReceivedHttpError(
+                                    view: WebView?,
+                                    request: WebResourceRequest?,
+                                    errorResponse: WebResourceResponse?
+                                ) {
+                                    super.onReceivedHttpError(view, request, errorResponse)
+                                    val statusCode = errorResponse?.statusCode ?: 0
+                                    if (request?.isForMainFrame == true && statusCode >= 400 && webErrorState == null) {
+                                        Log.w("WebView_DIAG", ">>> HTTP 错误: statusCode=$statusCode")
+                                        isLoading = false
+                                        webErrorState = WebViewError(
+                                            errorCode = statusCode,
+                                            description = "HTTP $statusCode",
+                                            isHttpError = true
+                                        )
                                     }
                                 }
 
@@ -539,9 +593,59 @@ fun UnifiedWebViewScreen(
                     }
                 }
             )
-    }
-        }
-    }
+
+            // 网页加载进度条（放在 AndroidView 之后，确保 Z 轴在 WebView 上方）
+            if (progress < 100) {
+                LinearProgressIndicator(
+                    progress = { progress / 100f },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+
+            // ═══ 自定义错误叠加层 ═══
+            webErrorState?.let { error ->
+                WebViewErrorOverlay(
+                    errorCode = error.errorCode,
+                    description = error.description,
+                    isHttpError = error.isHttpError,
+                    onRetry = {
+                        webErrorState = null
+                        webViewRef.value?.reload()
+                    },
+                    onToggleVpn = {
+                        webErrorState = null
+                        val currentUrl = webViewRef.value?.url
+                        if (currentUrl != null) {
+                            val toggledUrl = try {
+                                if (WebVpnEncoder.isWebVpnUrl(currentUrl)) {
+                                    WebVpnEncoder.decode(currentUrl)
+                                } else {
+                                    WebVpnEncoder.transform(currentUrl)
+                                }
+                            } catch (e: Exception) {
+                                Log.e("WebView_DIAG", "URL切换失败: ${e.message}")
+                                null
+                            }
+                            if (toggledUrl != null) {
+                                webViewRef.value?.loadUrl(toggledUrl)
+                            }
+                        }
+                    },
+                    onNetworkSettings = {
+                        try {
+                            context.startActivity(Intent(android.provider.Settings.ACTION_WIFI_SETTINGS))
+                        } catch (_: ActivityNotFoundException) {
+                            snackbar.show("无法打开网络设置", ToastUtils.Type.ERROR)
+                        }
+                    }
+                )
+            }
+        } // end Box (WebView 内容区)
+    } // end Column
+        } // end Scaffold
+    } // end outer Box
 }
 
 /**

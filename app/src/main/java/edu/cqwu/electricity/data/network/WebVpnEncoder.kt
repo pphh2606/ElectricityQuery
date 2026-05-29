@@ -67,4 +67,73 @@ object WebVpnEncoder {
         val encrypted = encryptHost(hostWithPort)
         return "$PROXY_BASE/$scheme/webvpn$encrypted$path$query$fragment"
     }
+
+    // ──────────── 反向解码方法 ────────────
+
+    /**
+     * 判断 URL 是否为 WebVPN 代理 URL。
+     *
+     * 匹配规则：以 [PROXY_BASE] 开头。
+     */
+    fun isWebVpnUrl(url: String): Boolean {
+        return url.startsWith(PROXY_BASE)
+    }
+
+    /**
+     * AES-CBC 解密主机名
+     *
+     * @param encryptedHex 加密后的 hex 字符串
+     * @return 解密后的主机名
+     */
+    private fun decryptHost(encryptedHex: String): String {
+        val encryptedBytes = encryptedHex.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        val keySpec = SecretKeySpec(KEY_IV, "AES")
+        val ivSpec = IvParameterSpec(KEY_IV)
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
+        val decrypted = cipher.doFinal(encryptedBytes)
+        return String(decrypted, Charsets.UTF_8)
+    }
+
+    /**
+     * 将 WebVPN 代理 URL 还原为原始外网 URL。
+     *
+     * 解析 WebVPN URL 格式：
+     *   https://clientvpn.cqwu.edu.cn/{scheme}/webvpn{encrypted_hex}{original_path}
+     *
+     * 示例：
+     *   输入: https://clientvpn.cqwu.edu.cn/https/webvpn{encrypted_hex}/some/path?q=1
+     *   输出: https://jwc.cqwu.edu.cn/some/path?q=1
+     *
+     * @param webVpnUrl WebVPN 代理 URL
+     * @return 原始外网 URL
+     * @throws IllegalArgumentException 如果 URL 格式无效或解密失败
+     */
+    fun decode(webVpnUrl: String): String {
+        val trimmed = webVpnUrl.trim()
+        require(isWebVpnUrl(trimmed)) { "不是有效的 WebVPN URL: $trimmed" }
+
+        val uri = URI(trimmed)
+        val path = uri.path ?: throw IllegalArgumentException("URL 缺少路径: $trimmed")
+
+        // 去掉开头的 "/"，按 "/" 分段
+        // segments[0] = scheme (https/http)
+        // segments[1] = webvpn{encrypted_hex}
+        // segments[2] = 原始 path（可选）
+        val segments = path.trimStart('/').split("/", limit = 3)
+        require(segments.size >= 2 && segments[1].startsWith("webvpn")) {
+            "WebVPN URL 路径格式无效: $path"
+        }
+
+        val scheme = segments[0]
+        val encryptedHex = segments[1].removePrefix("webvpn")
+        val originalPath = if (segments.size > 2) "/${segments[2]}" else "/"
+
+        val host = decryptHost(encryptedHex)
+
+        val query = uri.rawQuery?.let { "?$it" } ?: ""
+        val fragment = uri.rawFragment?.let { "#$it" } ?: ""
+
+        return "$scheme://$host$originalPath$query$fragment"
+    }
 }

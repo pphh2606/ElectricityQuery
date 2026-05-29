@@ -15,8 +15,17 @@ object RSAEncrypt {
     private const val TRANSFORMATION = "RSA/ECB/PKCS1Padding"
     private const val ALGORITHM = "RSA"
 
+    private const val RSA_PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsJEc7CIxbt5cPn3umQyO7Eu+ALarLPEE
+vaZUY+adwzTlKeiBPYukjimpfKoqJjcdqg6hffLIKCcKRN9PTFi8Y8324+e6g37jC0ILUlXYdvQM
+I8ftnXjROAioEK/rWClgY4eYFtURo5ytobco8CKwKvnDKrj/u7eExoWXUxvC0VKgz0Q8oKuh7UAM
+BwVAvuBW6g6nIRqpC+pLFvzZegvNdjbwZZ2MekmsG6IdB8GDUc6ut1M14zojIIfI+NRStJ03EgjV
+HqeNpuiR5bv98kgpnedLGfAFnMAxnIz2HKutbi0fWl4VhHqfApQoJZ16zi/R5WwJpxYDpxL/NAiW
+P/S2OQIDAQAB
+-----END PUBLIC KEY-----"""
+
     private val publicKey by lazy {
-        val keyBytes = ApiConfig.RSA_PUBLIC_KEY
+        val keyBytes = RSA_PUBLIC_KEY
             .replace("-----BEGIN PUBLIC KEY-----", "")
             .replace("-----END PUBLIC KEY-----", "")
             .replace("\n", "")
