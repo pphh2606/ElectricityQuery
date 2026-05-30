@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  チャージ                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_title">チャージ</string>
+    <string name="recharge_hint">ヒント</string>
+    <string name="recharge_query">照会</string>
+    <string name="recharge_student_id_label">学籍番号またはユーザーIDを入力</string>
+    <string name="recharge_student_id_placeholder">例：2022010101 または 12345</string>
+    <string name="recharge_my_account">マイアカウント</string>
+    <string name="recharge_switch_account">アカウント切替</string>
+    <string name="recharge_balance">残高（元）</string>
+    <string name="recharge_refresh_balance">残高を更新</string>
+    <string name="recharge_custom_amount_label">カスタム金額（元）</string>
+    <string name="recharge_custom_amount_placeholder">例：0.01</string>
+    <string name="recharge_pay_now">今すぐチャージ</string>
+    <string name="recharge_other_methods">その他のチャージ方法</string>
+    <string name="recharge_important_notes">重要なお知らせ</string>
+    <string name="recharge_note_time">1. チャージ可能時間は 00:05〜23:55 です。それ以外の時間はチャージできません</string>
+    <string name="recharge_note_delay">2. 支払い成功後すぐに反映されない場合は、5分ほどお待ちください</string>
+    <string name="recharge_note_power">3. チャージ完了後、残高があっても通電しない場合は管理者にお問い合わせください</string>
+    <string name="recharge_preset_amount">%1$d元</string>
+    <string name="recharge_hint_item1">1.ユーザー取得に失敗した場合、まず</string>
+    <string name="recharge_hint_item1_link">こちらをクリック</string>
+    <string name="recharge_hint_item1_suffix">してプラットフォームに登録してください。</string>
+    <string name="recharge_hint_item2">2.登録後もユーザー情報取得に失敗する場合は、寮室管理者の学籍番号または寮室で最初にプラットフォームに登録した学籍番号を入力してみてください。</string>
+    <string name="recharge_hint_item3_prefix">3.チャージ記録は学籍番号に対応するユーザーに記録されます。気になる場合は</string>
+    <string name="recharge_hint_item3_suffix">他のチャージ方法を選択してください。</string>
+    <string name="recharge_select_room_title">チャージ先のルームを選択</string>
+    <string name="recharge_select_room_hint">この学籍番号には複数のルームが紐付いています。チャージ先のルームを選択してください：</string>
+    <string name="recharge_other_method_title">チャージ方法を選択</string>
+    <string name="recharge_method_campus">今日のキャンパスチャージ</string>
+    <string name="recharge_method_inapp_h5">アプリ内H5チャージ</string>
+    <string name="recharge_method_browser_h5">ブラウザH5チャージ</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  チャージ記録照会                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_record_title">チャージ記録を照会</string>
+    <string name="recharge_record_time_range">照会期間：</string>
+    <string name="recharge_record_copy">コピー</string>
+    <string name="recharge_record_export">エクスポート</string>
+    <string name="recharge_record_total">合計チャージ：%1$s 元（全 %2$d 件）</string>
+    <string name="recharge_record_no_data">記録が見つかりません</string>
+    <string name="recharge_record_recharger">チャージ者：%1$s</string>
+    <string name="recharge_record_time">チャージ日時：%1$s</string>
+    <string name="recharge_record_amount">チャージ金額：%1$s 元</string>
+    <string name="recharge_record_order_no">注文番号：%1$s</string>
+    <string name="recharge_record_hint_item1">1. 照会内容は参考用です。実際のチャージ数量に基づいてください。</string>
+    <string name="recharge_record_hint_item2_prefix">2. チャージ記録が正確でないと思われる場合は、</string>
+    <string name="recharge_record_hint_item2_link">こちら</string>
+    <string name="recharge_record_hint_item2_suffix">から公式チャージ記録をご確認ください。</string>
+    <string name="recharge_record_export_title">チャージ記録を照会</string>
+    <string name="recharge_time_1month">1ヶ月</string>
+    <string name="recharge_time_3months">3ヶ月</string>
+    <string name="recharge_time_1year">1年</string>
+    <string name="recharge_time_4years">4年</string>
+    <string name="recharge_install_campus_app">先に今日のキャンパスアプリをインストールしてください</string>
+    <string name="recharge_no_room_selected">ルームが選択されていません</string>
+    <string name="recharge_invalid_amount">有効な金額を入力してください</string>
+    <string name="recharge_amount_out_of_range">金額が妥当な範囲を超えています（0〜1000元）</string>
+    <string name="recharge_order_create_failed">注文作成失敗: %1$s</string>
+    <string name="recharge_no_room_bound">このアカウントにはルームが紐付けられていません</string>
+    <string name="recharge_query_failed">照会失敗: %1$s</string>
+    <string name="recharge_enter_student_id">学籍番号を入力してください</string>
+    <string name="recharge_record_query_failed">チャージ記録の照会に失敗</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  支払い                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="payment_title_for_user">%1$s の電気料金をチャージ</string>
+    <string name="payment_title_default">電気料金をチャージ</string>
+    <string name="payment_creating_order">注文を作成中…</string>
+    <string name="payment_amount_label">チャージ金額</string>
+    <string name="payment_select_method">支払い方法を選択</string>
+    <string name="payment_wechat_desc">おすすめ、クイック決済</string>
+    <string name="payment_alipay_desc">デビットカード・クレジットカード対応</string>
+    <string name="payment_selected">選択済み</string>
+    <string name="payment_confirm">支払い確認</string>
+    <string name="payment_processing">支払い処理中…</string>
+    <string name="payment_order_failed">注文作成失敗</string>
+    <string name="payment_close">支払いを閉じる</string>
+</resources>

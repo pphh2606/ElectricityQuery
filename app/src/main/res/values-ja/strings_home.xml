@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  ホーム                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="home_title">ホーム</string>
+    <string name="home_search_apps">アプリを検索…</string>
+    <string name="home_no_match">一致するアプリが見つかりません</string>
+    <string name="home_search_result">検索結果（全 %1$d 件）</string>
+    <string name="home_my_services">マイサービス</string>
+    <string name="home_custom_website">カスタムWebサイト</string>
+    <string name="home_external_app_title">外部アプリを開く</string>
+    <string name="home_external_app_message">「%1$s」は今日のキャンパス内で開く必要があります。続行しますか？</string>
+    <string name="home_install_campus_app">「%1$s」を使用するには今日のキャンパスアプリをインストールしてください</string>
+    <string name="home_open_failed">開けませんでした: %1$s</string>
+    <string name="home_edit_my_services">マイサービスを編集</string>
+    <string name="home_confirm_exit_edit">確認して編集を終了</string>
+    <string name="home_load_failed">読み込み失敗</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  ホール                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="hall_title">ホール</string>
+    <string name="hall_no_favorites">お気に入りのアプリがありません</string>
+    <string name="hall_tab_all">すべて</string>
+    <string name="hall_tab_favorites">お気に入り</string>
+    <string name="hall_favorited">お気に入り済み</string>
+    <string name="hall_unfavorited">未お気に入り</string>
+</resources>

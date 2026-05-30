@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Tableau de bord électricité                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="dashboard_select_room">Sélectionnez un dortoir :</string>
+    <string name="dashboard_room_info">Info chambre</string>
+    <string name="dashboard_power_info">Info électricité</string>
+    <string name="dashboard_unit_degree">kWh</string>
+    <string name="dashboard_remaining_power">Électricité restante</string>
+    <string name="dashboard_account_balance">Solde du compte</string>
+    <string name="dashboard_online_pay">Paiement en ligne</string>
+    <string name="dashboard_more_features">Plus de fonctionnalités</string>
+    <string name="dashboard_recent_6months">Consommation des 6 derniers mois</string>
+    <string name="dashboard_daily_this_month">Consommation quotidienne du mois</string>
+    <string name="dashboard_24h_detail">Détail des dernières 24h</string>
+    <string name="dashboard_meter_status">État du compteur en temps réel</string>
+    <string name="dashboard_query_recharge_records">Historique de recharge</string>
+    <string name="dashboard_reselect_room">Re-sélectionner la chambre</string>
+    <string name="dashboard_title">Résultat de la consultation</string>
+    <string name="dashboard_select_dorm">Choisir le dortoir</string>
+    <string name="dashboard_cash_balance">Solde en espèces</string>
+    <string name="dashboard_subsidy_balance">Solde subventionné</string>
+    <string name="dashboard_base_balance">Solde de base</string>
+    <string name="dashboard_querying_balance">Consultation du solde…</string>
+    <string name="dashboard_room_name">Nom de la chambre</string>
+    <string name="dashboard_room_id">ID chambre</string>
+    <string name="dashboard_switch_dorm">Changer de dortoir</string>
+    <string name="dashboard_unknown">Inconnu</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Détail                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="detail_empty_record">Aucun historique de consommation</string>
+    <string name="detail_empty_daily">Aucune donnée quotidienne</string>
+    <string name="detail_power_consumption">Conso. : %1$s kWh</string>
+    <string name="detail_cost">Coût : %1$s ¥</string>
+    <string name="detail_total_consumption">Conso. : %1$s kWh</string>
+    <string name="detail_title_6months">Historique 6 mois</string>
+    <string name="detail_title_daily">Conso. quotidienne du mois</string>
+    <string name="detail_title_hourly">Détail 24h</string>
+    <string name="detail_title_meter">État du compteur</string>
+    <string name="detail_chart_usage_kwh">Conso.(kWh)</string>
+    <string name="detail_chart_cost_yuan">Coût(¥)</string>
+    <string name="detail_section_data">Données détaillées</string>
+    <string name="detail_section_meter_status">État du compteur</string>
+    <string name="detail_current">Courant</string>
+    <string name="detail_voltage">Tension</string>
+    <string name="detail_power_cumulative">Puissance actuelle / cumul</string>
+    <string name="detail_power_status">État d\'alimentation</string>
+    <string name="detail_empty_24h">Aucune donnée 24h</string>
+    <string name="detail_empty_meter">Aucune donnée compteur</string>
+    <string name="detail_export_time_header">Heure</string>
+    <string name="detail_export_kwh_header">Conso.(kWh)</string>
+    <string name="detail_export_yuan_header">Coût(¥)</string>
+    <string name="detail_export_current_bracket">【Courant】</string>
+    <string name="detail_export_voltage_bracket">【Tension】</string>
+    <string name="detail_export_power_bracket">【Puissance actuelle / cumul】</string>
+    <string name="detail_export_power_status_bracket">【État d\'alimentation】</string>
+    <string name="detail_export_empty_meter">Aucune donnée compteur</string>
+    <string name="electricity_tab_query">Consulter</string>
+    <string name="electricity_tab_recharge">Recharger</string>
+    <string name="electricity_tab_myroom">Mon compte</string>
+    <string name="electricity_tab_my_dorm">Mon dortoir</string>
+    <string name="building_no_campus">Aucune donnée de campus</string>
+    <string name="building_no_floors">Aucun étage dans ce bâtiment</string>
+    <string name="building_back_to_building">Retour à la sélection du bâtiment</string>
+    <string name="building_click_to_expand">Appuyez pour développer</string>
+    <string name="building_no_rooms">Aucune chambre</string>
+    <string name="building_reload">Recharger</string>
+    <string name="building_no_buildings">Aucun bâtiment sur ce campus</string>
+    <string name="building_rooms_count">%1$d chambres</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Consultation électricité                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="electricity_query_title">Consultation électricité</string>
+    <string name="electricity_recharge">Recharger</string>
+    <string name="electricity_switch_dorm">Changer de dortoir</string>
+    <string name="electricity_myroom_querying">Récupération des infos du dortoir…</string>
+    <string name="electricity_recharge_hint_item2">2. Si vous obtenez toujours une erreur après l\'inscription, essayez de saisir le numéro étudiant de l\'administrateur du dortoir ou du premier inscrit de la chambre.</string>
+    <string name="electricity_recharge_hint_item3">3. L\'historique de recharge est enregistré sous le numéro étudiant correspondant. Si cela vous dérange, veuillez utiliser d\'autres moyens de recharge.</string>
+</resources>

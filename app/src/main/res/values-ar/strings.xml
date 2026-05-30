@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Global                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="app_name">استعلام الكهرباء</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Common UI                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="common_back">رجوع</string>
+    <string name="common_close">إغلاق</string>
+    <string name="common_refresh">تحديث</string>
+    <string name="common_confirm">موافق</string>
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_delete">حذف</string>
+    <string name="common_save">حفظ</string>
+    <string name="common_add">إضافة</string>
+    <string name="common_edit">تعديل</string>
+    <string name="common_retry">إعادة المحاولة</string>
+    <string name="common_loading">جارٍ التحميل…</string>
+    <string name="common_more_options">المزيد من الخيارات</string>
+    <string name="common_unknown_error">خطأ غير معروف</string>
+    <string name="common_pull_to_retry">اسحب للأسفل لإعادة المحاولة</string>
+    <string name="common_no_data">لا توجد بيانات</string>
+    <string name="common_please_retry">يرجى المحاولة لاحقًا</string>
+    <string name="common_swipe_load_more">اسحب للأعلى لتحميل المزيد</string>
+    <string name="common_search">بحث</string>
+    <string name="common_share">مشاركة</string>
+    <string name="common_filter">تصفية</string>
+    <string name="common_settings">الإعدادات</string>
+    <string name="common_remove">إزالة</string>
+    <string name="common_view">عرض</string>
+    <string name="common_open_in_browser">فتح خارجي</string>
+    <string name="common_clear_search">مسح البحث</string>
+    <string name="common_exit_search">الخروج من البحث</string>
+    <string name="common_scan">مسح</string>
+    <string name="common_no_more">— لا يوجد المزيد —</string>
+    <string name="common_delete_account">حذف الحساب</string>
+    <string name="common_select_saved_user">اختيار مستخدم محفوظ</string>
+    <string name="common_send_email">إرسال بريد إلكتروني</string>
+    <string name="common_share_log">مشاركة السجلات</string>
+    <string name="common_web_version">نسخة الويب</string>
+    <string name="common_add_to_my_services">إضافة إلى خدماتي</string>
+    <string name="common_copy">نسخ</string>
+    <string name="common_export">تصدير</string>
+    <string name="common_export_success">تم التصدير إلى: %1$s</string>
+    <string name="common_export_failed">فشل التصدير: %1$s</string>
+    <string name="common_open_original_page">فتح الصفحة الأصلية</string>
+    <string name="common_unit_yuan">¥</string>
+    <string name="common_dash">—</string>
+    <string name="common_no_browser">لم يتم العثور على متصفح</string>
+    <string name="common_no_room_data">لا توجد بيانات للغرفة</string>
+    <string name="common_collapse">طي</string>
+    <string name="common_expand">توسيع</string>
+    <string name="common_load_failed">فشل التحميل</string>
+    <string name="common_enabled">مُمكّن</string>
+    <string name="common_disabled">معطّل</string>
+    <string name="common_re_query">إعادة الاستعلام</string>
+    <string name="common_copied_to_clipboard">تم النسخ إلى الحافظة</string>
+</resources>

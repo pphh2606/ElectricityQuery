@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  ログインモジュール                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_title">ログイン</string>
+    <string name="login_unified_auth">統合認証ログイン</string>
+    <string name="login_remember_password">パスワードを記憶</string>
+    <string name="login_relogin">再ログイン</string>
+    <string name="login_security_notice_title">ログイン説明</string>
+    <string name="login_security_notice_1">    パスワードはデバイス上でAES-CBC暗号化され、学校のCAS統合認証サーバーに直接送信されます。暗号化には学校のログインページから発行される動的saltが使用され、リクエストごとに異なります。本アプリはパスワードを第三者サーバーに送信しません。</string>
+    <string name="login_security_notice_2">    ログイン成功後、Cookieのみがデバイスローカルに保存され、AndroidシステムのWebKit CookieManagerを通じて永続化され、本アプリのみがアクセスできます。パスワード記憶機能は、ユーザーが明示的に有効にした場合のみ、暗号化してデバイスのプライベートストレージに保存します。</string>
+    <string name="login_security_notice_3">    各ユーザーのログインセッションは独立して保存され、相互に干渉しません。ログイン画面からいつでもユーザーのローカルログイン情報を削除できます。</string>
+    <string name="login_security_notice_4">    QRログインとアカウント追加は独立したCookie環境を使用し、既存ユーザーのセッション情報を一切引き継ぎません。</string>
+    <string name="login_security_notice_5">    ログイン資格情報のエクスポートにはデバイスパスワード検証が必要です。エクスポート時はAES暗号化とカスタムパスワード保護が適用され、インポート時には同じ復号パスワードが必要で、デバイス間の安全な資格情報移行を保証します。</string>
+    <string name="login_export_credential_title">資格情報をエクスポート</string>
+    <string name="login_not_entered">（未入力）</string>
+    <string name="login_security_notice">セキュリティ説明</string>
+    <string name="login_delete_account_title">アカウントを削除</string>
+    <string name="login_paste_credential_label">暗号化された資格情報文字列を貼り付け：</string>
+    <string name="login_paste_credential_hint">他のデバイスからエクスポートされた暗号化資格情報</string>
+    <string name="login_current_account">現在のアカウント：%1$s</string>
+    <string name="login_export_password_label">エクスポートパスワードを設定（資格情報の暗号化保護用）：</string>
+    <string name="login_delete_account_confirm">学籍番号「%1$s」とそのすべてのローカルデータを削除しますか？\n\n削除後、このアカウントを使用するには再ログインが必要です。</string>
+
+    <!-- ── ログインフォーム ── -->
+    <string name="login_student_id">学籍番号</string>
+    <string name="login_student_id_hint">学籍番号を入力</string>
+    <string name="login_password">パスワード</string>
+    <string name="login_password_hint">パスワードを入力</string>
+    <string name="login_show_password">パスワードを表示</string>
+    <string name="login_hide_password">パスワードを非表示</string>
+    <string name="login_login_button">ログイン</string>
+    <string name="login_scan_login">QRログイン</string>
+    <string name="login_add_account">アカウントを追加</string>
+    <string name="login_export_credential">資格情報をエクスポート</string>
+    <string name="login_import_credential">資格情報をインポート</string>
+    <string name="login_copy_to_clipboard">クリップボードにコピー</string>
+    <string name="login_import_and_login">インポートしてログイン</string>
+    <string name="login_import_title">資格情報をインポート</string>
+    <string name="login_import_paste_hint">ここに暗号化文字列を貼り付け…</string>
+    <string name="login_export_password">エクスポートパスワード</string>
+    <string name="login_export_password_hint">エクスポート時に設定したパスワードを入力</string>
+    <string name="login_export_password_set_hint">エクスポートパスワードを設定してください（4文字以上）</string>
+    <string name="login_show_import_password">パスワードを表示</string>
+    <string name="login_hide_import_password">パスワードを非表示</string>
+    <string name="login_device_auth_title">本人確認</string>
+    <string name="login_device_auth_desc">確認後に暗号化資格情報をエクスポート</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QRログインモジュール                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qr_login_title">QRログイン</string>
+    <string name="qr_login_fetching_qrcode">QRコードを取得中…</string>
+    <string name="qr_login_scan_hint">今日のキャンパス（Campusphere）アプリでQRコードをスキャンしてください</string>
+    <string name="qr_login_expiry">QRコードの有効期限は3分間</string>
+    <string name="qr_login_scan_success">スキャン成功</string>
+    <string name="qr_login_confirm_on_phone">スマートフォンで「ログイン確認」をタップしてください</string>
+    <string name="qr_login_completing">ログインを完了中…</string>
+    <string name="login_success">ログイン成功</string>
+    <string name="login_failed">ログイン失敗</string>
+    <string name="login_qr_expired">QRコードの有効期限が切れました。再試行してください</string>
+    <string name="login_get_page_failed">ログインページの取得に失敗</string>
+    <string name="login_verifying">ログイン中、お待ちください…</string>
+    <string name="login_password_too_short">パスワードは4文字以上必要です</string>
+    <string name="login_credential_copied">資格情報をクリップボードにコピーしました</string>
+</resources>

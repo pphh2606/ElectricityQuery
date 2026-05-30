@@ -13,8 +13,12 @@ import edu.cqwu.electricity.data.model.CustomServiceEntry
  * ENGLISH: 英文
  */
 enum class AppLanguage(val value: String, val displayName: String) {
-    CHINESE("zh", "中文"),
-    ENGLISH("en", "English");
+    CHINESE("zh", "简体中文"),
+    TRADITIONAL_CHINESE("zh-TW", "繁體中文"),
+    ENGLISH("en", "English"),
+    FRENCH("fr", "Français"),
+    ARABIC("ar", "العربية"),
+    JAPANESE("ja", "日本語");
 
     companion object {
         fun fromValue(value: String): AppLanguage {

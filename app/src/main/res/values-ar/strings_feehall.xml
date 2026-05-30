@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  قاعة الرسوم                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_hall_title">قاعة الرسوم</string>
+    <string name="fee_hall_tab_home">الرئيسية</string>
+    <string name="fee_hall_tab_orders">الطلبات</string>
+    <string name="fee_hall_tab_profile">حسابي</string>
+    <string name="fee_hall_no_projects">لا توجد مشاريع</string>
+    <string name="fee_hall_load_failed">فشل التحميل: %1$s</string>
+    <string name="fee_profile_pwd_change">تغيير كلمة المرور</string>
+    <string name="fee_profile_invoice_mgmt">إدارة رأس الفاتورة</string>
+    <string name="fee_profile_fun_bill">فاتورة ممتعة</string>
+    <string name="fee_profile_query_pay">استعلام الدفع</string>
+    <string name="fee_profile_view_invoice">عرض الفاتورة</string>
+    <string name="fee_profile_advance_invoice">فاتورة مسبقة</string>
+    <string name="fee_profile_load_failed">فشل التحميل: %1$s</string>
+    <string name="fee_profile_account">الحساب</string>
+    <string name="fee_profile_name">الاسم</string>
+    <string name="fee_profile_dept">القسم</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  تفاصيل الطلب                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_order_detail_title">تفاصيل الطلب</string>
+    <string name="fee_order_info">معلومات الطلب</string>
+    <string name="fee_order_no">رقم الطلب</string>
+    <string name="fee_order_product_desc">وصف المنتج</string>
+    <string name="fee_order_create_time">وقت الإنشاء</string>
+    <string name="fee_order_complete_time">وقت الإكمال</string>
+    <string name="fee_order_update_time">وقت التحديث</string>
+    <string name="fee_order_close_time">وقت الإغلاق</string>
+    <string name="fee_order_channel">قناة الدفع</string>
+    <string name="fee_order_transaction_no">رقم المعاملة</string>
+    <string name="fee_order_project_id">معرف المشروع</string>
+    <string name="fee_order_partner">الشريك</string>
+    <string name="fee_order_time_range_sep">~</string>
+    <string name="fee_hall_no_orders">لا توجد طلبات</string>
+    <string name="fee_order_project_name">اسم المشروع</string>
+    <string name="fee_order_loaded_count">تم تحميل %1$d</string>
+    <string name="fee_order_page_info">صفحة %1$d/%2$d</string>
+    <string name="fee_order_no_label">رقم الطلب: %1$s</string>
+    <string name="fee_hall_order_all_loaded">— تم تحميل %1$d —</string>
+</resources>

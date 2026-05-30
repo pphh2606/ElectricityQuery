@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  App Global                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="app_name">電費查詢</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Common UI                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="common_back">返回</string>
+    <string name="common_close">關閉</string>
+    <string name="common_refresh">重新整理</string>
+    <string name="common_confirm">確定</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_delete">刪除</string>
+    <string name="common_save">儲存</string>
+    <string name="common_add">新增</string>
+    <string name="common_edit">編輯</string>
+    <string name="common_retry">重試</string>
+    <string name="common_loading">載入中…</string>
+    <string name="common_more_options">更多選項</string>
+    <string name="common_unknown_error">未知錯誤</string>
+    <string name="common_pull_to_retry">下拉重新整理重試</string>
+    <string name="common_no_data">暫無資料</string>
+    <string name="common_please_retry">請稍後重試</string>
+    <string name="common_swipe_load_more">上滑載入更多</string>
+    <string name="common_search">搜尋</string>
+    <string name="common_share">分享</string>
+    <string name="common_filter">篩選</string>
+    <string name="common_settings">設定</string>
+    <string name="common_remove">移除</string>
+    <string name="common_view">檢視</string>
+    <string name="common_open_in_browser">外部開啟</string>
+    <string name="common_clear_search">清除搜尋</string>
+    <string name="common_exit_search">退出搜尋</string>
+    <string name="common_scan">掃描</string>
+    <string name="common_no_more">— 沒有更多了 —</string>
+    <string name="common_delete_account">刪除帳號</string>
+    <string name="common_select_saved_user">選取已儲存的使用者</string>
+    <string name="common_send_email">傳送郵件</string>
+    <string name="common_share_log">分享記錄</string>
+    <string name="common_web_version">網頁版</string>
+    <string name="common_add_to_my_services">加入我的服務</string>
+    <string name="common_copy">複製</string>
+    <string name="common_export">匯出</string>
+    <string name="common_export_success">已匯出至檔案: %1$s</string>
+    <string name="common_export_failed">匯出失敗: %1$s</string>
+    <string name="common_open_original_page">開啟原始網頁</string>
+    <string name="common_unit_yuan">元</string>
+    <string name="common_dash">—</string>
+    <string name="common_no_browser">找不到可用的瀏覽器應用程式</string>
+    <string name="common_no_room_data">暫無房間資料</string>
+    <string name="common_collapse">收合</string>
+    <string name="common_expand">展開</string>
+    <string name="common_load_failed">載入失敗</string>
+    <string name="common_enabled">已啟用</string>
+    <string name="common_disabled">已停用</string>
+    <string name="common_re_query">重新查詢</string>
+    <string name="common_copied_to_clipboard">已複製到剪貼簿</string>
+</resources>

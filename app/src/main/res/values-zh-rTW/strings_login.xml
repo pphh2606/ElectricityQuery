@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  登入模組                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_title">登入</string>
+    <string name="login_unified_auth">統一身份認證登入</string>
+    <string name="login_remember_password">記住密碼</string>
+    <string name="login_relogin">重新登入</string>
+    <string name="login_security_notice_title">登入說明</string>
+    <string name="login_security_notice_1">    密碼直接在裝置端透過 AES-CBC 加密後直接傳送到學校 CAS 統一認證伺服器，加密使用學校登入頁面下發的動態 salt，每次請求獨立。本應用程式不會將密碼傳送到任何第三方伺服器。</string>
+    <string name="login_security_notice_2">    登入成功後僅儲存 Cookie 在裝置本地，透過 Android 系統 WebKit CookieManager 持久化，僅本應用程式可存取。記住密碼功能可將密碼加密儲存在裝置私有儲存空間中，僅在使用者主動選擇時啟用。</string>
+    <string name="login_security_notice_3">    每個使用者的登入工作階段獨立儲存，互不干擾。可在登入介面中隨時刪除使用者的本地登入資訊。</string>
+    <string name="login_security_notice_4">    掃碼登入和新增帳號使用獨立的 Cookie 環境，不攜帶任何已登入使用者的工作階段資訊。</string>
+    <string name="login_security_notice_5">    登入憑證匯出需要驗證裝置密碼，匯出時使用 AES 加密加自訂密碼保護，匯入時需要相同的解密密碼，確保憑證在裝置間安全遷移。</string>
+    <string name="login_export_credential_title">匯出憑證</string>
+    <string name="login_not_entered">（未輸入）</string>
+    <string name="login_security_notice">安全說明</string>
+    <string name="login_delete_account_title">刪除帳號</string>
+    <string name="login_paste_credential_label">貼上加密憑證字串：</string>
+    <string name="login_paste_credential_hint">從其他裝置匯出的加密憑證</string>
+    <string name="login_current_account">目前帳號：%1$s</string>
+    <string name="login_export_password_label">設定匯出密碼（用於加密保護憑證）：</string>
+    <string name="login_delete_account_confirm">確定要刪除學號「%1$s」及其所有本地資料嗎？\n\n刪除後如需使用該帳號需重新登入。</string>
+
+    <!-- ── 登入表單 ── -->
+    <string name="login_student_id">學號</string>
+    <string name="login_student_id_hint">請輸入學號</string>
+    <string name="login_password">密碼</string>
+    <string name="login_password_hint">請輸入密碼</string>
+    <string name="login_show_password">顯示密碼</string>
+    <string name="login_hide_password">隱藏密碼</string>
+    <string name="login_login_button">登  入</string>
+    <string name="login_scan_login">掃碼登入</string>
+    <string name="login_add_account">新增帳號</string>
+    <string name="login_export_credential">匯出憑證</string>
+    <string name="login_import_credential">匯入憑證</string>
+    <string name="login_copy_to_clipboard">複製到剪貼簿</string>
+    <string name="login_import_and_login">匯入並登入</string>
+    <string name="login_import_title">匯入憑證</string>
+    <string name="login_import_paste_hint">在此貼上加密字串…</string>
+    <string name="login_export_password">匯出密碼</string>
+    <string name="login_export_password_hint">請輸入匯出時設定的密碼</string>
+    <string name="login_export_password_set_hint">請設定匯出密碼，至少 4 位</string>
+    <string name="login_show_import_password">顯示密碼</string>
+    <string name="login_hide_import_password">隱藏密碼</string>
+    <string name="login_device_auth_title">身份驗證</string>
+    <string name="login_device_auth_desc">驗證後匯出加密憑證</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  掃碼登入模組                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qr_login_title">掃碼登入</string>
+    <string name="qr_login_fetching_qrcode">正在取得 QR 碼…</string>
+    <string name="qr_login_scan_hint">請使用今日校園 App 掃描 QR 碼</string>
+    <string name="qr_login_expiry">QR 碼有效期 3 分鐘</string>
+    <string name="qr_login_scan_success">掃描成功</string>
+    <string name="qr_login_confirm_on_phone">請在手機上點選「確認登入」</string>
+    <string name="qr_login_completing">正在完成登入…</string>
+    <string name="login_success">登入成功</string>
+    <string name="login_failed">登入失敗</string>
+    <string name="login_qr_expired">QR 碼已過期，請重試</string>
+    <string name="login_get_page_failed">取得登入頁面失敗</string>
+    <string name="login_verifying">正在登入，請稍候…</string>
+    <string name="login_password_too_short">密碼長度至少 4 位</string>
+    <string name="login_credential_copied">憑證已複製到剪貼簿</string>
+</resources>

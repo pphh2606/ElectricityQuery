@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  التعليقات                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="feedback_title">التعليقات</string>
+    <string name="feedback_attach_log">إرفاق سجلات التطبيق (تشمل الأعطال)</string>
+    <string name="feedback_crash_count">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</string>
+    <string name="feedback_log_preview">معاينة السجلات</string>
+    <string name="feedback_title_label">العنوان (اختياري)</string>
+    <string name="feedback_content_label">المحتوى</string>
+    <string name="feedback_no_mail_app">لم يتم العثور على تطبيق بريد</string>
+    <string name="feedback_enable_log_first">يرجى تفعيل السجلات أولاً</string>
+    <string name="feedback_share_failed">فشلت المشاركة</string>
+    <string name="feedback_preview_log">معاينة</string>
+    <string name="feedback_subject_prefix">تعليق تطبيق الكهرباء</string>
+    <string name="feedback_no_logs">(لا توجد سجلات)</string>
+    <string name="feedback_loading_logs">(جارٍ تحميل السجلات، يرجى الانتظار)</string>
+    <string name="feedback_device_info_template">الجهاز: %1$s\nالنظام: Android %2$s (API %3$d)\nالإصدار: %4$s (%5$s)</string>
+</resources>

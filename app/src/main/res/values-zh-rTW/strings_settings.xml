@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  設定                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_title">設定</string>
+    <string name="settings_personalization">個人化</string>
+    <string name="settings_personalization_desc">夜間模式、主題色彩、頁面轉場動畫</string>
+    <string name="settings_config">組態</string>
+    <string name="settings_config_desc">瀏覽器識別碼等設定</string>
+    <string name="settings_about">關於</string>
+    <string name="settings_about_desc">應用程式版本、開發者資訊</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  個人化設定                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="personalization_title">個人化</string>
+    <string name="personalization_display">顯示設定</string>
+    <string name="personalization_night_mode">夜間模式</string>
+    <string name="personalization_theme_color">主題色彩</string>
+    <string name="personalization_dynamic_color">動態取色</string>
+    <string name="personalization_dynamic_color_supported">跟隨系統桌布自動擷取主題色</string>
+    <string name="personalization_dynamic_color_unsupported">此裝置不支援動態取色</string>
+    <string name="personalization_custom_color">自訂色彩</string>
+    <string name="personalization_custom_color_desc">使用選定的色彩產生主題</string>
+    <string name="personalization_topbar_color">標題列色彩</string>
+    <string name="personalization_qrcode_settings">QR 碼設定</string>
+    <string name="personalization_qrcode_desc">色彩、圓角等自訂樣式</string>
+    <string name="personalization_animation">動畫設定</string>
+    <string name="personalization_page_transition">頁面轉場動畫</string>
+    <string name="personalization_reduce_motion">減少動畫</string>
+    <string name="personalization_reduce_motion_override">（被減少動畫覆蓋）</string>
+    <string name="personalization_choose_color">選取主題色</string>
+    <string name="personalization_choose_color_desc">選取一種色彩作為應用程式主題色</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QR 碼設定                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_settings_title">QR 碼設定</string>
+    <string name="qrcode_settings_style">樣式設定</string>
+    <string name="qrcode_settings_md3_theme">MD3 主題色</string>
+    <string name="qrcode_settings_md3_theme_desc">使用目前主題色作為 QR 碼黑塊顏色</string>
+    <string name="qrcode_settings_black">黑色</string>
+    <string name="qrcode_settings_black_desc">使用黑色作為 QR 碼黑塊顏色</string>
+    <string name="qrcode_settings_corner_radius">圓角度</string>
+    <string name="qrcode_settings_display">顯示</string>
+    <string name="qrcode_settings_screen_brightness">螢幕亮度</string>
+    <string name="qrcode_settings_screen_brightness_desc">顯示 QR 碼時自動調高螢幕亮度</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  組態                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="config_title">組態</string>
+    <string name="config_user_agent">瀏覽器識別碼</string>
+    <string name="config_user_agent_desc">設定 User-Agent</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  瀏覽器識別碼設定 + 編輯                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="ua_settings_title">瀏覽器識別碼設定</string>
+    <string name="ua_settings_current">目前選中：%1$s</string>
+    <string name="ua_settings_home_ua">首頁瀏覽器識別碼設定</string>
+    <string name="ua_settings_coming_soon">即將開放</string>
+    <string name="ua_delete_title">刪除瀏覽器識別碼</string>
+    <string name="ua_delete_confirm">確定要刪除\"%1$s\"嗎？</string>
+    <string name="ua_edit_add_title">新增瀏覽器識別碼</string>
+    <string name="ua_edit_edit_title">編輯瀏覽器識別碼</string>
+    <string name="ua_edit_note_label">新增備註</string>
+    <string name="ua_edit_note_placeholder">例如：學校平板</string>
+    <string name="ua_edit_default_note">自訂識別碼</string>
+    <string name="ua_edit_ua_label">輸入瀏覽器識別碼</string>
+    <string name="ua_edit_ua_placeholder">Mozilla/5.0 …</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  關於                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="about_title">關於</string>
+    <string name="about_project_home">專案首頁</string>
+    <string name="about_developer">開發者</string>
+    <string name="about_contact">聯絡方式</string>
+    <string name="about_ai_notice">本應用程式使用了 AI 技術</string>
+    <string name="about_contact_title">聯絡方式</string>
+    <string name="about_contact_qq">QQ 聯絡</string>
+    <string name="about_contact_bilibili">Bilibili 聯絡</string>
+    <string name="about_contact_email">Email 聯絡</string>
+    <string name="about_install_qq">請先安裝 QQ 應用程式</string>
+    <string name="about_no_mail_app">無法開啟郵件應用程式</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  語言切換                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="language_title">語言</string>
+    <string name="language_current">目前語言</string>
+    <string name="language_select">選取語言</string>
+    <string name="language_chinese">简体中文</string>
+    <string name="language_english">English</string>
+</resources>

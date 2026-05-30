@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Profil                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_title">Mon compte</string>
+    <string name="profile_open_url">Ouvrir l\'URL</string>
+    <string name="profile_feedback">Commentaires</string>
+    <string name="profile_manage_accounts">Gérer les comptes</string>
+    <string name="profile_toggle_night_mode">Mode nuit</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Infos personnelles                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="my_info_title">Mes informations</string>
+    <string name="my_info_gender">Sexe</string>
+    <string name="my_info_grade">Année</string>
+    <string name="my_info_department">Département</string>
+    <string name="my_info_major">Spécialité</string>
+    <string name="my_info_class">Classe</string>
+    <string name="my_info_phone">Téléphone</string>
+    <string name="my_info_campus">Campus</string>
+    <string name="my_info_degree">Type d\'étudiant</string>
+    <string name="my_info_status">Statut</string>
+    <string name="my_info_collapse">Réduire</string>
+    <string name="my_info_expand">Développer</string>
+    <string name="my_info_load_failed">Échec du chargement</string>
+    <string name="my_info_login_expired">Session expirée, veuillez vous reconnecter</string>
+    <string name="profile_not_logged_in">Non connecté</string>
+    <string name="profile_my_info_cd">Mes informations</string>
+    <string name="profile_my_room_loading">Récupération des infos du dortoir…</string>
+    <string name="profile_no_room_data">Aucune donnée de chambre</string>
+</resources>

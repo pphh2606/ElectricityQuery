@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  通知                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="notice_title">お知らせ</string>
+    <string name="notice_total_count">全 %1$d 件のお知らせ</string>
+    <string name="notice_search_hint">お知らせを検索</string>
+    <string name="notice_search_result">\"%1$s\" の検索結果：全 %2$d 件</string>
+    <string name="notice_detail_title">お知らせ詳細</string>
+    <string name="notice_loading_detail">詳細を読み込み中…</string>
+    <string name="notice_publisher">発行元</string>
+    <string name="notice_publish_time">公開日時</string>
+    <string name="notice_view_count">閲覧数</string>
+    <string name="notice_searching">検索中…</string>
+    <string name="notice_loading_list">お知らせを読み込み中…</string>
+    <string name="notice_share">お知らせを共有</string>
+    <string name="notice_load_failed">詳細の読み込みに失敗</string>
+    <string name="notice_no_content">内容がありません</string>
+    <string name="notice_no_more">— これ以上ありません —</string>
+</resources>

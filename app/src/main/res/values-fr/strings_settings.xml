@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Paramètres                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_personalization">Personnalisation</string>
+    <string name="settings_personalization_desc">Mode nuit, couleur du thème, animation de transition</string>
+    <string name="settings_config">Configuration</string>
+    <string name="settings_config_desc">Identifiant de navigateur et autres</string>
+    <string name="settings_about">À propos</string>
+    <string name="settings_about_desc">Version de l\'application, infos développeur</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Personnalisation                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="personalization_title">Personnalisation</string>
+    <string name="personalization_display">Affichage</string>
+    <string name="personalization_night_mode">Mode nuit</string>
+    <string name="personalization_theme_color">Couleur du thème</string>
+    <string name="personalization_dynamic_color">Couleur dynamique</string>
+    <string name="personalization_dynamic_color_supported">Extraire la couleur du thème depuis le fond d\'écran</string>
+    <string name="personalization_dynamic_color_unsupported">Couleur dynamique non prise en charge</string>
+    <string name="personalization_custom_color">Couleur personnalisée</string>
+    <string name="personalization_custom_color_desc">Générer le thème à partir de la couleur choisie</string>
+    <string name="personalization_topbar_color">Couleur de la barre de titre</string>
+    <string name="personalization_qrcode_settings">Paramètres QR code</string>
+    <string name="personalization_qrcode_desc">Couleur, coins arrondis et autres styles</string>
+    <string name="personalization_animation">Animation</string>
+    <string name="personalization_page_transition">Transition de page</string>
+    <string name="personalization_reduce_motion">Réduire les animations</string>
+    <string name="personalization_reduce_motion_override">(remplacé par Réduire les animations)</string>
+    <string name="personalization_choose_color">Choisir la couleur</string>
+    <string name="personalization_choose_color_desc">Sélectionner une couleur comme thème</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QR Code                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_settings_title">Paramètres QR code</string>
+    <string name="qrcode_settings_style">Style</string>
+    <string name="qrcode_settings_md3_theme">Couleur thème MD3</string>
+    <string name="qrcode_settings_md3_theme_desc">Utiliser la couleur du thème pour les modules noirs</string>
+    <string name="qrcode_settings_black">Noir</string>
+    <string name="qrcode_settings_black_desc">Utiliser le noir pour les modules noirs</string>
+    <string name="qrcode_settings_corner_radius">Arrondi des coins</string>
+    <string name="qrcode_settings_display">Affichage</string>
+    <string name="qrcode_settings_screen_brightness">Luminosité de l\'écran</string>
+    <string name="qrcode_settings_screen_brightness_desc">Augmenter automatiquement la luminosité lors de l\'affichage du QR code</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Configuration                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="config_title">Configuration</string>
+    <string name="config_user_agent">User-Agent</string>
+    <string name="config_user_agent_desc">Définir le User-Agent</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  User-Agent                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="ua_settings_title">Paramètres User-Agent</string>
+    <string name="ua_settings_current">Actuel : %1$s</string>
+    <string name="ua_settings_home_ua">User-Agent de l\'accueil</string>
+    <string name="ua_settings_coming_soon">Bientôt disponible</string>
+    <string name="ua_delete_title">Supprimer le User-Agent</string>
+    <string name="ua_delete_confirm">Supprimer « %1$s » ?</string>
+    <string name="ua_edit_add_title">Ajouter un User-Agent</string>
+    <string name="ua_edit_edit_title">Modifier le User-Agent</string>
+    <string name="ua_edit_note_label">Ajouter une note</string>
+    <string name="ua_edit_note_placeholder">Ex. : tablette de l\'école</string>
+    <string name="ua_edit_default_note">UA personnalisé</string>
+    <string name="ua_edit_ua_label">Saisir le User-Agent</string>
+    <string name="ua_edit_ua_placeholder">Mozilla/5.0 …</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  À propos                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="about_title">À propos</string>
+    <string name="about_project_home">Page du projet</string>
+    <string name="about_developer">Développeur</string>
+    <string name="about_contact">Contact</string>
+    <string name="about_ai_notice">Cette application utilise l\'IA</string>
+    <string name="about_contact_title">Contact</string>
+    <string name="about_contact_qq">QQ</string>
+    <string name="about_contact_bilibili">Bilibili</string>
+    <string name="about_contact_email">E-mail</string>
+    <string name="about_install_qq">Veuillez d\'abord installer QQ</string>
+    <string name="about_no_mail_app">Impossible d\'ouvrir l\'application de messagerie</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Langue                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="language_title">Langue</string>
+    <string name="language_current">Langue actuelle</string>
+    <string name="language_select">Choisir la langue</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+</resources>

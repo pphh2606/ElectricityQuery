@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  WebView 通用瀏覽器                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_copy_link">複製連結</string>
+    <string name="webview_share_link">分享連結</string>
+    <string name="webview_open_in_browser">在瀏覽器中開啟</string>
+    <string name="webview_switch_to_external">切換為外網存取</string>
+    <string name="webview_switch_to_internal">切換為內網存取</string>
+    <string name="webview_clip_label">網頁連結</string>
+    <string name="webview_reload">重新載入</string>
+    <string name="webview_toggle_network">切換內/外網</string>
+    <string name="webview_network_settings">網路設定</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  WebView 錯誤覆蓋層                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_error_page_not_found">頁面找不到</string>
+    <string name="webview_error_page_not_found_desc">請求的頁面不存在（HTTP 404）</string>
+    <string name="webview_error_server_error">伺服器內部錯誤</string>
+    <string name="webview_error_server_error_desc">伺服器遇到問題，請稍後重試（HTTP 500）</string>
+    <string name="webview_error_service_unavailable">服務暫時不可用</string>
+    <string name="webview_error_service_unavailable_desc">伺服器正在維護或超載，請稍後重試（HTTP %1$d）</string>
+    <string name="webview_error_load_failed">網頁載入失敗</string>
+    <string name="webview_error_http_generic_desc">伺服器返回錯誤（HTTP %1$d）</string>
+    <string name="webview_error_network_disconnected">網路連線已中斷</string>
+    <string name="webview_error_network_disconnected_desc">請檢查網路設定後重試</string>
+    <string name="webview_error_timeout">連線逾時</string>
+    <string name="webview_error_timeout_desc">請使用校園網路環境或稍後重試</string>
+    <string name="webview_error_dns_failed">無法解析伺服器位址</string>
+    <string name="webview_error_dns_failed_desc">DNS 解析失敗，請檢查網路連線</string>
+    <string name="webview_error_connection_refused">伺服器拒絕連線</string>
+    <string name="webview_error_connection_refused_desc">請使用校園網路環境或稍後重試</string>
+    <string name="webview_error_no_response">伺服器未回應</string>
+    <string name="webview_error_no_response_desc">請使用校園網路環境開啟</string>
+    <string name="webview_error_unreachable">網路位址不可達</string>
+    <string name="webview_error_unreachable_desc">無法存取目標伺服器，請檢查網路連線</string>
+    <string name="webview_error_generic_desc">請檢查網路連線後重試</string>
+    <string name="webview_loading">載入中…</string>
+    <string name="webview_link_copied">連結已複製</string>
+    <string name="webview_url_change_failed">URL 切換失敗</string>
+    <string name="webview_campusphere_warning">正在存取今日校園專屬內容，可能存在不相容現象，建議使用今日校園 App 開啟</string>
+    <string name="webview_no_download_tool">找不到可用的下載工具</string>
+    <string name="webview_cannot_open_network_settings">無法開啟網路設定</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  首頁                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="home_title">首頁</string>
+    <string name="home_search_apps">搜尋應用程式…</string>
+    <string name="home_no_match">找不到符合的應用程式</string>
+    <string name="home_search_result">搜尋結果（共 %1$d 個）</string>
+    <string name="home_my_services">我的服務</string>
+    <string name="home_custom_website">自訂網站</string>
+    <string name="home_external_app_title">開啟外部應用程式</string>
+    <string name="home_external_app_message">「%1$s」需要在今日校園內開啟，確認繼續？</string>
+    <string name="home_install_campus_app">請安裝今日校園 App 以使用「%1$s」</string>
+    <string name="home_open_failed">開啟失敗: %1$s</string>
+    <string name="home_edit_my_services">編輯我的服務</string>
+    <string name="home_confirm_exit_edit">確認並退出編輯</string>
+    <string name="home_load_failed">載入失敗</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  大廳                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="hall_title">大廳</string>
+    <string name="hall_no_favorites">暫無收藏的應用程式</string>
+    <string name="hall_tab_all">全部</string>
+    <string name="hall_tab_favorites">收藏</string>
+    <string name="hall_favorited">已收藏</string>
+    <string name="hall_unfavorited">未收藏</string>
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Avis                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="notice_title">Avis</string>
+    <string name="notice_total_count">%1$d avis au total</string>
+    <string name="notice_search_hint">Rechercher des avis</string>
+    <string name="notice_search_result">« %1$s » : %2$d résultats</string>
+    <string name="notice_detail_title">Détail de l\'avis</string>
+    <string name="notice_loading_detail">Chargement des détails…</string>
+    <string name="notice_publisher">Émetteur</string>
+    <string name="notice_publish_time">Date de publication</string>
+    <string name="notice_view_count">Vues</string>
+    <string name="notice_searching">Recherche…</string>
+    <string name="notice_loading_list">Chargement des avis…</string>
+    <string name="notice_share">Partager</string>
+    <string name="notice_load_failed">Échec du chargement</string>
+    <string name="notice_no_content">Aucun contenu</string>
+    <string name="notice_no_more">— Fin de la liste —</string>
+</resources>

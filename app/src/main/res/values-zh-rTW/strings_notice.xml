@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  通知                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="notice_title">通知公告</string>
+    <string name="notice_total_count">共 %1$d 則通知</string>
+    <string name="notice_search_hint">搜尋通知公告</string>
+    <string name="notice_search_result">搜尋 \"%1$s\" 共 %2$d 則結果</string>
+    <string name="notice_detail_title">通知詳情</string>
+    <string name="notice_loading_detail">正在載入詳情…</string>
+    <string name="notice_publisher">發布單位</string>
+    <string name="notice_publish_time">發布時間</string>
+    <string name="notice_view_count">瀏覽次數</string>
+    <string name="notice_searching">正在搜尋…</string>
+    <string name="notice_loading_list">正在載入通知公告…</string>
+    <string name="notice_share">分享通知</string>
+    <string name="notice_load_failed">載入詳情失敗</string>
+    <string name="notice_no_content">暫無內容</string>
+    <string name="notice_no_more">— 沒有更多了 —</string>
+</resources>

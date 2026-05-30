@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  カードセンター                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_center_title">ICカードサービスプラットフォーム</string>
+    <string name="card_center_account_info">アカウント情報</string>
+    <string name="card_center_payment_code">支払いコード</string>
+    <string name="card_center_transit_code">乗車コード</string>
+    <string name="card_center_bills">取引明細</string>
+    <string name="card_center_report_lost">カード紛失届</string>
+    <string name="card_center_recharge">チャージ</string>
+    <string name="card_lost_title">カード紛失届</string>
+    <string name="card_lost_warning">⚠ 紛失届を提出すると、カードは直ちに使用できなくなります。操作前にご確認ください</string>
+    <string name="card_lost_failure">紛失届の提出に失敗</string>
+    <string name="card_fetching_info">カード情報を取得中…</string>
+    <string name="card_account_info_title">アカウント情報</string>
+    <string name="card_fetching_account">アカウント情報を取得中…</string>
+    <string name="card_account_info_name">氏名</string>
+    <string name="card_account_info_student_id">学籍番号</string>
+    <string name="card_account_info_balance">アカウント残高</string>
+    <string name="card_account_info_school">学校</string>
+    <string name="card_account_info_major">専攻</string>
+    <string name="card_account_info_class">クラス</string>
+    <string name="card_lost_card_number">カード番号</string>
+    <string name="card_lost_card_status">カード状態</string>
+    <string name="card_error_title">エラー</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  取引明細                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="bill_title">取引明細</string>
+    <string name="bill_cash_flow">資金流れ：</string>
+    <string name="bill_income">収入</string>
+    <string name="bill_expense">支出</string>
+    <string name="bill_fetching">明細を取得中…%1$ds</string>
+    <string name="bill_loaded_count">%1$d 件読み込み済み</string>
+    <string name="bill_start_date">開始日</string>
+    <string name="bill_end_date">終了日</string>
+    <string name="bill_page_info">%1$d/%2$d ページ</string>
+    <string name="bill_tab_all">すべて</string>
+    <string name="bill_tab_unpaid">未払い</string>
+    <string name="bill_tab_success">成功</string>
+    <string name="bill_tab_failed">失敗</string>
+    <string name="bill_detail_title">取引詳細</string>
+    <string name="bill_web_title">明細（Web版）</string>
+    <string name="bill_merchant_name">加盟店名</string>
+    <string name="bill_filter_reset">リセット</string>
+    <string name="bill_filter_apply">フィルター適用</string>
+    <string name="bill_no_unpaid">未払い注文はありません</string>
+    <string name="bill_no_success">成功取引はありません</string>
+    <string name="bill_no_failed">失敗取引はありません</string>
+    <string name="bill_no_records">取引記録がありません</string>
+    <string name="bill_capped_hint">— 最新100件のみ表示。詳細はWeb版をご利用ください —</string>
+    <string name="bill_all_loaded">— 全 %1$d 件読み込み完了 —</string>
+    <string name="card_lost_confirm_title">紛失届を確認</string>
+    <string name="card_lost_confirm_text">このカードの紛失届を提出しますか？提出後、カードは直ちに使用できなくなります。</string>
+    <string name="card_lost_confirm_btn">紛失届を提出</string>
+    <string name="card_lost_processing">処理中…</string>
+    <string name="card_lost_normal_status">正常</string>
+    <string name="card_lost_success">紛失届の提出に成功</string>
+    <string name="card_lost_request_error">リクエスト異常</string>
+    <string name="card_lost_fetch_error">カード情報の取得に失敗</string>
+    <string name="card_lost_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
+    <string name="card_account_info_fetch_error">アカウント情報の取得に失敗</string>
+</resources>

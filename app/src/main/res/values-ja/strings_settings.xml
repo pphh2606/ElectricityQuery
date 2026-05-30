@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  設定                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_title">設定</string>
+    <string name="settings_personalization">個人設定</string>
+    <string name="settings_personalization_desc">ダークモード、テーマカラー、ページ遷移アニメーション</string>
+    <string name="settings_config">設定</string>
+    <string name="settings_config_desc">ブラウザ識別子などの設定</string>
+    <string name="settings_about">について</string>
+    <string name="settings_about_desc">アプリバージョン、開発者情報</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  個人設定                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="personalization_title">個人設定</string>
+    <string name="personalization_display">表示設定</string>
+    <string name="personalization_night_mode">ダークモード</string>
+    <string name="personalization_theme_color">テーマカラー</string>
+    <string name="personalization_dynamic_color">ダイナミックカラー</string>
+    <string name="personalization_dynamic_color_supported">システム壁紙に合わせてテーマカラーを自動抽出</string>
+    <string name="personalization_dynamic_color_unsupported">このデバイスはダイナミックカラーに対応していません</string>
+    <string name="personalization_custom_color">カスタムカラー</string>
+    <string name="personalization_custom_color_desc">選択した色でテーマを生成</string>
+    <string name="personalization_topbar_color">タイトルバーの色</string>
+    <string name="personalization_qrcode_settings">QRコード設定</string>
+    <string name="personalization_qrcode_desc">色、角丸などのカスタムスタイル</string>
+    <string name="personalization_animation">アニメーション設定</string>
+    <string name="personalization_page_transition">ページ遷移アニメーション</string>
+    <string name="personalization_reduce_motion">アニメーションを減らす</string>
+    <string name="personalization_reduce_motion_override">（アニメーション減少により上書き）</string>
+    <string name="personalization_choose_color">テーマカラーを選択</string>
+    <string name="personalization_choose_color_desc">アプリのテーマカラーとして色を選択</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QRコード設定                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_settings_title">QRコード設定</string>
+    <string name="qrcode_settings_style">スタイル設定</string>
+    <string name="qrcode_settings_md3_theme">MD3 テーマカラー</string>
+    <string name="qrcode_settings_md3_theme_desc">現在のテーマカラーをQRコードの黒ブロック色として使用</string>
+    <string name="qrcode_settings_black">黒色</string>
+    <string name="qrcode_settings_black_desc">黒色をQRコードの黒ブロック色として使用</string>
+    <string name="qrcode_settings_corner_radius">角丸度</string>
+    <string name="qrcode_settings_display">表示</string>
+    <string name="qrcode_settings_screen_brightness">画面の明るさ</string>
+    <string name="qrcode_settings_screen_brightness_desc">QRコード表示時に自動で画面の明るさを上げる</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  設定                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="config_title">設定</string>
+    <string name="config_user_agent">ブラウザ識別子</string>
+    <string name="config_user_agent_desc">User-Agentを設定</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  ブラウザ識別子設定 + 編集                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="ua_settings_title">ブラウザ識別子設定</string>
+    <string name="ua_settings_current">現在選択中：%1$s</string>
+    <string name="ua_settings_home_ua">ホーム画面ブラウザ識別子設定</string>
+    <string name="ua_settings_coming_soon">近日公開</string>
+    <string name="ua_delete_title">ブラウザ識別子を削除</string>
+    <string name="ua_delete_confirm">\"%1$s\"を削除しますか？</string>
+    <string name="ua_edit_add_title">ブラウザ識別子を追加</string>
+    <string name="ua_edit_edit_title">ブラウザ識別子を編集</string>
+    <string name="ua_edit_note_label">メモを追加</string>
+    <string name="ua_edit_note_placeholder">例：学校タブレット</string>
+    <string name="ua_edit_default_note">カスタム識別子</string>
+    <string name="ua_edit_ua_label">ブラウザ識別子を入力</string>
+    <string name="ua_edit_ua_placeholder">Mozilla/5.0 …</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  について                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="about_title">について</string>
+    <string name="about_project_home">プロジェクトホームページ</string>
+    <string name="about_developer">開発者</string>
+    <string name="about_contact">連絡先</string>
+    <string name="about_ai_notice">本アプリはAI技術を使用しています</string>
+    <string name="about_contact_title">連絡先</string>
+    <string name="about_contact_qq">QQ連絡</string>
+    <string name="about_contact_bilibili">Bilibili連絡</string>
+    <string name="about_contact_email">メール連絡</string>
+    <string name="about_install_qq">先にQQアプリをインストールしてください</string>
+    <string name="about_no_mail_app">メールアプリを開けません</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  言語切り替え                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="language_title">言語</string>
+    <string name="language_current">現在の言語</string>
+    <string name="language_select">言語を選択</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+</resources>

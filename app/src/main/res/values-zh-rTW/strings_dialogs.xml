@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  對話框                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="custom_website_title">自訂網站</string>
+    <string name="custom_website_choose_icon">選取圖示</string>
+    <string name="custom_icon">自訂圖示</string>
+    <string name="custom_website_label">標題</string>
+    <string name="custom_website_label_placeholder">例如：教務系統</string>
+    <string name="custom_website_url_label">網址</string>
+    <string name="custom_website_url_placeholder">example.com</string>
+    <string name="custom_website_title_required">請輸入標題</string>
+    <string name="custom_website_url_invalid">請輸入有效的網址</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  開啟網址                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="open_url_intranet">內網存取</string>
+    <string name="open_url_title">開啟網址</string>
+    <string name="open_url_label">請輸入網址</string>
+    <string name="open_url_placeholder">example.com</string>
+    <string name="open_url_invalid">請輸入有效的網址，如 example.com</string>
+</resources>

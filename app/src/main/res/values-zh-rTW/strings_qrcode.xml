@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QR 碼                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_display_settings">QR 碼設定</string>
+    <string name="qrcode_display_scan_hint">請將 QR 碼對準掃碼裝置</string>
+    <string name="qrcode_display_auto_refresh">自動重新整理</string>
+    <string name="qrcode_display_balance">剩餘 %1$s ￥</string>
+    <string name="qrcode_login_expired">登入已過期，請重新登入</string>
+    <string name="qrcode_fetch_failed">取得 QR 碼失敗</string>
+    <string name="qrcode_refresh_failed">重新整理失敗</string>
+    <string name="qrcode_decode_failed">QR 碼解碼失敗</string>
+    <string name="qrcode_no_result">未識別到 QR 碼</string>
+    <string name="qrcode_camera_failed">相機啟動失敗</string>
+    <string name="qrcode_scan_result">掃碼結果: %1$s</string>
+    <string name="qrcode_cannot_handle_link">無法處理此連結: %1$s</string>
+    <string name="qrcode_save_success">QR 碼已儲存到相簿</string>
+    <string name="qrcode_save_failed">儲存失敗</string>
+    <string name="scan_save_to_album">儲存到相簿</string>
+    <string name="scan_open_external">其他應用程式開啟</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  掃碼                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="scan_title">掃碼</string>
+    <string name="scan_torch_on">關燈</string>
+    <string name="scan_torch_off">開燈</string>
+    <string name="scan_album">相簿</string>
+    <string name="scan_need_permission">需要相機權限才能掃碼</string>
+    <string name="scan_reauthorize">重新授權</string>
+    <string name="scan_permission_denied">相機權限被永久拒絕</string>
+    <string name="scan_go_to_settings">前往設定開啟權限</string>
+</resources>

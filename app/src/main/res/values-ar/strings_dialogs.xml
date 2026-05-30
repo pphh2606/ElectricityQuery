@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الحوارات                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="custom_website_title">موقع مخصص</string>
+    <string name="custom_website_choose_icon">اختيار أيقونة</string>
+    <string name="custom_icon">أيقونة مخصصة</string>
+    <string name="custom_website_label">العنوان</string>
+    <string name="custom_website_label_placeholder">مثال: النظام الأكاديمي</string>
+    <string name="custom_website_url_label">الرابط</string>
+    <string name="custom_website_url_placeholder">example.com</string>
+    <string name="custom_website_title_required">يرجى إدخال عنوان</string>
+    <string name="custom_website_url_invalid">يرجى إدخال رابط صالح</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  فتح رابط                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="open_url_intranet">وصول داخلي</string>
+    <string name="open_url_title">فتح الرابط</string>
+    <string name="open_url_label">أدخل الرابط</string>
+    <string name="open_url_placeholder">example.com</string>
+    <string name="open_url_invalid">يرجى إدخال رابط صالح، مثال: example.com</string>
+</resources>

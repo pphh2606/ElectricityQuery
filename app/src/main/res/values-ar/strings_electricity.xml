@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  لوحة الكهرباء                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="dashboard_select_room">يرجى اختيار السكن للعرض:</string>
+    <string name="dashboard_room_info">معلومات الغرفة</string>
+    <string name="dashboard_power_info">معلومات الكهرباء</string>
+    <string name="dashboard_unit_degree">ك.و.س</string>
+    <string name="dashboard_remaining_power">الكهرباء المتبقية</string>
+    <string name="dashboard_account_balance">رصيد الحساب</string>
+    <string name="dashboard_online_pay">الدفع عبر الإنترنت</string>
+    <string name="dashboard_more_features">المزيد من الميزات</string>
+    <string name="dashboard_recent_6months">استهلاك آخر 6 أشهر</string>
+    <string name="dashboard_daily_this_month">الاستهلاك اليومي لهذا الشهر</string>
+    <string name="dashboard_24h_detail">تفاصيل آخر 24 ساعة</string>
+    <string name="dashboard_meter_status">حالة العداد الفورية</string>
+    <string name="dashboard_query_recharge_records">سجل الشحن</string>
+    <string name="dashboard_reselect_room">إعادة اختيار الغرفة</string>
+    <string name="dashboard_title">نتيجة استعلام الكهرباء</string>
+    <string name="dashboard_select_dorm">اختيار السكن</string>
+    <string name="dashboard_cash_balance">الرصيد النقدي</string>
+    <string name="dashboard_subsidy_balance">رصيد الدعم</string>
+    <string name="dashboard_base_balance">الرصيد الأساسي</string>
+    <string name="dashboard_querying_balance">جارٍ استعلام الرصيد…</string>
+    <string name="dashboard_room_name">اسم الغرفة</string>
+    <string name="dashboard_room_id">معرف الغرفة</string>
+    <string name="dashboard_switch_dorm">تغيير السكن</string>
+    <string name="dashboard_unknown">غير معروف</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  التفاصيل                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="detail_empty_record">لا يوجد سجل استهلاك</string>
+    <string name="detail_empty_daily">لا توجد بيانات يومية</string>
+    <string name="detail_power_consumption">الاستهلاك: %1$s ك.و.س</string>
+    <string name="detail_cost">التكلفة: %1$s ¥</string>
+    <string name="detail_total_consumption">الاستهلاك: %1$s ك.و.س</string>
+    <string name="detail_title_6months">سجل آخر 6 أشهر</string>
+    <string name="detail_title_daily">الاستهلاك اليومي للشهر</string>
+    <string name="detail_title_hourly">تفاصيل 24 ساعة</string>
+    <string name="detail_title_meter">حالة العداد</string>
+    <string name="detail_chart_usage_kwh">الاستهلاك(ك.و.س)</string>
+    <string name="detail_chart_cost_yuan">التكلفة(¥)</string>
+    <string name="detail_section_data">البيانات التفصيلية</string>
+    <string name="detail_section_meter_status">حالة العداد</string>
+    <string name="detail_current">التيار</string>
+    <string name="detail_voltage">الجهد</string>
+    <string name="detail_power_cumulative">الطاقة الحالية / التراكمي</string>
+    <string name="detail_power_status">حالة الطاقة</string>
+    <string name="detail_empty_24h">لا توجد بيانات 24 ساعة</string>
+    <string name="detail_empty_meter">لا توجد بيانات عداد</string>
+    <string name="detail_export_time_header">الوقت</string>
+    <string name="detail_export_kwh_header">الاستهلاك(ك.و.س)</string>
+    <string name="detail_export_yuan_header">التكلفة(¥)</string>
+    <string name="detail_export_current_bracket">【التيار】</string>
+    <string name="detail_export_voltage_bracket">【الجهد】</string>
+    <string name="detail_export_power_bracket">【الطاقة الحالية / التراكمي】</string>
+    <string name="detail_export_power_status_bracket">【حالة الطاقة】</string>
+    <string name="detail_export_empty_meter">لا توجد بيانات عداد</string>
+    <string name="electricity_tab_query">استعلام</string>
+    <string name="electricity_tab_recharge">شحن</string>
+    <string name="electricity_tab_myroom">حسابي</string>
+    <string name="electricity_tab_my_dorm">سكني</string>
+    <string name="building_no_campus">لا توجد بيانات الحرم</string>
+    <string name="building_no_floors">لا توجد طوابق في هذا المبنى</string>
+    <string name="building_back_to_building">العودة لاختيار المبنى</string>
+    <string name="building_click_to_expand">اضغط للتوسيع</string>
+    <string name="building_no_rooms">لا توجد غرف</string>
+    <string name="building_reload">إعادة تحميل</string>
+    <string name="building_no_buildings">لا توجد مبانٍ في هذا الحرم</string>
+    <string name="building_rooms_count">%1$d غرفة</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  استعلام الكهرباء                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="electricity_query_title">استعلام الكهرباء</string>
+    <string name="electricity_recharge">شحن الكهرباء</string>
+    <string name="electricity_switch_dorm">تغيير السكن</string>
+    <string name="electricity_myroom_querying">جارٍ جلب معلومات السكن…</string>
+    <string name="electricity_recharge_hint_item2">2. إذا استمر فشل الحصول على معلومات المستخدم بعد التسجيل، جرب إدخال الرقم الجامعي لمسؤول السكن أو أول مسجل في الغرفة.</string>
+    <string name="electricity_recharge_hint_item3">3. يُسجل سجل الشحن تحت الرقم الجامعي المقابل. إذا كان هذا يزعجك، يرجى استخدام طرق شحن أخرى.</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  ダイアログ                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="custom_website_title">カスタムWebサイト</string>
+    <string name="custom_website_choose_icon">アイコンを選択</string>
+    <string name="custom_icon">カスタムアイコン</string>
+    <string name="custom_website_label">タイトル</string>
+    <string name="custom_website_label_placeholder">例：教務システム</string>
+    <string name="custom_website_url_label">URL</string>
+    <string name="custom_website_url_placeholder">example.com</string>
+    <string name="custom_website_title_required">タイトルを入力してください</string>
+    <string name="custom_website_url_invalid">有効なURLを入力してください</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  URLを開く                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="open_url_intranet">学内ネットワークアクセス</string>
+    <string name="open_url_title">URLを開く</string>
+    <string name="open_url_label">URLを入力してください</string>
+    <string name="open_url_placeholder">example.com</string>
+    <string name="open_url_invalid">有効なURLを入力してください（例：example.com）</string>
+</resources>

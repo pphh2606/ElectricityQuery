@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الإعدادات                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_personalization">التخصيص</string>
+    <string name="settings_personalization_desc">الوضع الليلي، لون السمة، حركة الانتقال</string>
+    <string name="settings_config">الإعدادات</string>
+    <string name="settings_config_desc">معرف المتصفح وإعدادات أخرى</string>
+    <string name="settings_about">حول</string>
+    <string name="settings_about_desc">إصدار التطبيق، معلومات المطور</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  التخصيص                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="personalization_title">التخصيص</string>
+    <string name="personalization_display">إعدادات العرض</string>
+    <string name="personalization_night_mode">الوضع الليلي</string>
+    <string name="personalization_theme_color">لون السمة</string>
+    <string name="personalization_dynamic_color">لون ديناميكي</string>
+    <string name="personalization_dynamic_color_supported">استخراج لون السمة من خلفية النظام</string>
+    <string name="personalization_dynamic_color_unsupported">اللون الديناميكي غير مدعوم على هذا الجهاز</string>
+    <string name="personalization_custom_color">لون مخصص</string>
+    <string name="personalization_custom_color_desc">إنشاء سمة من اللون المختار</string>
+    <string name="personalization_topbar_color">لون شريط العنوان</string>
+    <string name="personalization_qrcode_settings">إعدادات رمز QR</string>
+    <string name="personalization_qrcode_desc">اللون، الزوايا المستديرة وأنماط أخرى</string>
+    <string name="personalization_animation">إعدادات الحركة</string>
+    <string name="personalization_page_transition">حركة انتقال الصفحات</string>
+    <string name="personalization_reduce_motion">تقليل الحركة</string>
+    <string name="personalization_reduce_motion_override">(تم تجاوزه بواسطة تقليل الحركة)</string>
+    <string name="personalization_choose_color">اختيار لون السمة</string>
+    <string name="personalization_choose_color_desc">اختر لونًا ليكون سمة التطبيق</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  إعدادات رمز QR                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_settings_title">إعدادات رمز QR</string>
+    <string name="qrcode_settings_style">إعدادات النمط</string>
+    <string name="qrcode_settings_md3_theme">لون سمة MD3</string>
+    <string name="qrcode_settings_md3_theme_desc">استخدام لون السمة الحالي كلون للخلايا السوداء</string>
+    <string name="qrcode_settings_black">أسود</string>
+    <string name="qrcode_settings_black_desc">استخدام الأسود كلون للخلايا السوداء</string>
+    <string name="qrcode_settings_corner_radius">الزوايا المستديرة</string>
+    <string name="qrcode_settings_display">العرض</string>
+    <string name="qrcode_settings_screen_brightness">سطوع الشاشة</string>
+    <string name="qrcode_settings_screen_brightness_desc">زيادة سطوع الشاشة تلقائيًا عند عرض رمز QR</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الإعدادات                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="config_title">الإعدادات</string>
+    <string name="config_user_agent">معرف المتصفح</string>
+    <string name="config_user_agent_desc">تعيين User-Agent</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  إعدادات معرف المتصفح                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="ua_settings_title">إعدادات معرف المتصفح</string>
+    <string name="ua_settings_current">المحدد حاليًا: %1$s</string>
+    <string name="ua_settings_home_ua">معرف متصفح الصفحة الرئيسية</string>
+    <string name="ua_settings_coming_soon">قريبًا</string>
+    <string name="ua_delete_title">حذف معرف المتصفح</string>
+    <string name="ua_delete_confirm">هل تريد حذف \"%1$s\"؟</string>
+    <string name="ua_edit_add_title">إضافة معرف متصفح</string>
+    <string name="ua_edit_edit_title">تعديل معرف المتصفح</string>
+    <string name="ua_edit_note_label">إضافة ملاحظة</string>
+    <string name="ua_edit_note_placeholder">مثال: جهاز المدرسة اللوحي</string>
+    <string name="ua_edit_default_note">معرف مخصص</string>
+    <string name="ua_edit_ua_label">أدخل معرف المتصفح</string>
+    <string name="ua_edit_ua_placeholder">Mozilla/5.0 …</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  حول                                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="about_title">حول</string>
+    <string name="about_project_home">الصفحة الرئيسية للمشروع</string>
+    <string name="about_developer">المطور</string>
+    <string name="about_contact">جهات الاتصال</string>
+    <string name="about_ai_notice">يستخدم هذا التطبيق تقنية الذكاء الاصطناعي</string>
+    <string name="about_contact_title">جهات الاتصال</string>
+    <string name="about_contact_qq">QQ</string>
+    <string name="about_contact_bilibili">Bilibili</string>
+    <string name="about_contact_email">البريد الإلكتروني</string>
+    <string name="about_install_qq">يرجى تثبيت تطبيق QQ أولاً</string>
+    <string name="about_no_mail_app">تعذر فتح تطبيق البريد</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  اللغة                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="language_title">اللغة</string>
+    <string name="language_current">اللغة الحالية</string>
+    <string name="language_select">اختيار اللغة</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+</resources>

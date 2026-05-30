@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  بطاقة الحرم الجامعي                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_center_title">منصة بطاقة الحرم</string>
+    <string name="card_center_account_info">معلومات الحساب</string>
+    <string name="card_center_payment_code">رمز الدفع</string>
+    <string name="card_center_transit_code">رمز النقل</string>
+    <string name="card_center_bills">الفواتير</string>
+    <string name="card_center_report_lost">الإبلاغ عن الفقدان</string>
+    <string name="card_center_recharge">شحن</string>
+    <string name="card_lost_title">الإبلاغ عن الفقدان</string>
+    <string name="card_lost_warning">⚠ سيتم تعطيل البطاقة فورًا بعد الإبلاغ. يرجى التأكيد.</string>
+    <string name="card_lost_failure">فشل الإبلاغ</string>
+    <string name="card_fetching_info">جارٍ جلب معلومات البطاقة…</string>
+    <string name="card_account_info_title">معلومات الحساب</string>
+    <string name="card_fetching_account">جارٍ جلب معلومات الحساب…</string>
+    <string name="card_account_info_name">الاسم</string>
+    <string name="card_account_info_student_id">الرقم الجامعي</string>
+    <string name="card_account_info_balance">رصيد الحساب</string>
+    <string name="card_account_info_school">الجامعة</string>
+    <string name="card_account_info_major">التخصص</string>
+    <string name="card_account_info_class">الفصل</string>
+    <string name="card_lost_card_number">رقم البطاقة</string>
+    <string name="card_lost_card_status">حالة البطاقة</string>
+    <string name="card_error_title">خطأ</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الفواتير                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="bill_title">الفواتير</string>
+    <string name="bill_cash_flow">تدفق الأموال:</string>
+    <string name="bill_income">دخل</string>
+    <string name="bill_expense">مصروف</string>
+    <string name="bill_fetching">جارٍ الجلب… %1$d ث</string>
+    <string name="bill_loaded_count">تم تحميل %1$d</string>
+    <string name="bill_start_date">تاريخ البداية</string>
+    <string name="bill_end_date">تاريخ النهاية</string>
+    <string name="bill_page_info">صفحة %1$d/%2$d</string>
+    <string name="bill_tab_all">الكل</string>
+    <string name="bill_tab_unpaid">غير مدفوع</string>
+    <string name="bill_tab_success">ناجح</string>
+    <string name="bill_tab_failed">فاشل</string>
+    <string name="bill_detail_title">تفاصيل المعاملة</string>
+    <string name="bill_web_title">الفواتير (ويب)</string>
+    <string name="bill_merchant_name">اسم التاجر</string>
+    <string name="bill_filter_reset">إعادة تعيين</string>
+    <string name="bill_filter_apply">تطبيق</string>
+    <string name="bill_no_unpaid">لا توجد طلبات غير مدفوعة</string>
+    <string name="bill_no_success">لا توجد معاملات ناجحة</string>
+    <string name="bill_no_failed">لا توجد معاملات فاشلة</string>
+    <string name="bill_no_records">لا توجد معاملات</string>
+    <string name="bill_capped_hint">— عرض آخر 100 فقط، للمزيد زر النسخة الويب —</string>
+    <string name="bill_all_loaded">— تم تحميل %1$d —</string>
+    <string name="card_lost_confirm_title">تأكيد الفقدان</string>
+    <string name="card_lost_confirm_text">هل تريد الإبلاغ عن فقدان هذه البطاقة؟ سيتم تعطيلها فورًا.</string>
+    <string name="card_lost_confirm_btn">تأكيد الفقدان</string>
+    <string name="card_lost_processing">جارٍ المعالجة…</string>
+    <string name="card_lost_normal_status">طبيعي</string>
+    <string name="card_lost_success">تم الإبلاغ بنجاح</string>
+    <string name="card_lost_request_error">خطأ في الطلب</string>
+    <string name="card_lost_fetch_error">فشل جلب معلومات البطاقة</string>
+    <string name="card_lost_login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
+    <string name="card_account_info_fetch_error">فشل جلب معلومات الحساب</string>
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QRコード                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_display_settings">QRコード設定</string>
+    <string name="qrcode_display_scan_hint">QRコードをスキャン機器に向けてください</string>
+    <string name="qrcode_display_auto_refresh">自動更新</string>
+    <string name="qrcode_display_balance">残高 %1$s ￥</string>
+    <string name="qrcode_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
+    <string name="qrcode_fetch_failed">QRコードの取得に失敗</string>
+    <string name="qrcode_refresh_failed">更新失敗</string>
+    <string name="qrcode_decode_failed">QRコードのデコードに失敗</string>
+    <string name="qrcode_no_result">QRコードが認識されませんでした</string>
+    <string name="qrcode_camera_failed">カメラの起動に失敗</string>
+    <string name="qrcode_scan_result">スキャン結果: %1$s</string>
+    <string name="qrcode_cannot_handle_link">このリンクを処理できません: %1$s</string>
+    <string name="qrcode_save_success">QRコードをアルバムに保存しました</string>
+    <string name="qrcode_save_failed">保存失敗</string>
+    <string name="scan_save_to_album">アルバムに保存</string>
+    <string name="scan_open_external">他のアプリで開く</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  スキャン                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="scan_title">スキャン</string>
+    <string name="scan_torch_on">ライトを消す</string>
+    <string name="scan_torch_off">ライトをつける</string>
+    <string name="scan_album">アルバム</string>
+    <string name="scan_need_permission">スキャンにはカメラ権限が必要です</string>
+    <string name="scan_reauthorize">再許可</string>
+    <string name="scan_permission_denied">カメラ権限が完全に拒否されました</string>
+    <string name="scan_go_to_settings">設定画面で権限を有効にする</string>
+</resources>

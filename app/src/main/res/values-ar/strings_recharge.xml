@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الشحن                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_title">شحن</string>
+    <string name="recharge_hint">تلميح</string>
+    <string name="recharge_query">استعلام</string>
+    <string name="recharge_student_id_label">أدخل الرقم الجامعي أو userId</string>
+    <string name="recharge_student_id_placeholder">مثال: 2022010101 أو 12345</string>
+    <string name="recharge_my_account">حسابي</string>
+    <string name="recharge_switch_account">تغيير الحساب</string>
+    <string name="recharge_balance">الرصيد (¥)</string>
+    <string name="recharge_refresh_balance">تحديث الرصيد</string>
+    <string name="recharge_custom_amount_label">مبلغ مخصص (¥)</string>
+    <string name="recharge_custom_amount_placeholder">مثال: 0.01</string>
+    <string name="recharge_pay_now">ادفع الآن</string>
+    <string name="recharge_other_methods">طرق شحن أخرى</string>
+    <string name="recharge_important_notes">ملاحظات هامة</string>
+    <string name="recharge_note_time">1. الشحن متاح من 00:05 إلى 23:55.</string>
+    <string name="recharge_note_delay">2. إذا نجح الدفع ولم يصل الرصيد بعد، انتظر 5 دقائق.</string>
+    <string name="recharge_note_power">3. إذا اكتمل الشحن ويوجد رصيد ولكن لم تصل الكهرباء، اتصل بالمسؤول.</string>
+    <string name="recharge_preset_amount">%1$d ¥</string>
+    <string name="recharge_hint_item1">1. إذا فشل الحصول على المستخدم، يرجى أولاً</string>
+    <string name="recharge_hint_item1_link">النقر هنا</string>
+    <string name="recharge_hint_item1_suffix">للتسجيل في المنصة.</string>
+    <string name="recharge_hint_item2">2. إذا استمر الفشل بعد التسجيل، جرب الرقم الجامعي لمسؤول السكن أو أول مسجل.</string>
+    <string name="recharge_hint_item3_prefix">3. يُسجل السجل تحت الرقم الجامعي. إذا كان هذا يزعجك،</string>
+    <string name="recharge_hint_item3_suffix">اختر طريقة شحن أخرى.</string>
+    <string name="recharge_select_room_title">اختيار غرفة الشحن</string>
+    <string name="recharge_select_room_hint">هذا الرقم مرتبط بعدة غرف. اختر الغرفة المراد شحنها:</string>
+    <string name="recharge_other_method_title">اختيار طريقة الشحن</string>
+    <string name="recharge_method_campus">شحن Campusphere</string>
+    <string name="recharge_method_inapp_h5">شحن H5 داخل التطبيق</string>
+    <string name="recharge_method_browser_h5">شحن H5 بالمتصفح</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  سجل الشحن                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_record_title">سجل الشحن</string>
+    <string name="recharge_record_time_range">الفترة الزمنية:</string>
+    <string name="recharge_record_copy">نسخ</string>
+    <string name="recharge_record_export">تصدير</string>
+    <string name="recharge_record_total">إجمالي الشحن: %1$s ¥ (%2$d عملية)</string>
+    <string name="recharge_record_no_data">لا توجد سجلات</string>
+    <string name="recharge_record_recharger">الشاحن: %1$s</string>
+    <string name="recharge_record_time">وقت الشحن: %1$s</string>
+    <string name="recharge_record_amount">المبلغ: %1$s ¥</string>
+    <string name="recharge_record_order_no">رقم الطلب: %1$s</string>
+    <string name="recharge_record_hint_item1">1. البيانات المقدمة للرجوع فقط.</string>
+    <string name="recharge_record_hint_item2_prefix">2. إذا كنت تعتقد أن السجلات غير دقيقة، يمكنك زيارة</string>
+    <string name="recharge_record_hint_item2_link">هذا الرابط</string>
+    <string name="recharge_record_hint_item2_suffix">للسجل الرسمي.</string>
+    <string name="recharge_record_export_title">سجل الشحن</string>
+    <string name="recharge_time_1month">شهر</string>
+    <string name="recharge_time_3months">3 أشهر</string>
+    <string name="recharge_time_1year">سنة</string>
+    <string name="recharge_time_4years">4 سنوات</string>
+    <string name="recharge_install_campus_app">يرجى تثبيت Campusphere أولاً</string>
+    <string name="recharge_no_room_selected">لم يتم اختيار غرفة</string>
+    <string name="recharge_invalid_amount">يرجى إدخال مبلغ صالح</string>
+    <string name="recharge_amount_out_of_range">المبلغ خارج النطاق (0–1000 ¥)</string>
+    <string name="recharge_order_create_failed">فشل إنشاء الطلب: %1$s</string>
+    <string name="recharge_no_room_bound">لا توجد غرفة مرتبطة بهذا الحساب</string>
+    <string name="recharge_query_failed">فشل الاستعلام: %1$s</string>
+    <string name="recharge_enter_student_id">يرجى إدخال الرقم الجامعي</string>
+    <string name="recharge_record_query_failed">فشل استعلام سجل الشحن</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الدفع                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="payment_title_for_user">شحن الكهرباء لـ %1$s</string>
+    <string name="payment_title_default">شحن الكهرباء</string>
+    <string name="payment_creating_order">جارٍ إنشاء الطلب…</string>
+    <string name="payment_amount_label">مبلغ الشحن</string>
+    <string name="payment_select_method">اختيار طريقة الدفع</string>
+    <string name="payment_wechat_desc">موصى به، دفع سريع</string>
+    <string name="payment_alipay_desc">يدعم بطاقات الخصم والائتمان</string>
+    <string name="payment_selected">محدد</string>
+    <string name="payment_confirm">تأكيد الدفع</string>
+    <string name="payment_processing">جارٍ معالجة الدفع…</string>
+    <string name="payment_order_failed">فشل إنشاء الطلب</string>
+    <string name="payment_close">إغلاق</string>
+</resources>

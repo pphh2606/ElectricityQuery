@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  電気料金ダッシュボード                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="dashboard_select_room">確認する寮室を選択してください：</string>
+    <string name="dashboard_room_info">ルーム情報</string>
+    <string name="dashboard_power_info">電力情報</string>
+    <string name="dashboard_unit_degree">度</string>
+    <string name="dashboard_remaining_power">残量</string>
+    <string name="dashboard_account_balance">アカウント残高</string>
+    <string name="dashboard_online_pay">オンライン支払い</string>
+    <string name="dashboard_more_features">その他の機能</string>
+    <string name="dashboard_recent_6months">最近6ヶ月の電力使用記録</string>
+    <string name="dashboard_daily_this_month">今月の日別使用量</string>
+    <string name="dashboard_24h_detail">過去24時間の詳細</string>
+    <string name="dashboard_meter_status">メーターリアルタイム状態</string>
+    <string name="dashboard_query_recharge_records">チャージ記録を照会</string>
+    <string name="dashboard_reselect_room">ルームを再選択</string>
+    <string name="dashboard_title">電気料金照会結果</string>
+    <string name="dashboard_select_dorm">寮室を選択</string>
+    <string name="dashboard_cash_balance">現金残高</string>
+    <string name="dashboard_subsidy_balance">補助残高</string>
+    <string name="dashboard_base_balance">基本残高</string>
+    <string name="dashboard_querying_balance">残高を照会中…</string>
+    <string name="dashboard_room_name">ルーム名</string>
+    <string name="dashboard_room_id">ルーム ID</string>
+    <string name="dashboard_switch_dorm">寮室を切替</string>
+    <string name="dashboard_unknown">不明</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  詳細                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="detail_empty_record">電力使用記録がありません</string>
+    <string name="detail_empty_daily">日別使用データがありません</string>
+    <string name="detail_power_consumption">使用量: %1$s 度</string>
+    <string name="detail_cost">費用: %1$s 円</string>
+    <string name="detail_total_consumption">使用量: %1$s 度</string>
+    <string name="detail_title_6months">最近6ヶ月の電力使用記録</string>
+    <string name="detail_title_daily">今月の日別使用量</string>
+    <string name="detail_title_hourly">過去24時間の詳細</string>
+    <string name="detail_title_meter">メーターリアルタイム状態</string>
+    <string name="detail_chart_usage_kwh">使用量(度)</string>
+    <string name="detail_chart_cost_yuan">費用(円)</string>
+    <string name="detail_section_data">明細データ</string>
+    <string name="detail_section_meter_status">メーターリアルタイム状態</string>
+    <string name="detail_current">電流</string>
+    <string name="detail_voltage">電圧</string>
+    <string name="detail_power_cumulative">現在電力/累計値</string>
+    <string name="detail_power_status">電源状態</string>
+    <string name="detail_empty_24h">24時間データがありません</string>
+    <string name="detail_empty_meter">メーターデータがありません</string>
+    <string name="detail_export_time_header">時刻</string>
+    <string name="detail_export_kwh_header">使用量(度)</string>
+    <string name="detail_export_yuan_header">費用(円)</string>
+    <string name="detail_export_current_bracket">【電流】</string>
+    <string name="detail_export_voltage_bracket">【電圧】</string>
+    <string name="detail_export_power_bracket">【現在電力/累計値】</string>
+    <string name="detail_export_power_status_bracket">【電源状態】</string>
+    <string name="detail_export_empty_meter">メーターデータがありません</string>
+    <string name="electricity_tab_query">照会</string>
+    <string name="electricity_tab_recharge">チャージ</string>
+    <string name="electricity_tab_myroom">マイページ</string>
+    <string name="electricity_tab_my_dorm">マイ寮室</string>
+    <string name="building_no_campus">キャンパスデータがありません</string>
+    <string name="building_no_floors">この建物にはフロアデータがありません</string>
+    <string name="building_back_to_building">建物選択に戻る</string>
+    <string name="building_click_to_expand">タップして展開</string>
+    <string name="building_no_rooms">ルームがありません</string>
+    <string name="building_reload">再読み込み</string>
+    <string name="building_no_buildings">このキャンパスには建物がありません</string>
+    <string name="building_rooms_count">%1$d 室</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  電気料金照会                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="electricity_query_title">電気料金照会</string>
+    <string name="electricity_recharge">電気料金チャージ</string>
+    <string name="electricity_switch_dorm">寮室を切替</string>
+    <string name="electricity_myroom_querying">マイ寮室情報を取得中…</string>
+    <string name="electricity_recharge_hint_item2">2.登録後もユーザー情報取得に失敗する場合は、寮室管理者の学籍番号または寮室で最初にプラットフォームに登録した学籍番号を入力してみてください。</string>
+    <string name="electricity_recharge_hint_item3">3.チャージ記録は学籍番号に対応するユーザーに記録されます。気になる場合は他のチャージ方法をご確認ください。</string>
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Hall des frais                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_hall_title">Hall des frais</string>
+    <string name="fee_hall_tab_home">Accueil</string>
+    <string name="fee_hall_tab_orders">Commandes</string>
+    <string name="fee_hall_tab_profile">Mon compte</string>
+    <string name="fee_hall_no_projects">Aucun projet</string>
+    <string name="fee_hall_load_failed">Échec du chargement : %1$s</string>
+    <string name="fee_profile_pwd_change">Modifier le mot de passe</string>
+    <string name="fee_profile_invoice_mgmt">Gestion des entêtes de facture</string>
+    <string name="fee_profile_fun_bill">Facture ludique</string>
+    <string name="fee_profile_query_pay">Consulter le paiement</string>
+    <string name="fee_profile_view_invoice">Voir la facture</string>
+    <string name="fee_profile_advance_invoice">Facture anticipée</string>
+    <string name="fee_profile_load_failed">Échec du chargement : %1$s</string>
+    <string name="fee_profile_account">Compte</string>
+    <string name="fee_profile_name">Nom</string>
+    <string name="fee_profile_dept">Département</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Détail commande                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_order_detail_title">Détail commande</string>
+    <string name="fee_order_info">Info commande</string>
+    <string name="fee_order_no">N° commande</string>
+    <string name="fee_order_product_desc">Description</string>
+    <string name="fee_order_create_time">Date de création</string>
+    <string name="fee_order_complete_time">Date de complétion</string>
+    <string name="fee_order_update_time">Date de mise à jour</string>
+    <string name="fee_order_close_time">Date de clôture</string>
+    <string name="fee_order_channel">Canal de paiement</string>
+    <string name="fee_order_transaction_no">N° de transaction</string>
+    <string name="fee_order_project_id">ID projet</string>
+    <string name="fee_order_partner">Partenaire</string>
+    <string name="fee_order_time_range_sep">~</string>
+    <string name="fee_hall_no_orders">Aucune commande</string>
+    <string name="fee_order_project_name">Nom du projet</string>
+    <string name="fee_order_loaded_count">%1$d chargés</string>
+    <string name="fee_order_page_info">Page %1$d/%2$d</string>
+    <string name="fee_order_no_label">N° commande : %1$s</string>
+    <string name="fee_hall_order_all_loaded">— %1$d commandes chargées —</string>
+</resources>

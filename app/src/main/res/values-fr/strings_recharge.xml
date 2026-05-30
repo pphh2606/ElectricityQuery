@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Recharge                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_title">Recharge</string>
+    <string name="recharge_hint">Astuce</string>
+    <string name="recharge_query">Consulter</string>
+    <string name="recharge_student_id_label">Saisir le numéro étudiant ou userId</string>
+    <string name="recharge_student_id_placeholder">Ex. 2022010101 ou 12345</string>
+    <string name="recharge_my_account">Mon compte</string>
+    <string name="recharge_switch_account">Changer de compte</string>
+    <string name="recharge_balance">Solde (¥)</string>
+    <string name="recharge_refresh_balance">Actualiser le solde</string>
+    <string name="recharge_custom_amount_label">Montant personnalisé (¥)</string>
+    <string name="recharge_custom_amount_placeholder">Ex. 0.01</string>
+    <string name="recharge_pay_now">Payer maintenant</string>
+    <string name="recharge_other_methods">Autres moyens de recharge</string>
+    <string name="recharge_important_notes">Remarques importantes</string>
+    <string name="recharge_note_time">1. La recharge est possible de 00:05 à 23:55.</string>
+    <string name="recharge_note_delay">2. Si le paiement a réussi mais n\'est pas encore crédité, veuillez patienter 5 minutes.</string>
+    <string name="recharge_note_power">3. Si le solde est suffisant mais que l\'électricité n\'est pas rétablie, contactez l\'administrateur.</string>
+    <string name="recharge_preset_amount">%1$d ¥</string>
+    <string name="recharge_hint_item1">1. Si la récupération de l\'utilisateur échoue, veuillez d\'abord</string>
+    <string name="recharge_hint_item1_link">cliquer ici</string>
+    <string name="recharge_hint_item1_suffix">pour vous inscrire sur la plateforme.</string>
+    <string name="recharge_hint_item2">2. Si après inscription l\'erreur persiste, essayez le numéro de l\'administrateur du dortoir ou du premier inscrit.</string>
+    <string name="recharge_hint_item3_prefix">3. L\'historique est enregistré sous le numéro étudiant. Si cela vous dérange,</string>
+    <string name="recharge_hint_item3_suffix">choisissez une autre méthode de recharge.</string>
+    <string name="recharge_select_room_title">Choisir la chambre à recharger</string>
+    <string name="recharge_select_room_hint">Ce numéro étudiant est lié à plusieurs chambres. Choisissez celle à recharger :</string>
+    <string name="recharge_other_method_title">Choisir la méthode de recharge</string>
+    <string name="recharge_method_campus">Recharge Campusphere</string>
+    <string name="recharge_method_inapp_h5">Recharge H5 dans l\'app</string>
+    <string name="recharge_method_browser_h5">Recharge H5 navigateur</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Historique de recharge                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_record_title">Historique de recharge</string>
+    <string name="recharge_record_time_range">Période :</string>
+    <string name="recharge_record_copy">Copier</string>
+    <string name="recharge_record_export">Exporter</string>
+    <string name="recharge_record_total">Total rechargé : %1$s ¥ (%2$d opérations)</string>
+    <string name="recharge_record_no_data">Aucun enregistrement</string>
+    <string name="recharge_record_recharger">Rechargé par : %1$s</string>
+    <string name="recharge_record_time">Date : %1$s</string>
+    <string name="recharge_record_amount">Montant : %1$s ¥</string>
+    <string name="recharge_record_order_no">N° de commande : %1$s</string>
+    <string name="recharge_record_hint_item1">1. Les données sont fournies à titre indicatif.</string>
+    <string name="recharge_record_hint_item2_prefix">2. Si vous pensez que les données sont inexactes, consultez</string>
+    <string name="recharge_record_hint_item2_link">ce lien</string>
+    <string name="recharge_record_hint_item2_suffix">pour l\'historique officiel.</string>
+    <string name="recharge_record_export_title">Historique de recharge</string>
+    <string name="recharge_time_1month">1 mois</string>
+    <string name="recharge_time_3months">3 mois</string>
+    <string name="recharge_time_1year">1 an</string>
+    <string name="recharge_time_4years">4 ans</string>
+    <string name="recharge_install_campus_app">Veuillez d\'abord installer Campusphere</string>
+    <string name="recharge_no_room_selected">Aucune chambre sélectionnée</string>
+    <string name="recharge_invalid_amount">Veuillez saisir un montant valide</string>
+    <string name="recharge_amount_out_of_range">Montant hors plage (0–1000 ¥)</string>
+    <string name="recharge_order_create_failed">Échec de création de commande : %1$s</string>
+    <string name="recharge_no_room_bound">Aucune chambre liée à ce compte</string>
+    <string name="recharge_query_failed">Échec de la consultation : %1$s</string>
+    <string name="recharge_enter_student_id">Veuillez saisir un numéro étudiant</string>
+    <string name="recharge_record_query_failed">Échec de consultation de l\'historique</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Paiement                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="payment_title_for_user">Recharger pour %1$s</string>
+    <string name="payment_title_default">Recharger</string>
+    <string name="payment_creating_order">Création de la commande…</string>
+    <string name="payment_amount_label">Montant</string>
+    <string name="payment_select_method">Choisir le mode de paiement</string>
+    <string name="payment_wechat_desc">Recommandé, paiement rapide</string>
+    <string name="payment_alipay_desc">Carte de débit et de crédit acceptées</string>
+    <string name="payment_selected">Sélectionné</string>
+    <string name="payment_confirm">Confirmer le paiement</string>
+    <string name="payment_processing">Traitement du paiement…</string>
+    <string name="payment_order_failed">Échec de création de commande</string>
+    <string name="payment_close">Fermer</string>
+</resources>

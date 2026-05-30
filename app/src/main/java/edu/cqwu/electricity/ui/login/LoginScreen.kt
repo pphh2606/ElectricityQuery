@@ -83,6 +83,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.LanguageSwitchButton
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
@@ -213,6 +214,9 @@ fun LoginScreen(
                 },
                 // 安全说明 + 三点菜单
                 actions = {
+                    // 语言切换图标
+                    LanguageSwitchButton()
+
                     // 安全说明问号按钮
                     IconButton(onClick = { showSecurityNotice = true }) {
                         Icon(

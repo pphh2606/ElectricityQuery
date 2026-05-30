@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  WebView                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_copy_link">نسخ الرابط</string>
+    <string name="webview_share_link">مشاركة الرابط</string>
+    <string name="webview_open_in_browser">فتح في المتصفح</string>
+    <string name="webview_switch_to_external">التبديل إلى الشبكة الخارجية</string>
+    <string name="webview_switch_to_internal">التبديل إلى الشبكة الداخلية</string>
+    <string name="webview_clip_label">رابط ويب</string>
+    <string name="webview_reload">إعادة تحميل</string>
+    <string name="webview_toggle_network">تبديل الشبكة</string>
+    <string name="webview_network_settings">إعدادات الشبكة</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  أخطاء WebView                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_error_page_not_found">الصفحة غير موجودة</string>
+    <string name="webview_error_page_not_found_desc">الصفحة المطلوبة غير موجودة (HTTP 404)</string>
+    <string name="webview_error_server_error">خطأ داخلي في الخادم</string>
+    <string name="webview_error_server_error_desc">واجه الخادم مشكلة. يرجى المحاولة لاحقًا (HTTP 500)</string>
+    <string name="webview_error_service_unavailable">الخدمة غير متاحة مؤقتًا</string>
+    <string name="webview_error_service_unavailable_desc">الخادم قيد الصيانة أو التحميل الزائد (HTTP %1$d)</string>
+    <string name="webview_error_load_failed">فشل تحميل الصفحة</string>
+    <string name="webview_error_http_generic_desc">أعاد الخادم خطأ (HTTP %1$d)</string>
+    <string name="webview_error_network_disconnected">انقطع الاتصال بالشبكة</string>
+    <string name="webview_error_network_disconnected_desc">يرجى التحقق من إعدادات الشبكة</string>
+    <string name="webview_error_timeout">انتهت مهلة الاتصال</string>
+    <string name="webview_error_timeout_desc">يرجى استخدام شبكة الحرم الجامعي أو المحاولة لاحقًا</string>
+    <string name="webview_error_dns_failed">تعذر حل عنوان الخادم</string>
+    <string name="webview_error_dns_failed_desc">فشل تحليل DNS، تحقق من اتصالك</string>
+    <string name="webview_error_connection_refused">رفض الخادم الاتصال</string>
+    <string name="webview_error_connection_refused_desc">يرجى استخدام شبكة الحرم الجامعي أو المحاولة لاحقًا</string>
+    <string name="webview_error_no_response">الخادم لا يستجيب</string>
+    <string name="webview_error_no_response_desc">يرجى الفتح باستخدام شبكة الحرم الجامعي</string>
+    <string name="webview_error_unreachable">العنوان غير قابل للوصول</string>
+    <string name="webview_error_unreachable_desc">تعذر الوصول إلى الخادم الهدف</string>
+    <string name="webview_error_generic_desc">تحقق من اتصالك وأعد المحاولة</string>
+    <string name="webview_loading">جارٍ التحميل…</string>
+    <string name="webview_link_copied">تم نسخ الرابط</string>
+    <string name="webview_url_change_failed">فشل تغيير الرابط</string>
+    <string name="webview_campusphere_warning">أنت تتصفح محتوى Campusphere. قد تحدث مشاكل توافق. يُنصح باستخدام تطبيق Campusphere.</string>
+    <string name="webview_no_download_tool">لم يتم العثور على أداة تنزيل</string>
+    <string name="webview_cannot_open_network_settings">تعذر فتح إعدادات الشبكة</string>
+</resources>

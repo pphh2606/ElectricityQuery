@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Dialogues                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="custom_website_title">Site personnalisé</string>
+    <string name="custom_website_choose_icon">Choisir l\'icône</string>
+    <string name="custom_icon">Icône personnalisée</string>
+    <string name="custom_website_label">Titre</string>
+    <string name="custom_website_label_placeholder">Ex. : Système académique</string>
+    <string name="custom_website_url_label">URL</string>
+    <string name="custom_website_url_placeholder">exemple.com</string>
+    <string name="custom_website_title_required">Veuillez saisir un titre</string>
+    <string name="custom_website_url_invalid">Veuillez saisir une URL valide</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Ouvrir URL                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="open_url_intranet">Accès intranet</string>
+    <string name="open_url_title">Ouvrir l\'URL</string>
+    <string name="open_url_label">Saisir l\'URL</string>
+    <string name="open_url_placeholder">exemple.com</string>
+    <string name="open_url_invalid">Veuillez saisir une URL valide (ex. exemple.com)</string>
+</resources>

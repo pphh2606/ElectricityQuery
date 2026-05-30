@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QR Code                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_display_settings">Paramètres QR</string>
+    <string name="qrcode_display_scan_hint">Présentez le QR code au scanner</string>
+    <string name="qrcode_display_auto_refresh">Actualisation auto</string>
+    <string name="qrcode_display_balance">Solde %1$s ￥</string>
+    <string name="qrcode_login_expired">Session expirée, veuillez vous reconnecter</string>
+    <string name="qrcode_fetch_failed">Échec d\'obtention du QR code</string>
+    <string name="qrcode_refresh_failed">Échec d\'actualisation</string>
+    <string name="qrcode_decode_failed">Échec de décodage du QR code</string>
+    <string name="qrcode_no_result">Aucun QR code détecté</string>
+    <string name="qrcode_camera_failed">Échec du démarrage de la caméra</string>
+    <string name="qrcode_scan_result">Résultat : %1$s</string>
+    <string name="qrcode_cannot_handle_link">Impossible de traiter ce lien : %1$s</string>
+    <string name="qrcode_save_success">QR code enregistré dans l\'album</string>
+    <string name="qrcode_save_failed">Échec d\'enregistrement</string>
+    <string name="scan_save_to_album">Enregistrer dans l\'album</string>
+    <string name="scan_open_external">Ouvrir avec une autre app</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Scanner                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="scan_title">Scanner</string>
+    <string name="scan_torch_on">Torche OFF</string>
+    <string name="scan_torch_off">Torche ON</string>
+    <string name="scan_album">Album</string>
+    <string name="scan_need_permission">Autorisation caméra requise</string>
+    <string name="scan_reauthorize">Réautoriser</string>
+    <string name="scan_permission_denied">Autorisation caméra refusée définitivement</string>
+    <string name="scan_go_to_settings">Aller aux paramètres</string>
+</resources>

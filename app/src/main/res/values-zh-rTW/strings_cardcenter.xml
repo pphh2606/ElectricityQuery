@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  一卡通服務平台                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_center_title">一卡通服務平台</string>
+    <string name="card_center_account_info">帳戶資訊</string>
+    <string name="card_center_payment_code">支付碼</string>
+    <string name="card_center_transit_code">乘車碼</string>
+    <string name="card_center_bills">帳單</string>
+    <string name="card_center_report_lost">卡片掛失</string>
+    <string name="card_center_recharge">加值</string>
+    <string name="card_lost_title">卡片掛失</string>
+    <string name="card_lost_warning">⚠ 掛失後卡片將立即無法使用，請確認後再操作</string>
+    <string name="card_lost_failure">掛失失敗</string>
+    <string name="card_fetching_info">正在取得卡片資訊…</string>
+    <string name="card_account_info_title">帳戶資訊</string>
+    <string name="card_fetching_account">正在取得帳戶資訊…</string>
+    <string name="card_account_info_name">姓名</string>
+    <string name="card_account_info_student_id">學號</string>
+    <string name="card_account_info_balance">帳戶餘額</string>
+    <string name="card_account_info_school">學校</string>
+    <string name="card_account_info_major">專業</string>
+    <string name="card_account_info_class">班級</string>
+    <string name="card_lost_card_number">卡號</string>
+    <string name="card_lost_card_status">卡片狀態</string>
+    <string name="card_error_title">錯誤</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  帳單                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="bill_title">帳單</string>
+    <string name="bill_cash_flow">資金流向：</string>
+    <string name="bill_income">收入</string>
+    <string name="bill_expense">支出</string>
+    <string name="bill_fetching">正在取得帳單…%1$ds</string>
+    <string name="bill_loaded_count">已載入 %1$d 筆</string>
+    <string name="bill_start_date">開始日期</string>
+    <string name="bill_end_date">結束日期</string>
+    <string name="bill_page_info">第 %1$d/%2$d 頁</string>
+    <string name="bill_tab_all">全部</string>
+    <string name="bill_tab_unpaid">未付款</string>
+    <string name="bill_tab_success">成功</string>
+    <string name="bill_tab_failed">失敗</string>
+    <string name="bill_detail_title">交易詳情</string>
+    <string name="bill_web_title">帳單（網頁版）</string>
+    <string name="bill_merchant_name">商家名稱</string>
+    <string name="bill_filter_reset">重設</string>
+    <string name="bill_filter_apply">套用篩選</string>
+    <string name="bill_no_unpaid">暫無未付款訂單</string>
+    <string name="bill_no_success">暫無成功交易</string>
+    <string name="bill_no_failed">暫無失敗交易</string>
+    <string name="bill_no_records">暫無交易記錄</string>
+    <string name="bill_capped_hint">— 僅展示最近 100 筆，更多請前往網頁版 —</string>
+    <string name="bill_all_loaded">— 已載入全部 %1$d 筆 —</string>
+    <string name="card_lost_confirm_title">確認掛失</string>
+    <string name="card_lost_confirm_text">確定要掛失該卡片嗎？掛失後卡片將立即無法使用。</string>
+    <string name="card_lost_confirm_btn">確定掛失</string>
+    <string name="card_lost_processing">正在處理…</string>
+    <string name="card_lost_normal_status">正常</string>
+    <string name="card_lost_success">掛失成功</string>
+    <string name="card_lost_request_error">請求異常</string>
+    <string name="card_lost_fetch_error">取得卡片資訊失敗</string>
+    <string name="card_lost_login_expired">登入已過期，請重新登入</string>
+    <string name="card_account_info_fetch_error">取得帳戶資訊失敗</string>
+</resources>

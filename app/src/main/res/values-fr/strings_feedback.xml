@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Commentaires                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="feedback_title">Commentaires</string>
+    <string name="feedback_attach_log">Joindre les journaux (inclut les crashs)</string>
+    <string name="feedback_crash_count">%1$d crashs enregistrés, joints automatiquement</string>
+    <string name="feedback_log_preview">Aperçu des journaux</string>
+    <string name="feedback_title_label">Titre (optionnel)</string>
+    <string name="feedback_content_label">Contenu</string>
+    <string name="feedback_no_mail_app">Aucune application de messagerie trouvée</string>
+    <string name="feedback_enable_log_first">Veuillez d\'abord activer les journaux</string>
+    <string name="feedback_share_failed">Échec du partage</string>
+    <string name="feedback_preview_log">Aperçu</string>
+    <string name="feedback_subject_prefix">Commentaire Électricité</string>
+    <string name="feedback_no_logs">(aucun journal)</string>
+    <string name="feedback_loading_logs">(chargement des journaux, veuillez patienter)</string>
+    <string name="feedback_device_info_template">Appareil : %1$s\nOS : Android %2$s (API %3$d)\nVersion : %4$s (%5$s)</string>
+</resources>

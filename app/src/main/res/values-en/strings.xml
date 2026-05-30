@@ -31,7 +31,7 @@
     <string name="common_settings">Settings</string>
     <string name="common_remove">Remove</string>
     <string name="common_view">View</string>
-    <string name="common_open_in_browser">Open in Browser</string>
+    <string name="common_open_in_browser">Open Externally</string>
     <string name="common_clear_search">Clear Search</string>
     <string name="common_exit_search">Exit Search</string>
     <string name="common_scan">Scan</string>

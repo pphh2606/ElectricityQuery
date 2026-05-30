@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  プロフィール                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_title">マイページ</string>
+    <string name="profile_open_url">URLを開く</string>
+    <string name="profile_feedback">フィードバック</string>
+    <string name="profile_manage_accounts">アカウント管理</string>
+    <string name="profile_toggle_night_mode">ダークモード切替</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  個人情報                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="my_info_title">個人情報</string>
+    <string name="my_info_gender">性別</string>
+    <string name="my_info_grade">学年</string>
+    <string name="my_info_department">学部</string>
+    <string name="my_info_major">専攻</string>
+    <string name="my_info_class">クラス</string>
+    <string name="my_info_phone">電話番号</string>
+    <string name="my_info_campus">キャンパス</string>
+    <string name="my_info_degree">学生区分</string>
+    <string name="my_info_status">在籍状況</string>
+    <string name="my_info_collapse">折りたたむ</string>
+    <string name="my_info_expand">展開</string>
+    <string name="my_info_load_failed">読み込み失敗</string>
+    <string name="my_info_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
+    <string name="profile_not_logged_in">未ログイン</string>
+    <string name="profile_my_info_cd">個人情報</string>
+    <string name="profile_my_room_loading">寮室情報を取得中…</string>
+    <string name="profile_no_room_data">ルームデータがありません</string>
+</resources>

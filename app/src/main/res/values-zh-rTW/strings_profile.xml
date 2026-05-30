@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  個人檔案                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_title">我的</string>
+    <string name="profile_open_url">開啟網址</string>
+    <string name="profile_feedback">意見回饋</string>
+    <string name="profile_manage_accounts">管理帳號</string>
+    <string name="profile_toggle_night_mode">切換夜間模式</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  個人資訊                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="my_info_title">個人資訊</string>
+    <string name="my_info_gender">性別</string>
+    <string name="my_info_grade">年級</string>
+    <string name="my_info_department">院系</string>
+    <string name="my_info_major">專業</string>
+    <string name="my_info_class">班級</string>
+    <string name="my_info_phone">手機號碼</string>
+    <string name="my_info_campus">校區</string>
+    <string name="my_info_degree">學生類別</string>
+    <string name="my_info_status">在校情況</string>
+    <string name="my_info_collapse">收合</string>
+    <string name="my_info_expand">展開</string>
+    <string name="my_info_load_failed">載入失敗</string>
+    <string name="my_info_login_expired">登入已過期，請重新登入</string>
+    <string name="profile_not_logged_in">未登入</string>
+    <string name="profile_my_info_cd">個人資訊</string>
+    <string name="profile_my_room_loading">正在取得我的寢室資訊…</string>
+    <string name="profile_no_room_data">暫無房間資料</string>
+</resources>

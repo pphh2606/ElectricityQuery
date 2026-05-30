@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  WebView                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_copy_link">Copier le lien</string>
+    <string name="webview_share_link">Partager le lien</string>
+    <string name="webview_open_in_browser">Ouvrir dans le navigateur</string>
+    <string name="webview_switch_to_external">Passer en réseau externe</string>
+    <string name="webview_switch_to_internal">Passer en réseau interne</string>
+    <string name="webview_clip_label">Lien Web</string>
+    <string name="webview_reload">Recharger</string>
+    <string name="webview_toggle_network">Basculer le réseau</string>
+    <string name="webview_network_settings">Paramètres réseau</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Erreurs WebView                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_error_page_not_found">Page introuvable</string>
+    <string name="webview_error_page_not_found_desc">La page demandée n\'existe pas (HTTP 404)</string>
+    <string name="webview_error_server_error">Erreur interne du serveur</string>
+    <string name="webview_error_server_error_desc">Le serveur a rencontré un problème. Veuillez réessayer plus tard (HTTP 500)</string>
+    <string name="webview_error_service_unavailable">Service temporairement indisponible</string>
+    <string name="webview_error_service_unavailable_desc">Le serveur est en maintenance ou surchargé (HTTP %1$d)</string>
+    <string name="webview_error_load_failed">Échec du chargement de la page</string>
+    <string name="webview_error_http_generic_desc">Le serveur a retourné une erreur (HTTP %1$d)</string>
+    <string name="webview_error_network_disconnected">Connexion réseau perdue</string>
+    <string name="webview_error_network_disconnected_desc">Vérifiez vos paramètres réseau</string>
+    <string name="webview_error_timeout">Délai de connexion dépassé</string>
+    <string name="webview_error_timeout_desc">Utilisez le réseau du campus ou réessayez plus tard</string>
+    <string name="webview_error_dns_failed">Impossible de résoudre l\'adresse du serveur</string>
+    <string name="webview_error_dns_failed_desc">Échec de résolution DNS, vérifiez votre connexion</string>
+    <string name="webview_error_connection_refused">Connexion refusée par le serveur</string>
+    <string name="webview_error_connection_refused_desc">Utilisez le réseau du campus ou réessayez plus tard</string>
+    <string name="webview_error_no_response">Aucune réponse du serveur</string>
+    <string name="webview_error_no_response_desc">Veuillez utiliser le réseau du campus</string>
+    <string name="webview_error_unreachable">Adresse réseau inaccessible</string>
+    <string name="webview_error_unreachable_desc">Impossible d\'atteindre le serveur cible</string>
+    <string name="webview_error_generic_desc">Vérifiez votre connexion réseau et réessayez</string>
+    <string name="webview_loading">Chargement…</string>
+    <string name="webview_link_copied">Lien copié</string>
+    <string name="webview_url_change_failed">Échec du changement d\'URL</string>
+    <string name="webview_campusphere_warning">Vous accédez à du contenu Campusphere. Des problèmes de compatibilité peuvent survenir. Utilisez de préférence l\'application Campusphere.</string>
+    <string name="webview_no_download_tool">Aucun outil de téléchargement trouvé</string>
+    <string name="webview_cannot_open_network_settings">Impossible d\'ouvrir les paramètres réseau</string>
+</resources>

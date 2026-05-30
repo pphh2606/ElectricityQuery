@@ -1,7 +1,5 @@
 package edu.cqwu.electricity.ui.settings
 
-import android.app.Activity
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,10 +38,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.data.local.AppLanguage
 import edu.cqwu.electricity.data.local.SettingsPreferences
-import edu.cqwu.electricity.ui.components.BottomSheetDialog
-import edu.cqwu.electricity.ui.components.BottomSheetItem
+import edu.cqwu.electricity.ui.components.LanguageSwitchSheet
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 
@@ -116,33 +112,8 @@ fun ConfigScreen(
         }
     }
 
-    // ── 语言选择 BottomSheet（自带拖动手柄）──
-    if (showLanguageSheet) {
-        BottomSheetDialog(
-            onDismissRequest = { showLanguageSheet = false },
-            title = stringResource(R.string.language_select),
-            fullscreen = false,
-        ) {
-            AppLanguage.entries.forEach { language ->
-                BottomSheetItem(
-                    icon = null,
-                    title = language.displayName,
-                    selected = language == currentLanguage,
-                    onClick = {
-                        settingsPrefs.setAppLanguage(language)
-                        showLanguageSheet = false
-                        // 重启 Activity 应用新语言
-                        val activity = context as? Activity ?: return@BottomSheetItem
-                        val intent = Intent(activity, activity.javaClass)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                        activity.startActivity(intent)
-                        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                        activity.finish()
-                    },
-                )
-            }
-        }
-    }
+    // ── 语言选择 BottomSheet（复用 LanguageSwitchSheet）──
+    LanguageSwitchSheet(showSheet = showLanguageSheet, onDismiss = { showLanguageSheet = false })
 }
 
 /**

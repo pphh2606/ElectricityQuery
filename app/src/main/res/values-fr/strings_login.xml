@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Connexion                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_title">Connexion</string>
+    <string name="login_unified_auth">Authentification unifiée</string>
+    <string name="login_remember_password">Mémoriser le mot de passe</string>
+    <string name="login_relogin">Reconnexion</string>
+    <string name="login_security_notice_title">Note de sécurité</string>
+    <string name="login_security_notice_1">    Le mot de passe est chiffré directement sur l\'appareil via AES-CBC et envoyé au serveur CAS de l\'établissement. Le chiffrement utilise un salt dynamique fourni par la page de connexion, unique à chaque requête. Cette application n\'envoie jamais votre mot de passe à un serveur tiers.</string>
+    <string name="login_security_notice_2">    Après connexion, seuls les cookies sont conservés localement via le CookieManager WebKit du système Android, accessible uniquement par cette application. La fonction de mémorisation du mot de passe chiffre les identifiants dans le stockage privé de l\'appareil, activée uniquement sur choix de l\'utilisateur.</string>
+    <string name="login_security_notice_3">    Chaque session de connexion est stockée indépendamment. Vous pouvez supprimer à tout moment les données de connexion locales depuis l\'écran de connexion.</string>
+    <string name="login_security_notice_4">    La connexion par QR et l\'ajout de compte utilisent des environnements de cookies indépendants, sans transporter aucune session existante.</string>
+    <string name="login_security_notice_5">    L\'export des identifiants nécessite la vérification du mot de passe de l\'appareil. Les données exportées sont protégées par chiffrement AES avec mot de passe personnalisé. L\'import nécessite le même mot de passe de déchiffrement.</string>
+    <string name="login_export_credential_title">Exporter les identifiants</string>
+    <string name="login_not_entered">(non saisi)</string>
+    <string name="login_security_notice">Sécurité</string>
+    <string name="login_delete_account_title">Supprimer le compte</string>
+    <string name="login_paste_credential_label">Coller la chaîne d\'identifiants chiffrée :</string>
+    <string name="login_paste_credential_hint">Identifiants chiffrés exportés depuis un autre appareil</string>
+    <string name="login_current_account">Compte actuel : %1$s</string>
+    <string name="login_export_password_label">Définir le mot de passe d\'export (protection des identifiants) :</string>
+    <string name="login_delete_account_confirm">Supprimer le compte « %1$s » et toutes ses données locales ?\n\nVous devrez vous reconnecter pour utiliser ce compte.</string>
+
+    <!-- ── Formulaire ── -->
+    <string name="login_student_id">Numéro étudiant</string>
+    <string name="login_student_id_hint">Saisir le numéro étudiant</string>
+    <string name="login_password">Mot de passe</string>
+    <string name="login_password_hint">Saisir le mot de passe</string>
+    <string name="login_show_password">Afficher</string>
+    <string name="login_hide_password">Masquer</string>
+    <string name="login_login_button">Connexion</string>
+    <string name="login_scan_login">Connexion QR</string>
+    <string name="login_add_account">Ajouter un compte</string>
+    <string name="login_export_credential">Exporter les identifiants</string>
+    <string name="login_import_credential">Importer les identifiants</string>
+    <string name="login_copy_to_clipboard">Copier</string>
+    <string name="login_import_and_login">Importer et se connecter</string>
+    <string name="login_import_title">Importer les identifiants</string>
+    <string name="login_import_paste_hint">Coller la chaîne chiffrée ici…</string>
+    <string name="login_export_password">Mot de passe d\'export</string>
+    <string name="login_export_password_hint">Saisir le mot de passe défini lors de l\'export</string>
+    <string name="login_export_password_set_hint">Définir un mot de passe (4 caractères min.)</string>
+    <string name="login_show_import_password">Afficher</string>
+    <string name="login_hide_import_password">Masquer</string>
+    <string name="login_device_auth_title">Vérification</string>
+    <string name="login_device_auth_desc">Vérifier pour exporter les identifiants</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Connexion QR                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qr_login_title">Connexion QR</string>
+    <string name="qr_login_fetching_qrcode">Obtention du QR code…</string>
+    <string name="qr_login_scan_hint">Scannez avec l\'application Campusphere</string>
+    <string name="qr_login_expiry">QR code valide 3 minutes</string>
+    <string name="qr_login_scan_success">Scan réussi</string>
+    <string name="qr_login_confirm_on_phone">Appuyez sur « Confirmer la connexion » sur votre téléphone</string>
+    <string name="qr_login_completing">Finalisation de la connexion…</string>
+    <string name="login_success">Connexion réussie</string>
+    <string name="login_failed">Échec de la connexion</string>
+    <string name="login_qr_expired">QR code expiré, veuillez réessayer</string>
+    <string name="login_get_page_failed">Échec de récupération de la page de connexion</string>
+    <string name="login_verifying">Connexion en cours, veuillez patienter…</string>
+    <string name="login_password_too_short">Le mot de passe doit comporter au moins 4 caractères</string>
+    <string name="login_credential_copied">Identifiants copiés</string>
+</resources>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  加值                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_title">加值</string>
+    <string name="recharge_hint">提示</string>
+    <string name="recharge_query">查詢</string>
+    <string name="recharge_student_id_label">請輸入學號 或 userId</string>
+    <string name="recharge_student_id_placeholder">例如 2022010101 或 12345</string>
+    <string name="recharge_my_account">我的帳號</string>
+    <string name="recharge_switch_account">切換帳號</string>
+    <string name="recharge_balance">餘額（元）</string>
+    <string name="recharge_refresh_balance">重新整理餘額</string>
+    <string name="recharge_custom_amount_label">自訂金額（元）</string>
+    <string name="recharge_custom_amount_placeholder">例如 0.01</string>
+    <string name="recharge_pay_now">立即加值</string>
+    <string name="recharge_other_methods">其他加值方式</string>
+    <string name="recharge_important_notes">重要提示</string>
+    <string name="recharge_note_time">1. 加值時間為 00:05~23:55，其他時間無法加值</string>
+    <string name="recharge_note_delay">2. 如果支付成功但未及時到帳，請等待5分鐘</string>
+    <string name="recharge_note_power">3. 如果加值完成有餘額但未通電，請聯絡管理員處理</string>
+    <string name="recharge_preset_amount">%1$d元</string>
+    <string name="recharge_hint_item1">1.如果取得使用者失敗，請先</string>
+    <string name="recharge_hint_item1_link">點選此處</string>
+    <string name="recharge_hint_item1_suffix">在平台註冊。</string>
+    <string name="recharge_hint_item2">2.若註冊後還是提示取得使用者資訊失敗，請嘗試填寫寢室管理員學號/寢室內第一個註冊了平台的學號。</string>
+    <string name="recharge_hint_item3_prefix">3.加值記錄會記錄在學號所對應的使用者上。如介意請</string>
+    <string name="recharge_hint_item3_suffix">選取其他加值方式。</string>
+    <string name="recharge_select_room_title">選取加值房間</string>
+    <string name="recharge_select_room_hint">該學號下繫結多個房間，請選取要加值的房間：</string>
+    <string name="recharge_other_method_title">選取加值方式</string>
+    <string name="recharge_method_campus">今日校園加值</string>
+    <string name="recharge_method_inapp_h5">應用程式內H5加值</string>
+    <string name="recharge_method_browser_h5">瀏覽器H5加值</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  查詢加值記錄                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_record_title">查詢加值記錄</string>
+    <string name="recharge_record_time_range">查詢時間範圍：</string>
+    <string name="recharge_record_copy">複製</string>
+    <string name="recharge_record_export">匯出</string>
+    <string name="recharge_record_total">合計加值：%1$s 元（共 %2$d 筆）</string>
+    <string name="recharge_record_no_data">未查詢到記錄</string>
+    <string name="recharge_record_recharger">加值人：%1$s</string>
+    <string name="recharge_record_time">加值時間：%1$s</string>
+    <string name="recharge_record_amount">加值金額：%1$s 元</string>
+    <string name="recharge_record_order_no">訂單號：%1$s</string>
+    <string name="recharge_record_hint_item1">1. 查詢內容僅供參考，請以實際加值數量為準。</string>
+    <string name="recharge_record_hint_item2_prefix">2. 如果認為加值記錄不準，可以存取</string>
+    <string name="recharge_record_hint_item2_link">此處</string>
+    <string name="recharge_record_hint_item2_suffix">檢視官方加值記錄。</string>
+    <string name="recharge_record_export_title">查詢加值記錄</string>
+    <string name="recharge_time_1month">一個月</string>
+    <string name="recharge_time_3months">三個月</string>
+    <string name="recharge_time_1year">一年</string>
+    <string name="recharge_time_4years">四年</string>
+    <string name="recharge_install_campus_app">請先安裝今日校園App</string>
+    <string name="recharge_no_room_selected">未選取房間</string>
+    <string name="recharge_invalid_amount">請輸入有效金額</string>
+    <string name="recharge_amount_out_of_range">金額超出合理範圍（0-1000元）</string>
+    <string name="recharge_order_create_failed">建立訂單失敗: %1$s</string>
+    <string name="recharge_no_room_bound">該帳號下未繫結任何房間</string>
+    <string name="recharge_query_failed">查詢失敗: %1$s</string>
+    <string name="recharge_enter_student_id">請輸入學號</string>
+    <string name="recharge_record_query_failed">查詢加值記錄失敗</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  支付                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="payment_title_for_user">為 %1$s 加值電費</string>
+    <string name="payment_title_default">加值電費</string>
+    <string name="payment_creating_order">正在建立訂單…</string>
+    <string name="payment_amount_label">加值金額</string>
+    <string name="payment_select_method">選取支付方式</string>
+    <string name="payment_wechat_desc">推薦使用，快速支付</string>
+    <string name="payment_alipay_desc">支援儲蓄卡和信用卡</string>
+    <string name="payment_selected">已選取</string>
+    <string name="payment_confirm">確認支付</string>
+    <string name="payment_processing">正在處理支付…</string>
+    <string name="payment_order_failed">訂單建立失敗</string>
+    <string name="payment_close">關閉支付</string>
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  繳費服務大廳                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_hall_title">繳費服務大廳</string>
+    <string name="fee_hall_tab_home">首頁</string>
+    <string name="fee_hall_tab_orders">訂單</string>
+    <string name="fee_hall_tab_profile">我的</string>
+    <string name="fee_hall_no_projects">暫無繳費項目</string>
+    <string name="fee_hall_load_failed">載入失敗: %1$s</string>
+    <string name="fee_profile_pwd_change">修改密碼</string>
+    <string name="fee_profile_invoice_mgmt">發票抬頭管理</string>
+    <string name="fee_profile_fun_bill">趣味帳單</string>
+    <string name="fee_profile_query_pay">查詢繳費</string>
+    <string name="fee_profile_view_invoice">檢視發票</string>
+    <string name="fee_profile_advance_invoice">預支發票</string>
+    <string name="fee_profile_load_failed">載入失敗: %1$s</string>
+    <string name="fee_profile_account">帳號</string>
+    <string name="fee_profile_name">姓名</string>
+    <string name="fee_profile_dept">學院</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  訂單詳情                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_order_detail_title">訂單詳情</string>
+    <string name="fee_order_info">訂單資訊</string>
+    <string name="fee_order_no">訂單號</string>
+    <string name="fee_order_product_desc">商品描述</string>
+    <string name="fee_order_create_time">下單時間</string>
+    <string name="fee_order_complete_time">完成時間</string>
+    <string name="fee_order_update_time">更新時間</string>
+    <string name="fee_order_close_time">關閉時間</string>
+    <string name="fee_order_channel">支付渠道</string>
+    <string name="fee_order_transaction_no">支付流水號</string>
+    <string name="fee_order_project_id">專案識別碼</string>
+    <string name="fee_order_partner">合作夥伴</string>
+    <string name="fee_order_time_range_sep">~</string>
+    <string name="fee_hall_no_orders">暫無訂單</string>
+    <string name="fee_order_project_name">專案名稱</string>
+    <string name="fee_order_loaded_count">已載入 %1$d 筆</string>
+    <string name="fee_order_page_info">第 %1$d/%2$d 頁</string>
+    <string name="fee_order_no_label">訂單號: %1$s</string>
+    <string name="fee_hall_order_all_loaded">— 已載入全部 %1$d 筆 —</string>
+</resources>

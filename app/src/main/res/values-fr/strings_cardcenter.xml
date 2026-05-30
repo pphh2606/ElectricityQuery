@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Carte campus                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_center_title">Plateforme carte campus</string>
+    <string name="card_center_account_info">Info compte</string>
+    <string name="card_center_payment_code">Code de paiement</string>
+    <string name="card_center_transit_code">Code transport</string>
+    <string name="card_center_bills">Factures</string>
+    <string name="card_center_report_lost">Déclarer perdue</string>
+    <string name="card_center_recharge">Recharger</string>
+    <string name="card_lost_title">Déclaration de perte</string>
+    <string name="card_lost_warning">⚠ La carte sera immédiatement désactivée. Confirmez-vous ?</string>
+    <string name="card_lost_failure">Échec de la déclaration</string>
+    <string name="card_fetching_info">Récupération des infos de la carte…</string>
+    <string name="card_account_info_title">Info compte</string>
+    <string name="card_fetching_account">Récupération du compte…</string>
+    <string name="card_account_info_name">Nom</string>
+    <string name="card_account_info_student_id">N° étudiant</string>
+    <string name="card_account_info_balance">Solde</string>
+    <string name="card_account_info_school">Établissement</string>
+    <string name="card_account_info_major">Spécialité</string>
+    <string name="card_account_info_class">Classe</string>
+    <string name="card_lost_card_number">N° de carte</string>
+    <string name="card_lost_card_status">Statut</string>
+    <string name="card_error_title">Erreur</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Factures                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="bill_title">Factures</string>
+    <string name="bill_cash_flow">Flux financier :</string>
+    <string name="bill_income">Revenu</string>
+    <string name="bill_expense">Dépense</string>
+    <string name="bill_fetching">Récupération… %1$ds</string>
+    <string name="bill_loaded_count">%1$d chargées</string>
+    <string name="bill_start_date">Date début</string>
+    <string name="bill_end_date">Date fin</string>
+    <string name="bill_page_info">Page %1$d/%2$d</string>
+    <string name="bill_tab_all">Tout</string>
+    <string name="bill_tab_unpaid">Impayé</string>
+    <string name="bill_tab_success">Réussi</string>
+    <string name="bill_tab_failed">Échoué</string>
+    <string name="bill_detail_title">Détail transaction</string>
+    <string name="bill_web_title">Factures (Web)</string>
+    <string name="bill_merchant_name">Marchand</string>
+    <string name="bill_filter_reset">Réinitialiser</string>
+    <string name="bill_filter_apply">Appliquer</string>
+    <string name="bill_no_unpaid">Aucune commande impayée</string>
+    <string name="bill_no_success">Aucune transaction réussie</string>
+    <string name="bill_no_failed">Aucune transaction échouée</string>
+    <string name="bill_no_records">Aucune transaction</string>
+    <string name="bill_capped_hint">— Affichage limité aux 100 dernières, voir la version Web pour plus —</string>
+    <string name="bill_all_loaded">— %1$d transactions chargées —</string>
+    <string name="card_lost_confirm_title">Confirmer la perte</string>
+    <string name="card_lost_confirm_text">Déclarer cette carte comme perdue ? Elle sera immédiatement désactivée.</string>
+    <string name="card_lost_confirm_btn">Confirmer la perte</string>
+    <string name="card_lost_processing">Traitement…</string>
+    <string name="card_lost_normal_status">Normal</string>
+    <string name="card_lost_success">Perte déclarée avec succès</string>
+    <string name="card_lost_request_error">Erreur de requête</string>
+    <string name="card_lost_fetch_error">Échec de récupération des infos de la carte</string>
+    <string name="card_lost_login_expired">Session expirée, veuillez vous reconnecter</string>
+    <string name="card_account_info_fetch_error">Échec de récupération du compte</string>
+</resources>

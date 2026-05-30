@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  تسجيل الدخول                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_title">تسجيل الدخول</string>
+    <string name="login_unified_auth">تسجيل الدخول الموحد</string>
+    <string name="login_remember_password">تذكر كلمة المرور</string>
+    <string name="login_relogin">إعادة تسجيل الدخول</string>
+    <string name="login_security_notice_title">ملاحظة أمنية</string>
+    <string name="login_security_notice_1">    يتم تشفير كلمة المرور مباشرة على الجهاز عبر AES-CBC وإرسالها إلى خادم CAS الموحد. يستخدم التشفير مفتاح ملح ديناميكي (Salt) من صفحة تسجيل الدخول، فريد لكل طلب. هذا التطبيق لا يرسل كلمة المرور إلى أي خادم خارجي.</string>
+    <string name="login_security_notice_2">    بعد تسجيل الدخول بنجاح، تُحفظ ملفات تعريف الارتباط (Cookies) فقط محليًا عبر WebKit CookieManager في نظام Android، ولا يمكن الوصول إليها إلا من هذا التطبيق. ميزة تذكر كلمة المرور تشفرها وتخزنها في المساحة الخاصة بالجهاز فقط عند تفعيل المستخدم لها.</string>
+    <string name="login_security_notice_3">    كل جلسة مستخدم مخزنة بشكل مستقل. يمكنك حذف بيانات تسجيل الدخول المحلية في أي وقت من شاشة تسجيل الدخول.</string>
+    <string name="login_security_notice_4">    يستخدم تسجيل الدخول عبر QR وإضافة الحسابات بيئات ملفات تعريف ارتباط مستقلة، دون حمل أي جلسات موجودة.</string>
+    <string name="login_security_notice_5">    يتطلب تصدير بيانات الاعتماد التحقق من كلمة مرور الجهاز. البيانات المصدرة محمية بتشفير AES مع كلمة مرور مخصصة، ويتطلب الاستيراد نفس كلمة المرور لضمان النقل الآمن بين الأجهزة.</string>
+    <string name="login_export_credential_title">تصدير بيانات الاعتماد</string>
+    <string name="login_not_entered">(غير مدخل)</string>
+    <string name="login_security_notice">ملاحظة أمنية</string>
+    <string name="login_delete_account_title">حذف الحساب</string>
+    <string name="login_paste_credential_label">لصق سلسلة بيانات الاعتماد المشفرة:</string>
+    <string name="login_paste_credential_hint">بيانات اعتماد مشفرة مُصدّرة من جهاز آخر</string>
+    <string name="login_current_account">الحساب الحالي: %1$s</string>
+    <string name="login_export_password_label">تعيين كلمة مرور التصدير (لحماية بيانات الاعتماد):</string>
+    <string name="login_delete_account_confirm">هل تريد بالتأكيد حذف الحساب «%1$s» وجميع بياناته المحلية؟\n\nستحتاج إلى إعادة تسجيل الدخول لاستخدام هذا الحساب.</string>
+
+    <!-- ── نموذج تسجيل الدخول ── -->
+    <string name="login_student_id">الرقم الجامعي</string>
+    <string name="login_student_id_hint">أدخل الرقم الجامعي</string>
+    <string name="login_password">كلمة المرور</string>
+    <string name="login_password_hint">أدخل كلمة المرور</string>
+    <string name="login_show_password">إظهار كلمة المرور</string>
+    <string name="login_hide_password">إخفاء كلمة المرور</string>
+    <string name="login_login_button">تسجيل الدخول</string>
+    <string name="login_scan_login">تسجيل الدخول عبر QR</string>
+    <string name="login_add_account">إضافة حساب</string>
+    <string name="login_export_credential">تصدير بيانات الاعتماد</string>
+    <string name="login_import_credential">استيراد بيانات الاعتماد</string>
+    <string name="login_copy_to_clipboard">نسخ إلى الحافظة</string>
+    <string name="login_import_and_login">استيراد وتسجيل الدخول</string>
+    <string name="login_import_title">استيراد بيانات الاعتماد</string>
+    <string name="login_import_paste_hint">الصق السلسلة المشفرة هنا…</string>
+    <string name="login_export_password">كلمة مرور التصدير</string>
+    <string name="login_export_password_hint">أدخل كلمة المرور التي حددتها عند التصدير</string>
+    <string name="login_export_password_set_hint">يرجى تعيين كلمة مرور تصدير (4 أحرف على الأقل)</string>
+    <string name="login_show_import_password">إظهار كلمة المرور</string>
+    <string name="login_hide_import_password">إخفاء كلمة المرور</string>
+    <string name="login_device_auth_title">التحقق من الهوية</string>
+    <string name="login_device_auth_desc">تحقق لتصدير بيانات الاعتماد المشفرة</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  تسجيل الدخول عبر QR                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qr_login_title">تسجيل الدخول عبر QR</string>
+    <string name="qr_login_fetching_qrcode">جارٍ جلب رمز QR…</string>
+    <string name="qr_login_scan_hint">امسح رمز QR باستخدام تطبيق Campusphere</string>
+    <string name="qr_login_expiry">صلاحية رمز QR: 3 دقائق</string>
+    <string name="qr_login_scan_success">تم المسح بنجاح</string>
+    <string name="qr_login_confirm_on_phone">اضغط «تأكيد تسجيل الدخول» على هاتفك</string>
+    <string name="qr_login_completing">جارٍ إكمال تسجيل الدخول…</string>
+    <string name="login_success">تم تسجيل الدخول بنجاح</string>
+    <string name="login_failed">فشل تسجيل الدخول</string>
+    <string name="login_qr_expired">انتهت صلاحية رمز QR، يرجى إعادة المحاولة</string>
+    <string name="login_get_page_failed">فشل الحصول على صفحة تسجيل الدخول</string>
+    <string name="login_verifying">جارٍ تسجيل الدخول، يرجى الانتظار…</string>
+    <string name="login_password_too_short">يجب أن تكون كلمة المرور 4 أحرف على الأقل</string>
+    <string name="login_credential_copied">تم نسخ بيانات الاعتماد إلى الحافظة</string>
+</resources>

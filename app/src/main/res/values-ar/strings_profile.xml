@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الملف الشخصي                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_title">حسابي</string>
+    <string name="profile_open_url">فتح الرابط</string>
+    <string name="profile_feedback">التعليقات</string>
+    <string name="profile_manage_accounts">إدارة الحسابات</string>
+    <string name="profile_toggle_night_mode">تبديل الوضع الليلي</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  معلوماتي                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="my_info_title">معلوماتي</string>
+    <string name="my_info_gender">الجنس</string>
+    <string name="my_info_grade">السنة الدراسية</string>
+    <string name="my_info_department">القسم</string>
+    <string name="my_info_major">التخصص</string>
+    <string name="my_info_class">الفصل</string>
+    <string name="my_info_phone">رقم الهاتف</string>
+    <string name="my_info_campus">الحرم الجامعي</string>
+    <string name="my_info_degree">نوع الطالب</string>
+    <string name="my_info_status">الحالة الدراسية</string>
+    <string name="my_info_collapse">طي</string>
+    <string name="my_info_expand">توسيع</string>
+    <string name="my_info_load_failed">فشل التحميل</string>
+    <string name="my_info_login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
+    <string name="profile_not_logged_in">لم يتم تسجيل الدخول</string>
+    <string name="profile_my_info_cd">معلوماتي</string>
+    <string name="profile_my_room_loading">جارٍ جلب معلومات السكن…</string>
+    <string name="profile_no_room_data">لا توجد بيانات للغرفة</string>
+</resources>
