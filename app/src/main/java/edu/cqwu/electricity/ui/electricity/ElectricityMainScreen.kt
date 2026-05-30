@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.electricity
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -199,7 +202,7 @@ fun ElectricityMainScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -211,7 +214,7 @@ fun ElectricityMainScreen(
                             IconButton(onClick = { showMenu = true }) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = "更多选项",
+                                    contentDescription = stringResource(R.string.common_more_options),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -246,7 +249,7 @@ fun ElectricityMainScreen(
                         IconButton(onClick = { showRechargeInfoDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.Info,
-                                contentDescription = "提示",
+                                contentDescription = stringResource(R.string.recharge_hint),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -258,7 +261,7 @@ fun ElectricityMainScreen(
                             IconButton(onClick = { showRoomSwitchSheet = true }) {
                                 Icon(
                                     imageVector = Icons.Default.SwapHoriz,
-                                    contentDescription = "切换寝室"
+                                    contentDescription = stringResource(R.string.electricity_switch_dorm)
                                 )
                             }
                         }
@@ -266,7 +269,7 @@ fun ElectricityMainScreen(
                             IconButton(onClick = { showMyRoomMenu = true }) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = "更多选项",
+                                    contentDescription = stringResource(R.string.common_more_options),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -393,7 +396,7 @@ fun ElectricityMainScreen(
     if (showRechargeInfoDialog) {
         BottomSheetDialog(
             onDismissRequest = { showRechargeInfoDialog = false },
-            title = "提示"
+            title = stringResource(R.string.recharge_hint)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -402,7 +405,7 @@ fun ElectricityMainScreen(
                 // 第1条：外部链接
                 val link1Text = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append("1.如果获取用户失败，请先")
+                        append(stringResource(R.string.recharge_hint_item1))
                     }
                     pushLink(
                         LinkAnnotation.Clickable(
@@ -425,10 +428,10 @@ fun ElectricityMainScreen(
                             }
                         }
                     )
-                    append("点击此处")
+                    append(stringResource(R.string.recharge_hint_item1_link))
                     pop()
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append("在平台注册。")
+                        append(stringResource(R.string.recharge_hint_item1_suffix))
                     }
                 }
                 Text(
@@ -455,10 +458,10 @@ fun ElectricityMainScreen(
     if (showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty()) {
         BottomSheetDialog(
             onDismissRequest = { showRoomSwitchSheet = false },
-            title = "选择寝室"
+            title = stringResource(R.string.dashboard_select_dorm)
         ) {
             Text(
-                text = "请选择要查看的寝室：",
+                text = stringResource(R.string.dashboard_select_room),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp)

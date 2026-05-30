@@ -104,7 +104,7 @@ class CrashHandler private constructor(
         // 链式调用系统默认处理器（会杀死进程、显示崩溃对话框）
         // 如果 originalHandler 为 null，兜底手动杀进程避免变成僵尸 App
         if (originalHandler != null) {
-            originalHandler!!.uncaughtException(thread, throwable)
+            originalHandler.uncaughtException(thread, throwable)
         } else {
             Process.killProcess(Process.myPid())
             System.exit(10)

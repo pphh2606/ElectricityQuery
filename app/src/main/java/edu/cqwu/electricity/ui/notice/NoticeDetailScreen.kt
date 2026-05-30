@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.notice
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -169,7 +172,7 @@ fun NoticeDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "通知详情",
+                        text = stringResource(R.string.notice_detail_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -179,7 +182,7 @@ fun NoticeDetailScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -189,7 +192,7 @@ fun NoticeDetailScreen(
                         IconButton(onClick = { shareNotice() }) {
                             Icon(
                                 imageVector = Icons.Default.Share,
-                                contentDescription = "分享",
+                                contentDescription = stringResource(R.string.common_share),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -202,7 +205,7 @@ fun NoticeDetailScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.OpenInBrowser,
-                                contentDescription = "在浏览器中打开",
+                                contentDescription = stringResource(R.string.common_open_in_browser),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -231,7 +234,7 @@ fun NoticeDetailScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "正在加载详情...",
+                            text = stringResource(R.string.notice_loading_detail),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -255,7 +258,7 @@ fun NoticeDetailScreen(
                             modifier = Modifier.padding(32.dp)
                         )
                         Text(
-                            text = "下拉刷新重试",
+                            text = stringResource(R.string.common_pull_to_retry),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 16.dp)
@@ -316,12 +319,12 @@ fun NoticeDetailScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = Icons.Default.Person,
-                                        contentDescription = "发布单位",
+                                        contentDescription = stringResource(R.string.notice_publisher),
                                         modifier = Modifier.padding(end = 3.dp).size(14.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = detailData.sendDepartment.ifBlank { "未知" },
+                                        text = detailData.sendDepartment.ifBlank { stringResource(R.string.dashboard_unknown) },
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -329,7 +332,7 @@ fun NoticeDetailScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = Icons.Default.AccessTime,
-                                        contentDescription = "发布时间",
+                                        contentDescription = stringResource(R.string.notice_publish_time),
                                         modifier = Modifier.padding(end = 3.dp).size(14.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -342,7 +345,7 @@ fun NoticeDetailScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = Icons.Default.Visibility,
-                                        contentDescription = "浏览次数",
+                                        contentDescription = stringResource(R.string.notice_view_count),
                                         modifier = Modifier.padding(end = 3.dp).size(14.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )

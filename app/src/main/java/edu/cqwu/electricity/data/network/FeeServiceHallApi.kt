@@ -205,8 +205,7 @@ class FeeServiceHallApi {
                 val step1Resp = SharedHttpClient.client.newCall(
                     Request.Builder().url(CAS_LOGIN_URL).get().build()
                 ).execute()
-                val step1Html = step1Resp.body?.string()
-                    ?: return@withContext Result.failure(Exception("获取 /casLogin/ 响应为空"))
+                val step1Html = step1Resp.body.string()
                 android.util.Log.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
 
                 // 从 HTML 中提取 location.href 重定向地址
@@ -228,8 +227,7 @@ class FeeServiceHallApi {
                 val step2Resp = step2Client.newCall(
                     Request.Builder().url(redirectUrl).get().build()
                 ).execute()
-                val step2Html = step2Resp.body?.string()
-                    ?: return@withContext Result.failure(Exception("CAS 认证响应为空"))
+                val step2Html = step2Resp.body.string()
                 android.util.Log.d("FeeServiceHallApi", "步骤2: CAS认证完成, 响应码=${step2Resp.code}, HTML长度=${step2Html.length}, finalUrl=${step2Resp.request.url}")
 
                 // 从 HTML 中提取 dlyscas 端点地址（含 idserial）
@@ -313,8 +311,7 @@ class FeeServiceHallApi {
             try {
                 val request = buildBaseRequest(PROJECT_LIST_URL).build()
                 val response = client.newCall(request).execute()
-                val body = response.body?.string()
-                    ?: return@withContext Result.failure(Exception("响应为空"))
+                val body = response.body.string()
                 gson.parseApiResponse<FeeProjectResponse>(body).map { it.data ?: emptyList() }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
@@ -358,8 +355,7 @@ class FeeServiceHallApi {
                     .build()
 
                 val response = client.newCall(request).execute()
-                val body = response.body?.string()
-                    ?: return@withContext Result.failure(Exception("响应为空"))
+                val body = response.body.string()
                 gson.parseApiResponse<OrderListResponse>(body).map { it.data ?: OrderPageData(emptyList(), null, null, null) }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
@@ -384,8 +380,7 @@ class FeeServiceHallApi {
                     .post(bodyJson.toRequestBody(jsonMediaType))
                     .build()
                 val response = client.newCall(request).execute()
-                val body = response.body?.string()
-                    ?: return@withContext Result.failure(Exception("响应为空"))
+                val body = response.body.string()
                 gson.parseApiResponse<UserProfileResponse>(body).map { it.data ?: UserProfile(null, null, null) }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)

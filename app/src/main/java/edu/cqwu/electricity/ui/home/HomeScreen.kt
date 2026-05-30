@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.home
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -125,7 +128,7 @@ fun HomeTopBar(
                     onValueChange = onSearchQueryChange,
                     placeholder = {
                         Text(
-                            text = "搜索应用...",
+                            text = stringResource(R.string.home_search_apps),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
@@ -149,7 +152,7 @@ fun HomeTopBar(
                             IconButton(onClick = { onSearchQueryChange("") }) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
-                                    contentDescription = "清除搜索",
+                                    contentDescription = stringResource(R.string.common_clear_search),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -164,7 +167,7 @@ fun HomeTopBar(
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "退出搜索",
+                        contentDescription = stringResource(R.string.common_exit_search),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -176,7 +179,7 @@ fun HomeTopBar(
         TopAppBar(
             title = {
                 Text(
-                    text = "首页",
+                    text = stringResource(R.string.home_title),
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -184,14 +187,14 @@ fun HomeTopBar(
                 IconButton(onClick = onToggleSearch) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "搜索",
+                        contentDescription = stringResource(R.string.common_search),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 IconButton(onClick = onNavigateToScan) {
                     Icon(
                         imageVector = Icons.Default.PhotoCamera,
-                        contentDescription = "扫码",
+                        contentDescription = stringResource(R.string.common_scan),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -335,7 +338,7 @@ fun HomePageContent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "未找到匹配的应用",
+                            text = stringResource(R.string.home_no_match),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -348,7 +351,7 @@ fun HomePageContent(
                         // 搜索结果标题
                         item(key = "search_header") {
                             Text(
-                                text = "搜索结果（共 ${filteredApps.size} 个）",
+                                text = stringResource(R.string.home_search_result, filteredApps.size),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface,
@@ -445,7 +448,7 @@ fun HomePageContent(
     pendingExternalIntent?.let { (appName, url) ->
         BottomSheetDialog(
             onDismissRequest = { pendingExternalIntent = null },
-            title = "打开外部应用",
+            title = stringResource(R.string.home_external_app_title),
             icon = Icons.Default.OpenInBrowser,
             leadingButton = {
                 TextButton(onClick = { pendingExternalIntent = null }) {
@@ -576,7 +579,7 @@ private fun MyServicesSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "我的服务",
+                text = stringResource(R.string.home_my_services),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -625,7 +628,7 @@ private fun MyServicesSection(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "移除",
+                                    contentDescription = stringResource(R.string.common_remove),
                                     tint = MaterialTheme.colorScheme.onError,
                                     modifier = Modifier.size(12.dp)
                                 )
@@ -661,7 +664,7 @@ private fun MyServicesSection(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "移除",
+                                    contentDescription = stringResource(R.string.common_remove),
                                     tint = MaterialTheme.colorScheme.onError,
                                     modifier = Modifier.size(12.dp)
                                 )
@@ -707,14 +710,14 @@ private fun AddCustomServiceButton(onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.Language,
-                contentDescription = "自定义网站",
+                contentDescription = stringResource(R.string.custom_website_title),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(24.dp)
             )
         }
 
         Text(
-            text = "自定义网站",
+            text = stringResource(R.string.home_custom_website),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
             textAlign = TextAlign.Center,
             maxLines = 1,
@@ -999,7 +1002,7 @@ private fun AppIconItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "添加到我的服务",
+                        contentDescription = stringResource(R.string.common_add_to_my_services),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(14.dp)
                     )

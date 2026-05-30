@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.feeservicehall
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -107,7 +110,7 @@ fun FeeServiceHallScreen(
                 title = { Text("缴费服务大厅", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 actions = {
@@ -115,7 +118,7 @@ fun FeeServiceHallScreen(
                         IconButton(onClick = { viewModel.toggleOrderFilter() }) {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
-                                contentDescription = "筛选",
+                                contentDescription = stringResource(R.string.common_filter),
                                 tint = if (uiState.showOrderFilter) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -124,7 +127,7 @@ fun FeeServiceHallScreen(
                     IconButton(onClick = {
                         onNavigateToWebView(ORIGINAL_WEB_URL, ORIGINAL_WEB_TITLE)
                     }) {
-                        Icon(Icons.Default.OpenInBrowser, contentDescription = "打开原网页")
+                        Icon(Icons.Default.OpenInBrowser, contentDescription = stringResource(R.string.common_open_original_page))
                     }
                 },
                 colors = topBarColors,

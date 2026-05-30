@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.notice
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -129,7 +132,7 @@ fun NoticeScreen(
                     title = {
                         Column {
                             Text(
-                                text = "通知公告",
+                                text = stringResource(R.string.notice_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 maxLines = 1,
@@ -138,7 +141,7 @@ fun NoticeScreen(
                             )
                             if (viewModel.totalItem > 0) {
                                 Text(
-                                    text = "共 ${viewModel.totalItem} 条通知",
+                                    text = stringResource(R.string.notice_total_count, viewModel.totalItem),
                                     style = MaterialTheme.typography.bodySmall,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -151,7 +154,7 @@ fun NoticeScreen(
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "返回",
+                                contentDescription = stringResource(R.string.common_back),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -171,7 +174,7 @@ fun NoticeScreen(
                         onValueChange = { searchText = it },
                         placeholder = {
                             Text(
-                                text = "搜索通知公告",
+                                text = stringResource(R.string.notice_search_hint),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                             )
@@ -196,7 +199,7 @@ fun NoticeScreen(
                                 }) {
                                     Icon(
                                         imageVector = Icons.Filled.Close,
-                                        contentDescription = "清除搜索",
+                                        contentDescription = stringResource(R.string.common_clear_search),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -213,7 +216,7 @@ fun NoticeScreen(
                     IconButton(onClick = { doSearch(searchText) }) {
                         Icon(
                             imageVector = Icons.Filled.Search,
-                            contentDescription = "搜索",
+                            contentDescription = stringResource(R.string.common_search),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -292,7 +295,7 @@ fun NoticeScreen(
                         if (viewModel.searchKeyword.isNotBlank() && viewModel.items.isNotEmpty()) {
                             item(key = "search_header") {
                                 Text(
-                                    text = "搜索 \"${viewModel.searchKeyword}\" 共 ${viewModel.totalItem} 条结果",
+                                    text = stringResource(R.string.notice_search_result, viewModel.searchKeyword, viewModel.totalItem),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -320,7 +323,7 @@ fun NoticeScreen(
                                             CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Text(
-                                                text = "加载中...",
+                                                text = stringResource(R.string.common_loading),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -379,7 +382,7 @@ private fun NoticeCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                NoticeInfoChip(icon = Icons.Filled.Person, text = notice.sendDepartment.ifBlank { "未知" })
+                NoticeInfoChip(icon = Icons.Filled.Person, text = notice.sendDepartment.ifBlank { stringResource(R.string.dashboard_unknown) })
                 NoticeInfoChip(icon = Icons.Filled.AccessTime, text = notice.sendTimeDesc)
                 Spacer(modifier = Modifier.weight(1f))
                 NoticeInfoChip(icon = Icons.Filled.Visibility, text = notice.clickNumber)

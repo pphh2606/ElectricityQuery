@@ -67,8 +67,7 @@ class QrLoginApi {
                     .build()
             ).execute()
 
-            val html = response.body?.string()
-                ?: throw RuntimeException("获取扫码登录页面失败：响应体为空")
+            val html = response.body.string()
 
             // 解析 lt (Login Ticket)
             val lt = extractInputValue(html, "lt")
@@ -99,8 +98,7 @@ class QrLoginApi {
                     .build()
             ).execute()
 
-            val uuid = response.body?.string()?.trim()
-                ?: throw RuntimeException("获取二维码 UUID 失败：响应体为空")
+            val uuid = response.body.string().trim()
 
             if (uuid.isBlank()) {
                 throw RuntimeException("获取二维码 UUID 失败：UUID 为空")
@@ -134,8 +132,7 @@ class QrLoginApi {
                     .build()
             ).execute()
 
-            val bytes = response.body?.bytes()
-                ?: throw RuntimeException("下载二维码图片失败：响应体为空")
+            val bytes = response.body.bytes()
 
             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                 ?: throw RuntimeException("二维码图片解码失败：Bitmap 为空")
@@ -180,8 +177,7 @@ class QrLoginApi {
                     .build()
             ).execute()
 
-            val status = response.body?.string()?.trim()
-                ?: throw RuntimeException("获取扫码状态失败：响应体为空")
+            val status = response.body.string().trim()
 
             Result.success(status)
         } catch (e: Exception) {
@@ -268,8 +264,8 @@ class QrLoginApi {
                         .build()
                 ).execute()
 
-                val html = indexResponse.body?.string()
-                if (html != null) {
+                val html = indexResponse.body.string()
+                if (true) {
                     val usernameRegex = Regex("""data-name="id">([^<]+)</div>""")
                     val extracted = usernameRegex.find(html)?.groupValues?.getOrNull(1)
                     if (extracted != null) {

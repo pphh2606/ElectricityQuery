@@ -1,5 +1,6 @@
 package edu.cqwu.electricity
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,8 +31,15 @@ import edu.cqwu.electricity.ui.theme.NightModeState
 import edu.cqwu.electricity.ui.theme.QrCodeSettings
 import edu.cqwu.electricity.ui.theme.TopBarState
 import edu.cqwu.electricity.ui.theme.电费查询Theme
+import edu.cqwu.electricity.util.LocaleContextWrapper
 
 class MainActivity : ComponentActivity() {
+
+    override fun attachBaseContext(newBase: Context) {
+        val language = SettingsPreferences(newBase).getAppLanguage().value
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, language))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 启用边到边绘制（内容延伸到系统栏后方）

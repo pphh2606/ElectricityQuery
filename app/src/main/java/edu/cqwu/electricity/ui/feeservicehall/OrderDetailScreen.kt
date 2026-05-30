@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.feeservicehall
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -83,7 +86,7 @@ fun OrderDetailScreen(
                 title = { Text("订单详情", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 colors = topBarColors,
@@ -183,7 +186,7 @@ private fun OrderInfoSection(order: OrderRecord) {
             .padding(16.dp),
     ) {
         Text(
-            text = "订单信息",
+            text = stringResource(R.string.fee_order_info),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -193,30 +196,30 @@ private fun OrderInfoSection(order: OrderRecord) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         Spacer(Modifier.height(8.dp))
 
-        InfoRow(label = "订单号", value = order.orderNo)
-        InfoRow(label = "商品描述", value = order.productDesc ?: "—")
-        InfoRow(label = "下单时间", value = order.createDate ?: "—")
+        InfoRow(label = stringResource(R.string.fee_order_no), value = order.orderNo)
+        InfoRow(label = stringResource(R.string.fee_order_product_desc), value = order.productDesc ?: stringResource(R.string.common_dash))
+        InfoRow(label = stringResource(R.string.fee_order_create_time), value = order.createDate ?: stringResource(R.string.common_dash))
 
         if (order.actualCloseTime != null) {
-            InfoRow(label = "完成时间", value = order.actualCloseTime)
+            InfoRow(label = stringResource(R.string.fee_order_complete_time), value = order.actualCloseTime)
         }
         if (order.updateDate != null) {
-            InfoRow(label = "更新时间", value = order.updateDate)
+            InfoRow(label = stringResource(R.string.fee_order_update_time), value = order.updateDate)
         }
         if (order.schdualCloseTime != null) {
-            InfoRow(label = "关闭时间", value = order.schdualCloseTime)
+            InfoRow(label = stringResource(R.string.fee_order_close_time), value = order.schdualCloseTime)
         }
 
-        InfoRow(label = "支付渠道", value = order.tradeChannelDisplay)
+        InfoRow(label = stringResource(R.string.fee_order_channel), value = order.tradeChannelDisplay)
 
         if (order.balanceOrderTradeOrderNo != null) {
-            InfoRow(label = "支付流水号", value = order.balanceOrderTradeOrderNo)
+            InfoRow(label = stringResource(R.string.fee_order_transaction_no), value = order.balanceOrderTradeOrderNo)
         }
         if (order.engName != null) {
-            InfoRow(label = "项目标识", value = order.engName)
+            InfoRow(label = stringResource(R.string.fee_order_project_id), value = order.engName)
         }
         if (order.partnerId != null) {
-            InfoRow(label = "合作伙伴", value = order.partnerId)
+            InfoRow(label = stringResource(R.string.fee_order_partner), value = order.partnerId)
         }
     }
 }

@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.electricity
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -138,7 +141,7 @@ fun DashboardScreen(
     // 使用统一 TabScaffold
     TabScaffold(
         showTopBar = showTopBar,
-        title = "电费查询结果",
+        title = stringResource(R.string.dashboard_title),
         onBack = { onBackToSelection() },
         actions = {
             // 我的寝室切换按钮（仅多房间时显示）
@@ -146,7 +149,7 @@ fun DashboardScreen(
                 IconButton(onClick = { showRoomSwitchSheet = true }) {
                     Icon(
                         imageVector = Icons.Default.Home,
-                        contentDescription = "切换寝室"
+                        contentDescription = stringResource(R.string.electricity_switch_dorm)
                     )
                 }
             }
@@ -154,7 +157,7 @@ fun DashboardScreen(
                 IconButton(onClick = { showMenu = true }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "更多选项"
+                        contentDescription = stringResource(R.string.common_more_options)
                     )
                 }
                 DropdownMenu(
@@ -291,10 +294,10 @@ private fun DashboardContent(
     if (showRoomSwitchSheet && myRoomList.isNotEmpty()) {
         BottomSheetDialog(
             onDismissRequest = { onShowRoomSwitchSheetChange(false) },
-            title = "选择寝室"
+            title = stringResource(R.string.dashboard_select_dorm)
         ) {
             Text(
-                text = "请选择要查看的寝室：",
+                text = stringResource(R.string.dashboard_select_room),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -337,7 +340,7 @@ private fun RoomInfoCard(room: BuildingNode?) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "房间信息",
+                    text = stringResource(R.string.dashboard_room_info),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -347,14 +350,14 @@ private fun RoomInfoCard(room: BuildingNode?) {
             Spacer(modifier = Modifier.height(12.dp))
 
             InfoRow(
-                label = "房间名称",
-                value = room?.displayName ?: "未知"
+                label = stringResource(R.string.dashboard_room_name),
+                value = room?.displayName ?: stringResource(R.string.dashboard_unknown)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             InfoRow(
-                label = "房间 ID",
+                label = stringResource(R.string.dashboard_room_id),
                 value = room?.id ?: "-"
             )
         }
@@ -423,7 +426,7 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "用电信息",
+                    text = stringResource(R.string.dashboard_power_info),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -449,7 +452,7 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "度",
+                        text = stringResource(R.string.dashboard_unit_degree),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                         modifier = Modifier.padding(bottom = 4.dp)
@@ -460,7 +463,7 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "剩余电量",
+                text = stringResource(R.string.dashboard_remaining_power),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                 modifier = Modifier.fillMaxWidth(),
@@ -490,7 +493,7 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "账户余额",
+                    text = stringResource(R.string.dashboard_account_balance),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -499,11 +502,11 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            BalanceRow(label = "现金余额", amount = balance.userBalance, unit = "元")
+            BalanceRow(label = stringResource(R.string.dashboard_cash_balance), amount = balance.userBalance, unit = stringResource(R.string.common_unit_yuan))
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            BalanceRow(label = "补贴余额", amount = balance.subsidyBalance, unit = "元")
+            BalanceRow(label = stringResource(R.string.dashboard_subsidy_balance), amount = balance.subsidyBalance, unit = stringResource(R.string.common_unit_yuan))
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            BalanceRow(label = "基础余额", amount = balance.baseBalance, unit = "元")
+            BalanceRow(label = stringResource(R.string.dashboard_base_balance), amount = balance.baseBalance, unit = stringResource(R.string.common_unit_yuan))
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -516,7 +519,7 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "在线支付",
+                    text = stringResource(R.string.dashboard_online_pay),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -569,7 +572,7 @@ private fun MoreFunctionsSection(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "更多功能",
+                    text = stringResource(R.string.dashboard_more_features),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -579,31 +582,31 @@ private fun MoreFunctionsSection(
             Spacer(modifier = Modifier.height(8.dp))
 
             NavItem(
-                text = "最近6个月用电记录",
+                text = stringResource(R.string.dashboard_recent_6months),
                 leadingIcon = Icons.Default.DateRange,
                 onClick = { onNavigateToDetail(DetailType.SIX_MONTH_USAGE) }
             )
             HorizontalDivider()
             NavItem(
-                text = "本月每日用电",
+                text = stringResource(R.string.dashboard_daily_this_month),
                 leadingIcon = Icons.Default.CalendarToday,
                 onClick = { onNavigateToDetail(DetailType.MONTH_DAILY_USAGE) }
             )
             HorizontalDivider()
             NavItem(
-                text = "近24h用电明细",
+                text = stringResource(R.string.dashboard_24h_detail),
                 leadingIcon = Icons.Default.Schedule,
                 onClick = { onNavigateToDetail(DetailType.HOURLY_USAGE) }
             )
             HorizontalDivider()
             NavItem(
-                text = "电表实时状态",
+                text = stringResource(R.string.dashboard_meter_status),
                 leadingIcon = Icons.Default.Home,
                 onClick = { onNavigateToDetail(DetailType.METER_STATUS) }
             )
             HorizontalDivider()
             NavItem(
-                text = "查询充值记录",
+                text = stringResource(R.string.dashboard_query_recharge_records),
                 leadingIcon = Icons.AutoMirrored.Filled.List,
                 onClick = onNavigateToRechargeRecord
             )
@@ -652,7 +655,7 @@ private fun NavItem(
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = "查看",
+            contentDescription = stringResource(R.string.common_view),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
@@ -672,7 +675,7 @@ private fun BackButton(onClick: () -> Unit) {
         shape = RoundedCornerShape(12.dp)
     ) {
         Text(
-            text = "重新选择房间",
+            text = stringResource(R.string.dashboard_reselect_room),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium
         )
@@ -701,7 +704,7 @@ private fun LoadingSkeleton() {
                     CircularProgressIndicator()
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "正在查询余额...",
+                        text = stringResource(R.string.dashboard_querying_balance),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -724,7 +727,7 @@ private fun LoadingSkeleton() {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "加载中...",
+                    text = stringResource(R.string.common_loading),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

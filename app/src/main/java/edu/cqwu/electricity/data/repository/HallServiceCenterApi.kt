@@ -53,8 +53,7 @@ class HallServiceCenterApi {
 
             Log.d("HallServiceCenterApi", "GET $url")
             val response = client.newCall(request).execute()
-            val body = response.body?.string()
-                ?: throw RuntimeException("获取服务数据中心数据失败：响应体为空")
+            val body = response.body.string()
 
             // JSON API 响应直接反序列化，通过 hasLogin 字段判断登录态
             val result = gson.fromJson(body, ServiceCenterDataResponse::class.java)

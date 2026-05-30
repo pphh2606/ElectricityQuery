@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.webview
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -208,7 +211,7 @@ fun UnifiedWebViewScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "返回",
+                                contentDescription = stringResource(R.string.common_back),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -216,7 +219,7 @@ fun UnifiedWebViewScreen(
                         IconButton(onClick = onClose) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
-                                contentDescription = "关闭",
+                                contentDescription = stringResource(R.string.common_close),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -229,7 +232,7 @@ fun UnifiedWebViewScreen(
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Refresh,
-                            contentDescription = "刷新",
+                            contentDescription = stringResource(R.string.common_refresh),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -239,7 +242,7 @@ fun UnifiedWebViewScreen(
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "更多选项",
+                                contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -248,7 +251,7 @@ fun UnifiedWebViewScreen(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("复制链接") },
+                                text = { Text(stringResource(R.string.webview_copy_link)) },
                                 leadingIcon = { Icon(Icons.Default.Link, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -260,7 +263,7 @@ fun UnifiedWebViewScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("分享链接") },
+                                text = { Text(stringResource(R.string.webview_share_link)) },
                                 leadingIcon = { Icon(Icons.Default.Share, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -274,7 +277,7 @@ fun UnifiedWebViewScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("在浏览器中打开") },
+                                text = { Text(stringResource(R.string.webview_open_in_browser)) },
                                 leadingIcon = { Icon(Icons.Default.OpenInBrowser, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -287,7 +290,7 @@ fun UnifiedWebViewScreen(
                                 text = {
                                     Text(
                                         if (WebVpnEncoder.isWebVpnUrl(webViewRef.value?.url ?: ""))
-                                            "切换为外网访问" else "切换为内网访问"
+                                            stringResource(R.string.webview_switch_to_external) else stringResource(R.string.webview_switch_to_internal)
                                     )
                                 },
                                 leadingIcon = { Icon(Icons.Default.SwapHoriz, contentDescription = null) },

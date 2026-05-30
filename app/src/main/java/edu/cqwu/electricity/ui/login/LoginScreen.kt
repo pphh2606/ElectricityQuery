@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.login
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.ClipData
@@ -196,7 +199,7 @@ fun LoginScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "登录",
+                        text = stringResource(R.string.login_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -204,7 +207,7 @@ fun LoginScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = stringResource(R.string.common_back)
                         )
                     }
                 },
@@ -214,7 +217,7 @@ fun LoginScreen(
                     IconButton(onClick = { showSecurityNotice = true }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                            contentDescription = "安全说明",
+                            contentDescription = stringResource(R.string.login_security_notice),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -224,7 +227,7 @@ fun LoginScreen(
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "更多选项",
+                                contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -239,6 +242,7 @@ fun LoginScreen(
                                     showMenu = false
                                     val km = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
                                     if (km.isDeviceSecure) {
+                                        @Suppress("DEPRECATION")
                                         val intent = km.createConfirmDeviceCredentialIntent(
                                             "身份验证",
                                             "验证后导出加密凭据"
@@ -284,7 +288,7 @@ fun LoginScreen(
 
                 // 标题
                 Text(
-                    text = "统一身份认证登录",
+                    text = stringResource(R.string.login_unified_auth),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -326,7 +330,7 @@ fun LoginScreen(
                                             Icons.Default.KeyboardArrowUp
                                         else
                                             Icons.Default.ArrowDropDown,
-                                        contentDescription = "选择已保存的用户"
+                                        contentDescription = stringResource(R.string.common_select_saved_user)
                                     )
                                 }
                             }
@@ -364,7 +368,7 @@ fun LoginScreen(
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.Close,
-                                                contentDescription = "删除账号",
+                                                contentDescription = stringResource(R.string.common_delete_account),
                                                 tint = MaterialTheme.colorScheme.error
                                             )
                                         }
@@ -444,7 +448,7 @@ fun LoginScreen(
                         )
                     )
                     Text(
-                        text = "记住密码",
+                        text = stringResource(R.string.login_remember_password),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.clickable(
@@ -525,34 +529,34 @@ fun LoginScreen(
     if (showSecurityNotice) {
         BottomSheetDialog(
             onDismissRequest = { showSecurityNotice = false },
-            title = "登录说明"
+            title = stringResource(R.string.login_security_notice_title)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "    密码直接在设备端通过 AES-CBC 加密后直接发送到学校 CAS 统一认证服务器，加密使用学校登录页下发的动态 salt，每次请求独立。本应用不会将密码发送到任何第三方服务器。",
+                    text = stringResource(R.string.login_security_notice_1),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = "    登录成功后仅保存 Cookie 在设备本地，通过 Android 系统 WebKit CookieManager 持久化，仅本应用可访问。记住密码功能可将密码加密保存在设备私有存储中，仅在用户主动选择时启用。",
+                    text = stringResource(R.string.login_security_notice_2),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = "    每个用户的登录会话独立存储，互不干扰。可在登录界面里随时删除用户的本地登录信息。",
+                    text = stringResource(R.string.login_security_notice_3),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = "    扫码登录和添加账号使用独立的 Cookie 环境，不携带任何已登录用户的会话信息。",
+                    text = stringResource(R.string.login_security_notice_4),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = "    登录凭据导出需要验证设备密码，导出时使用AES加密加自定义密码保护，导入时需要相同的解密密码，确保凭据在设备间安全迁移。",
+                    text = stringResource(R.string.login_security_notice_5),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -568,11 +572,11 @@ fun LoginScreen(
             text = {
                 Column {
                     Text(
-                        text = "粘贴加密凭据字符串：",
+                        text = stringResource(R.string.login_paste_credential_label),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = "从其他设备导出的加密凭据",
+                        text = stringResource(R.string.login_paste_credential_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -648,18 +652,18 @@ fun LoginScreen(
     if (showExportDialog) {
         AlertDialog(
             onDismissRequest = { showExportDialog = false },
-            title = { Text("导出凭据", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.login_export_credential_title), fontWeight = FontWeight.Bold) },
             text = {
                 Column {
                     Text(
-                        text = "当前账号：${uiState.username.ifBlank { "（未输入）" }}",
+                        text = stringResource(R.string.login_current_account, uiState.username.ifBlank { stringResource(R.string.login_not_entered) }),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "设置导出密码（用于加密保护凭据）：",
+                        text = stringResource(R.string.login_export_password_label),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -714,7 +718,6 @@ fun LoginScreen(
                             is CredentialResult.Error -> {
                                 snackbar.show(result.message, ToastUtils.Type.ERROR)
                             }
-                            else -> {}
                         }
                     },
                     enabled = exportPassword.isNotBlank()
@@ -734,11 +737,11 @@ fun LoginScreen(
     deleteConfirmAccount?.let { account ->
         BottomSheetDialog(
             onDismissRequest = { deleteConfirmAccount = null },
-            title = "删除账号",
+            title = stringResource(R.string.login_delete_account_title),
             icon = Icons.Default.Delete,
             leadingButton = {
                 TextButton(onClick = { deleteConfirmAccount = null }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             },
             trailingButton = {
@@ -748,14 +751,14 @@ fun LoginScreen(
                     showAccountDropdown = false
                 }) {
                     Text(
-                        text = "删除",
+                        text = stringResource(R.string.common_delete),
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
             }
         ) {
             Text(
-                text = "确定要删除学号「$account」及其所有本地数据吗？\n\n删除后如需使用该账号需重新登录。",
+                text = stringResource(R.string.login_delete_account_confirm, account),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

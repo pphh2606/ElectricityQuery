@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.cardcenter
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -84,7 +87,7 @@ fun CardCenterScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "一卡通服务平台",
+                        text = stringResource(R.string.card_center_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -92,7 +95,7 @@ fun CardCenterScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

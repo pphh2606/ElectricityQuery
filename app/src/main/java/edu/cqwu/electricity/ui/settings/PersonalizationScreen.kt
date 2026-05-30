@@ -53,8 +53,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.NightMode
 import edu.cqwu.electricity.data.local.PageTransition
 import edu.cqwu.electricity.data.local.ReduceMotion
@@ -93,10 +95,10 @@ fun PersonalizationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "个性化", fontWeight = FontWeight.Bold) },
+                title = { Text(text = stringResource(R.string.personalization_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 colors = topBarColors,
@@ -111,7 +113,7 @@ fun PersonalizationScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             // 显示设置
-            SectionTitle(title = "显示设置")
+            SectionTitle(title = stringResource(R.string.personalization_display))
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -119,7 +121,7 @@ fun PersonalizationScreen(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 SettingRow(
-                    icon = Icons.Default.Contrast, title = "夜间模式",
+                    icon = Icons.Default.Contrast, title = stringResource(R.string.personalization_night_mode),
                     subtitle = currentNightMode.displayName,
                     onClick = { showNightModeDialog = true },
                 )
@@ -127,7 +129,7 @@ fun PersonalizationScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // 主题颜色
-            SectionTitle(title = "主题颜色")
+            SectionTitle(title = stringResource(R.string.personalization_theme_color))
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -136,15 +138,15 @@ fun PersonalizationScreen(
             ) {
                 Column {
                     ThemeColorRow(
-                        icon = Icons.Default.AutoAwesome, title = "动态取色",
-                        subtitle = if (isDynamicColorSupported) "跟随系统壁纸自动提取主题色" else "此设备不支持动态取色",
+                        icon = Icons.Default.AutoAwesome, title = stringResource(R.string.personalization_dynamic_color),
+                        subtitle = if (isDynamicColorSupported) stringResource(R.string.personalization_dynamic_color_supported) else stringResource(R.string.personalization_dynamic_color_unsupported),
                         selected = currentColorSource is ThemeColorSource.SystemDynamic,
                         enabled = isDynamicColorSupported,
                         onClick = { onColorSourceChange(ThemeColorSource.SystemDynamic) },
                     )
                     ThemeColorRow(
-                        icon = Icons.Default.Colorize, title = "自定义颜色",
-                        subtitle = "使用选定的颜色生成主题",
+                        icon = Icons.Default.Colorize, title = stringResource(R.string.personalization_custom_color),
+                        subtitle = stringResource(R.string.personalization_custom_color_desc),
                         selected = currentColorSource is ThemeColorSource.Custom,
                         onClick = {
                             showColorPicker = true
@@ -159,7 +161,7 @@ fun PersonalizationScreen(
                         },
                     )
                     SettingRow(
-                        icon = Icons.Default.FormatPaint, title = "标题栏颜色",
+                        icon = Icons.Default.FormatPaint, title = stringResource(R.string.personalization_topbar_color),
                         subtitle = currentTopBarStyle.displayName,
                         onClick = { showTopBarStyleDialog = true },
                     )
@@ -168,7 +170,7 @@ fun PersonalizationScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // 二维码设置
-            SectionTitle(title = "二维码设置")
+            SectionTitle(title = stringResource(R.string.personalization_qrcode_settings))
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -177,15 +179,15 @@ fun PersonalizationScreen(
             ) {
                 SettingRow(
                     icon = Icons.Default.QrCode,
-                    title = "二维码设置",
-                    subtitle = "颜色、圆角等自定义样式",
+                    title = stringResource(R.string.personalization_qrcode_settings),
+                    subtitle = stringResource(R.string.personalization_qrcode_desc),
                     onClick = onNavigateToQrCodeSettings,
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
 
             // 动画设置
-            SectionTitle(title = "动画设置")
+            SectionTitle(title = stringResource(R.string.personalization_animation))
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -194,7 +196,7 @@ fun PersonalizationScreen(
             ) {
                 Column {
                     SettingRow(
-                        icon = Icons.Default.Animation, title = "页面过渡动画",
+                        icon = Icons.Default.Animation, title = stringResource(R.string.personalization_page_transition),
                         subtitle = if (currentReduceMotion == ReduceMotion.ON) {
                             "${currentPageTransition.displayName}（被减少动画覆盖）"
                         } else {
@@ -203,7 +205,7 @@ fun PersonalizationScreen(
                         onClick = { showPageTransitionDialog = true },
                     )
                     SettingRow(
-                        icon = Icons.Default.MotionPhotosAuto, title = "减少动画",
+                        icon = Icons.Default.MotionPhotosAuto, title = stringResource(R.string.personalization_reduce_motion),
                         subtitle = currentReduceMotion.displayName,
                         onClick = { showReduceMotionDialog = true },
                     )
@@ -231,7 +233,7 @@ fun PersonalizationScreen(
     }
     if (showTopBarStyleDialog) {
         SelectionDialog(
-            title = "标题栏颜色", current = currentTopBarStyle,
+            title = stringResource(R.string.personalization_topbar_color), current = currentTopBarStyle,
             entries = TopBarStyle.entries,
             displayText = { it.displayName },
             onSelect = { onTopBarStyleChange(it); showTopBarStyleDialog = false },
@@ -240,7 +242,7 @@ fun PersonalizationScreen(
     }
     if (showPageTransitionDialog) {
         SelectionDialog(
-            title = "页面过渡动画", current = currentPageTransition,
+            title = stringResource(R.string.personalization_page_transition), current = currentPageTransition,
             entries = PageTransition.entries,
             displayText = { it.displayName },
             onSelect = { onPageTransitionChange(it); showPageTransitionDialog = false },
@@ -249,7 +251,7 @@ fun PersonalizationScreen(
     }
     if (showReduceMotionDialog) {
         SelectionDialog(
-            title = "减少动画", current = currentReduceMotion,
+            title = stringResource(R.string.personalization_reduce_motion), current = currentReduceMotion,
             entries = ReduceMotion.entries,
             displayText = { it.displayName },
             onSelect = { onReduceMotionChange(it); showReduceMotionDialog = false },
@@ -336,7 +338,7 @@ private fun ThemeColorRow(icon: ImageVector, title: String, subtitle: String, se
 private fun NightModeSelectionDialog(onSelect: (NightMode) -> Unit, onDismiss: () -> Unit) {
     BottomSheetDialog(
         onDismissRequest = onDismiss,
-        title = "夜间模式"
+        title = stringResource(R.string.personalization_night_mode)
     ) {
         NightMode.entries.forEach { mode ->
             BottomSheetItem(
@@ -372,10 +374,10 @@ private fun ColorPickerDialog(
     var selectedColor by remember(initialColor) { mutableStateOf(initialColor) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "选择主题色", style = MaterialTheme.typography.headlineSmall) },
+        title = { Text(text = stringResource(R.string.personalization_choose_color), style = MaterialTheme.typography.headlineSmall) },
         text = {
             Column {
-                Text(text = "选择一种颜色作为应用主题色", style = MaterialTheme.typography.bodyMedium,
+                Text(text = stringResource(R.string.personalization_choose_color_desc), style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 16.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     presetColors.chunked(6).forEach { row ->
@@ -400,8 +402,8 @@ private fun ColorPickerDialog(
                 }
             }
         },
-        confirmButton = { TextButton(onClick = { onColorSelected(selectedColor); onDismiss() }) { Text("确定") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        confirmButton = { TextButton(onClick = { onColorSelected(selectedColor); onDismiss() }) { Text(stringResource(R.string.common_confirm)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
     )
 }

@@ -32,9 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 
 /**
  * WebView 加载错误叠加层
@@ -110,7 +112,7 @@ fun WebViewErrorOverlay(
 
             // ── 重新加载按钮 ──
             FilledTonalButton(onClick = onRetry) {
-                Text("重新加载")
+                Text(stringResource(R.string.webview_reload))
             }
 
             // ── 操作按钮行 ──
@@ -127,7 +129,7 @@ fun WebViewErrorOverlay(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("切换内/外网")
+                        Text(stringResource(R.string.webview_toggle_network))
                     }
                 }
 
@@ -140,7 +142,7 @@ fun WebViewErrorOverlay(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("网络设置")
+                        Text(stringResource(R.string.webview_network_settings))
                     }
                 }
             }
@@ -151,6 +153,7 @@ fun WebViewErrorOverlay(
 /**
  * 根据错误码解析用户友好的错误信息
  */
+@Composable
 private fun resolveErrorInfo(
     errorCode: Int,
     description: String,
@@ -160,23 +163,23 @@ private fun resolveErrorInfo(
         return when (errorCode) {
             404 -> ErrorDisplayInfo(
                 icon = Icons.Filled.ErrorOutline,
-                title = "页面未找到",
-                description = "请求的页面不存在（HTTP 404）"
+                title = stringResource(R.string.webview_error_page_not_found),
+                description = stringResource(R.string.webview_error_page_not_found_desc)
             )
             500 -> ErrorDisplayInfo(
                 icon = Icons.Filled.ErrorOutline,
-                title = "服务器内部错误",
-                description = "服务器遇到问题，请稍后重试（HTTP 500）"
+                title = stringResource(R.string.webview_error_server_error),
+                description = stringResource(R.string.webview_error_server_error_desc)
             )
             502, 503, 504 -> ErrorDisplayInfo(
                 icon = Icons.Filled.CloudOff,
-                title = "服务暂时不可用",
-                description = "服务器正在维护或过载，请稍后重试（HTTP $errorCode）"
+                title = stringResource(R.string.webview_error_service_unavailable),
+                description = stringResource(R.string.webview_error_service_unavailable_desc, errorCode)
             )
             else -> ErrorDisplayInfo(
                 icon = Icons.Filled.ErrorOutline,
-                title = "网页加载失败",
-                description = "服务器返回错误（HTTP $errorCode）"
+                title = stringResource(R.string.webview_error_load_failed),
+                description = stringResource(R.string.webview_error_http_generic_desc, errorCode)
             )
         }
     }
@@ -184,38 +187,38 @@ private fun resolveErrorInfo(
     return when (errorCode) {
         -2 -> ErrorDisplayInfo(
             icon = Icons.Filled.WifiOff,
-            title = "网络连接已断开",
-            description = "请检查网络设置后重试"
+            title = stringResource(R.string.webview_error_network_disconnected),
+            description = stringResource(R.string.webview_error_network_disconnected_desc)
         )
         -8 -> ErrorDisplayInfo(
             icon = Icons.Filled.Timer,
-            title = "连接超时",
-            description = "请使用校园网环境或稍后重试"
+            title = stringResource(R.string.webview_error_timeout),
+            description = stringResource(R.string.webview_error_timeout_desc)
         )
         -15 -> ErrorDisplayInfo(
             icon = Icons.Filled.Dns,
-            title = "无法解析服务器地址",
-            description = "DNS 解析失败，请检查网络连接"
+            title = stringResource(R.string.webview_error_dns_failed),
+            description = stringResource(R.string.webview_error_dns_failed_desc)
         )
         -106 -> ErrorDisplayInfo(
             icon = Icons.Filled.SignalWifiOff,
-            title = "服务器拒绝连接",
-            description = "请使用校园网环境或稍后重试"
+            title = stringResource(R.string.webview_error_connection_refused),
+            description = stringResource(R.string.webview_error_connection_refused_desc)
         )
         -324 -> ErrorDisplayInfo(
             icon = Icons.Filled.CloudOff,
-            title = "服务器未响应",
-            description = "请使用校园网环境打开"
+            title = stringResource(R.string.webview_error_no_response),
+            description = stringResource(R.string.webview_error_no_response_desc)
         )
         -109 -> ErrorDisplayInfo(
             icon = Icons.Filled.SignalWifiOff,
-            title = "网络地址不可达",
-            description = "无法访问目标服务器，请检查网络连接"
+            title = stringResource(R.string.webview_error_unreachable),
+            description = stringResource(R.string.webview_error_unreachable_desc)
         )
         else -> ErrorDisplayInfo(
             icon = Icons.Filled.ErrorOutline,
-            title = "网页加载失败",
-            description = description.ifBlank { "请检查网络连接后重试" }
+            title = stringResource(R.string.webview_error_load_failed),
+            description = description.ifBlank { stringResource(R.string.webview_error_generic_desc) }
         )
     }
 }

@@ -53,9 +53,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.QrCodeColorMode
 import edu.cqwu.electricity.data.network.CasAuthApi
 import edu.cqwu.electricity.data.network.CookieStore
@@ -307,7 +309,7 @@ fun QrCodeDisplayScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = stringResource(R.string.common_back)
                         )
                     }
                 },
@@ -318,14 +320,14 @@ fun QrCodeDisplayScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "刷新",
+                            contentDescription = stringResource(R.string.common_refresh),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = onNavigateToQrCodeSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "二维码设置",
+                            contentDescription = stringResource(R.string.qrcode_display_settings),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -390,14 +392,14 @@ fun QrCodeDisplayScreen(
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(
-                                        text = errorMessage ?: "加载失败",
+                                        text = errorMessage ?: stringResource(R.string.webview_error_load_failed),
                                         color = MaterialTheme.colorScheme.error,
                                         style = MaterialTheme.typography.bodyLarge,
                                         textAlign = TextAlign.Center
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
                                     Text(
-                                        text = "下拉或点击刷新按钮重试",
+                                        text = stringResource(R.string.common_pull_to_retry),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         style = MaterialTheme.typography.bodySmall
                                     )
@@ -454,7 +456,7 @@ fun QrCodeDisplayScreen(
                             Spacer(modifier = Modifier.height(24.dp))
 
                             Text(
-                                text = "请将二维码对准扫码设备",
+                                text = stringResource(R.string.qrcode_display_scan_hint),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -467,7 +469,7 @@ fun QrCodeDisplayScreen(
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "自动刷新",
+                                    text = stringResource(R.string.qrcode_display_auto_refresh),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

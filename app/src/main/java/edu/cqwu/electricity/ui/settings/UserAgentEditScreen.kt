@@ -31,9 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.network.UserAgentEntry
 import edu.cqwu.electricity.data.network.UserAgentProvider
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
@@ -72,7 +74,7 @@ fun UserAgentEditScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (isNew) "添加浏览器标识" else "编辑浏览器标识",
+                        text = if (isNew) stringResource(R.string.ua_edit_add_title) else stringResource(R.string.ua_edit_edit_title),
                         fontWeight = FontWeight.Bold,
                     )
                 },
@@ -80,7 +82,7 @@ fun UserAgentEditScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                         )
                     }
                 },
@@ -90,7 +92,7 @@ fun UserAgentEditScreen(
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "删除",
+                                contentDescription = stringResource(R.string.common_delete),
                                 tint = MaterialTheme.colorScheme.error,
                             )
                         }
@@ -121,8 +123,8 @@ fun UserAgentEditScreen(
                     TextField(
                         value = note,
                         onValueChange = { note = it },
-                        label = { Text("添加备注") },
-                        placeholder = { Text("例如：学校平板") },
+                        label = { Text(stringResource(R.string.ua_edit_note_label)) },
+                        placeholder = { Text(stringResource(R.string.ua_edit_note_placeholder)) },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
@@ -137,8 +139,8 @@ fun UserAgentEditScreen(
                     TextField(
                         value = userAgent,
                         onValueChange = { userAgent = it },
-                        label = { Text("输入浏览器标识") },
-                        placeholder = { Text("Mozilla/5.0 ...") },
+                        label = { Text(stringResource(R.string.ua_edit_ua_label)) },
+                        placeholder = { Text(stringResource(R.string.ua_edit_ua_placeholder)) },
                         minLines = 4,
                         maxLines = 8,
                         colors = TextFieldDefaults.colors(
@@ -181,7 +183,7 @@ fun UserAgentEditScreen(
                         .padding(bottom = 16.dp),
                     enabled = canSave,
                 ) {
-                    Text("保存")
+                    Text(stringResource(R.string.common_save))
                 }
             }
         }
@@ -191,9 +193,9 @@ fun UserAgentEditScreen(
     if (showDeleteDialog && existingEntry != null) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text(text = "删除浏览器标识") },
+            title = { Text(text = stringResource(R.string.ua_delete_title)) },
             text = {
-                Text(text = "确定要删除\"${existingEntry.name}\"吗？")
+                Text(text = stringResource(R.string.ua_delete_confirm, existingEntry.name))
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -201,12 +203,12 @@ fun UserAgentEditScreen(
                     showDeleteDialog = false
                     onBack()
                 }) {
-                    Text("删除", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.common_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,

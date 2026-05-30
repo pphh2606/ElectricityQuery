@@ -85,7 +85,7 @@ class CampusphereApi {
         ).execute()
 
         // 消费响应体
-        resp.body?.string()
+        resp.body.string()
         val finalUrl = resp.request.url.toString()
         val code = resp.code
         android.util.Log.d(TAG, "CAS ticket 交换: code=$code, finalUrl=${finalUrl.take(100)}")
@@ -161,8 +161,7 @@ class CampusphereApi {
                 .build()
 
             val info = client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                    ?: throw Exception("响应为空")
+                val responseBody = response.body.string()
 
                 android.util.Log.d(TAG, "API 响应(前200): ${responseBody.take(200)}")
 
@@ -229,8 +228,7 @@ class CampusphereApi {
                 .build()
 
             val list = client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                    ?: throw Exception("响应为空")
+                val responseBody = response.body.string()
 
                 if (isNotLoggedIn(responseBody)) {
                     throw NotLoggedInException()

@@ -27,6 +27,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.ui.Alignment
@@ -53,7 +55,7 @@ fun SettingsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "设置",
+                        text = stringResource(R.string.settings_title),
                         fontWeight = FontWeight.Bold,
                     )
                 },
@@ -61,7 +63,7 @@ fun SettingsScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                         )
                     }
                 },
@@ -83,22 +85,22 @@ fun SettingsScreen(
                 Column {
                     SettingsEntry(
                         icon = Icons.Default.Palette,
-                        title = "个性化",
-                        subtitle = "夜间模式、主题颜色、页面过渡动画",
+                        title = stringResource(R.string.settings_personalization),
+                        subtitle = stringResource(R.string.settings_personalization_desc),
                         onClick = onNavigateToPersonalization,
                     )
 
                     SettingsEntry(
                         icon = Icons.Default.Tune,
-                        title = "配置",
-                        subtitle = "浏览器标识等设置",
+                        title = stringResource(R.string.settings_config),
+                        subtitle = stringResource(R.string.settings_config_desc),
                         onClick = onNavigateToConfig,
                     )
 
                     SettingsEntry(
                         icon = Icons.Default.Info,
-                        title = "关于",
-                        subtitle = "应用版本、开发者信息",
+                        title = stringResource(R.string.settings_about),
+                        subtitle = stringResource(R.string.settings_about_desc),
                         onClick = onNavigateToAbout,
                     )
                 }

@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -59,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -67,6 +69,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.BuyRecord
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
@@ -147,7 +150,7 @@ fun RechargeRecordScreen(
         Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("查询充值记录", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.recharge_record_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = {
                         viewModel.clearRechargeRecordState()
@@ -155,7 +158,7 @@ fun RechargeRecordScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -165,7 +168,7 @@ fun RechargeRecordScreen(
                     IconButton(onClick = { showInfoDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "提示",
+                            contentDescription = stringResource(R.string.recharge_hint),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -173,7 +176,7 @@ fun RechargeRecordScreen(
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "更多选项",
+                                contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -182,7 +185,7 @@ fun RechargeRecordScreen(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("复制") },
+                                text = { Text(stringResource(R.string.recharge_record_copy)) },
                                 leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -191,7 +194,7 @@ fun RechargeRecordScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("导出") },
+                                text = { Text(stringResource(R.string.recharge_record_export)) },
                                 leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -225,7 +228,7 @@ fun RechargeRecordScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "查询时间范围：",
+                        text = stringResource(R.string.recharge_record_time_range),
                         style = MaterialTheme.typography.bodyLarge
                     )
 
@@ -242,7 +245,7 @@ fun RechargeRecordScreen(
                             singleLine = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                             modifier = Modifier
-                                .menuAnchor()
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = !recordState.isQuerying)
                                 .width(160.dp),
                             enabled = !recordState.isQuerying,
                             colors = TextFieldDefaults.colors(
@@ -284,7 +287,7 @@ fun RechargeRecordScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = recordState.error ?: "未知错误",
+                                text = recordState.error ?: stringResource(R.string.common_unknown_error),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -301,7 +304,7 @@ fun RechargeRecordScreen(
                             // 合计（移到最上方）
                             item {
                                 Text(
-                                    text = "合计充值：${String.format("%.2f", total)} 元（共 ${reversedList.size} 笔）",
+                                    text = stringResource(R.string.recharge_record_total, String.format("%.2f", total), reversedList.size),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
@@ -324,7 +327,7 @@ fun RechargeRecordScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "未查询到记录",
+                                text = stringResource(R.string.recharge_record_no_data),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -340,14 +343,14 @@ fun RechargeRecordScreen(
     if (showInfoDialog) {
         BottomSheetDialog(
             onDismissRequest = { showInfoDialog = false },
-            title = "提示"
+            title = stringResource(R.string.recharge_hint)
         ) {
             Column {
-                Text("1. 查询内容仅供参考，请以实际充值数量为准。")
+                Text(stringResource(R.string.recharge_record_hint_item1))
                 Spacer(modifier = Modifier.height(8.dp))
                 val infoText = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
-                        append("2. 如果认为充值记录不准，可以访问")
+                        append(stringResource(R.string.recharge_record_hint_item2_prefix))
                     }
                     pushLink(
                         LinkAnnotation.Clickable(
@@ -366,10 +369,10 @@ fun RechargeRecordScreen(
                             context.startActivity(intent)
                         }
                     )
-                    append("此处")
+                    append(stringResource(R.string.recharge_record_hint_item2_link))
                     pop()
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
-                        append("查看官方充值记录。")
+                        append(stringResource(R.string.recharge_record_hint_item2_suffix))
                     }
                 }
                 Text(
@@ -393,26 +396,26 @@ private fun RechargeRecordCard(record: BuyRecord) {
     ) {
         // 充值人（独立显示，每条记录可能不同）
         Text(
-            text = "充值人：${record.userName}",
+            text = stringResource(R.string.recharge_record_recharger, record.userName),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "充值时间：${record.buyTime}",
+            text = stringResource(R.string.recharge_record_time, record.buyTime),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "充值金额：${String.format("%.2f", record.buyTotal)} 元",
+            text = stringResource(R.string.recharge_record_amount, String.format("%.2f", record.buyTotal)),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "订单号：${record.orderNum}",
+            text = stringResource(R.string.recharge_record_order_no, record.orderNum),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

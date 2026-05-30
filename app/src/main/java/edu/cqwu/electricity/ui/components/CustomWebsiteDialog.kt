@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.components
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,7 +70,7 @@ fun CustomWebsiteDialog(
 
     BottomSheetDialog(
         onDismissRequest = onDismiss,
-        title = "自定义网站",
+        title = stringResource(R.string.custom_website_title),
         icon = Icons.Default.Language,
         leadingButton = {
             TextButton(onClick = onDismiss) {
@@ -113,7 +116,7 @@ fun CustomWebsiteDialog(
                 }
                 AsyncImage(
                     model = request,
-                    contentDescription = "自定义图标",
+                    contentDescription = stringResource(R.string.custom_icon),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(4.dp)
@@ -127,12 +130,12 @@ fun CustomWebsiteDialog(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "选择图标",
+                        contentDescription = stringResource(R.string.custom_website_choose_icon),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
-                        text = "选择图标",
+                        text = stringResource(R.string.custom_website_choose_icon),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.cardcenter
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -115,7 +118,7 @@ fun AccountInfoScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "账户信息",
+                        text = stringResource(R.string.card_account_info_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -123,7 +126,7 @@ fun AccountInfoScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -149,7 +152,7 @@ fun AccountInfoScreen(
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "正在获取账户信息...",
+                                text = stringResource(R.string.card_fetching_account),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -199,19 +202,19 @@ private fun AccountInfoContent(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     InfoRow(
-                        label = "姓名",
+                        label = stringResource(R.string.card_account_info_name),
                         value = info.name,
                         icon = Icons.Filled.Person
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
-                        label = "学工号",
+                        label = stringResource(R.string.card_account_info_student_id),
                         value = info.studentId,
                         icon = Icons.Filled.Badge
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
-                        label = "账户余额",
+                        label = stringResource(R.string.card_account_info_balance),
                         value = info.balance,
                         icon = Icons.Filled.Payments,
                         isHighlight = true
@@ -229,19 +232,19 @@ private fun AccountInfoContent(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     InfoRow(
-                        label = "学校",
+                        label = stringResource(R.string.card_account_info_school),
                         value = info.school.ifBlank { "-" },
                         icon = Icons.Filled.School
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
-                        label = "专业",
+                        label = stringResource(R.string.card_account_info_major),
                         value = info.major.ifBlank { "-" },
                         icon = Icons.Filled.LibraryBooks
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
-                        label = "班级",
+                        label = stringResource(R.string.card_account_info_class),
                         value = info.className.ifBlank { "-" },
                         icon = Icons.Filled.Groups
                     )

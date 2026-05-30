@@ -244,7 +244,7 @@ class ElectricityApi {
             if (!response.isSuccessful) {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
-            val body = response.body?.string() ?: throw RuntimeException("响应体为空")
+            val body = response.body.string()
             android.util.Log.d("ElectricityApi", "充值响应: $body")
 
             val rechargeResponse = gson.fromJson(body, RechargeResponse::class.java)
@@ -348,7 +348,7 @@ class ElectricityApi {
             if (!response.isSuccessful) {
                 throw RuntimeException("查询订单状态 HTTP ${response.code}: ${response.message}")
             }
-            val body = response.body?.string() ?: throw RuntimeException("查询订单状态响应体为空")
+            val body = response.body.string()
             android.util.Log.d("ElectricityApi", "订单状态响应: $body")
 
             gson.fromJson(body, OrderStatusResponse::class.java)
@@ -379,8 +379,7 @@ class ElectricityApi {
                     .build()
             ).execute()
 
-            val html = response.body?.string()
-                ?: throw RuntimeException("获取账户信息失败：响应体为空")
+            val html = response.body.string()
 
             // 检查是否被重定向到 CAS 登录页
             SessionChecker.checkAndThrow(html)
@@ -462,8 +461,7 @@ class ElectricityApi {
                     .build()
             ).execute()
 
-            val html = response.body?.string()
-                ?: throw RuntimeException("获取卡信息失败：响应体为空")
+            val html = response.body.string()
 
             SessionChecker.checkAndThrow(html)
 
@@ -504,8 +502,7 @@ class ElectricityApi {
 
             val response = SharedHttpClient.client.newCall(requestBuilder.build()).execute()
 
-            val body = response.body?.string()
-                ?: throw RuntimeException("挂失请求失败：响应体为空")
+            val body = response.body.string()
 
             android.util.Log.d("ElectricityApi", "卡挂失响应: $body")
 
@@ -601,8 +598,7 @@ class ElectricityApi {
                 .build()
         ).execute()
 
-        return response.body?.string()
-            ?: throw RuntimeException("获取账单失败：响应体为空")
+        return response.body.string()
     }
 
     /**
@@ -636,8 +632,7 @@ class ElectricityApi {
                     .build()
             ).execute()
 
-            val json = response.body?.string()
-                ?: throw RuntimeException("H5 账单请求失败：响应体为空")
+            val json = response.body.string()
 
             // 检查是否被重定向到 CAS 登录页
             SessionChecker.checkAndThrow(json)
@@ -835,7 +830,7 @@ class ElectricityApi {
         if (!response.isSuccessful) {
             throw RuntimeException("HTTP ${response.code}: ${response.message}")
         }
-        val body = response.body?.string() ?: throw RuntimeException("响应体为空")
+        val body = response.body.string()
         android.util.Log.d("ElectricityApi", "响应体原始内容: $body")
         return body
     }

@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.cardcenter
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -174,7 +177,7 @@ fun BillScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "账单",
+                        text = stringResource(R.string.bill_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -182,7 +185,7 @@ fun BillScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -191,14 +194,14 @@ fun BillScreen(
                     IconButton(onClick = { onNavigateToWebView(webBillUrl, "账单（网页版）") }) {
                         Icon(
                             imageVector = Icons.Filled.OpenInBrowser,
-                            contentDescription = "网页版",
+                            contentDescription = stringResource(R.string.common_web_version),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = { viewModel.toggleFilterPanel() }) {
                         Icon(
                             imageVector = Icons.Filled.FilterList,
-                            contentDescription = "筛选",
+                            contentDescription = stringResource(R.string.common_filter),
                             tint = if (uiState.showFilterPanel)
                                 MaterialTheme.colorScheme.primary
                             else
@@ -587,14 +590,14 @@ private fun BillLoadingContent(loadElapsed: Long) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         CircularProgressIndicator()
         Spacer(modifier = Modifier.height(12.dp))
-        Text(text = "正在获取账单...${loadElapsed}s", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = stringResource(R.string.bill_fetching, loadElapsed), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
 @Composable
 private fun BillEmptyDataContent() {
     Box(modifier = Modifier.fillMaxWidth().padding(vertical = 64.dp), contentAlignment = Alignment.Center) {
-        Text(text = "暂无数据", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = stringResource(R.string.common_no_data), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -609,7 +612,7 @@ private fun BillTabErrorContent(errorMessage: String) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "请稍后重试",
+                text = stringResource(R.string.common_please_retry),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
@@ -635,8 +638,8 @@ private fun BillEmptyListContent(tabNo: Int) {
 @Composable
 private fun BillStatsRow(pageInfo: BillPageInfo) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = "已加载 ${pageInfo.records.size} 条", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = "第 ${pageInfo.currentPage}/${pageInfo.totalPages} 页", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = stringResource(R.string.bill_loaded_count, pageInfo.records.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = stringResource(R.string.bill_page_info, pageInfo.currentPage, pageInfo.totalPages), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -648,12 +651,12 @@ private fun BillFooterContent(uiState: BillUiState, pageInfo: BillPageInfo, view
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "加载中...${uiState.loadMoreElapsed}s", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = stringResource(R.string.bill_fetching, uiState.loadMoreElapsed), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else if (pageInfo.hasNext) {
         // 自动加载由 LaunchedEffect（滑到底部最后3项）驱动，点击可手动触发翻页作为兜底
         Text(
-            text = "上滑加载更多",
+            text = stringResource(R.string.common_swipe_load_more),
             modifier = Modifier.clickable {
                 if (!uiState.isLoadingMore) viewModel.loadNextPage()
             },

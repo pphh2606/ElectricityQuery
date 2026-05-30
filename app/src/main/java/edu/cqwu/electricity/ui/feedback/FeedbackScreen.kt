@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.feedback
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.layout.Column
@@ -242,7 +245,7 @@ fun FeedbackScreen(
     if (showLogPreview) {
         BottomSheetDialog(
             onDismissRequest = { showLogPreview = false },
-            title = "日志预览",
+            title = stringResource(R.string.feedback_log_preview),
         ) {
             // 外层 BottomSheetDialog(fullscreen=true) 已包含 fillMaxHeight + 滚动，
             // 内容只需 fillMaxWidth，不要固定高度和内层滚动，避免冲突
@@ -263,7 +266,7 @@ fun FeedbackScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "意见反馈",
+                        text = stringResource(R.string.feedback_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -271,7 +274,7 @@ fun FeedbackScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -289,7 +292,7 @@ fun FeedbackScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = "发送邮件",
+                                contentDescription = stringResource(R.string.common_send_email),
                             )
                         }
                         IconButton(
@@ -298,7 +301,7 @@ fun FeedbackScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Share,
-                                contentDescription = "分享日志",
+                                contentDescription = stringResource(R.string.common_share_log),
                             )
                         }
                     }
@@ -322,7 +325,7 @@ fun FeedbackScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "附带应用日志（含崩溃记录）",
+                    text = stringResource(R.string.feedback_attach_log),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
                 )
@@ -377,7 +380,7 @@ fun FeedbackScreen(
                         modifier = Modifier.padding(end = 4.dp),
                     )
                     Text(
-                        text = "存在 $crashReportCount 条历史崩溃记录，发送时将自动附带",
+                        text = stringResource(R.string.feedback_crash_count, crashReportCount),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )

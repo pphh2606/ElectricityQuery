@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.profile
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.animation.AnimatedVisibility
 import edu.cqwu.electricity.ui.components.ReLoginContent
 import androidx.compose.animation.expandVertically
@@ -92,7 +95,7 @@ fun MyInfoScreen(
                 title = { Text("我的信息", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 colors = topBarColors,
@@ -348,7 +351,7 @@ private fun CollapsibleCategoryCard(
                             modifier = Modifier.size(20.dp),
                         )
                     }
-                    if (index < (category.children?.size ?: 0) - 1) {
+                    if (index < category.children.size - 1) {
                         HorizontalDivider(thickness = 0.5.dp,
                             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                             modifier = Modifier.padding(start = 20.dp))

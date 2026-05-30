@@ -69,7 +69,7 @@ import androidx.compose.ui.unit.dp
  *     },
  *     trailingButton = {
  *         IconButton(onClick = { /* 设置 */ }) {
- *             Icon(Icons.Default.Settings, contentDescription = "设置")
+ *             Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.common_settings))
  *         }
  *     }
  * ) {

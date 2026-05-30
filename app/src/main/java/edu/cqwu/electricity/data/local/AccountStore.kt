@@ -37,8 +37,10 @@ data class SavedAccountInfo(
  *   val allAccounts = store.getAllAccounts()  // 按时间降序
  *   val password = store.getPassword("2024xxxxx")
  */
+@Suppress("DEPRECATION")
 class AccountStore(context: Context) {
 
+    @Suppress("DEPRECATION")
     private val prefs: SharedPreferences = run {
         val masterKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)

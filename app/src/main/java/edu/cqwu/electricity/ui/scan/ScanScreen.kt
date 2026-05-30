@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.scan
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -456,6 +459,7 @@ fun ScanScreen(
                     handleScanResult(text, context, onOpenUrl, onBack, { resumeScan() }) { msg -> snackbar.show(msg) }
                 },
             )
+            @Suppress("DEPRECATION")
             val imageAnalysis = ImageAnalysis.Builder()
                 .setTargetResolution(android.util.Size(ANALYSIS_WIDTH, ANALYSIS_HEIGHT))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -504,7 +508,7 @@ fun ScanScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("扫码", color = Color.White) },
+                title = { Text(stringResource(R.string.scan_title), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = {
                         camera?.cameraControl?.enableTorch(false)
@@ -512,7 +516,7 @@ fun ScanScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = Color.White,
                         )
                     }
@@ -581,7 +585,7 @@ fun ScanScreen(
                         Icon(
                             imageVector = if (isTorchOn) Icons.Default.FlashlightOn
                             else Icons.Default.FlashlightOff,
-                            contentDescription = if (isTorchOn) "关灯" else "开灯",
+                            contentDescription = if (isTorchOn) stringResource(R.string.scan_torch_on) else stringResource(R.string.scan_torch_off),
                             tint = if (isTorchOn) Color.Yellow else Color.White,
                             modifier = Modifier.size(36.dp),
                         )
@@ -597,7 +601,7 @@ fun ScanScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.PhotoLibrary,
-                            contentDescription = "相册",
+                            contentDescription = stringResource(R.string.scan_album),
                             tint = Color.White,
                             modifier = Modifier.size(36.dp),
                         )
@@ -615,14 +619,14 @@ fun ScanScreen(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = "需要相机权限才能扫码",
+                            text = stringResource(R.string.scan_need_permission),
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         androidx.compose.material3.Button(
                             onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
                             modifier = Modifier.padding(top = 16.dp),
                         ) {
-                            Text("重新授权")
+                            Text(stringResource(R.string.scan_reauthorize))
                         }
                     }
                 }
@@ -634,7 +638,7 @@ fun ScanScreen(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = "相机权限被永久拒绝",
+                            text = stringResource(R.string.scan_permission_denied),
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         androidx.compose.material3.Button(
@@ -647,7 +651,7 @@ fun ScanScreen(
                             },
                             modifier = Modifier.padding(top = 16.dp),
                         ) {
-                            Text("前往设置开启权限")
+                            Text(stringResource(R.string.scan_go_to_settings))
                         }
                     }
                 }

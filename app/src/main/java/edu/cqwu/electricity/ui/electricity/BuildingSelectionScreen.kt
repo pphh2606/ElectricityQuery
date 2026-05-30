@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.electricity
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -94,13 +97,13 @@ fun BuildingSelectionScreen(
     // 使用统一 TabScaffold（独立页面显示 TopAppBar，Tab 内嵌时不自带）
     TabScaffold(
         showTopBar = showTopBar,
-        title = "电费查询",
+        title = stringResource(R.string.electricity_query_title),
         onBack = onBack,
         actions = {
             IconButton(onClick = onNavigateToAccountSelection) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "充值电费"
+                    contentDescription = stringResource(R.string.electricity_recharge)
                 )
             }
         }

@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.ui.settings
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,16 +29,26 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
+import edu.cqwu.electricity.data.local.AppLanguage
+import edu.cqwu.electricity.data.local.SettingsPreferences
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 
 /**
- * 配置页 — 未来配置入口的容器页面。
- * 目前仅有"浏览器标识"一项设置。
+ * 配置页 — 包含浏览器标识和语言切换设置。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,16 +57,21 @@ fun ConfigScreen(
     onNavigateToUserAgent: () -> Unit,
 ) {
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val context = LocalContext.current
+    val settingsPrefs = remember { SettingsPreferences(context) }
+
+    var showLanguageSheet by remember { mutableStateOf(false) }
+    val currentLanguage by remember { mutableStateOf(settingsPrefs.getAppLanguage()) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "配置", fontWeight = FontWeight.Bold) },
+                title = { Text(text = stringResource(R.string.config_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                         )
                     }
                 },
@@ -71,11 +90,55 @@ fun ConfigScreen(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
-                ConfigEntry(
-                    icon = Icons.Default.Smartphone,
-                    title = "浏览器标识",
-                    subtitle = "设置 User-Agent",
-                    onClick = onNavigateToUserAgent,
+                Column {
+                    // ── 浏览器标识 ──
+                    ConfigEntry(
+                        icon = Icons.Default.Smartphone,
+                        title = stringResource(R.string.config_user_agent),
+                        subtitle = stringResource(R.string.config_user_agent_desc),
+                        onClick = onNavigateToUserAgent,
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    )
+
+                    // ── 语言 ──
+                    ConfigEntry(
+                        icon = Icons.Default.Language,
+                        title = stringResource(R.string.language_title),
+                        subtitle = currentLanguage.displayName,
+                        onClick = { showLanguageSheet = true },
+                    )
+                }
+            }
+        }
+    }
+
+    // ── 语言选择 BottomSheet（自带拖动手柄）──
+    if (showLanguageSheet) {
+        BottomSheetDialog(
+            onDismissRequest = { showLanguageSheet = false },
+            title = stringResource(R.string.language_select),
+            fullscreen = false,
+        ) {
+            AppLanguage.entries.forEach { language ->
+                BottomSheetItem(
+                    icon = null,
+                    title = language.displayName,
+                    selected = language == currentLanguage,
+                    onClick = {
+                        settingsPrefs.setAppLanguage(language)
+                        showLanguageSheet = false
+                        // 重启 Activity 应用新语言
+                        val activity = context as? Activity ?: return@BottomSheetItem
+                        val intent = Intent(activity, activity.javaClass)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        activity.startActivity(intent)
+                        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        activity.finish()
+                    },
                 )
             }
         }

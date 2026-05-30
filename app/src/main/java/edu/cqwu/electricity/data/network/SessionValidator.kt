@@ -75,7 +75,7 @@ object SessionValidator {
                     .build()
             ).execute()
 
-            val html = response.body?.string() ?: return@withContext null
+            val html = response.body.string()
 
             // 检查是否是 CAS 登录页（Cookie 无效场景）
             if (SessionChecker.isCasLoginPage(html)) {

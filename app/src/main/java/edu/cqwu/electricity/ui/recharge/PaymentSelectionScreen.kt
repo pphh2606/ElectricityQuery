@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.PaymentMethod
 import kotlinx.coroutines.delay
 
@@ -109,9 +111,9 @@ fun PaymentSelectionScreen(
 
     // 动态标题
     val title = if (recharge.fullName.isNotBlank()) {
-        "为${recharge.fullName}充值电费"
+        stringResource(R.string.payment_title_for_user, recharge.fullName)
     } else {
-        "充值电费"
+        stringResource(R.string.payment_title_default)
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -126,7 +128,7 @@ fun PaymentSelectionScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -157,7 +159,7 @@ fun PaymentSelectionScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
-                        text = "正在创建订单...",
+                        text = stringResource(R.string.payment_creating_order),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -170,7 +172,7 @@ fun PaymentSelectionScreen(
                         ?: recharge.customAmount.toDoubleOrNull()
                     if (amount != null) {
                         Text(
-                            text = "充值金额",
+                            text = stringResource(R.string.payment_amount_label),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -190,7 +192,7 @@ fun PaymentSelectionScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "选择支付方式",
+                        text = stringResource(R.string.payment_select_method),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -237,10 +239,10 @@ fun PaymentSelectionScreen(
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("正在处理支付...")
+                            Text(stringResource(R.string.payment_processing))
                         } else {
                             Text(
-                                text = "确认支付",
+                                text = stringResource(R.string.payment_confirm),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -250,13 +252,13 @@ fun PaymentSelectionScreen(
                     // 订单创建失败
                     Spacer(modifier = Modifier.height(48.dp))
                     Text(
-                        text = "订单创建失败",
+                        text = stringResource(R.string.payment_order_failed),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = recharge.rechargeError ?: "未知错误",
+                        text = recharge.rechargeError ?: stringResource(R.string.common_unknown_error),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -265,7 +267,7 @@ fun PaymentSelectionScreen(
                         onClick = { viewModel.submitRecharge() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("重试")
+                        Text(stringResource(R.string.common_retry))
                     }
                 }
             }
@@ -615,7 +617,7 @@ private fun PaymentWebViewOverlay(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "关闭支付",
+                        contentDescription = stringResource(R.string.payment_close),
                         tint = ComposeColor.White
                     )
                 }
@@ -685,7 +687,7 @@ private fun PaymentMethodCard(
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                 )
                 Text(
-                    text = if (method == PaymentMethod.WECHAT) "推荐使用，快捷支付" else "支持储蓄卡和信用卡",
+                    text = if (method == PaymentMethod.WECHAT) stringResource(R.string.payment_wechat_desc) else stringResource(R.string.payment_alipay_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -695,7 +697,7 @@ private fun PaymentMethodCard(
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "已选择",
+                    contentDescription = stringResource(R.string.payment_selected),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )

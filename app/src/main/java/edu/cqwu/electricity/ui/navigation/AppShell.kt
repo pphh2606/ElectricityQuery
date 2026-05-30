@@ -65,6 +65,7 @@ fun AppShell(
                     val visuals = data.visuals as? CustomSnackbarVisuals
                     val type = visuals?.type ?: ToastUtils.Type.ERROR
 
+                    @Suppress("DEPRECATION")
                     val swipeDismissState = rememberSwipeToDismissBoxState(
                         confirmValueChange = { value ->
                             if (value != SwipeToDismissBoxValue.Settled) {

@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.hall
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +73,7 @@ fun HallTopBar() {
     TopAppBar(
         title = {
             Text(
-                text = "大厅",
+                text = stringResource(R.string.hall_title),
                 fontWeight = FontWeight.Bold,
             )
         },
@@ -277,7 +280,7 @@ private fun FavoriteAppsContent(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "暂无收藏的应用",
+                    text = stringResource(R.string.hall_no_favorites),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

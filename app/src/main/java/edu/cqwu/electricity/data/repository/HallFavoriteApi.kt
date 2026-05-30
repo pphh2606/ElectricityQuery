@@ -62,8 +62,7 @@ class HallFavoriteApi {
             .build()
 
         val initResponse = client.newCall(initRequest).execute()
-        val initBody = initResponse.body?.string()
-            ?: throw RuntimeException("获取 ehall 受保护页面失败：响应体为空")
+        val initBody = initResponse.body.string()
 
         // 检查最终响应是否仍是 CAS 登录页（Cookie 过期或未登录）
         if (SessionChecker.isCasLoginPage(initBody)) {
@@ -99,8 +98,7 @@ class HallFavoriteApi {
 
             Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 步骤2: GET $url")
             val response = client.newCall(request).execute()
-            val body = response.body?.string()
-                ?: throw RuntimeException("获取收藏应用列表失败：响应体为空")
+            val body = response.body.string()
 
             Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 收到响应，长度=${body.length}")
             Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 响应前200字: ${body.take(200)}")
@@ -163,8 +161,7 @@ class HallFavoriteApi {
 
             Log.d("HallFavoriteApi", "toggleFavorite: GET $url")
             val response = client.newCall(request).execute()
-            val body = response.body?.string()
-                ?: throw RuntimeException("切换收藏失败：响应体为空")
+            val body = response.body.string()
 
             Log.d("HallFavoriteApi", "toggleFavorite 响应: $body")
 

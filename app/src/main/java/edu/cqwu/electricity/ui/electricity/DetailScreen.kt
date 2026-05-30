@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.electricity
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 // 三点菜单
 
 // 剪贴板与文件导出
@@ -142,7 +145,7 @@ fun DetailScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -152,7 +155,7 @@ fun DetailScreen(
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "更多选项",
+                                contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -273,8 +276,8 @@ private fun UsageListWithChart(
             ElectricityLineChartCard(
                 xLabels = records.map(xLabelTransform),
                 lines = listOf(
-                    LineData("用电量(度)", records.map { it.consumeTotal ?: 0.0 }, Color(0xFF2196F3)),
-                    LineData("费用(元)", records.map { it.costTotal ?: 0.0 }, Color(0xFFE53935))
+                    LineData("用电量(度)", records.map { it.consumeTotal }, Color(0xFF2196F3)),
+                    LineData("费用(元)", records.map { it.costTotal }, Color(0xFFE53935))
                 )
             )
         }
@@ -296,7 +299,7 @@ private fun UsageListWithChart(
 private fun SixMonthUsageContent(data: UsageResponse?) {
     UsageListWithChart(
         data = data,
-        emptyMessage = "暂无用电记录",
+        emptyMessage = stringResource(R.string.detail_empty_record),
         xLabelTransform = { it.costTime.takeLast(2) + "月" }
     )
 }
@@ -308,7 +311,7 @@ private fun SixMonthUsageContent(data: UsageResponse?) {
 private fun MonthDailyUsageContent(data: UsageResponse?) {
     UsageListWithChart(
         data = data,
-        emptyMessage = "暂无每日用电数据",
+        emptyMessage = stringResource(R.string.detail_empty_daily),
         xLabelTransform = { it.costTime.takeLast(5) }
     )
 }
@@ -333,7 +336,7 @@ private fun HourlyUsageContent(data: CurrentDataResponse?) {
             ElectricityLineChartCard(
                 xLabels = records.map { it.dataTime.takeLast(5) },
                 lines = listOf(
-                    LineData("用电量(度)", records.map { it.dataTotal ?: 0.0 }, Color(0xFF2196F3))
+                    LineData("用电量(度)", records.map { it.dataTotal }, Color(0xFF2196F3))
                 )
             )
         }
@@ -387,14 +390,14 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         // 当前功率/累计值 (exp2)
         if (!data?.exp2.isNullOrBlank()) {
             item {
-                SimpleValueCard("当前功率/累计值", data!!.exp2!!)
+                SimpleValueCard("当前功率/累计值", data.exp2)
             }
         }
 
         // 电源状态 (exp5)
         if (!data?.exp5.isNullOrBlank()) {
             item {
-                SimpleValueCard("电源状态", data!!.exp5!!)
+                SimpleValueCard("电源状态", data.exp5)
             }
         }
     }
@@ -439,7 +442,7 @@ private fun UsageRecordCard(record: UsageRecord) {
     ListItem(
         headlineContent = {
             Text(
-                text = record.costTime ?: "未知时间",
+                text = record.costTime,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -450,11 +453,11 @@ private fun UsageRecordCard(record: UsageRecord) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "用电量: ${String.format("%.2f", record.consumeTotal ?: 0.0)} 度",
+                    text = stringResource(R.string.detail_power_consumption, String.format("%.2f", record.consumeTotal)),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = "费用: ${String.format("%.2f", record.costTotal ?: 0.0)} 元",
+                    text = stringResource(R.string.detail_cost, String.format("%.2f", record.costTotal)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -478,14 +481,14 @@ private fun HourDataCard(record: HourDataRecord) {
     ListItem(
         headlineContent = {
             Text(
-                text = record.dataTime ?: "未知时间",
+                text = record.dataTime,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
             )
         },
         supportingContent = {
             Text(
-                text = "用电量: ${String.format("%.2f", record.dataTotal ?: 0.0)} 度",
+                text = stringResource(R.string.detail_total_consumption, String.format("%.2f", record.dataTotal)),
                 style = MaterialTheme.typography.bodySmall
             )
         },
@@ -576,9 +579,9 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
                 records?.forEach { record ->
                     appendLine(
                         String.format("%-20s %-10.2f %-10.2f",
-                            record.costTime ?: "未知",
-                            record.consumeTotal ?: 0.0,
-                            record.costTotal ?: 0.0)
+                            record.costTime,
+                            record.consumeTotal,
+                            record.costTotal)
                     )
                 }
             }
@@ -589,8 +592,8 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
                 detailState.currentData?.hourDataObj?.forEach { record ->
                     appendLine(
                         String.format("%-20s %-10.2f",
-                            record.dataTime ?: "未知",
-                            record.dataTotal ?: 0.0)
+                            record.dataTime,
+                            record.dataTotal)
                     )
                 }
             }

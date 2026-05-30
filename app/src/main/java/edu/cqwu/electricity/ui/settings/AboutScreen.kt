@@ -80,7 +80,7 @@ fun AboutScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "关于",
+                        text = stringResource(R.string.about_title),
                         fontWeight = FontWeight.Bold,
                     )
                 },
@@ -88,7 +88,7 @@ fun AboutScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                         )
                     }
                 },
@@ -146,7 +146,7 @@ fun AboutScreen(
                     // 项目主页
                     AboutEntry(
                         icon = Icons.Default.Code,
-                        title = "项目主页",
+                        title = stringResource(R.string.about_project_home),
                         subtitle = "https://github.com/pphh2606/ElectricityQuery",
                         onClick = {
                             try {
@@ -166,7 +166,7 @@ fun AboutScreen(
                     // 开发者
                     AboutEntry(
                         icon = Icons.Default.Person,
-                        title = "开发者",
+                        title = stringResource(R.string.about_developer),
                         subtitle = "pphh2606",
                         onClick = {
                             // 预留：可跳转开发者主页
@@ -178,7 +178,7 @@ fun AboutScreen(
                     // 联系方式（点击弹出底部选择弹窗）
                     AboutEntry(
                         icon = Icons.AutoMirrored.Filled.Chat,
-                        title = "联系方式",
+                        title = stringResource(R.string.about_contact),
                         subtitle = null,
                         onClick = { showContactSheet = true },
                     )
@@ -189,7 +189,7 @@ fun AboutScreen(
 
             // ─── 底部脚注 ───
             Text(
-                text = "本应用使用了AI技术",
+                text = stringResource(R.string.about_ai_notice),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -206,13 +206,13 @@ fun AboutScreen(
     // ─── 联系方式底部弹窗 ───
     if (showContactSheet) {
         BottomSheetDialog(
-            onDismissRequest = { },
-            title = "联系方式",
+            onDismissRequest = { showContactSheet = false },
+            title = stringResource(R.string.about_contact_title),
         ) {
             // QQ
             BottomSheetItem(
                 icon = Icons.AutoMirrored.Filled.Chat,
-                title = "QQ联系",
+                title = stringResource(R.string.about_contact_qq),
                 onClick = {
                     try {
                         val intent = Intent(
@@ -229,7 +229,7 @@ fun AboutScreen(
             // 哔哩哔哩（复制 UID）
             BottomSheetItem(
                 icon = Icons.Default.VideogameAsset,
-                title = "哔哩哔哩联系",
+                title = stringResource(R.string.about_contact_bilibili),
                 onClick = {
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("Bilibili UID", "1858606373"))
@@ -240,7 +240,7 @@ fun AboutScreen(
             // 邮箱
             BottomSheetItem(
                 icon = Icons.Default.Email,
-                title = "邮箱联系",
+                title = stringResource(R.string.about_contact_email),
                 onClick = {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:2606841932@qq.com")

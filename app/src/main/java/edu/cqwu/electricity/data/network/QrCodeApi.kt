@@ -60,7 +60,7 @@ class QrCodeApi {
                     .build()
             ).execute()
 
-            val html = response.body?.string() ?: throw RuntimeException("获取二维码页面失败：响应体为空")
+            val html = response.body.string()
             val tHttp = System.currentTimeMillis()
             Log.d("QrCodeApi_DEBUG", "fetchQrCode 网络耗时: ${tHttp - t0}ms, 响应状态=${response.code}, HTML长度=${html.length}")
 

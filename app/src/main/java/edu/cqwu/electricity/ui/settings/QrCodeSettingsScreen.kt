@@ -37,9 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.QrCodeColorMode
 import edu.cqwu.electricity.ui.components.QrCodeView
 import edu.cqwu.electricity.ui.theme.LocalQrCodeSettings
@@ -88,12 +90,12 @@ fun QrCodeSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "二维码设置", fontWeight = FontWeight.Bold) },
+                title = { Text(text = stringResource(R.string.qrcode_settings_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                         )
                     }
                 },
@@ -133,7 +135,7 @@ fun QrCodeSettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // ── 颜色选择 ──
-            SectionTitle(title = "样式设置")
+            SectionTitle(title = stringResource(R.string.qrcode_settings_style))
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -142,15 +144,15 @@ fun QrCodeSettingsScreen(
             ) {
                 Column {
                     ColorModeRow(
-                        title = "MD3 主题色",
-                        subtitle = "使用当前主题色作为二维码黑块颜色",
+                        title = stringResource(R.string.qrcode_settings_md3_theme),
+                        subtitle = stringResource(R.string.qrcode_settings_md3_theme_desc),
                         selected = qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE,
                         onClick = { qrCodeSettings.onColorModeChange(QrCodeColorMode.THEME_SNAKE) },
                         colorPreview = MaterialTheme.colorScheme.primary,
                     )
                     ColorModeRow(
-                        title = "黑色",
-                        subtitle = "使用黑色作为二维码黑块颜色",
+                        title = stringResource(R.string.qrcode_settings_black),
+                        subtitle = stringResource(R.string.qrcode_settings_black_desc),
                         selected = qrCodeSettings.colorMode == QrCodeColorMode.MONOCHROME,
                         onClick = { qrCodeSettings.onColorModeChange(QrCodeColorMode.MONOCHROME) },
                         colorPreview = if (isDarkTheme) Color.White else Color.Black,
@@ -161,7 +163,7 @@ fun QrCodeSettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // ── 圆角度 ──
-            SectionTitle(title = "圆角度")
+            SectionTitle(title = stringResource(R.string.qrcode_settings_corner_radius))
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -226,7 +228,7 @@ fun QrCodeSettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // ── 屏幕高亮 ──
-            SectionTitle(title = "显示")
+            SectionTitle(title = stringResource(R.string.qrcode_settings_display))
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -248,13 +250,13 @@ fun QrCodeSettingsScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "屏幕高亮",
+                            text = stringResource(R.string.qrcode_settings_screen_brightness),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
-                            text = "显示二维码时自动调高屏幕亮度",
+                            text = stringResource(R.string.qrcode_settings_screen_brightness_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

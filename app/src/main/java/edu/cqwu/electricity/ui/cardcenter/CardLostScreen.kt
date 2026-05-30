@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.cardcenter
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -158,7 +161,7 @@ fun CardLostScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "卡挂失",
+                        text = stringResource(R.string.card_lost_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -166,7 +169,7 @@ fun CardLostScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -193,7 +196,7 @@ fun CardLostScreen(
                                 CircularProgressIndicator()
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "正在获取卡信息...",
+                                    text = stringResource(R.string.card_fetching_info),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -252,7 +255,7 @@ fun CardLostScreen(
     if (errorDialogMessage != null) {
         BottomSheetDialog(
             onDismissRequest = { errorDialogMessage = null },
-            title = "错误"
+            title = stringResource(R.string.card_error_title)
         ) {
             Text(
                 text = errorDialogMessage ?: "",
@@ -289,13 +292,13 @@ private fun CardLostContent(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     CardInfoRow(
-                        label = "卡号",
+                        label = stringResource(R.string.card_lost_card_number),
                         value = cardInfo.cardNumber,
                         icon = Icons.Filled.CreditCard
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     CardInfoRow(
-                        label = "卡状态",
+                        label = stringResource(R.string.card_lost_card_status),
                         value = cardInfo.cardStatus,
                         icon = Icons.Filled.CreditCardOff,
                         valueColor = if (isCardNormal)

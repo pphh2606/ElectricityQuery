@@ -8,6 +8,22 @@ import com.google.gson.reflect.TypeToken
 import edu.cqwu.electricity.data.model.CustomServiceEntry
 
 /**
+ * 应用语言枚举
+ * CHINESE: 中文（默认）
+ * ENGLISH: 英文
+ */
+enum class AppLanguage(val value: String, val displayName: String) {
+    CHINESE("zh", "中文"),
+    ENGLISH("en", "English");
+
+    companion object {
+        fun fromValue(value: String): AppLanguage {
+            return entries.firstOrNull { it.value == value } ?: CHINESE
+        }
+    }
+}
+
+/**
  * 夜间模式枚举
  * SYSTEM: 跟随系统设置
  * LIGHT:  强制浅色模式
@@ -88,6 +104,19 @@ class SettingsPreferences(context: Context) {
 
     fun setPageTransition(type: PageTransition) {
         prefs.edit().putString(KEY_PAGE_TRANSITION, type.value).apply()
+    }
+
+    // ── 标题栏颜色样式 ──
+
+    // ── 应用语言 ──
+
+    fun getAppLanguage(): AppLanguage {
+        val raw = prefs.getString(KEY_APP_LANGUAGE, AppLanguage.CHINESE.value) ?: AppLanguage.CHINESE.value
+        return AppLanguage.fromValue(raw)
+    }
+
+    fun setAppLanguage(language: AppLanguage) {
+        prefs.edit().putString(KEY_APP_LANGUAGE, language.value).apply()
     }
 
     // ── 标题栏颜色样式 ──
@@ -211,6 +240,7 @@ class SettingsPreferences(context: Context) {
 
     companion object {
         private const val PREF_NAME = "settings_preferences"
+        private const val KEY_APP_LANGUAGE = "app_language"
         private const val KEY_NIGHT_MODE = "night_mode"
         private const val KEY_COLOR_SOURCE = "color_source"
         private const val KEY_SEED_COLOR = "seed_color"

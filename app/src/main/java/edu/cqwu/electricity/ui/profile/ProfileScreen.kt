@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.profile
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,7 +74,7 @@ fun ProfileTopBar(
     TopAppBar(
         title = {
             Text(
-                text = "我的",
+                text = stringResource(R.string.profile_title),
                 fontWeight = FontWeight.Bold,
             )
         },
@@ -93,7 +96,7 @@ fun ProfileTopBar(
                 }
                 Icon(
                     imageVector = icon,
-                    contentDescription = "切换夜间模式",
+                    contentDescription = stringResource(R.string.profile_toggle_night_mode),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -102,7 +105,7 @@ fun ProfileTopBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "设置",
+                    contentDescription = stringResource(R.string.common_settings),
                 )
             }
         },
@@ -131,7 +134,7 @@ fun ProfilePageContent(
     }
 
     val isLoggedIn = username != null
-    val avatarText = if (isLoggedIn && username!!.isNotEmpty()) {
+    val avatarText = if (isLoggedIn && username.isNotEmpty()) {
         username.first().toString()
     } else {
         "?"
@@ -225,7 +228,7 @@ fun ProfilePageContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "管理账号",
+                            contentDescription = stringResource(R.string.profile_manage_accounts),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp),
                         )
@@ -274,7 +277,7 @@ fun ProfilePageContent(
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "打开网址",
+                    text = stringResource(R.string.profile_open_url),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -282,7 +285,7 @@ fun ProfilePageContent(
                 )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "打开网址",
+                    contentDescription = stringResource(R.string.profile_open_url),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -310,7 +313,7 @@ fun ProfilePageContent(
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "意见反馈",
+                    text = stringResource(R.string.profile_feedback),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -318,7 +321,7 @@ fun ProfilePageContent(
                 )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "意见反馈",
+                    contentDescription = stringResource(R.string.profile_feedback),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

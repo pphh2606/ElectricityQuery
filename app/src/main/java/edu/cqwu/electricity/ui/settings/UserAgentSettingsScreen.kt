@@ -37,9 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.network.UserAgentEntry
 import edu.cqwu.electricity.data.network.UserAgentProvider
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
@@ -62,12 +64,12 @@ fun UserAgentSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "浏览器标识设置", fontWeight = FontWeight.Bold) },
+                title = { Text(text = stringResource(R.string.ua_settings_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                         )
                     }
                 },
@@ -85,7 +87,7 @@ fun UserAgentSettingsScreen(
             // 当前选中提示
             val selectedName = UserAgentProvider.getSelectedName()
             Text(
-                text = "当前选中：$selectedName",
+                text = stringResource(R.string.ua_settings_current, selectedName),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
@@ -134,7 +136,7 @@ fun UserAgentSettingsScreen(
                     modifier = Modifier.size(18.dp),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "添加")
+                Text(text = stringResource(R.string.common_add))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -161,14 +163,14 @@ fun UserAgentSettingsScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
-                            text = "首页浏览器标识设置",
+                            text = stringResource(R.string.ua_settings_home_ua),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "待开放",
+                            text = stringResource(R.string.ua_settings_coming_soon),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
                         )
@@ -183,9 +185,9 @@ fun UserAgentSettingsScreen(
         val target = deleteTarget!!
         AlertDialog(
             onDismissRequest = { deleteTarget = null },
-            title = { Text(text = "删除浏览器标识") },
+            title = { Text(text = stringResource(R.string.ua_delete_title)) },
             text = {
-                Text(text = "确定要删除\"${target.name}\"吗？")
+                Text(text = stringResource(R.string.ua_delete_confirm, target.name))
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -194,12 +196,12 @@ fun UserAgentSettingsScreen(
                     selectedId = UserAgentProvider.getSelectedId()
                     deleteTarget = null
                 }) {
-                    Text("删除", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.common_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { deleteTarget = null }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -261,7 +263,7 @@ private fun UaEntryRow(
         IconButton(onClick = onEdit) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "编辑",
+                contentDescription = stringResource(R.string.common_edit),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             )
         }

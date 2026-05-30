@@ -59,8 +59,7 @@ class NoticeApi {
                     .build()
             ).execute()
 
-            val body = response.body?.string()
-                ?: throw RuntimeException("通知公告响应体为空")
+            val body = response.body.string()
 
             if (!response.isSuccessful) {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
@@ -105,8 +104,7 @@ class NoticeApi {
                     .build()
             ).execute()
 
-            val body = response.body?.string()
-                ?: throw RuntimeException("通知详情响应体为空")
+            val body = response.body.string()
 
             if (!response.isSuccessful) {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")

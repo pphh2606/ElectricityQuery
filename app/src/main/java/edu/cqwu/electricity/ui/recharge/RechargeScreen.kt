@@ -54,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -65,6 +66,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.network.AccountManager
@@ -160,7 +162,7 @@ fun RechargeScreen(
     // 使用统一 TabScaffold
     TabScaffold(
         showTopBar = showTopBar,
-        title = "充值",
+        title = stringResource(R.string.recharge_title),
         onBack = {
             viewModel.clearRechargeState()
             viewModel.clearAccountRechargeState()
@@ -171,7 +173,7 @@ fun RechargeScreen(
             IconButton(onClick = { showInfoDialog = true }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
-                    contentDescription = "提示",
+                    contentDescription = stringResource(R.string.recharge_hint),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -248,8 +250,8 @@ private fun RechargeContent(
             TextField(
                 value = recharge.studentId,
                 onValueChange = { viewModel.setAccountStudentId(it) },
-                label = { Text("请输入学号 或 userId") },
-                placeholder = { Text("例如 2022010101 或 12345") },
+                label = { Text(stringResource(R.string.recharge_student_id_label)) },
+                placeholder = { Text(stringResource(R.string.recharge_student_id_placeholder)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -283,7 +285,7 @@ private fun RechargeContent(
                     )
                 } else {
                     Text(
-                        text = "查询",
+                        text = stringResource(R.string.recharge_query),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -295,7 +297,7 @@ private fun RechargeContent(
         if (recharge.error != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = recharge.error ?: "",
+                text = recharge.error,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.fillMaxWidth()
@@ -332,7 +334,7 @@ private fun RechargeContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "我的账号",
+                            text = stringResource(R.string.recharge_my_account),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -347,7 +349,7 @@ private fun RechargeContent(
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                    contentDescription = "切换账户",
+                                    contentDescription = stringResource(R.string.recharge_switch_account),
                                     modifier = Modifier.size(20.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -364,7 +366,7 @@ private fun RechargeContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "余额（元）",
+                            text = stringResource(R.string.recharge_balance),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -381,7 +383,7 @@ private fun RechargeContent(
                                 Text(
                                     text = recharge.balance?.let {
                                         String.format("%.2f", it.userBalance)
-                                    } ?: "加载中...",
+                                    } ?: stringResource(R.string.common_loading),
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.primary
@@ -390,7 +392,7 @@ private fun RechargeContent(
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(
                                 imageVector = Icons.Filled.Refresh,
-                                contentDescription = "刷新余额",
+                                contentDescription = stringResource(R.string.recharge_refresh_balance),
                                 modifier = Modifier
                                     .size(20.dp)
                                     .clickable(enabled = !recharge.balanceLoading) {
@@ -417,8 +419,8 @@ private fun RechargeContent(
             TextField(
                 value = recharge.customAmount,
                 onValueChange = { viewModel.setCustomRechargeAmount(it) },
-                label = { Text("自定义金额（元）") },
-                placeholder = { Text("例如 0.01") },
+                label = { Text(stringResource(R.string.recharge_custom_amount_label)) },
+                placeholder = { Text(stringResource(R.string.recharge_custom_amount_placeholder)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -442,7 +444,7 @@ private fun RechargeContent(
                 )
             ) {
                 Text(
-                    text = "立即充值",
+                    text = stringResource(R.string.recharge_pay_now),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -452,7 +454,7 @@ private fun RechargeContent(
 
             // ── 其他充值方式 ──
             Text(
-                text = "其他充值方式",
+                text = stringResource(R.string.recharge_other_methods),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onShowOtherRechargeDialogChange(true) }
@@ -492,7 +494,7 @@ private fun RechargeContent(
     if (showInfoDialog) {
         BottomSheetDialog(
             onDismissRequest = { onShowInfoDialogChange(false) },
-            title = "提示"
+            title = stringResource(R.string.recharge_hint)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -501,7 +503,7 @@ private fun RechargeContent(
                 // 第1条：外部链接
                 val link1Text = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append("1.如果获取用户失败，请先")
+                        append(stringResource(R.string.recharge_hint_item1))
                     }
                     pushLink(
                         LinkAnnotation.Clickable(
@@ -524,10 +526,10 @@ private fun RechargeContent(
                             }
                         }
                     )
-                    append("点击此处")
+                    append(stringResource(R.string.recharge_hint_item1_link))
                     pop()
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append("在平台注册。")
+                        append(stringResource(R.string.recharge_hint_item1_suffix))
                     }
                 }
                 Text(
@@ -537,14 +539,14 @@ private fun RechargeContent(
 
                 // 第2条：纯文本
                 Text(
-                    text = "2.若注册后还是提示获取用户信息失败，请尝试填写寝室管理员学号/寝室内第一个注册了平台的学号。",
+                    text = stringResource(R.string.recharge_hint_item2),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 // 第3条：点击触发其他充值弹窗
                 val link2Text = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append("3.充值记录会记录在学号所对应的用户头上。如介意请")
+                        append(stringResource(R.string.recharge_hint_item3_prefix))
                     }
                     pushLink(
                         LinkAnnotation.Clickable(
@@ -560,10 +562,10 @@ private fun RechargeContent(
                             onShowOtherRechargeDialogChange(true)
                         }
                     )
-                    append("点击此处")
+                    append(stringResource(R.string.recharge_hint_item1_link))
                     pop()
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append("选择其他充值方式。")
+                        append(stringResource(R.string.recharge_hint_item3_suffix))
                     }
                 }
                 Text(
@@ -580,12 +582,12 @@ private fun RechargeContent(
     if (showOtherRechargeDialog) {
         BottomSheetDialog(
             onDismissRequest = { onShowOtherRechargeDialogChange(false) },
-            title = "选择充值方式"
+            title = stringResource(R.string.recharge_other_method_title)
         ) {
             // 今日校园充值
             BottomSheetItem(
                 icon = Icons.Default.Store,
-                title = "今日校园充值",
+                title = stringResource(R.string.recharge_method_campus),
                 onClick = {
                     try {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
@@ -600,7 +602,7 @@ private fun RechargeContent(
             // 应用内 H5 充值
             BottomSheetItem(
                 icon = Icons.Default.Public,
-                title = "应用内H5充值",
+                title = stringResource(R.string.recharge_method_inapp_h5),
                 onClick = {
                     onShowOtherRechargeDialogChange(false)
                     onNavigateToH5Recharge()
@@ -610,7 +612,7 @@ private fun RechargeContent(
             // 浏览器 H5 充值
             BottomSheetItem(
                 icon = Icons.Default.OpenInBrowser,
-                title = "浏览器H5充值",
+                title = stringResource(R.string.recharge_method_browser_h5),
                 onClick = {
                     try {
                         val intent = Intent(
@@ -669,7 +671,7 @@ private fun AmountGrid(
                         )
                     ) {
                         Text(
-                            text = "${amount.toInt()}元",
+                            text = stringResource(R.string.recharge_preset_amount, amount.toInt()),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
@@ -702,7 +704,7 @@ private fun ImportantNotesCard() {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "重要提示",
+                text = stringResource(R.string.recharge_important_notes),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.error,
@@ -710,7 +712,7 @@ private fun ImportantNotesCard() {
             )
 
             Text(
-                text = "1. 充值时间为 00:05~23:55，其他时间无法充值",
+                text = stringResource(R.string.recharge_note_time),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -718,7 +720,7 @@ private fun ImportantNotesCard() {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "2. 如果支付成功但未及时到账，请等待5分钟",
+                text = stringResource(R.string.recharge_note_delay),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -726,7 +728,7 @@ private fun ImportantNotesCard() {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "3. 如果充值完成有余额但未通电，请联系管理员处理",
+                text = stringResource(R.string.recharge_note_power),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -750,10 +752,10 @@ private fun RoomSelectionDialog(
 ) {
     BottomSheetDialog(
         onDismissRequest = onDismiss,
-        title = "选择充值房间"
+        title = stringResource(R.string.recharge_select_room_title)
     ) {
         Text(
-            text = "该学号下绑定多个房间，请选择要充值的房间：",
+            text = stringResource(R.string.recharge_select_room_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp)

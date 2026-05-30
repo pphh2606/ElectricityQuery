@@ -153,7 +153,7 @@ class CasAuthApi {
             val t0 = System.currentTimeMillis()
 
             // === 诊断日志：记录开始登录时的 Cookie 状态 ===
-            val preLoginCookie = cookieProvider(LOGIN_URL) ?: "(null)"
+            val preLoginCookie = cookieProvider(LOGIN_URL)
             android.util.Log.d("CasAuthApi", "登录前Cookie状态$tag: $preLoginCookie")
 
             // 步骤 1：直接 GET CAS 登录页
@@ -167,8 +167,7 @@ class CasAuthApi {
             val loginPageCode = loginPageResp.code
             android.util.Log.d("CasAuthApi", "步骤1响应$tag: code=$loginPageCode, finalUrl=$loginPageFinalUrl")
 
-            val loginPageHtml = loginPageResp.body?.string()
-                ?: throw RuntimeException("获取登录页面失败：响应体为空")
+            val loginPageHtml = loginPageResp.body.string()
             val t1 = System.currentTimeMillis()
             android.util.Log.d("CasAuthApi", "步骤1耗时$tag: ${t1 - t0}ms，登录页HTML长度: ${loginPageHtml.length}")
 
@@ -220,16 +219,16 @@ class CasAuthApi {
 
             // === 诊断日志：POST 响应详情 ===
             val postFinalUrl = loginResp.request.url.toString()
-            val postResponseBody = loginResp.body?.string()
-            val postBodyLen = postResponseBody?.length ?: -1
+            val postResponseBody = loginResp.body.string()
+            val postBodyLen = postResponseBody.length
             android.util.Log.d("CasAuthApi", "步骤4耗时$tag: ${t4 - t3}ms, 登录响应 code=${loginResp.code}, finalUrl=$postFinalUrl, bodyLen=$postBodyLen")
 
             // === 诊断日志：POST 后的 Cookie 状态 ===
-            val postLoginCookie = cookieProvider(LOGIN_URL) ?: "(null)"
+            val postLoginCookie = cookieProvider(LOGIN_URL)
             android.util.Log.d("CasAuthApi", "登录后Cookie状态$tag: $postLoginCookie")
 
             // 如果响应体可读，检查是否包含错误提示
-            if (postResponseBody != null && postResponseBody.length < 2000) {
+            if (postResponseBody.length < 2000) {
                 android.util.Log.d("CasAuthApi", "POST响应体内容$tag: ${postResponseBody.take(500)}")
             }
 
@@ -259,14 +258,14 @@ class CasAuthApi {
             throw e
         } catch (e: java.net.SocketTimeoutException) {
             // === 诊断日志：超时时的 Cookie 状态 ===
-            val timeoutCookie = try { cookieProvider(LOGIN_URL) ?: "(null)" } catch (ex: Exception) { "(获取失败: ${ex.message})" }
+            val timeoutCookie = try { cookieProvider(LOGIN_URL) } catch (ex: Exception) { "(获取失败: ${ex.message})" }
             android.util.Log.e("CasAuthApi", "=== Socket超时诊断 === 登录失败$tag, 超时时刻Cookie状态: $timeoutCookie")
             android.util.Log.e("CasAuthApi", "=== Socket超时诊断 === 异常信息: ${e.message}")
             android.util.Log.e("CasAuthApi", "登录失败$tag", e)
             Result.failure(e)
         } catch (e: Exception) {
             // === 诊断日志：异常时的 Cookie 状态 ===
-            val exceptionCookie = try { cookieProvider(LOGIN_URL) ?: "(null)" } catch (ex: Exception) { "(获取失败: ${ex.message})" }
+            val exceptionCookie = try { cookieProvider(LOGIN_URL) } catch (ex: Exception) { "(获取失败: ${ex.message})" }
             android.util.Log.e("CasAuthApi", "=== 异常诊断 === 登录失败$tag, 异常类型=${e::class.simpleName}, 异常时刻Cookie状态: $exceptionCookie")
             android.util.Log.e("CasAuthApi", "登录失败$tag", e)
             Result.failure(e)

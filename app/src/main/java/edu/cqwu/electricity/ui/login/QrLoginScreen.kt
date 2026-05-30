@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.login
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
@@ -252,7 +255,7 @@ fun QrLoginScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "扫码登录",
+                        text = stringResource(R.string.qr_login_title),
                         fontWeight = FontWeight.Bold,
                     )
                 },
@@ -260,7 +263,7 @@ fun QrLoginScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -269,7 +272,7 @@ fun QrLoginScreen(
                     IconButton(onClick = onNavigateToQrCodeSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "二维码设置",
+                            contentDescription = stringResource(R.string.qrcode_display_settings),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -302,7 +305,7 @@ fun QrLoginScreen(
                             verticalArrangement = Arrangement.Center,
                         ) {
                             Text(
-                                text = "正在获取二维码...",
+                                text = stringResource(R.string.qr_login_fetching_qrcode),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -337,7 +340,7 @@ fun QrLoginScreen(
                             Spacer(modifier = Modifier.height(24.dp))
 
                             Text(
-                                text = "请使用今日校园 App 扫描二维码",
+                                text = stringResource(R.string.qr_login_scan_hint),
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center,
@@ -346,7 +349,7 @@ fun QrLoginScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                text = "二维码有效期 3 分钟",
+                                text = stringResource(R.string.qr_login_expiry),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
@@ -422,14 +425,14 @@ fun QrLoginScreen(
                             verticalArrangement = Arrangement.Center,
                         ) {
                             Text(
-                                text = "扫描成功",
+                                text = stringResource(R.string.qr_login_scan_success),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "请在手机上点击「确认登录」",
+                                text = stringResource(R.string.qr_login_confirm_on_phone),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -444,7 +447,7 @@ fun QrLoginScreen(
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "正在完成登录...",
+                                text = stringResource(R.string.qr_login_completing),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -464,7 +467,7 @@ fun QrLoginScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "下拉刷新重试",
+                                text = stringResource(R.string.common_pull_to_retry),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
