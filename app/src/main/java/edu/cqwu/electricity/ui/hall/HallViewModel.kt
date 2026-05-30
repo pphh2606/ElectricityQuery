@@ -66,6 +66,8 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     favoriteApi.initEhallSession()
                 } catch (e: SessionExpiredException) {
                     Log.d("HallViewModel", "ehall session 初始化失败（未登录），保持本地 JSON")
+                } catch (e: java.net.UnknownHostException) {
+                    Log.w("HallViewModel", "ehall 服务器不可达（无校园网？），保持本地 JSON")
                 }
             }
 

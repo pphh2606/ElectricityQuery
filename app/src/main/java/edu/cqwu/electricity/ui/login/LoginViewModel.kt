@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.local.CredentialExporter
 import edu.cqwu.electricity.data.network.AccountManager
+import edu.cqwu.electricity.data.network.CookieStore
+import edu.cqwu.electricity.data.network.SessionValidationResult
 import edu.cqwu.electricity.data.network.SessionValidator
 import edu.cqwu.electricity.data.repository.LoginRepository
 import kotlinx.coroutines.channels.Channel
@@ -175,7 +177,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         // 清除系统 CookieManager（必须在 removeUser 之前，因为 removeUser 会清空 activeUser）
         val isActiveUser = username == AccountManager.getActiveUser()
         if (isActiveUser) {
-            edu.cqwu.electricity.data.network.CookieStore.removeAllCookies()
+            CookieStore.removeAllCookies()
         }
 
         AccountManager.removeUser(username)
@@ -221,18 +223,23 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 val userStore = AccountManager.getCookiesForUser(username)
 
                 // 直接调用 SessionValidator 验证（内部会从 UserCookieStore 和系统 CookieManager 兜底）
-                val userInfo = SessionValidator.validate(userStore)
-
-                if (userInfo != null) {
-                    // Cookie 有效，自动切换
-                    AccountManager.switchToUser(username)
-                    android.util.Log.d("LoginViewModel",
-                        "智能切换: 用户[$username] Cookie 有效，自动切换成功")
-                    _events.send(LoginEvent.AutoSwitchSuccess(username))
-                    return@launch
-                } else {
-                    android.util.Log.d("LoginViewModel",
-                        "智能切换: 用户[$username] Cookie 无效或无 Cookie")
+                when (val result = SessionValidator.validate(userStore)) {
+                    is SessionValidationResult.Valid -> {
+                        // Cookie 有效，自动切换
+                        AccountManager.switchToUser(username)
+                        android.util.Log.d("LoginViewModel",
+                            "智能切换: 用户[$username] Cookie 有效，自动切换成功")
+                        _events.send(LoginEvent.AutoSwitchSuccess(username))
+                        return@launch
+                    }
+                    is SessionValidationResult.Invalid -> {
+                        android.util.Log.d("LoginViewModel",
+                            "智能切换: 用户[$username] Cookie 无效或无 Cookie")
+                    }
+                    is SessionValidationResult.NetworkError -> {
+                        android.util.Log.e("LoginViewModel", "智能切换网络异常: ${result.message}")
+                        _events.send(LoginEvent.Error("自动验证失败，请手动登录"))
+                    }
                 }
             } catch (e: Exception) {
                 android.util.Log.e("LoginViewModel", "智能切换异常", e)
@@ -352,33 +359,39 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      * 合并去重后一起加密导出。
      *
      * @param exportPassword 用户设定的导出密码
-     * @return CredentialResult.ExportSuccess 或 CredentialResult.Error
      */
-    fun exportCredentials(exportPassword: String): CredentialResult {
-        val state = _uiState.value
-        val currentUsername = state.username.trim()
-        val currentPassword = resolveLoginPassword()  // 使用真实密码
-
-        // 1. 一次性读取所有带密码的账号，只解析一次 JSON
-        val accounts = accountStore.getAllAccountsWithPassword().toMutableList()
-
-        // 2. 加上当前输入框中的账号（如果不在列表中）
-        if (currentUsername.isNotBlank() && currentPassword.isNotBlank()) {
-            val exists = accounts.any { it.first == currentUsername }
-            if (!exists) {
-                accounts.add(currentUsername to currentPassword)
+    fun exportCredentials(exportPassword: String) {
+        viewModelScope.launch {
+            if (exportPassword.length < 4) {
+                _events.send(LoginEvent.Error("密码长度不能少于4位"))
+                return@launch
             }
-        }
+            val state = _uiState.value
+            val currentUsername = state.username.trim()
+            val currentPassword = resolveLoginPassword()
 
-        if (accounts.isEmpty()) {
-            return CredentialResult.Error("没有可导出的账号，请先登录一次")
-        }
+            // 1. 一次性读取所有带密码的账号
+            val accounts = accountStore.getAllAccountsWithPassword().toMutableList()
 
-        return try {
-            val encrypted = CredentialExporter.export(accounts, exportPassword)
-            CredentialResult.ExportSuccess(encrypted)
-        } catch (e: Exception) {
-            CredentialResult.Error("导出失败: ${e.message}")
+            // 2. 加上当前输入框中的账号（如果不在列表中）
+            if (currentUsername.isNotBlank() && currentPassword.isNotBlank()) {
+                val exists = accounts.any { it.first == currentUsername }
+                if (!exists) {
+                    accounts.add(currentUsername to currentPassword)
+                }
+            }
+
+            if (accounts.isEmpty()) {
+                _events.send(LoginEvent.Error("没有可导出的账号，请先登录一次"))
+                return@launch
+            }
+
+            try {
+                val encrypted = CredentialExporter.export(accounts, exportPassword)
+                _events.send(LoginEvent.ExportSuccess(encrypted))
+            } catch (e: Exception) {
+                _events.send(LoginEvent.Error("导出失败: ${e.message}"))
+            }
         }
     }
 
@@ -390,7 +403,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      * @param exportPassword 导出密码
      */
     fun importAndLogin(encryptedData: String, exportPassword: String) {
-        val accounts = CredentialExporter.import(encryptedData, exportPassword)
+        val accounts = try {
+            CredentialExporter.import(encryptedData, exportPassword)
+        } catch (e: Exception) {
+            viewModelScope.launch { _events.send(LoginEvent.Error("凭据解析失败: ${e.message}")) }
+            return
+        }
         if (accounts.isNullOrEmpty()) {
             viewModelScope.launch { _events.send(LoginEvent.Error("凭据导入失败：密码错误或数据已损坏")) }
             return
@@ -418,12 +436,6 @@ sealed interface LoginEvent {
     data class Error(val msg: String) : LoginEvent
     data class LoginSuccess(val cookie: String) : LoginEvent
     data class AutoSwitchSuccess(val username: String) : LoginEvent
+    data class ExportSuccess(val encryptedData: String) : LoginEvent
 }
 
-/**
- * 凭据导入/导出结果密封类
- */
-sealed class CredentialResult {
-    data class ExportSuccess(val encryptedString: String) : CredentialResult()
-    data class Error(val message: String) : CredentialResult()
-}

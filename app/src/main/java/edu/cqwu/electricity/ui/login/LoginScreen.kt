@@ -10,9 +10,8 @@ import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -42,12 +40,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.ui.semantics.Role
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,8 +64,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -82,8 +78,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.LanguageSwitchButton
+import edu.cqwu.electricity.ui.components.LoadingDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
@@ -114,9 +110,6 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // 导入凭据粘贴框自动聚焦
-    val importFocusRequester = remember { FocusRequester() }
-
     // 每次页面变为可见时刷新已保存账号列表（例如从扫码登录返回后）
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -136,15 +129,8 @@ fun LoginScreen(
     var showExportDialog by remember { mutableStateOf(false) }
     // 安全说明弹窗
     var showSecurityNotice by remember { mutableStateOf(false) }
-    // 导出凭据
-    var exportPassword by remember { mutableStateOf("") }
-    var showExportPassword by remember { mutableStateOf(false) }
-    // 导入凭据
-    var importDataText by remember { mutableStateOf("") }
-    var importPassword by remember { mutableStateOf("") }
     // 学号下拉选择
     var showAccountDropdown by remember { mutableStateOf(false) }
-    var showImportPassword by remember { mutableStateOf(false) }
     // 删除账号确认弹窗：记录待删除的学号
     val snackbar = LocalSnackbarController.current
     var deleteConfirmAccount by remember { mutableStateOf<String?>(null) }
@@ -154,15 +140,13 @@ fun LoginScreen(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            exportPassword = ""
-            showExportPassword = false
             showExportDialog = true
         }
     }
 
     // 拦截系统返回（包括侧滑手势和物理返回键）
-    // 加载中拦截，防止登录请求中误触退出导致状态丢失
-    BackHandler(enabled = uiState.isLoading) {
+    // 加载中/自动切换中拦截，防止登录请求中误触退出导致状态丢失
+    BackHandler(enabled = uiState.isLoading || uiState.isAutoSwitching) {
         snackbar.show(context.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
     }
 
@@ -184,16 +168,21 @@ fun LoginScreen(
                     delay(500)
                     onBack()
                 }
+                is LoginEvent.ExportSuccess -> {
+                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)
+                        as android.content.ClipboardManager
+                    val clip = ClipData.newPlainText(
+                        context.getString(R.string.login_export_credential),
+                        event.encryptedData
+                    )
+                    clipboard.setPrimaryClip(clip)
+                    snackbar.show(context.getString(R.string.login_credential_copied), ToastUtils.Type.SUCCESS)
+                    showExportDialog = false
+                }
             }
         }
     }
 
-    // 导入凭据对话框打开时自动聚焦到粘贴框
-    LaunchedEffect(showImportDialog) {
-        if (showImportDialog) {
-            importFocusRequester.requestFocus()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -255,8 +244,6 @@ fun LoginScreen(
                                         )
                                         authLauncher.launch(intent)
                                     } else {
-                                        exportPassword = ""
-                                        showExportPassword = false
                                         showExportDialog = true
                                     }
                                 }
@@ -266,8 +253,6 @@ fun LoginScreen(
                                 leadingIcon = { Icon(Icons.Default.CloudDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    importDataText = ""
-                                    importPassword = ""
                                     showImportDialog = true
                                 }
                             )
@@ -300,15 +285,6 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                // 下滑刷新风格的加载进度条（仅在登录加载时显示）
-                if (uiState.isLoading) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -349,44 +325,14 @@ fun LoginScreen(
                     )
 
                     // 学号下拉选择菜单（类似QQ样式：账号居左，删除按钮居右）
-                    DropdownMenu(
-                        expanded = showAccountDropdown && uiState.savedAccounts.isNotEmpty(),
-                        onDismissRequest = { showAccountDropdown = false },
-                        modifier = Modifier.fillMaxWidth(0.9f)
-                    ) {
-                        uiState.savedAccounts.forEach { account ->
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = account,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        IconButton(
-                                            onClick = {
-                                                deleteConfirmAccount = account
-                                            }
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Close,
-                                                contentDescription = stringResource(R.string.common_delete_account),
-                                                tint = MaterialTheme.colorScheme.error
-                                            )
-                                        }
-                                    }
-                                },
-                                onClick = {
-                                    showAccountDropdown = false
-                                    loginViewModel.switchToUser(account)
-                                }
-                            )
-                        }
-                    }
+                    AccountDropdownMenu(
+                        savedAccounts = uiState.savedAccounts,
+                        expanded = showAccountDropdown,
+                        onDismiss = { showAccountDropdown = false },
+                        onSelectAccount = { loginViewModel.switchToUser(it) },
+                        onDeleteAccount = { deleteConfirmAccount = it },
+                        modifier = Modifier.fillMaxWidth(0.9f),
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -442,12 +388,17 @@ fun LoginScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
+                        .padding(horizontal = 4.dp)
+                        .toggleable(
+                            value = uiState.rememberPassword,
+                            onValueChange = { loginViewModel.setRememberPassword(it) },
+                            role = Role.Checkbox,
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
                         checked = uiState.rememberPassword,
-                        onCheckedChange = { loginViewModel.setRememberPassword(it) },
+                        onCheckedChange = null,
                         enabled = !uiState.isLoading,
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colorScheme.primary
@@ -457,12 +408,6 @@ fun LoginScreen(
                         text = stringResource(R.string.login_remember_password),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            loginViewModel.setRememberPassword(!uiState.rememberPassword)
-                        }
                     )
                 }
 
@@ -531,244 +476,54 @@ fun LoginScreen(
         }
     }
 
+    // ========== 登录/切换账号加载弹窗 ==========
+    val showLoading = uiState.isLoading || uiState.isAutoSwitching
+    if (showLoading) {
+        LoadingDialog(
+            message = if (uiState.isAutoSwitching)
+                stringResource(R.string.login_auto_switching)
+            else
+                stringResource(R.string.login_verifying)
+        )
+    }
+
     // ========== 安全说明弹窗 ==========
     if (showSecurityNotice) {
-        BottomSheetDialog(
-            onDismissRequest = { showSecurityNotice = false },
-            title = stringResource(R.string.login_security_notice_title)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.login_security_notice_1),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = stringResource(R.string.login_security_notice_2),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = stringResource(R.string.login_security_notice_3),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = stringResource(R.string.login_security_notice_4),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = stringResource(R.string.login_security_notice_5),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+        SecurityNoticeSheet(
+            onDismiss = { showSecurityNotice = false },
+        )
     }
 
     // ========== 导入凭据对话框 ==========
-    if (showImportDialog) {
-        AlertDialog(
-            onDismissRequest = { showImportDialog = false },
-            title = { Text(stringResource(R.string.login_import_title), fontWeight = FontWeight.Bold) },
-            text = {
-                Column {
-                    Text(
-                        text = stringResource(R.string.login_paste_credential_label),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = stringResource(R.string.login_paste_credential_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    TextField(
-                        value = importDataText,
-                        onValueChange = { importDataText = it },
-                        placeholder = { Text(stringResource(R.string.login_import_paste_hint)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 80.dp)
-                            .focusRequester(importFocusRequester),
-                        maxLines = 4,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    TextField(
-                        value = importPassword,
-                        onValueChange = { importPassword = it },
-                        label = { Text(stringResource(R.string.login_export_password)) },
-                        placeholder = { Text(stringResource(R.string.login_export_password_hint)) },
-                        singleLine = true,
-                        visualTransformation = if (showImportPassword)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        trailingIcon = {
-                            IconButton(onClick = { showImportPassword = !showImportPassword }) {
-                                Icon(
-                                    imageVector = if (showImportPassword)
-                                        Icons.Default.Visibility
-                                    else
-                                        Icons.Default.VisibilityOff,
-                                    contentDescription = if (showImportPassword) stringResource(R.string.login_hide_import_password) else stringResource(R.string.login_show_import_password)
-                                )
-                            }
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        loginViewModel.importAndLogin(importDataText, importPassword)
-                        showImportDialog = false
-                    },
-                    enabled = importDataText.isNotBlank() && importPassword.isNotBlank()
-                ) {
-                    Text(stringResource(R.string.login_import_and_login))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showImportDialog = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            }
-        )
-    }
+    ImportCredentialDialog(
+        show = showImportDialog,
+        onDismiss = { showImportDialog = false },
+        onConfirm = { data, password ->
+            loginViewModel.importAndLogin(data, password)
+            showImportDialog = false
+        },
+    )
 
     // ========== 导出凭据对话框 ==========
-    if (showExportDialog) {
-        AlertDialog(
-            onDismissRequest = { showExportDialog = false },
-            title = { Text(stringResource(R.string.login_export_credential_title), fontWeight = FontWeight.Bold) },
-            text = {
-                Column {
-                    Text(
-                        text = stringResource(R.string.login_current_account, uiState.username.ifBlank { stringResource(R.string.login_not_entered) }),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.login_export_password_label),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = exportPassword,
-                        onValueChange = { exportPassword = it },
-                        label = { Text(stringResource(R.string.login_export_password)) },
-                        placeholder = { Text(stringResource(R.string.login_export_password_set_hint)) },
-                        singleLine = true,
-                        visualTransformation = if (showExportPassword)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        trailingIcon = {
-                            IconButton(onClick = { showExportPassword = !showExportPassword }) {
-                                Icon(
-                                    imageVector = if (showExportPassword)
-                                        Icons.Default.Visibility
-                                    else
-                                        Icons.Default.VisibilityOff,
-                                    contentDescription = if (showExportPassword) stringResource(R.string.login_hide_password) else stringResource(R.string.login_show_password)
-                                )
-                            }
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        if (exportPassword.length < 4) {
-                            snackbar.show(context.getString(R.string.login_password_too_short), ToastUtils.Type.ERROR)
-                            return@TextButton
-                        }
-                        when (val result = loginViewModel.exportCredentials(exportPassword)) {
-                            is CredentialResult.ExportSuccess -> {
-                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)
-                                    as android.content.ClipboardManager
-                                val clip = ClipData.newPlainText(context.getString(R.string.login_export_credential), result.encryptedString)
-                                clipboard.setPrimaryClip(clip)
-                                snackbar.show(context.getString(R.string.login_credential_copied), ToastUtils.Type.SUCCESS)
-                            }
-                            is CredentialResult.Error -> {
-                                snackbar.show(result.message, ToastUtils.Type.ERROR)
-                            }
-                        }
-                    },
-                    enabled = exportPassword.isNotBlank()
-                ) {
-                    Text(stringResource(R.string.login_copy_to_clipboard))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExportDialog = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            }
-        )
-    }
+    ExportCredentialDialog(
+        show = showExportDialog,
+        currentUsername = uiState.username,
+        onDismiss = { showExportDialog = false },
+        onConfirm = { password ->
+            loginViewModel.exportCredentials(password)
+            showExportDialog = false
+        },
+    )
 
     // ── 删除账号确认弹窗 ──
-    deleteConfirmAccount?.let { account ->
-        BottomSheetDialog(
-            onDismissRequest = { deleteConfirmAccount = null },
-            title = stringResource(R.string.login_delete_account_title),
-            icon = Icons.Default.Delete,
-            leadingButton = {
-                TextButton(onClick = { deleteConfirmAccount = null }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            },
-            trailingButton = {
-                TextButton(onClick = {
-                    loginViewModel.removeAccount(account)
-                    deleteConfirmAccount = null
-                    showAccountDropdown = false
-                }) {
-                    Text(
-                        text = stringResource(R.string.common_delete),
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-        ) {
-            Text(
-                text = stringResource(R.string.login_delete_account_confirm, account),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
+    DeleteAccountSheet(
+        account = deleteConfirmAccount,
+        onDismiss = { deleteConfirmAccount = null },
+        onConfirm = {
+            loginViewModel.removeAccount(deleteConfirmAccount!!)
+            deleteConfirmAccount = null
+            showAccountDropdown = false
+        },
+    )
 
 }

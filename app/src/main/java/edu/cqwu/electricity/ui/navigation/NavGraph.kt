@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,6 +19,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,9 +76,14 @@ import edu.cqwu.electricity.ui.settings.UserAgentEditScreen
 import edu.cqwu.electricity.ui.settings.UserAgentSettingsScreen
 import edu.cqwu.electricity.ui.theme.AnimationSettings
 import edu.cqwu.electricity.ui.theme.LocalAnimationSettings
+import edu.cqwu.electricity.data.network.SessionValidationResult
+import edu.cqwu.electricity.data.network.SessionValidator
+import edu.cqwu.electricity.data.network.UserCookieStore
+import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalColorSourceState
 import edu.cqwu.electricity.ui.theme.LocalNightModeState
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
+import edu.cqwu.electricity.util.ToastUtils
 import edu.cqwu.electricity.ui.webview.UnifiedWebViewScreen
 
 /**
@@ -102,6 +109,9 @@ object Routes {
 
     /** 本地登录页面 */
     const val LOGIN = "login"
+
+    /** Cookie 过期自动跳转登录（带从下往上覆盖动画） */
+    const val COOKIE_EXPIRED_LOGIN = "cookie_expired_login"
 
     /** 通用内置浏览器路径 */
     const val UNIFIED_WEBVIEW = "unified_webview/{url}/{title}"
@@ -283,6 +293,26 @@ fun AppNavGraph(
     val animationSettings = LocalAnimationSettings.current
     val topBarState = LocalTopBarState.current
 
+    val snackbar = LocalSnackbarController.current
+
+    // 启动时后台静默验证 Cookie 有效性
+    LaunchedEffect(Unit) {
+        val store = UserCookieStore() // 空 store，validate 内部会从系统 CookieManager 兜底
+        when (val result = SessionValidator.validate(store)) {
+            is SessionValidationResult.Valid -> {
+                android.util.Log.d("NavGraph", "启动 Cookie 验证：有效")
+            }
+            is SessionValidationResult.Invalid -> {
+                android.util.Log.d("NavGraph", "启动 Cookie 验证：失效，跳转登录页")
+                navController.navigate(Routes.COOKIE_EXPIRED_LOGIN)
+            }
+            is SessionValidationResult.NetworkError -> {
+                android.util.Log.w("NavGraph", "启动 Cookie 验证：网络错误 - ${result.message}")
+                snackbar.show("网络异常，请检查网络连接", ToastUtils.Type.ERROR)
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Routes.MAIN_TABS,
@@ -397,8 +427,8 @@ fun AppNavGraph(
                 navArgument("title") { type = NavType.StringType },
             ),
         ) { backStackEntry ->
-            val url = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("url") ?: "", "UTF-8")
-            val title = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("title") ?: "", "UTF-8")
+            val url = android.net.Uri.decode(backStackEntry.arguments?.getString("url") ?: "")
+            val title = android.net.Uri.decode(backStackEntry.arguments?.getString("title") ?: "")
             UnifiedWebViewScreen(
                 url = url,
                 initialTitle = title.ifBlank { "" },
@@ -535,8 +565,26 @@ fun AppNavGraph(
             )
         }
 
-        // 本地登录页面
+        // 本地登录页面（通用入口，跟随全局动画设置）
         animatedComposable(settings = animationSettings, route = Routes.LOGIN) {
+            LoginScreen(
+                onBack = { skipNextCasRedirect = true; navController.popBackStack() },
+                onNavigateToQrLogin = { navController.navigate(Routes.QR_LOGIN) },
+            )
+        }
+
+        // Cookie 过期自动跳转登录（从下往上覆盖 / 从上往下退出，由快变慢）
+        composable(
+            route = Routes.COOKIE_EXPIRED_LOGIN,
+            enterTransition = {
+                slideInVertically(
+                    animationSpec = tween(800, easing = LinearEasing),
+                    initialOffsetY = { it }
+                ) + fadeIn(tween(200))
+            },
+            exitTransition = exitAnim(animationSettings),
+            popExitTransition = exitAnim(animationSettings),
+        ) {
             LoginScreen(
                 onBack = { skipNextCasRedirect = true; navController.popBackStack() },
                 onNavigateToQrLogin = { navController.navigate(Routes.QR_LOGIN) },

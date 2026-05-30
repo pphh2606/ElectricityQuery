@@ -62,6 +62,7 @@
     <string name="login_qr_expired">QR 碼已過期，請重試</string>
     <string name="login_get_page_failed">取得登入頁面失敗</string>
     <string name="login_verifying">正在登入，請稍候…</string>
+    <string name="login_auto_switching">嘗試自動登入…</string>
     <string name="login_password_too_short">密碼長度至少 4 位</string>
     <string name="login_credential_copied">憑證已複製到剪貼簿</string>
 </resources>

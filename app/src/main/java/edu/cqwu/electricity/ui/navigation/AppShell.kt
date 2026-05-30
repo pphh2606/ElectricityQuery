@@ -59,7 +59,8 @@ fun AppShell(
                 hostState = snackbarController.hostState,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .windowInsetsPadding(WindowInsets.navigationBars),
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .padding(bottom = 60.dp),
                 snackbar = { data ->
                     // 从 SnackbarVisuals 中提取类型信息，确保多 Snackbar 排队时颜色与实例一一绑定
                     val visuals = data.visuals as? CustomSnackbarVisuals

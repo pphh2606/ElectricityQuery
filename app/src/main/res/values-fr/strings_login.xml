@@ -62,6 +62,7 @@
     <string name="login_qr_expired">QR code expiré, veuillez réessayer</string>
     <string name="login_get_page_failed">Échec de récupération de la page de connexion</string>
     <string name="login_verifying">Connexion en cours, veuillez patienter…</string>
+    <string name="login_auto_switching">Tentative de connexion automatique…</string>
     <string name="login_password_too_short">Le mot de passe doit comporter au moins 4 caractères</string>
     <string name="login_credential_copied">Identifiants copiés</string>
 </resources>
