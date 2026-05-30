@@ -69,14 +69,13 @@ import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import kotlinx.coroutines.launch
 
 private const val ORIGINAL_WEB_URL = "https://pay.cqwu.edu.cn/casLogin/"
-private const val ORIGINAL_WEB_TITLE = "缴费服务大厅"
 
-private data class FeeServiceHallTab(val label: String, val icon: ImageVector)
+private data class FeeServiceHallTab(val icon: ImageVector, @androidx.annotation.StringRes val labelRes: Int)
 
 private val tabs = listOf(
-    FeeServiceHallTab("主页", Icons.Default.Home),
-    FeeServiceHallTab("订单", Icons.AutoMirrored.Filled.Assignment),
-    FeeServiceHallTab("我的", Icons.Default.Person),
+    FeeServiceHallTab(Icons.Default.Home, R.string.fee_hall_tab_home),
+    FeeServiceHallTab(Icons.AutoMirrored.Filled.Assignment, R.string.fee_hall_tab_orders),
+    FeeServiceHallTab(Icons.Default.Person, R.string.fee_hall_tab_profile),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -86,6 +85,7 @@ fun FeeServiceHallScreen(
     onNavigateToWebView: (url: String, title: String) -> Unit,
     viewModel: FeeServiceHallViewModel = viewModel(),
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
@@ -107,7 +107,7 @@ fun FeeServiceHallScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("缴费服务大厅", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.fee_hall_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
@@ -125,7 +125,7 @@ fun FeeServiceHallScreen(
                         }
                     }
                     IconButton(onClick = {
-                        onNavigateToWebView(ORIGINAL_WEB_URL, ORIGINAL_WEB_TITLE)
+                        onNavigateToWebView(ORIGINAL_WEB_URL, context.getString(R.string.fee_hall_title))
                     }) {
                         Icon(Icons.Default.OpenInBrowser, contentDescription = stringResource(R.string.common_open_original_page))
                     }
@@ -136,6 +136,7 @@ fun FeeServiceHallScreen(
         bottomBar = {
             NavigationBar {
                 tabs.forEachIndexed { index, tab ->
+                    val tabLabel = stringResource(tab.labelRes)
                     NavigationBarItem(
                         selected = pagerState.currentPage == index,
                         onClick = {
@@ -143,8 +144,8 @@ fun FeeServiceHallScreen(
                                 scope.launch { pagerState.animateScrollToPage(index) }
                             }
                         },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
+                        icon = { Icon(tab.icon, contentDescription = tabLabel) },
+                        label = { Text(tabLabel) },
                     )
                 }
             }
@@ -211,13 +212,13 @@ private fun FeeServiceHallHomeTab(
             }
             uiState.errorMessage != null && uiState.categories.isEmpty() -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("加载失败: ${uiState.errorMessage}", style = MaterialTheme.typography.bodyLarge,
+                    Text(stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""), style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.error)
                 }
             }
             uiState.categories.isEmpty() -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("暂无缴费项目", style = MaterialTheme.typography.bodyLarge,
+                    Text(stringResource(R.string.fee_hall_no_projects), style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }

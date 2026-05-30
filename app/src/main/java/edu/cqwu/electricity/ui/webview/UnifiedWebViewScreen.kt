@@ -86,7 +86,7 @@ import java.io.ByteArrayInputStream
 @Composable
 fun UnifiedWebViewScreen(
     url: String,
-    initialTitle: String = "加载中...",
+    initialTitle: String = "",
     onClose: () -> Unit,
     onNavigateToLogin: () -> Unit = {},
     onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
@@ -111,7 +111,8 @@ fun UnifiedWebViewScreen(
     var canGoBack by remember { mutableStateOf(false) }
     var progress by remember { mutableIntStateOf(10) }
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-    var pageTitle by remember { mutableStateOf(initialTitle) }
+    val displayTitle = initialTitle.ifBlank { stringResource(R.string.webview_loading) }
+    var pageTitle by remember { mutableStateOf(displayTitle) }
     val snackbar = LocalSnackbarController.current
     var pageDomain by remember { mutableStateOf("") }
     // 控制三点溢出菜单
@@ -257,9 +258,9 @@ fun UnifiedWebViewScreen(
                                     showMenu = false
                                     val url = webViewRef.value?.url ?: return@DropdownMenuItem
                                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                                    val clip = android.content.ClipData.newPlainText("网页链接", url)
+                                    val clip = android.content.ClipData.newPlainText(context.getString(R.string.webview_clip_label), url)
                                     clipboard.setPrimaryClip(clip)
-                                    snackbar.show("链接已复制", ToastUtils.Type.SUCCESS)
+                                    snackbar.show(context.getString(R.string.webview_link_copied), ToastUtils.Type.SUCCESS)
                                 }
                             )
                             DropdownMenuItem(
@@ -273,7 +274,7 @@ fun UnifiedWebViewScreen(
                                         putExtra(Intent.EXTRA_TEXT, url)
                                         type = "text/plain"
                                     }
-                                    context.startActivity(Intent.createChooser(sendIntent, "分享链接"))
+                                    context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.webview_share_link)))
                                 }
                             )
                             DropdownMenuItem(
@@ -305,7 +306,7 @@ fun UnifiedWebViewScreen(
                                         }
                                     } catch (e: Exception) {
                                         Log.e("WebView_DIAG", "URL 切换失败: ${e.message}")
-                                        snackbar.show("URL 切换失败", ToastUtils.Type.ERROR)
+                                        snackbar.show(context.getString(R.string.webview_url_change_failed), ToastUtils.Type.ERROR)
                                         null
                                     }
                                     if (toggledUrl != null) {
@@ -373,8 +374,8 @@ fun UnifiedWebViewScreen(
                                             campusphereToastShown = true
                                             val currentUrl = url
                                             snackbar.show(
-                                                message = "正在访问今日校园专属内容，可能存在不兼容现象，建议使用今日校园APP打开",
-                                                actionLabel = "打开",
+                                                message = context.getString(R.string.webview_campusphere_warning),
+                                                actionLabel = context.getString(R.string.common_open_in_browser),
                                                 onAction = {
                                                     try {
                                                         // 优先尝试打开今日校园 App
@@ -386,7 +387,7 @@ fun UnifiedWebViewScreen(
                                                             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(currentUrl))
                                                             context.startActivity(browserIntent)
                                                         } catch (_: ActivityNotFoundException) {
-                                                            snackbar.show("未找到可用的浏览器应用")
+                                                            snackbar.show(context.getString(R.string.common_no_browser))
                                                         }
                                                     }
                                                 }
@@ -447,7 +448,7 @@ fun UnifiedWebViewScreen(
                                     super.onReceivedError(view, request, error)
                                     if (request?.isForMainFrame == true && webErrorState == null) {
                                         val code = error?.errorCode ?: -1
-                                        val desc = error?.description?.toString() ?: "未知错误"
+                                        val desc = error?.description?.toString() ?: context.getString(R.string.common_unknown_error)
                                         Log.w("WebView_DIAG", ">>> 主框架加载错误: code=$code, desc=$desc")
                                         isLoading = false
                                         webErrorState = WebViewError(
@@ -527,7 +528,7 @@ fun UnifiedWebViewScreen(
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
                                     context.startActivity(intent)
                                 } catch (e: ActivityNotFoundException) {
-                                    snackbar.show("未找到可用的下载工具", ToastUtils.Type.ERROR)
+                                    snackbar.show(context.getString(R.string.webview_no_download_tool), ToastUtils.Type.ERROR)
                                 }
                             }
 
@@ -640,7 +641,7 @@ fun UnifiedWebViewScreen(
                         try {
                             context.startActivity(Intent(android.provider.Settings.ACTION_WIFI_SETTINGS))
                         } catch (_: ActivityNotFoundException) {
-                            snackbar.show("无法打开网络设置", ToastUtils.Type.ERROR)
+                            snackbar.show(context.getString(R.string.webview_cannot_open_network_settings), ToastUtils.Type.ERROR)
                         }
                     }
                 )

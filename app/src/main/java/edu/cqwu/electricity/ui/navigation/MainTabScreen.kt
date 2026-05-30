@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.data.local.ReduceMotion
 import edu.cqwu.electricity.data.network.QrCodeType
@@ -100,8 +101,8 @@ fun MainTabScreen(
                                 }
                             }
                         },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
+                        icon = { Icon(tab.icon, contentDescription = stringResource(tab.labelRes)) },
+                        label = { Text(stringResource(tab.labelRes)) },
                     )
                 }
             }

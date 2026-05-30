@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  充值模块                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_title">充值</string>
+    <string name="recharge_hint">提示</string>
+    <string name="recharge_query">查询</string>
+    <string name="recharge_student_id_label">请输入学号 或 userId</string>
+    <string name="recharge_student_id_placeholder">例如 2022010101 或 12345</string>
+    <string name="recharge_my_account">我的账号</string>
+    <string name="recharge_switch_account">切换账户</string>
+    <string name="recharge_balance">余额（元）</string>
+    <string name="recharge_refresh_balance">刷新余额</string>
+    <string name="recharge_custom_amount_label">自定义金额（元）</string>
+    <string name="recharge_custom_amount_placeholder">例如 0.01</string>
+    <string name="recharge_pay_now">立即充值</string>
+    <string name="recharge_other_methods">其他充值方式</string>
+    <string name="recharge_important_notes">重要提示</string>
+    <string name="recharge_note_time">1. 充值时间为 00:05~23:55，其他时间无法充值</string>
+    <string name="recharge_note_delay">2. 如果支付成功但未及时到账，请等待5分钟</string>
+    <string name="recharge_note_power">3. 如果充值完成有余额但未通电，请联系管理员处理</string>
+    <string name="recharge_preset_amount">%1$d元</string>
+    <string name="recharge_hint_item1">1.如果获取用户失败，请先</string>
+    <string name="recharge_hint_item1_link">点击此处</string>
+    <string name="recharge_hint_item1_suffix">在平台注册。</string>
+    <string name="recharge_hint_item2">2.若注册后还是提示获取用户信息失败，请尝试填写寝室管理员学号/寝室内第一个注册了平台的学号。</string>
+    <string name="recharge_hint_item3_prefix">3.充值记录会记录在学号所对应的用户头上。如介意请</string>
+    <string name="recharge_hint_item3_suffix">选择其他充值方式。</string>
+    <string name="recharge_select_room_title">选择充值房间</string>
+    <string name="recharge_select_room_hint">该学号下绑定多个房间，请选择要充值的房间：</string>
+    <string name="recharge_other_method_title">选择充值方式</string>
+    <string name="recharge_method_campus">今日校园充值</string>
+    <string name="recharge_method_inapp_h5">应用内H5充值</string>
+    <string name="recharge_method_browser_h5">浏览器H5充值</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  充值记录模块                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_record_title">查询充值记录</string>
+    <string name="recharge_record_time_range">查询时间范围：</string>
+    <string name="recharge_record_copy">复制</string>
+    <string name="recharge_record_export">导出</string>
+    <string name="recharge_record_total">合计充值：%1$s 元（共 %2$d 笔）</string>
+    <string name="recharge_record_no_data">未查询到记录</string>
+    <string name="recharge_record_recharger">充值人：%1$s</string>
+    <string name="recharge_record_time">充值时间：%1$s</string>
+    <string name="recharge_record_amount">充值金额：%1$s 元</string>
+    <string name="recharge_record_order_no">订单号：%1$s</string>
+    <string name="recharge_record_hint_item1">1. 查询内容仅供参考，请以实际充值数量为准。</string>
+    <string name="recharge_record_hint_item2_prefix">2. 如果认为充值记录不准，可以访问</string>
+    <string name="recharge_record_hint_item2_link">此处</string>
+    <string name="recharge_record_hint_item2_suffix">查看官方充值记录。</string>
+    <string name="recharge_record_export_title">查询充值记录</string>
+    <string name="recharge_time_1month">一个月</string>
+    <string name="recharge_time_3months">三个月</string>
+    <string name="recharge_time_1year">一年</string>
+    <string name="recharge_time_4years">四年</string>
+    <string name="recharge_install_campus_app">请先安装今日校园App</string>
+    <string name="recharge_no_room_selected">未选择房间</string>
+    <string name="recharge_invalid_amount">请输入有效金额</string>
+    <string name="recharge_amount_out_of_range">金额超出合理范围（0-1000元）</string>
+    <string name="recharge_order_create_failed">创建订单失败: %1$s</string>
+    <string name="recharge_no_room_bound">该账号下未绑定任何房间</string>
+    <string name="recharge_query_failed">查询失败: %1$s</string>
+    <string name="recharge_enter_student_id">请输入学号</string>
+    <string name="recharge_record_query_failed">查询充值记录失败</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  支付选择模块                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="payment_title_for_user">为 %1$s 充值电费</string>
+    <string name="payment_title_default">充值电费</string>
+    <string name="payment_creating_order">正在创建订单…</string>
+    <string name="payment_amount_label">充值金额</string>
+    <string name="payment_select_method">选择支付方式</string>
+    <string name="payment_wechat_desc">推荐使用，快捷支付</string>
+    <string name="payment_alipay_desc">支持储蓄卡和信用卡</string>
+    <string name="payment_selected">已选择</string>
+    <string name="payment_confirm">确认支付</string>
+    <string name="payment_processing">正在处理支付…</string>
+    <string name="payment_order_failed">订单创建失败</string>
+    <string name="payment_close">关闭支付</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Custom Website Dialog                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="custom_website_title">Custom Website</string>
+    <string name="custom_website_choose_icon">Choose Icon</string>
+    <string name="custom_icon">Custom Icon</string>
+    <string name="custom_website_label">Title</string>
+    <string name="custom_website_label_placeholder">e.g. Academic System</string>
+    <string name="custom_website_url_label">URL</string>
+    <string name="custom_website_url_placeholder">example.com</string>
+    <string name="custom_website_title_required">Please enter a title</string>
+    <string name="custom_website_url_invalid">Please enter a valid URL</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Open URL Dialog                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="open_url_intranet">Intranet Access</string>
+    <string name="open_url_title">Open URL</string>
+    <string name="open_url_label">Enter URL</string>
+    <string name="open_url_placeholder">example.com</string>
+    <string name="open_url_invalid">Please enter a valid URL, e.g. example.com</string>
+</resources>

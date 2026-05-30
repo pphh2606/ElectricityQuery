@@ -101,10 +101,10 @@ fun DetailScreen(
     }
 
     val title = when (detailType) {
-        DetailType.SIX_MONTH_USAGE -> "最近6个月用电记录"
-        DetailType.MONTH_DAILY_USAGE -> "本月每日用电"
-        DetailType.HOURLY_USAGE -> "近24h用电明细"
-        DetailType.METER_STATUS -> "电表实时状态"
+        DetailType.SIX_MONTH_USAGE -> stringResource(R.string.detail_title_6months)
+        DetailType.MONTH_DAILY_USAGE -> stringResource(R.string.detail_title_daily)
+        DetailType.HOURLY_USAGE -> stringResource(R.string.detail_title_hourly)
+        DetailType.METER_STATUS -> stringResource(R.string.detail_title_meter)
     }
 
     // 控制三点菜单
@@ -123,9 +123,9 @@ fun DetailScreen(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show("已导出到文件: $pendingExportLabel", ToastUtils.Type.SUCCESS)
+                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show("导出失败: ${e.message}", ToastUtils.Type.ERROR)
+                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -164,7 +164,7 @@ fun DetailScreen(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("复制") },
+                                text = { Text(stringResource(R.string.common_copy)) },
                                 leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -173,7 +173,7 @@ fun DetailScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("导出") },
+                                text = { Text(stringResource(R.string.common_export)) },
                                 leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -215,7 +215,7 @@ fun DetailScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = detailState.error ?: "未知错误",
+                                text = detailState.error ?: stringResource(R.string.common_unknown_error),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -276,14 +276,14 @@ private fun UsageListWithChart(
             ElectricityLineChartCard(
                 xLabels = records.map(xLabelTransform),
                 lines = listOf(
-                    LineData("用电量(度)", records.map { it.consumeTotal }, Color(0xFF2196F3)),
-                    LineData("费用(元)", records.map { it.costTotal }, Color(0xFFE53935))
+                    LineData(stringResource(R.string.detail_chart_usage_kwh), records.map { it.consumeTotal }, Color(0xFF2196F3)),
+                    LineData(stringResource(R.string.detail_chart_cost_yuan), records.map { it.costTotal }, Color(0xFFE53935))
                 )
             )
         }
 
         item {
-            SectionTitle("明细数据")
+            SectionTitle(stringResource(R.string.detail_section_data))
         }
 
         items(records) { record ->
@@ -324,7 +324,7 @@ private fun MonthDailyUsageContent(data: UsageResponse?) {
 private fun HourlyUsageContent(data: CurrentDataResponse?) {
     val records = data?.hourDataObj
     if (records.isNullOrEmpty()) {
-        EmptyPlaceholder("暂无24h用电数据")
+        EmptyPlaceholder(stringResource(R.string.detail_empty_24h))
         return
     }
 
@@ -336,13 +336,13 @@ private fun HourlyUsageContent(data: CurrentDataResponse?) {
             ElectricityLineChartCard(
                 xLabels = records.map { it.dataTime.takeLast(5) },
                 lines = listOf(
-                    LineData("用电量(度)", records.map { it.dataTotal }, Color(0xFF2196F3))
+                    LineData(stringResource(R.string.detail_chart_usage_kwh), records.map { it.dataTotal }, Color(0xFF2196F3))
                 )
             )
         }
 
         item {
-            SectionTitle("明细数据")
+            SectionTitle(stringResource(R.string.detail_section_data))
         }
 
         items(records) { record ->
@@ -362,7 +362,7 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
     val voltageItems = data?.exp3 ?: emptyList()
     if (currentItems.isEmpty() && voltageItems.isEmpty()
         && data?.exp2.isNullOrBlank() && data?.exp5.isNullOrBlank()) {
-        EmptyPlaceholder("暂无电表数据")
+        EmptyPlaceholder(stringResource(R.string.detail_empty_meter))
         return
     }
 
@@ -370,34 +370,34 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            SectionTitle("电表实时状态")
+            SectionTitle(stringResource(R.string.detail_section_meter_status))
         }
 
         // 电流 (exp4)
         if (currentItems.isNotEmpty()) {
             item {
-                MeterGroupCard("电流", currentItems, "A")
+                MeterGroupCard(stringResource(R.string.detail_current), currentItems, "A")
             }
         }
 
         // 电压 (exp3)
         if (voltageItems.isNotEmpty()) {
             item {
-                MeterGroupCard("电压", voltageItems, "V")
+                MeterGroupCard(stringResource(R.string.detail_voltage), voltageItems, "V")
             }
         }
 
         // 当前功率/累计值 (exp2)
         if (!data?.exp2.isNullOrBlank()) {
             item {
-                SimpleValueCard("当前功率/累计值", data.exp2)
+                SimpleValueCard(stringResource(R.string.detail_power_cumulative), data.exp2)
             }
         }
 
         // 电源状态 (exp5)
         if (!data?.exp5.isNullOrBlank()) {
             item {
-                SimpleValueCard("电源状态", data.exp5)
+                SimpleValueCard(stringResource(R.string.detail_power_status), data.exp5)
             }
         }
     }

@@ -291,10 +291,10 @@ fun HomePageContent(
                     Log.w(TAG, "降级 campusnextins:// 也失败: ${e2.message}")
                 }
             }
-            snackbar.show("请安装今日校园App以使用「$appName」", ToastUtils.Type.ERROR)
+            snackbar.show(context.getString(R.string.home_install_campus_app, appName), ToastUtils.Type.ERROR)
         } catch (e: Exception) {
             Log.e(TAG, "打开外部应用异常: ${e.message}")
-            snackbar.show("打开失败: ${e.message}", ToastUtils.Type.ERROR)
+            snackbar.show(context.getString(R.string.home_open_failed, e.message ?: ""), ToastUtils.Type.ERROR)
         }
     }
 
@@ -322,7 +322,7 @@ fun HomePageContent(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = uiState.error ?: "加载失败",
+                        text = uiState.error ?: stringResource(R.string.home_load_failed),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -452,7 +452,7 @@ fun HomePageContent(
             icon = Icons.Default.OpenInBrowser,
             leadingButton = {
                 TextButton(onClick = { pendingExternalIntent = null }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             },
             trailingButton = {
@@ -460,12 +460,12 @@ fun HomePageContent(
                     pendingExternalIntent = null
                     openExternalIntent(appName, url)
                 }) {
-                    Text("确认")
+                    Text(stringResource(R.string.common_confirm))
                 }
             }
         ) {
             Text(
-                text = "「$appName」需要在今日校园内打开，确认继续？",
+                text = stringResource(R.string.home_external_app_message, appName),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -591,7 +591,7 @@ private fun MyServicesSection(
             ) {
                 Icon(
                     imageVector = if (isEditMode) Icons.Default.Check else Icons.Default.Edit,
-                    contentDescription = if (isEditMode) "确认并退出编辑" else "编辑我的服务",
+                    contentDescription = if (isEditMode) stringResource(R.string.home_confirm_exit_edit) else stringResource(R.string.home_edit_my_services),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )

@@ -522,7 +522,7 @@ private fun RechargeContent(
                                 )
                                 context.startActivity(intent)
                             } catch (_: ActivityNotFoundException) {
-                                snackbar.show("未找到可用的浏览器应用")
+                                snackbar.show(context.getString(R.string.common_no_browser))
                             }
                         }
                     )
@@ -593,7 +593,7 @@ private fun RechargeContent(
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
                         context.startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
-                        snackbar.show("请先安装今日校园App")
+                        snackbar.show(context.getString(R.string.recharge_install_campus_app))
                     }
                     onShowOtherRechargeDialogChange(false)
                 }
@@ -621,7 +621,7 @@ private fun RechargeContent(
                         )
                         context.startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
-                        snackbar.show("未找到可用的浏览器应用")
+                        snackbar.show(context.getString(R.string.common_no_browser))
                     }
                     onShowOtherRechargeDialogChange(false)
                 }

@@ -46,22 +46,22 @@ import androidx.compose.ui.unit.dp
 /** 功能菜单项数据 */
 private data class ProfileMenuItem(
     val icon: ImageVector,
-    val title: String,
+    @androidx.annotation.StringRes val titleRes: Int,
     val url: String,
 )
 
 /** 第一组菜单：账户服务 */
 private val accountServiceItems = listOf(
-    ProfileMenuItem(Icons.Default.Lock, "修改密码", "https://pay.cqwu.edu.cn/mobile/#/password"),
-    ProfileMenuItem(Icons.Default.Description, "发票抬头管理", "https://pay.cqwu.edu.cn/mobile/#/invoiceTitleList"),
-    ProfileMenuItem(Icons.Default.BarChart, "趣味账单", "https://pay.cqwu.edu.cn/mobile/#/more"),
+    ProfileMenuItem(Icons.Default.Lock, R.string.fee_profile_pwd_change, "https://pay.cqwu.edu.cn/mobile/#/password"),
+    ProfileMenuItem(Icons.Default.Description, R.string.fee_profile_invoice_mgmt, "https://pay.cqwu.edu.cn/mobile/#/invoiceTitleList"),
+    ProfileMenuItem(Icons.Default.BarChart, R.string.fee_profile_fun_bill, "https://pay.cqwu.edu.cn/mobile/#/more"),
 )
 
 /** 第二组菜单：查询服务 */
 private val queryServiceItems = listOf(
-    ProfileMenuItem(Icons.Default.Search, "查询缴费", "https://pay.cqwu.edu.cn/mobile/#/searchPay"),
-    ProfileMenuItem(Icons.Default.Receipt, "查看发票", "https://pay.cqwu.edu.cn/mobile/#/billShowList"),
-    ProfileMenuItem(Icons.AutoMirrored.Filled.Send, "预支发票", "https://pay.cqwu.edu.cn/mobile/#/advanceBilling"),
+    ProfileMenuItem(Icons.Default.Search, R.string.fee_profile_query_pay, "https://pay.cqwu.edu.cn/mobile/#/searchPay"),
+    ProfileMenuItem(Icons.Default.Receipt, R.string.fee_profile_view_invoice, "https://pay.cqwu.edu.cn/mobile/#/billShowList"),
+    ProfileMenuItem(Icons.AutoMirrored.Filled.Send, R.string.fee_profile_advance_invoice, "https://pay.cqwu.edu.cn/mobile/#/advanceBilling"),
 )
 
 /**
@@ -105,10 +105,11 @@ private fun ProfileMenuCard(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
     ) {
         items.forEachIndexed { index, item ->
+            val itemTitle = stringResource(item.titleRes)
             ProfileOptionItem(
                 icon = item.icon,
-                title = item.title,
-                onClick = { onNavigateToWebView(item.url, item.title) },
+                title = itemTitle,
+                onClick = { onNavigateToWebView(item.url, itemTitle) },
             )
             if (index < items.lastIndex) {
                 HorizontalDivider(
@@ -136,7 +137,7 @@ private fun ProfileInfoCard(uiState: FeeServiceHallUiState) {
             }
             uiState.profileError != null -> {
                 Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                    Text("加载失败: ${uiState.profileError}", style = MaterialTheme.typography.bodyLarge,
+                    Text(stringResource(R.string.fee_profile_load_failed, uiState.profileError ?: ""), style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.error)
                 }
             }
@@ -156,11 +157,11 @@ private fun ProfileInfoCard(uiState: FeeServiceHallUiState) {
                     }
                     Spacer(Modifier.width(16.dp))
                     Column(Modifier.weight(1f)) {
-                        InfoRow(label = "账号", value = profile?.accountNum ?: "-")
+                        InfoRow(label = stringResource(R.string.fee_profile_account), value = profile?.accountNum ?: "-")
                         Spacer(Modifier.height(4.dp))
-                        InfoRow(label = "姓名", value = profile?.name ?: "-")
+                        InfoRow(label = stringResource(R.string.fee_profile_name), value = profile?.name ?: "-")
                         Spacer(Modifier.height(4.dp))
-                        InfoRow(label = "学院", value = profile?.deptName ?: "-")
+                        InfoRow(label = stringResource(R.string.fee_profile_dept), value = profile?.deptName ?: "-")
                     }
                 }
             }

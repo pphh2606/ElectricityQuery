@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Recharge                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_title">Recharge</string>
+    <string name="recharge_hint">Tips</string>
+    <string name="recharge_query">Query</string>
+    <string name="recharge_student_id_label">Enter Student ID or userId</string>
+    <string name="recharge_student_id_placeholder">e.g. 2022010101 or 12345</string>
+    <string name="recharge_my_account">My Account</string>
+    <string name="recharge_switch_account">Switch Account</string>
+    <string name="recharge_balance">Balance (CNY)</string>
+    <string name="recharge_refresh_balance">Refresh Balance</string>
+    <string name="recharge_custom_amount_label">Custom Amount (CNY)</string>
+    <string name="recharge_custom_amount_placeholder">e.g. 0.01</string>
+    <string name="recharge_pay_now">Pay Now</string>
+    <string name="recharge_other_methods">Other Payment Methods</string>
+    <string name="recharge_important_notes">Important Notes</string>
+    <string name="recharge_note_time">1. Top-up is available from 00:05 to 23:55 only.</string>
+    <string name="recharge_note_delay">2. If payment succeeded but not credited, please wait 5 minutes.</string>
+    <string name="recharge_note_power">3. If you have balance but no power, please contact the administrator.</string>
+    <string name="recharge_preset_amount">%1$d CNY</string>
+    <string name="recharge_hint_item1">1. If user lookup fails, please </string>
+    <string name="recharge_hint_item1_link">click here</string>
+    <string name="recharge_hint_item1_suffix"> to register on the platform.</string>
+    <string name="recharge_hint_item2">2. If registration still fails, try using the dorm administrator student ID or the first registered student ID in the dorm.</string>
+    <string name="recharge_hint_item3_prefix">3. Recharge records are tied to the student ID. If you prefer not, please </string>
+    <string name="recharge_hint_item3_suffix">choose another payment method.</string>
+    <string name="recharge_select_room_title">Select Room</string>
+    <string name="recharge_select_room_hint">Multiple rooms are linked to this ID. Please select the room to recharge:</string>
+    <string name="recharge_other_method_title">Select Payment Method</string>
+    <string name="recharge_method_campus">Campusphere</string>
+    <string name="recharge_method_inapp_h5">In-App H5</string>
+    <string name="recharge_method_browser_h5">Browser H5</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Recharge Records                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="recharge_record_title">Recharge Records</string>
+    <string name="recharge_record_time_range">Time Range:</string>
+    <string name="recharge_record_copy">Copy</string>
+    <string name="recharge_record_export">Export</string>
+    <string name="recharge_record_total">Total: %1$s CNY (%2$d records)</string>
+    <string name="recharge_record_no_data">No records found</string>
+    <string name="recharge_record_recharger">Paid by: %1$s</string>
+    <string name="recharge_record_time">Time: %1$s</string>
+    <string name="recharge_record_amount">Amount: %1$s CNY</string>
+    <string name="recharge_record_order_no">Order No: %1$s</string>
+    <string name="recharge_record_hint_item1">1. The query results are for reference only. Please refer to the actual recharge amount.</string>
+    <string name="recharge_record_hint_item2_prefix">2. If you find the records inaccurate, you can visit </string>
+    <string name="recharge_record_hint_item2_link">here</string>
+    <string name="recharge_record_hint_item2_suffix"> to view official records.</string>
+    <string name="recharge_record_export_title">Recharge Records</string>
+    <string name="recharge_time_1month">1 Month</string>
+    <string name="recharge_time_3months">3 Months</string>
+    <string name="recharge_time_1year">1 Year</string>
+    <string name="recharge_time_4years">4 Years</string>
+    <string name="recharge_install_campus_app">Please install Campusphere App first</string>
+    <string name="recharge_no_room_selected">No room selected</string>
+    <string name="recharge_invalid_amount">Please enter a valid amount</string>
+    <string name="recharge_amount_out_of_range">Amount out of range (0-1000 CNY)</string>
+    <string name="recharge_order_create_failed">Order creation failed: %1$s</string>
+    <string name="recharge_no_room_bound">No rooms linked to this account</string>
+    <string name="recharge_query_failed">Query failed: %1$s</string>
+    <string name="recharge_enter_student_id">Please enter student ID</string>
+    <string name="recharge_record_query_failed">Failed to query recharge records</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Payment Selection                          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="payment_title_for_user">Recharge for %1$s</string>
+    <string name="payment_title_default">Recharge</string>
+    <string name="payment_creating_order">Creating order…</string>
+    <string name="payment_amount_label">Amount</string>
+    <string name="payment_select_method">Select Payment Method</string>
+    <string name="payment_wechat_desc">Recommended, fast payment</string>
+    <string name="payment_alipay_desc">Supports debit and credit cards</string>
+    <string name="payment_selected">Selected</string>
+    <string name="payment_confirm">Confirm Payment</string>
+    <string name="payment_processing">Processing payment…</string>
+    <string name="payment_order_failed">Order creation failed</string>
+    <string name="payment_close">Close Payment</string>
+</resources>

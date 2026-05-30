@@ -92,7 +92,7 @@ fun MyInfoScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("我的信息", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.my_info_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
@@ -112,7 +112,7 @@ fun MyInfoScreen(
             when {
                 uiState.needsLogin -> {
                     ReLoginContent(
-                        errorMessage = "登录已过期，请重新登录",
+                        errorMessage = stringResource(R.string.my_info_login_expired),
                         requiresReLogin = true,
                         onReLogin = onReLogin,
                         onRetry = { viewModel.loadStudentInfo() },
@@ -192,17 +192,26 @@ private fun MyInfoContent(
             Spacer(Modifier.height(12.dp))
 
             // 使用列表循环代替手动重复的 InfoRow + Divider
-            val infoItems = remember(studentInfo) {
+            val genderLabel = stringResource(R.string.my_info_gender)
+            val gradeLabel = stringResource(R.string.my_info_grade)
+            val deptLabel = stringResource(R.string.my_info_department)
+            val majorLabel = stringResource(R.string.my_info_major)
+            val classLabel = stringResource(R.string.my_info_class)
+            val phoneLabel = stringResource(R.string.my_info_phone)
+            val campusLabel = stringResource(R.string.my_info_campus)
+            val degreeLabel = stringResource(R.string.my_info_degree)
+            val statusLabel = stringResource(R.string.my_info_status)
+            val infoItems = remember(studentInfo, genderLabel, gradeLabel, deptLabel, majorLabel, classLabel, phoneLabel, campusLabel, degreeLabel, statusLabel) {
                 listOf(
-                    "性别" to studentInfo.sex,
-                    "年级" to studentInfo.grade,
-                    "院系" to studentInfo.dwmc,
-                    "专业" to studentInfo.zymc,
-                    "班级" to studentInfo.bjmc,
-                    "手机号" to studentInfo.mobile,
-                    "校区" to studentInfo.schoolZone.ifBlank { "-" },
-                    "学生类别" to studentInfo.degree,
-                    "在校情况" to studentInfo.userType,
+                    genderLabel to studentInfo.sex,
+                    gradeLabel to studentInfo.grade,
+                    deptLabel to studentInfo.dwmc,
+                    majorLabel to studentInfo.zymc,
+                    classLabel to studentInfo.bjmc,
+                    phoneLabel to studentInfo.mobile,
+                    campusLabel to studentInfo.schoolZone.ifBlank { "-" },
+                    degreeLabel to studentInfo.degree,
+                    statusLabel to studentInfo.userType,
                 )
             }
 
@@ -308,7 +317,7 @@ private fun CollapsibleCategoryCard(
                 Icon(
                     imageVector = if (expanded) Icons.Filled.ExpandLess
                         else Icons.Filled.ExpandMore,
-                    contentDescription = if (expanded) "收起" else "展开",
+                    contentDescription = if (expanded) stringResource(R.string.my_info_collapse) else stringResource(R.string.my_info_expand),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

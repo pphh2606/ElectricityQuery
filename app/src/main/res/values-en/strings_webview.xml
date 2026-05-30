@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  WebView Browser                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_copy_link">Copy Link</string>
+    <string name="webview_share_link">Share Link</string>
+    <string name="webview_open_in_browser">Open in Browser</string>
+    <string name="webview_switch_to_external">Switch to External</string>
+    <string name="webview_switch_to_internal">Switch to Internal</string>
+    <string name="webview_clip_label">Web Link</string>
+    <string name="webview_reload">Reload</string>
+    <string name="webview_toggle_network">Toggle Network</string>
+    <string name="webview_network_settings">Network Settings</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  WebView Error Overlay                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_error_page_not_found">Page Not Found</string>
+    <string name="webview_error_page_not_found_desc">The requested page does not exist (HTTP 404)</string>
+    <string name="webview_error_server_error">Internal Server Error</string>
+    <string name="webview_error_server_error_desc">The server encountered an error. Please try again later (HTTP 500)</string>
+    <string name="webview_error_service_unavailable">Service Unavailable</string>
+    <string name="webview_error_service_unavailable_desc">The server is under maintenance or overloaded. Please try again later (HTTP %1$d)</string>
+    <string name="webview_error_load_failed">Page Load Failed</string>
+    <string name="webview_error_http_generic_desc">Server returned an error (HTTP %1$d)</string>
+    <string name="webview_error_network_disconnected">Network Disconnected</string>
+    <string name="webview_error_network_disconnected_desc">Please check your network settings and try again</string>
+    <string name="webview_error_timeout">Connection Timeout</string>
+    <string name="webview_error_timeout_desc">Please use the campus network or try again later</string>
+    <string name="webview_error_dns_failed">Cannot Resolve Server Address</string>
+    <string name="webview_error_dns_failed_desc">DNS resolution failed. Please check your network connection</string>
+    <string name="webview_error_connection_refused">Connection Refused</string>
+    <string name="webview_error_connection_refused_desc">Please use the campus network or try again later</string>
+    <string name="webview_error_no_response">No Response</string>
+    <string name="webview_error_no_response_desc">Please open with campus network</string>
+    <string name="webview_error_unreachable">Network Unreachable</string>
+    <string name="webview_error_unreachable_desc">Cannot reach the target server. Please check your network connection</string>
+    <string name="webview_error_generic_desc">Please check your network connection and try again</string>
+    <string name="webview_loading">Loading…</string>
+    <string name="webview_link_copied">Link copied</string>
+    <string name="webview_url_change_failed">URL change failed</string>
+    <string name="webview_campusphere_warning">You are visiting Campusphere content which may not be fully compatible. Please use the Campusphere app instead.</string>
+    <string name="webview_no_download_tool">No download tool found</string>
+    <string name="webview_cannot_open_network_settings">Cannot open network settings</string>
+</resources>

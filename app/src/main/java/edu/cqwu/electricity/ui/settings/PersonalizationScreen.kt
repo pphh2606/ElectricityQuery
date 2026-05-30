@@ -198,7 +198,7 @@ fun PersonalizationScreen(
                     SettingRow(
                         icon = Icons.Default.Animation, title = stringResource(R.string.personalization_page_transition),
                         subtitle = if (currentReduceMotion == ReduceMotion.ON) {
-                            "${currentPageTransition.displayName}（被减少动画覆盖）"
+                            "${currentPageTransition.displayName}${stringResource(R.string.personalization_reduce_motion_override)}"
                         } else {
                             currentPageTransition.displayName
                         },

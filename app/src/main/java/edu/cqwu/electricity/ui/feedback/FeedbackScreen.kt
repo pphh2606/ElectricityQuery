@@ -361,7 +361,7 @@ fun FeedbackScreen(
                             modifier = Modifier.padding(end = 4.dp),
                         )
                     }
-                    Text("预览日志")
+                    Text(stringResource(R.string.feedback_preview_log))
                 }
             }
 
@@ -393,7 +393,7 @@ fun FeedbackScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("标题（可选）") },
+                label = { Text(stringResource(R.string.feedback_title_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -404,7 +404,7 @@ fun FeedbackScreen(
             OutlinedTextField(
                 value = content,
                 onValueChange = { content = it },
-                label = { Text("反馈内容") },
+                label = { Text(stringResource(R.string.feedback_content_label)) },
                 minLines = 5,
                 modifier = Modifier.fillMaxWidth(),
             )

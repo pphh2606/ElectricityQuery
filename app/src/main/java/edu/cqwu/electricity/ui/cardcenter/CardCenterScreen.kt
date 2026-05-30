@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.ui.cardcenter
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -125,6 +127,7 @@ fun CardCenterScreen(
             ) {
                 // 功能网格：3 列 × 2 行
                 item(key = "grid") {
+                    val ctx = LocalContext.current
                     CardGrid(
                         items = cardCenterItems,
                         onItemClick = { item ->
@@ -134,7 +137,7 @@ fun CardCenterScreen(
                                 CardAction.QR_CODE_BUS -> onNavigateToQrCode(QrCodeType.BUS)
                                 CardAction.CARD_LOST -> onNavigateToCardLost()
                                 CardAction.BILL -> onNavigateToBill()
-                                is CardAction.WEB_VIEW -> onNavigateToWebView(item.action.url, item.label)
+                                is CardAction.WEB_VIEW -> onNavigateToWebView(item.action.url, ctx.getString(item.labelRes))
                             }
                         }
                     )
@@ -169,7 +172,7 @@ private sealed class CardAction {
  * 单个网格项数据
  */
 private data class CardGridItem(
-    val label: String,
+    @androidx.annotation.StringRes val labelRes: Int,
     val icon: ImageVector,
     val action: CardAction
 )
@@ -177,32 +180,32 @@ private data class CardGridItem(
 /** 卡中心 6 个功能项 */
 private val cardCenterItems = listOf(
     CardGridItem(
-        label = "账户信息",
+        labelRes = R.string.card_center_account_info,
         icon = Icons.Filled.AccountBalance,
         action = CardAction.ACCOUNT_INFO
     ),
     CardGridItem(
-        label = "支付码",
+        labelRes = R.string.card_center_payment_code,
         icon = Icons.Filled.QrCodeScanner,
         action = CardAction.QR_CODE_PAY
     ),
     CardGridItem(
-        label = "乘车码",
+        labelRes = R.string.card_center_transit_code,
         icon = Icons.Filled.DirectionsBus,
         action = CardAction.QR_CODE_BUS
     ),
     CardGridItem(
-        label = "账单",
+        labelRes = R.string.card_center_bills,
         icon = Icons.Filled.Receipt,
         action = CardAction.BILL
     ),
     CardGridItem(
-        label = "卡挂失",
+        labelRes = R.string.card_center_report_lost,
         icon = Icons.Filled.CreditCardOff,
         action = CardAction.CARD_LOST
     ),
     CardGridItem(
-        label = "充值",
+        labelRes = R.string.card_center_recharge,
         icon = Icons.Filled.Payments,
         action = CardAction.WEB_VIEW("https://pay.cqwu.edu.cn/projectDetailEcard/")
     )
@@ -287,7 +290,7 @@ private fun CardGridItemView(
             ) {
                 Icon(
                     imageVector = item.icon,
-                    contentDescription = item.label,
+                    contentDescription = stringResource(item.labelRes),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(28.dp)
                 )
@@ -297,7 +300,7 @@ private fun CardGridItemView(
 
             // 功能名称
             Text(
-                text = item.label,
+                text = stringResource(item.labelRes),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  首页模块                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="home_title">首页</string>
+    <string name="home_search_apps">搜索应用…</string>
+    <string name="home_no_match">未找到匹配的应用</string>
+    <string name="home_search_result">搜索结果（共 %1$d 个）</string>
+    <string name="home_my_services">我的服务</string>
+    <string name="home_custom_website">自定义网站</string>
+    <string name="home_external_app_title">打开外部应用</string>
+    <string name="home_external_app_message">「%1$s」需要在今日校园内打开，确认继续？</string>
+    <string name="home_install_campus_app">请安装今日校园App以使用「%1$s」</string>
+    <string name="home_open_failed">打开失败: %1$s</string>
+    <string name="home_edit_my_services">编辑我的服务</string>
+    <string name="home_confirm_exit_edit">确认并退出编辑</string>
+    <string name="home_load_failed">加载失败</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  大厅模块                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="hall_title">大厅</string>
+    <string name="hall_no_favorites">暂无收藏的应用</string>
+    <string name="hall_tab_all">全部</string>
+    <string name="hall_tab_favorites">收藏</string>
+    <string name="hall_favorited">已收藏</string>
+    <string name="hall_unfavorited">未收藏</string>
+</resources>

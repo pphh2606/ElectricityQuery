@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  设置                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_title">设置</string>
+    <string name="settings_personalization">个性化</string>
+    <string name="settings_personalization_desc">夜间模式、主题颜色、页面过渡动画</string>
+    <string name="settings_config">配置</string>
+    <string name="settings_config_desc">浏览器标识等设置</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_about_desc">应用版本、开发者信息</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  个性化设置                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="personalization_title">个性化</string>
+    <string name="personalization_display">显示设置</string>
+    <string name="personalization_night_mode">夜间模式</string>
+    <string name="personalization_theme_color">主题颜色</string>
+    <string name="personalization_dynamic_color">动态取色</string>
+    <string name="personalization_dynamic_color_supported">跟随系统壁纸自动提取主题色</string>
+    <string name="personalization_dynamic_color_unsupported">此设备不支持动态取色</string>
+    <string name="personalization_custom_color">自定义颜色</string>
+    <string name="personalization_custom_color_desc">使用选定的颜色生成主题</string>
+    <string name="personalization_topbar_color">标题栏颜色</string>
+    <string name="personalization_qrcode_settings">二维码设置</string>
+    <string name="personalization_qrcode_desc">颜色、圆角等自定义样式</string>
+    <string name="personalization_animation">动画设置</string>
+    <string name="personalization_page_transition">页面过渡动画</string>
+    <string name="personalization_reduce_motion">减少动画</string>
+    <string name="personalization_reduce_motion_override">（被减少动画覆盖）</string>
+    <string name="personalization_choose_color">选择主题色</string>
+    <string name="personalization_choose_color_desc">选择一种颜色作为应用主题色</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  二维码设置                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_settings_title">二维码设置</string>
+    <string name="qrcode_settings_style">样式设置</string>
+    <string name="qrcode_settings_md3_theme">MD3 主题色</string>
+    <string name="qrcode_settings_md3_theme_desc">使用当前主题色作为二维码黑块颜色</string>
+    <string name="qrcode_settings_black">黑色</string>
+    <string name="qrcode_settings_black_desc">使用黑色作为二维码黑块颜色</string>
+    <string name="qrcode_settings_corner_radius">圆角度</string>
+    <string name="qrcode_settings_display">显示</string>
+    <string name="qrcode_settings_screen_brightness">屏幕高亮</string>
+    <string name="qrcode_settings_screen_brightness_desc">显示二维码时自动调高屏幕亮度</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  配置                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="config_title">配置</string>
+    <string name="config_user_agent">浏览器标识</string>
+    <string name="config_user_agent_desc">设置 User-Agent</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  浏览器标识设置 + 编辑                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="ua_settings_title">浏览器标识设置</string>
+    <string name="ua_settings_current">当前选中：%1$s</string>
+    <string name="ua_settings_home_ua">首页浏览器标识设置</string>
+    <string name="ua_settings_coming_soon">待开放</string>
+    <string name="ua_delete_title">删除浏览器标识</string>
+    <string name="ua_delete_confirm">确定要删除\"%1$s\"吗？</string>
+    <string name="ua_edit_add_title">添加浏览器标识</string>
+    <string name="ua_edit_edit_title">编辑浏览器标识</string>
+    <string name="ua_edit_note_label">添加备注</string>
+    <string name="ua_edit_note_placeholder">例如：学校平板</string>
+    <string name="ua_edit_default_note">自定义标识</string>
+    <string name="ua_edit_ua_label">输入浏览器标识</string>
+    <string name="ua_edit_ua_placeholder">Mozilla/5.0 …</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  关于                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="about_title">关于</string>
+    <string name="about_project_home">项目主页</string>
+    <string name="about_developer">开发者</string>
+    <string name="about_contact">联系方式</string>
+    <string name="about_ai_notice">本应用使用了AI技术</string>
+    <string name="about_contact_title">联系方式</string>
+    <string name="about_contact_qq">QQ联系</string>
+    <string name="about_contact_bilibili">哔哩哔哩联系</string>
+    <string name="about_contact_email">邮箱联系</string>
+    <string name="about_install_qq">请先安装 QQ 应用</string>
+    <string name="about_no_mail_app">无法打开邮件应用</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  语言切换                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="language_title">语言</string>
+    <string name="language_current">当前语言</string>
+    <string name="language_select">选择语言</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+</resources>

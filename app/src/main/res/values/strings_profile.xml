@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  我的                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_title">我的</string>
+    <string name="profile_open_url">打开网址</string>
+    <string name="profile_feedback">意见反馈</string>
+    <string name="profile_manage_accounts">管理账号</string>
+    <string name="profile_toggle_night_mode">切换夜间模式</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  我的信息                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="my_info_title">我的信息</string>
+    <string name="my_info_gender">性别</string>
+    <string name="my_info_grade">年级</string>
+    <string name="my_info_department">院系</string>
+    <string name="my_info_major">专业</string>
+    <string name="my_info_class">班级</string>
+    <string name="my_info_phone">手机号</string>
+    <string name="my_info_campus">校区</string>
+    <string name="my_info_degree">学生类别</string>
+    <string name="my_info_status">在校情况</string>
+    <string name="my_info_collapse">收起</string>
+    <string name="my_info_expand">展开</string>
+    <string name="my_info_load_failed">加载失败</string>
+    <string name="my_info_login_expired">登录已过期，请重新登录</string>
+    <string name="profile_not_logged_in">未登录</string>
+    <string name="profile_my_info_cd">我的信息</string>
+    <string name="profile_my_room_loading">正在获取我的寝室信息…</string>
+    <string name="profile_no_room_data">暂无房间数据</string>
+</resources>

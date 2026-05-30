@@ -162,7 +162,7 @@ fun LoginScreen(
     // 拦截系统返回（包括侧滑手势和物理返回键）
     // 加载中拦截，防止登录请求中误触退出导致状态丢失
     BackHandler(enabled = uiState.isLoading) {
-        snackbar.show("正在登录，请稍候...", ToastUtils.Type.ERROR)
+        snackbar.show(context.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
     }
 
     // 收集一次性事件（替代 LaunchedEffect(uiState.error/loginResult/autoLoginResult)）
@@ -174,7 +174,7 @@ fun LoginScreen(
                     snackbar.show(event.msg, ToastUtils.Type.ERROR)
                 }
                 is LoginEvent.LoginSuccess -> {
-                    snackbar.show("登录成功!\nCookie: ${event.cookie}", ToastUtils.Type.SUCCESS)
+                    snackbar.show(context.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
                     delay(1500)
                     onBack()
                 }
@@ -235,8 +235,10 @@ fun LoginScreen(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
+                            val authTitle = stringResource(R.string.login_device_auth_title)
+                            val authDesc = stringResource(R.string.login_device_auth_desc)
                             DropdownMenuItem(
-                                text = { Text("导出凭据") },
+                                text = { Text(stringResource(R.string.login_export_credential)) },
                                 leadingIcon = { Icon(Icons.Default.UploadFile, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -244,8 +246,8 @@ fun LoginScreen(
                                     if (km.isDeviceSecure) {
                                         @Suppress("DEPRECATION")
                                         val intent = km.createConfirmDeviceCredentialIntent(
-                                            "身份验证",
-                                            "验证后导出加密凭据"
+                                            authTitle,
+                                            authDesc
                                         )
                                         authLauncher.launch(intent)
                                     } else {
@@ -256,7 +258,7 @@ fun LoginScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("导入凭据") },
+                                text = { Text(stringResource(R.string.login_import_credential)) },
                                 leadingIcon = { Icon(Icons.Default.CloudDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
@@ -311,8 +313,8 @@ fun LoginScreen(
                     TextField(
                         value = uiState.username,
                         onValueChange = { loginViewModel.updateUsername(it) },
-                        label = { Text("学号") },
-                        placeholder = { Text("请输入学号") },
+                        label = { Text(stringResource(R.string.login_student_id)) },
+                        placeholder = { Text(stringResource(R.string.login_student_id_hint)) },
                         singleLine = true,
                         enabled = !uiState.isLoading,
                         keyboardOptions = KeyboardOptions(
@@ -389,8 +391,8 @@ fun LoginScreen(
                 TextField(
                     value = uiState.password,
                     onValueChange = { loginViewModel.updatePassword(it) },
-                    label = { Text("密码") },
-                    placeholder = { Text("请输入密码") },
+                    label = { Text(stringResource(R.string.login_password)) },
+                    placeholder = { Text(stringResource(R.string.login_password_hint)) },
                     singleLine = true,
                     enabled = !uiState.isLoading,
                     visualTransformation = if (uiState.passwordRevealed)
@@ -417,7 +419,7 @@ fun LoginScreen(
                                         Icons.Default.VisibilityOff
                                     else
                                         Icons.Default.Visibility,
-                                    contentDescription = if (uiState.passwordRevealed) "隐藏密码" else "显示密码",
+                                    contentDescription = if (uiState.passwordRevealed) stringResource(R.string.login_hide_password) else stringResource(R.string.login_show_password),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -477,7 +479,7 @@ fun LoginScreen(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text("登  录", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.login_login_button), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -495,7 +497,7 @@ fun LoginScreen(
                         enabled = !uiState.isLoading
                     ) {
                         Text(
-                            "扫码登录",
+                            stringResource(R.string.login_scan_login),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -514,7 +516,7 @@ fun LoginScreen(
                         enabled = !uiState.isLoading
                     ) {
                         Text(
-                            "添加账号",
+                            stringResource(R.string.login_add_account),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -568,7 +570,7 @@ fun LoginScreen(
     if (showImportDialog) {
         AlertDialog(
             onDismissRequest = { showImportDialog = false },
-            title = { Text("导入凭据", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.login_import_title), fontWeight = FontWeight.Bold) },
             text = {
                 Column {
                     Text(
@@ -584,7 +586,7 @@ fun LoginScreen(
                     TextField(
                         value = importDataText,
                         onValueChange = { importDataText = it },
-                        placeholder = { Text("在此粘贴加密字符串...") },
+                        placeholder = { Text(stringResource(R.string.login_import_paste_hint)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 80.dp)
@@ -599,8 +601,8 @@ fun LoginScreen(
                     TextField(
                         value = importPassword,
                         onValueChange = { importPassword = it },
-                        label = { Text("导出密码") },
-                        placeholder = { Text("请输入导出时设置的密码") },
+                        label = { Text(stringResource(R.string.login_export_password)) },
+                        placeholder = { Text(stringResource(R.string.login_export_password_hint)) },
                         singleLine = true,
                         visualTransformation = if (showImportPassword)
                             VisualTransformation.None
@@ -617,7 +619,7 @@ fun LoginScreen(
                                         Icons.Default.Visibility
                                     else
                                         Icons.Default.VisibilityOff,
-                                    contentDescription = if (showImportPassword) "隐藏密码" else "显示密码"
+                                    contentDescription = if (showImportPassword) stringResource(R.string.login_hide_import_password) else stringResource(R.string.login_show_import_password)
                                 )
                             }
                         },
@@ -637,12 +639,12 @@ fun LoginScreen(
                     },
                     enabled = importDataText.isNotBlank() && importPassword.isNotBlank()
                 ) {
-                    Text("导入并登录")
+                    Text(stringResource(R.string.login_import_and_login))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showImportDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -670,8 +672,8 @@ fun LoginScreen(
                     TextField(
                         value = exportPassword,
                         onValueChange = { exportPassword = it },
-                        label = { Text("导出密码") },
-                        placeholder = { Text("请设置导出密码，至少 4 位") },
+                        label = { Text(stringResource(R.string.login_export_password)) },
+                        placeholder = { Text(stringResource(R.string.login_export_password_set_hint)) },
                         singleLine = true,
                         visualTransformation = if (showExportPassword)
                             VisualTransformation.None
@@ -688,7 +690,7 @@ fun LoginScreen(
                                         Icons.Default.Visibility
                                     else
                                         Icons.Default.VisibilityOff,
-                                    contentDescription = if (showExportPassword) "隐藏密码" else "显示密码"
+                                    contentDescription = if (showExportPassword) stringResource(R.string.login_hide_password) else stringResource(R.string.login_show_password)
                                 )
                             }
                         },
@@ -704,16 +706,16 @@ fun LoginScreen(
                 TextButton(
                     onClick = {
                         if (exportPassword.length < 4) {
-                            snackbar.show("密码长度至少 4 位", ToastUtils.Type.ERROR)
+                            snackbar.show(context.getString(R.string.login_password_too_short), ToastUtils.Type.ERROR)
                             return@TextButton
                         }
                         when (val result = loginViewModel.exportCredentials(exportPassword)) {
                             is CredentialResult.ExportSuccess -> {
                                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)
                                     as android.content.ClipboardManager
-                                val clip = ClipData.newPlainText("加密凭据", result.encryptedString)
+                                val clip = ClipData.newPlainText(context.getString(R.string.login_export_credential), result.encryptedString)
                                 clipboard.setPrimaryClip(clip)
-                                snackbar.show("凭据已复制到剪贴板", ToastUtils.Type.SUCCESS)
+                                snackbar.show(context.getString(R.string.login_credential_copied), ToastUtils.Type.SUCCESS)
                             }
                             is CredentialResult.Error -> {
                                 snackbar.show(result.message, ToastUtils.Type.ERROR)
@@ -722,12 +724,12 @@ fun LoginScreen(
                     },
                     enabled = exportPassword.isNotBlank()
                 ) {
-                    Text("复制到剪贴板")
+                    Text(stringResource(R.string.login_copy_to_clipboard))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showExportDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )

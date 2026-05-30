@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Campus Card                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_center_title">Campus Card Service</string>
+    <string name="card_center_account_info">Account Info</string>
+    <string name="card_center_payment_code">Payment QR</string>
+    <string name="card_center_transit_code">Transit QR</string>
+    <string name="card_center_bills">Bills</string>
+    <string name="card_center_report_lost">Report Lost</string>
+    <string name="card_center_recharge">Recharge</string>
+    <string name="card_lost_title">Report Lost Card</string>
+    <string name="card_lost_warning">⚠ After reporting lost, the card will be immediately unusable. Please confirm before proceeding.</string>
+    <string name="card_lost_failure">Report lost failed</string>
+    <string name="card_fetching_info">Fetching card info…</string>
+    <string name="card_account_info_title">Account Info</string>
+    <string name="card_fetching_account">Fetching account info…</string>
+    <string name="card_account_info_name">Name</string>
+    <string name="card_account_info_student_id">Student/Staff ID</string>
+    <string name="card_account_info_balance">Account Balance</string>
+    <string name="card_account_info_school">School</string>
+    <string name="card_account_info_major">Major</string>
+    <string name="card_account_info_class">Class</string>
+    <string name="card_lost_card_number">Card Number</string>
+    <string name="card_lost_card_status">Card Status</string>
+    <string name="card_error_title">Error</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Bill                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="bill_title">Bills</string>
+    <string name="bill_cash_flow">Transaction Flow:</string>
+    <string name="bill_income">Income</string>
+    <string name="bill_expense">Expense</string>
+    <string name="bill_fetching">Fetching bills…%1$ds</string>
+    <string name="bill_loaded_count">Loaded %1$d records</string>
+    <string name="bill_start_date">Start Date</string>
+    <string name="bill_end_date">End Date</string>
+    <string name="bill_page_info">Page %1$d/%2$d</string>
+    <string name="bill_tab_all">All</string>
+    <string name="bill_tab_unpaid">Unpaid</string>
+    <string name="bill_tab_success">Success</string>
+    <string name="bill_tab_failed">Failed</string>
+    <string name="bill_detail_title">Transaction Details</string>
+    <string name="bill_web_title">Bills (Web)</string>
+    <string name="bill_merchant_name">Merchant</string>
+    <string name="bill_filter_reset">Reset</string>
+    <string name="bill_filter_apply">Apply</string>
+    <string name="bill_no_unpaid">No unpaid orders</string>
+    <string name="bill_no_success">No successful transactions</string>
+    <string name="bill_no_failed">No failed transactions</string>
+    <string name="bill_no_records">No transaction records</string>
+    <string name="bill_capped_hint">— Only showing last 100 records, more on web —</string>
+    <string name="bill_all_loaded">— All %1$d records loaded —</string>
+    <string name="card_lost_confirm_title">Confirm Report Lost</string>
+    <string name="card_lost_confirm_text">Are you sure you want to report this card as lost? It will become immediately unusable.</string>
+    <string name="card_lost_confirm_btn">Report Lost</string>
+    <string name="card_lost_processing">Processing…</string>
+    <string name="card_lost_normal_status">Normal</string>
+    <string name="card_lost_success">Report lost successful</string>
+    <string name="card_lost_request_error">Request error</string>
+    <string name="card_lost_fetch_error">Failed to fetch card info</string>
+    <string name="card_lost_login_expired">Session expired, please login again</string>
+    <string name="card_account_info_fetch_error">Failed to fetch account info</string>
+</resources>

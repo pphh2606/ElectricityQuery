@@ -129,9 +129,9 @@ fun DashboardScreen(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show("已导出到文件: $pendingExportLabel", ToastUtils.Type.SUCCESS)
+                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show("导出失败: ${e.message}", ToastUtils.Type.ERROR)
+                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -165,21 +165,21 @@ fun DashboardScreen(
                     onDismissRequest = { showMenu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("复制") },
+                        text = { Text(stringResource(R.string.common_copy)) },
                         leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                         onClick = {
                             showMenu = false
                             val text = getDashboardTextContent(room, balance)
-                            copyToClipboard(context, text, "电费查询结果", snackbar)
+                            copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("导出") },
+                        text = { Text(stringResource(R.string.common_export)) },
                         leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
                         onClick = {
                             showMenu = false
                             pendingExportText = getDashboardTextContent(room, balance)
-                            pendingExportLabel = "电费查询结果"
+                            pendingExportLabel = context.getString(R.string.dashboard_title)
                             saveFileLauncher.launch("electricity_dashboard.txt")
                         }
                     )
@@ -262,7 +262,7 @@ private fun DashboardContent(
                 // 查询失败/空状态
                 item(key = "error_state") {
                     ErrorStateCard(
-                        message = error ?: "加载失败",
+                        message = error ?: stringResource(R.string.common_load_failed),
                         onRetry = onRefresh
                     )
                 }
@@ -397,7 +397,7 @@ private fun ErrorStateCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onRetry) {
-                Text("重新查询")
+                Text(stringResource(R.string.common_re_query))
             }
         }
     }
@@ -535,7 +535,7 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = if (balance.payEnable == 1) "已启用" else "已禁用",
+                        text = if (balance.payEnable == 1) stringResource(R.string.common_enabled) else stringResource(R.string.common_disabled),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = if (balance.payEnable == 1)
@@ -838,5 +838,5 @@ fun copyToClipboard(
         as android.content.ClipboardManager
     val clip = android.content.ClipData.newPlainText(label, text)
     clipboard.setPrimaryClip(clip)
-    snackbar.show("已复制到剪贴板", ToastUtils.Type.SUCCESS)
+    snackbar.show(context.getString(R.string.common_copied_to_clipboard), ToastUtils.Type.SUCCESS)
 }

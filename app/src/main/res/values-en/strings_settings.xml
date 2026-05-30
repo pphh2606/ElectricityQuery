@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Settings                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_personalization">Personalization</string>
+    <string name="settings_personalization_desc">Night mode, theme color, page transition animation</string>
+    <string name="settings_config">Configuration</string>
+    <string name="settings_config_desc">User-Agent and other settings</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_desc">App version, developer info</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Personalization                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="personalization_title">Personalization</string>
+    <string name="personalization_display">Display</string>
+    <string name="personalization_night_mode">Night Mode</string>
+    <string name="personalization_theme_color">Theme Color</string>
+    <string name="personalization_dynamic_color">Dynamic Color</string>
+    <string name="personalization_dynamic_color_supported">Extract theme color from system wallpaper</string>
+    <string name="personalization_dynamic_color_unsupported">Dynamic color not supported on this device</string>
+    <string name="personalization_custom_color">Custom Color</string>
+    <string name="personalization_custom_color_desc">Use selected color to generate theme</string>
+    <string name="personalization_topbar_color">Top Bar Color</string>
+    <string name="personalization_qrcode_settings">QR Code Settings</string>
+    <string name="personalization_qrcode_desc">Color, corner radius, and other custom styles</string>
+    <string name="personalization_animation">Animation</string>
+    <string name="personalization_page_transition">Page Transition</string>
+    <string name="personalization_reduce_motion">Reduce Motion</string>
+    <string name="personalization_reduce_motion_override">(Overridden by Reduce Motion)</string>
+    <string name="personalization_choose_color">Choose Theme Color</string>
+    <string name="personalization_choose_color_desc">Select a color as the app theme color</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QR Code Settings                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_settings_title">QR Code Settings</string>
+    <string name="qrcode_settings_style">Style</string>
+    <string name="qrcode_settings_md3_theme">MD3 Theme Color</string>
+    <string name="qrcode_settings_md3_theme_desc">Use current theme color for QR code dark modules</string>
+    <string name="qrcode_settings_black">Black</string>
+    <string name="qrcode_settings_black_desc">Use black for QR code dark modules</string>
+    <string name="qrcode_settings_corner_radius">Corner Radius</string>
+    <string name="qrcode_settings_display">Display</string>
+    <string name="qrcode_settings_screen_brightness">Screen Brightness</string>
+    <string name="qrcode_settings_screen_brightness_desc">Automatically increase screen brightness when displaying QR code</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Configuration                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="config_title">Configuration</string>
+    <string name="config_user_agent">User-Agent</string>
+    <string name="config_user_agent_desc">Set User-Agent</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  User-Agent Settings + Edit                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="ua_settings_title">User-Agent Settings</string>
+    <string name="ua_settings_current">Current: %1$s</string>
+    <string name="ua_settings_home_ua">Homepage User-Agent</string>
+    <string name="ua_settings_coming_soon">Coming Soon</string>
+    <string name="ua_delete_title">Delete User-Agent</string>
+    <string name="ua_delete_confirm">Are you sure you want to delete "%1$s"?</string>
+    <string name="ua_edit_add_title">Add User-Agent</string>
+    <string name="ua_edit_edit_title">Edit User-Agent</string>
+    <string name="ua_edit_note_label">Add Note</string>
+    <string name="ua_edit_note_placeholder">e.g. School tablet</string>
+    <string name="ua_edit_default_note">Custom UA</string>
+    <string name="ua_edit_ua_label">Enter User-Agent</string>
+    <string name="ua_edit_ua_placeholder">Mozilla/5.0 …</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  About                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="about_title">About</string>
+    <string name="about_project_home">Project Homepage</string>
+    <string name="about_developer">Developer</string>
+    <string name="about_contact">Contact</string>
+    <string name="about_ai_notice">This app uses AI technology</string>
+    <string name="about_contact_title">Contact</string>
+    <string name="about_contact_qq">QQ</string>
+    <string name="about_contact_bilibili">Bilibili</string>
+    <string name="about_contact_email">Email</string>
+    <string name="about_install_qq">Please install QQ App first</string>
+    <string name="about_no_mail_app">Cannot open email app</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Language                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="language_title">Language</string>
+    <string name="language_current">Current Language</string>
+    <string name="language_select">Select Language</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+</resources>

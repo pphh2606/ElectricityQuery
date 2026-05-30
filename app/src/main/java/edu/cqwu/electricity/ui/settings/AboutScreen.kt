@@ -156,7 +156,7 @@ fun AboutScreen(
                                 )
                                 context.startActivity(intent)
                             } catch (e: Exception) {
-                                snackbar.show("无法打开浏览器")
+                                snackbar.show(context.getString(R.string.common_no_browser))
                             }
                         },
                     )
@@ -221,7 +221,7 @@ fun AboutScreen(
                         )
                         context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
-                        snackbar.show("请先安装 QQ 应用")
+                        snackbar.show(context.getString(R.string.about_install_qq))
                     }
                 },
             )
@@ -233,7 +233,7 @@ fun AboutScreen(
                 onClick = {
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("Bilibili UID", "1858606373"))
-                    snackbar.show("UID 已复制到剪贴板")
+                    snackbar.show(context.getString(R.string.common_copied_to_clipboard))
                 },
             )
 
@@ -248,7 +248,7 @@ fun AboutScreen(
                     try {
                         context.startActivity(intent)
                     } catch (e: Exception) {
-                        snackbar.show("无法打开邮件应用")
+                        snackbar.show(context.getString(R.string.about_no_mail_app))
                     }
                 },
             )

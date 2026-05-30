@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  自定义网站弹窗                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="custom_website_title">自定义网站</string>
+    <string name="custom_website_choose_icon">选择图标</string>
+    <string name="custom_icon">自定义图标</string>
+    <string name="custom_website_label">标题</string>
+    <string name="custom_website_label_placeholder">例如：教务系统</string>
+    <string name="custom_website_url_label">网址</string>
+    <string name="custom_website_url_placeholder">example.com</string>
+    <string name="custom_website_title_required">请输入标题</string>
+    <string name="custom_website_url_invalid">请输入有效的网址</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  打开链接弹窗                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="open_url_intranet">内网访问</string>
+    <string name="open_url_title">打开网址</string>
+    <string name="open_url_label">请输入网址</string>
+    <string name="open_url_placeholder">example.com</string>
+    <string name="open_url_invalid">请输入有效的网址，如 example.com</string>
+</resources>

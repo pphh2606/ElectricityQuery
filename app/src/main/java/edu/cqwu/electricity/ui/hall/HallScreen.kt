@@ -133,7 +133,7 @@ fun HallPageContent(
                 contentColor = MaterialTheme.colorScheme.primary,
                 divider = {},
             ) {
-                val tabs = listOf("全部", "收藏")
+                val tabs = listOf(stringResource(R.string.hall_tab_all), stringResource(R.string.hall_tab_favorites))
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = hallPagerState.currentPage == index,
@@ -270,7 +270,7 @@ private fun FavoriteAppsContent(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextButton(onClick = onRetry) {
-                    Text("重试")
+                    Text(stringResource(R.string.common_retry))
                 }
             }
         }
@@ -383,7 +383,7 @@ private fun HallListItem(
                     Icon(
                         imageVector = if (item.favorite) Icons.Filled.Favorite
                         else Icons.Outlined.FavoriteBorder,
-                        contentDescription = if (item.favorite) "已收藏" else "未收藏",
+                        contentDescription = if (item.favorite) stringResource(R.string.hall_favorited) else stringResource(R.string.hall_unfavorited),
                         tint = if (item.favorite) MaterialTheme.colorScheme.error
                         else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),

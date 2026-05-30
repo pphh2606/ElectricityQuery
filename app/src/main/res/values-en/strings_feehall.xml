@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Fee Service Hall                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_hall_title">Fee Service Hall</string>
+    <string name="fee_hall_tab_home">Home</string>
+    <string name="fee_hall_tab_orders">Orders</string>
+    <string name="fee_hall_tab_profile">Profile</string>
+    <string name="fee_hall_no_projects">No payment items</string>
+    <string name="fee_hall_load_failed">Load failed: %1$s</string>
+    <string name="fee_profile_pwd_change">Change Password</string>
+    <string name="fee_profile_invoice_mgmt">Invoice Management</string>
+    <string name="fee_profile_fun_bill">Fun Bill</string>
+    <string name="fee_profile_query_pay">Query Payment</string>
+    <string name="fee_profile_view_invoice">View Invoice</string>
+    <string name="fee_profile_advance_invoice">Advance Invoice</string>
+    <string name="fee_profile_load_failed">Load failed: %1$s</string>
+    <string name="fee_profile_account">Account</string>
+    <string name="fee_profile_name">Name</string>
+    <string name="fee_profile_dept">Department</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Order Detail                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="fee_order_detail_title">Order Details</string>
+    <string name="fee_order_info">Order Info</string>
+    <string name="fee_order_no">Order No.</string>
+    <string name="fee_order_product_desc">Description</string>
+    <string name="fee_order_create_time">Created</string>
+    <string name="fee_order_complete_time">Completed</string>
+    <string name="fee_order_update_time">Updated</string>
+    <string name="fee_order_close_time">Closed</string>
+    <string name="fee_order_channel">Payment Channel</string>
+    <string name="fee_order_transaction_no">Transaction No.</string>
+    <string name="fee_order_project_id">Project ID</string>
+    <string name="fee_order_partner">Partner</string>
+    <string name="fee_order_time_range_sep">~</string>
+    <string name="fee_hall_no_orders">No orders</string>
+    <string name="fee_order_project_name">Project Name</string>
+    <string name="fee_order_loaded_count">%1$d loaded</string>
+    <string name="fee_order_page_info">Page %1$d/%2$d</string>
+    <string name="fee_order_no_label">Order No: %1$s</string>
+    <string name="fee_hall_order_all_loaded">— All %1$d orders loaded —</string>
+</resources>

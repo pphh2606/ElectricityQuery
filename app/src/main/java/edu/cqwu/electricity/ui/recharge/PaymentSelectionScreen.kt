@@ -671,7 +671,7 @@ private fun PaymentMethodCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (method == PaymentMethod.WECHAT) "微" else "支",
+                    text = method.displayName.first().toString(),
                     color = ComposeColor.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold

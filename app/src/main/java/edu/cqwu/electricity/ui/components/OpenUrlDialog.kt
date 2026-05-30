@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.ui.components
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -83,6 +85,7 @@ fun OpenUrlDialog(
     var isInternal by remember { mutableStateOf(true) }
     var urlError by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
+    val context = LocalContext.current
 
     // 对话框弹出后自动聚焦输入框并弹出软键盘
     LaunchedEffect(Unit) {
@@ -98,7 +101,7 @@ fun OpenUrlDialog(
                 tint = MaterialTheme.colorScheme.primary
             )
         },
-        title = { Text("打开网址") },
+        title = { Text(stringResource(R.string.open_url_title)) },
         text = {
             Column {
                 TextField(
@@ -107,8 +110,8 @@ fun OpenUrlDialog(
                         urlInput = it
                         urlError = null // 用户输入时清除错误
                     },
-                    label = { Text("请输入网址") },
-                    placeholder = { Text("example.com") },
+                    label = { Text(stringResource(R.string.open_url_label)) },
+                    placeholder = { Text(stringResource(R.string.open_url_placeholder)) },
                     singleLine = true,
                     isError = urlError != null,
                     supportingText = urlError?.let {
@@ -130,7 +133,7 @@ fun OpenUrlDialog(
                             if (isValidUrl(urlInput)) {
                                 onConfirm(normalizeUrl(urlInput), isInternal)
                             } else {
-                                urlError = "请输入有效的网址，如 example.com"
+                                urlError = context.getString(R.string.open_url_invalid)
                             }
                         }
                     ),
@@ -161,12 +164,12 @@ fun OpenUrlDialog(
                 },
                 enabled = urlInput.isNotBlank() && isValidUrl(urlInput)
             ) {
-                Text("确认")
+                Text(stringResource(R.string.common_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.common_cancel))
             }
         }
     )

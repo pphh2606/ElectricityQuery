@@ -236,7 +236,7 @@ fun NoticeScreen(
                         CircularProgressIndicator()
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = if (viewModel.searchKeyword.isNotBlank()) "正在搜索..." else "正在加载通知公告...",
+                            text = if (viewModel.searchKeyword.isNotBlank()) stringResource(R.string.notice_searching) else stringResource(R.string.notice_loading_list),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -266,7 +266,7 @@ fun NoticeScreen(
                                 viewModel.loadPage(0, keyword = keyword)
                             }
                         }) {
-                            Text("重试")
+                            Text(stringResource(R.string.common_retry))
                         }
                     }
                 }
@@ -331,7 +331,7 @@ fun NoticeScreen(
                                     }
                                     !viewModel.hasMore && viewModel.items.isNotEmpty() -> {
                                         Text(
-                                            text = "— 没有更多了 —",
+                                            text = stringResource(R.string.notice_no_more),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                                         )

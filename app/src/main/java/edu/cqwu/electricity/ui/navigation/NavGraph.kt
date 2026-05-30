@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.ui.navigation
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
+
 import android.os.Build
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -269,6 +272,7 @@ fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val viewModel: ElectricityViewModel = viewModel()
     val rechargeViewModel: RechargeViewModel = viewModel()
     val myRoomViewModel: MyRoomViewModel = viewModel()
@@ -397,7 +401,7 @@ fun AppNavGraph(
             val title = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("title") ?: "", "UTF-8")
             UnifiedWebViewScreen(
                 url = url,
-                initialTitle = title.ifBlank { "加载中..." },
+                initialTitle = title.ifBlank { "" },
                 onClose = { navController.popBackStack() },
                 onNavigateToLogin = { skipNextCasRedirect = false; navController.navigate(Routes.LOGIN) },
                 onNavigateToWebView = { newUrl, newTitle ->
@@ -522,7 +526,7 @@ fun AppNavGraph(
         ) { backStackEntry ->
             val typeStr = backStackEntry.arguments?.getString("qrCodeType") ?: "PAY"
             val qrCodeType = remember(typeStr) { try { QrCodeType.valueOf(typeStr) } catch (_: Exception) { QrCodeType.PAY } }
-            val title = when (qrCodeType) { QrCodeType.PAY -> "支付码"; QrCodeType.BUS -> "乘车码" }
+            val title = when (qrCodeType) { QrCodeType.PAY -> stringResource(R.string.card_center_payment_code); QrCodeType.BUS -> stringResource(R.string.card_center_transit_code) }
             QrCodeDisplayScreen(
                 qrCodeType = qrCodeType, title = title,
                 onBack = { navController.popBackStack() },
@@ -627,7 +631,7 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() },
                 onOpenUrl = { url ->
                     navController.popBackStack()
-                    navController.navigate(Routes.unifiedWebViewRoute(url, "扫码结果"))
+                    navController.navigate(Routes.unifiedWebViewRoute(url, context.getString(R.string.scan_title)))
                 },
             )
         }

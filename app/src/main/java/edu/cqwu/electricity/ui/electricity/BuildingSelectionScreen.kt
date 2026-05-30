@@ -167,7 +167,7 @@ private fun ContentArea(
                     SelectionStep.AREA -> {
                         if (uiState.areas.isEmpty()) {
                             item(key = "empty") {
-                                EmptyStateText("暂无校区数据")
+                                EmptyStateText(stringResource(R.string.building_no_campus))
                             }
                         } else {
                             android.util.Log.d("DEBUG_expand", "Rendering AREA step: areas=${uiState.areas.size}, expandedAreaIds=${uiState.expandedAreaIds}")
@@ -186,7 +186,7 @@ private fun ContentArea(
                     SelectionStep.ROOM_GRID -> {
                         if (uiState.floors.isEmpty()) {
                             item(key = "empty") {
-                                EmptyStateText("该楼栋下无楼层数据")
+                                EmptyStateText(stringResource(R.string.building_no_floors))
                             }
                         } else {
                             // 直接在外层 LazyColumn 中 items
@@ -227,7 +227,7 @@ private fun ContentArea(
                         contentDescription = null
                     )
                 },
-                text = { Text("返回楼栋选择") },
+                text = { Text(stringResource(R.string.building_back_to_building)) },
             )
         }
     }
@@ -309,7 +309,7 @@ private fun ExpandableGroupHeader(
     ) {
         Icon(
             imageVector = if (isExpanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,
-            contentDescription = if (isExpanded) "收起" else "展开",
+            contentDescription = if (isExpanded) stringResource(R.string.common_collapse) else stringResource(R.string.common_expand),
             modifier = Modifier.size(20.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -358,15 +358,15 @@ private fun FloorRoomGroup(
                             )
                         }
                         is FloorRoomLoadState.Success -> {
-                            Text("${loadState.rooms.size} 间", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.building_rooms_count, loadState.rooms.size), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         is FloorRoomLoadState.Error -> {
-                            Text("加载失败", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(R.string.common_load_failed), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
                             Spacer(Modifier.width(4.dp))
-                            Text("重试", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable { onLoadFloor(floor) })
+                            Text(stringResource(R.string.common_retry), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable { onLoadFloor(floor) })
                         }
                         null -> {
-                            Text("点击展开", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.building_click_to_expand), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -394,15 +394,15 @@ private fun FloorRoomGroup(
                     }
                     is FloorRoomLoadState.Success -> {
                         if (loadState.rooms.isEmpty()) {
-                            Text("暂无房间", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 8.dp))
+                            Text(stringResource(R.string.building_no_rooms), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 8.dp))
                         } else {
                             Spacer(Modifier.height(4.dp))
                             RoomGridRow(rooms = loadState.rooms, onRoomClick = onRoomClick)
                         }
                     }
                     is FloorRoomLoadState.Error -> {
-                        Text("加载失败: ${loadState.message}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp))
-                        TextButton(onClick = { onLoadFloor(floor) }) { Text("重新加载") }
+                        Text(stringResource(R.string.common_load_failed) + ": ${loadState.message}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp))
+                        TextButton(onClick = { onLoadFloor(floor) }) { Text(stringResource(R.string.building_reload)) }
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -431,7 +431,7 @@ private fun AreaBuildingGroup(
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 val buildings = area.children ?: emptyList()
                 if (buildings.isEmpty()) {
-                    Text("该校区下无楼栋", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 8.dp))
+                    Text(stringResource(R.string.building_no_buildings), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 8.dp))
                 } else {
                     Spacer(Modifier.height(4.dp))
                     RoomGridRow(rooms = buildings, onRoomClick = { building -> onBuildingClick(building, area.id) })

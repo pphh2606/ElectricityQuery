@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.ui.feeservicehall
 
+import androidx.compose.ui.res.stringResource
+import edu.cqwu.electricity.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -103,14 +105,14 @@ internal fun FeeServiceHallOrderTab(
                 }
                 uiState.orderErrorMessage != null && uiState.orders.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("加载失败: ${uiState.orderErrorMessage}",
+                        Text(stringResource(R.string.fee_hall_load_failed, uiState.orderErrorMessage ?: ""),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.error)
                     }
                 }
                 uiState.orders.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("暂无订单", style = MaterialTheme.typography.bodyLarge,
+                        Text(stringResource(R.string.fee_hall_no_orders), style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
@@ -176,7 +178,7 @@ private fun OrderFilterPanel(
         OutlinedTextField(
             value = projectName,
             onValueChange = onProjectNameChange,
-            label = { Text("项目名称") },
+            label = { Text(stringResource(R.string.fee_order_project_name)) },
             singleLine = true,
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
             modifier = Modifier.fillMaxWidth(),
@@ -190,21 +192,21 @@ private fun OrderFilterPanel(
         ) {
             OutlinedTextField(
                 value = startDate, onValueChange = onStartDateChange,
-                label = { Text("开始日期") }, singleLine = true,
+                label = { Text(stringResource(R.string.bill_start_date)) }, singleLine = true,
                 modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp),
             )
             Text("~", style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             OutlinedTextField(
                 value = endDate, onValueChange = onEndDateChange,
-                label = { Text("结束日期") }, singleLine = true,
+                label = { Text(stringResource(R.string.bill_end_date)) }, singleLine = true,
                 modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp),
             )
         }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            TextButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text("重置") }
-            Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text("应用筛选") }
+            TextButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_reset)) }
+            Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_apply)) }
         }
     }
 }
@@ -215,9 +217,9 @@ private fun OrderStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text("已加载 $loadedCount 条", style = MaterialTheme.typography.bodySmall,
+        Text(stringResource(R.string.fee_order_loaded_count, loadedCount), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("第 $currentPage/$totalPages 页", style = MaterialTheme.typography.bodySmall,
+        Text(stringResource(R.string.fee_order_page_info, currentPage, totalPages), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -258,7 +260,7 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
         Column(Modifier.weight(1f)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    order.projectName ?: order.productDesc ?: "未知",
+                    order.projectName ?: order.productDesc ?: stringResource(R.string.dashboard_unknown),
                     style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -269,7 +271,7 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
             }
             Spacer(Modifier.height(2.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("订单号: ${order.orderNo}", style = MaterialTheme.typography.bodySmall,
+                Text(stringResource(R.string.fee_order_no_label, order.orderNo), style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(8.dp))
@@ -289,18 +291,18 @@ private fun OrderFooterContent(uiState: FeeServiceHallUiState, onLoadMore: () ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 Spacer(Modifier.width(8.dp))
-                Text("加载中...", style = MaterialTheme.typography.bodySmall,
+                Text(stringResource(R.string.common_loading), style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else if (uiState.orderHasMore) {
             Text(
-                "上滑加载更多",
+                stringResource(R.string.common_swipe_load_more),
                 modifier = Modifier.clickable(onClick = onLoadMore),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
             )
         } else if (uiState.orders.isNotEmpty()) {
-            Text("— 已加载全部 ${uiState.orders.size} 条 —",
+            Text(stringResource(R.string.fee_hall_order_all_loaded, uiState.orders.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

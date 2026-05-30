@@ -66,6 +66,7 @@ fun UserAgentEditScreen(
     var userAgent by remember { mutableStateOf(existingEntry?.userAgent ?: "") }
     var note by remember { mutableStateOf(existingEntry?.note ?: "") }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val defaultNote = stringResource(R.string.ua_edit_default_note)
 
     val canSave = userAgent.isNotBlank()
 
@@ -159,7 +160,7 @@ fun UserAgentEditScreen(
                             // 添加模式
                             val newEntry = UserAgentEntry(
                                 id = UUID.randomUUID().toString(),
-                                name = note.ifBlank { "自定义标识" },
+                                name = note.ifBlank { defaultNote },
                                 userAgent = userAgent.trim(),
                                 note = note,
                                 isBuiltin = false,

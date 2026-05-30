@@ -120,7 +120,7 @@ fun NoticeDetailScreen(
                 isLoading = false
                 isRefreshing = false
             }.onFailure { e ->
-                errorMessage = e.message ?: "加载详情失败"
+                errorMessage = e.message ?: context.getString(R.string.notice_load_failed)
                 isLoading = false
                 isRefreshing = false
             }
@@ -153,7 +153,7 @@ fun NoticeDetailScreen(
             putExtra(Intent.EXTRA_TEXT, shareText)
             type = "text/plain"
         }
-        val shareIntent = Intent.createChooser(sendIntent, "分享通知")
+        val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.notice_share))
         context.startActivity(shareIntent)
     }
 
@@ -437,7 +437,7 @@ fun NoticeDetailScreen(
                                 .verticalScroll(rememberScrollState()),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("暂无内容", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.notice_no_content), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }

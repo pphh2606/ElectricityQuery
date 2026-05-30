@@ -110,7 +110,7 @@ fun BillScreen(
     val webBillUrl = "http://218.194.176.214:8382/epay/thirdapp/bill"
 
     // 标签页定义（pageIndex 0→tabNo=1, 1→2, 2→4, 3→5）
-    val tabs = listOf("全部", "未付款", "成功", "失败")
+    val tabLabelKeys = listOf(R.string.bill_tab_all, R.string.bill_tab_unpaid, R.string.bill_tab_success, R.string.bill_tab_failed)
     val tabTabNo = listOf(1, 2, 4, 5)
 
     // ── HorizontalPager 状态（左右滑动切换 Tab）──
@@ -119,19 +119,20 @@ fun BillScreen(
     val initialPage = tabTabNo.indexOf(uiState.activeTab).coerceAtLeast(0)
     val pagerState = rememberPagerState(
         initialPage = initialPage,
-        pageCount = { tabs.size }
+        pageCount = { tabLabelKeys.size }
     )
     // 每个 tab 独立维护 LazyListState，保持各自的滚动位置
-    val listStates: List<LazyListState> = remember { List(tabs.size) { LazyListState() } }
+    val listStates: List<LazyListState> = remember { List(tabLabelKeys.size) { LazyListState() } }
 
     // ── 稳定化 onClick 回调 ──
     val stableOnNavigateToWebView by rememberUpdatedState(onNavigateToWebView)
+    val detailTitleStr = stringResource(R.string.bill_detail_title)
     val onRecordClick = remember<(edu.cqwu.electricity.data.model.BillRecord) -> Unit> {
         { record ->
             if (record.detailUrl.isNotBlank()) {
                 stableOnNavigateToWebView(
                     viewModel.getBillDetailUrl(record.detailUrl),
-                    "交易详情"
+                    detailTitleStr
                 )
             }
         }
@@ -191,7 +192,8 @@ fun BillScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onNavigateToWebView(webBillUrl, "账单（网页版）") }) {
+                    val webTitle = stringResource(R.string.bill_web_title)
+                    IconButton(onClick = { onNavigateToWebView(webBillUrl, webTitle) }) {
                         Icon(
                             imageVector = Icons.Filled.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
@@ -220,7 +222,7 @@ fun BillScreen(
                 modifier = Modifier.fillMaxWidth(),
                 divider = {},
             ) {
-                tabs.forEachIndexed { index, label ->
+                tabLabelKeys.forEachIndexed { index, key ->
                     Tab(
                         selected = pagerState.currentPage == index,
                         onClick = {
@@ -228,7 +230,7 @@ fun BillScreen(
                         },
                         text = {
                             Text(
-                                text = label,
+                                text = stringResource(key),
                                 fontWeight = if (pagerState.currentPage == index)
                                     FontWeight.Bold else FontWeight.Normal
                             )
@@ -298,7 +300,7 @@ fun BillScreen(
                                    // 逐 Tab 错误状态（后台 Tab 加载失败时的轻量提示）
                                    uiState.perTabError[pageTabNo] != null -> {
                                        item(key = "tab_error") {
-                                           BillTabErrorContent(uiState.perTabError[pageTabNo] ?: "获取账单失败")
+                                           BillTabErrorContent(uiState.perTabError[pageTabNo] ?: stringResource(R.string.common_load_failed))
                                        }
                                    }
                                    // 错误状态仅当前活跃 Tab 显示
@@ -393,7 +395,7 @@ private fun FilterPanel(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            label = { Text("商户名称") },
+            label = { Text(stringResource(R.string.bill_merchant_name)) },
             singleLine = true,
             leadingIcon = {
                 Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -407,9 +409,9 @@ private fun FilterPanel(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            DatePickerField(label = "开始日期", value = startDate, onValueChanged = onStartDateChange, modifier = Modifier.weight(1f))
+            DatePickerField(label = stringResource(R.string.bill_start_date), value = startDate, onValueChanged = onStartDateChange, modifier = Modifier.weight(1f))
             Text(text = "~", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            DatePickerField(label = "结束日期", value = endDate, onValueChanged = onEndDateChange, modifier = Modifier.weight(1f))
+            DatePickerField(label = stringResource(R.string.bill_end_date), value = endDate, onValueChanged = onEndDateChange, modifier = Modifier.weight(1f))
         }
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -417,23 +419,23 @@ private fun FilterPanel(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "资金流向：", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = stringResource(R.string.bill_cash_flow), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable(role = Role.Checkbox) { onIncomeCheckedChange(!incomeChecked) }) {
                 Checkbox(checked = incomeChecked, onCheckedChange = null)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "收入", style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.bill_income), style = MaterialTheme.typography.bodyMedium)
             }
             Spacer(modifier = Modifier.width(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable(role = Role.Checkbox) { onExpenseCheckedChange(!expenseChecked) }) {
                 Checkbox(checked = expenseChecked, onCheckedChange = null)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "支出", style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.bill_expense), style = MaterialTheme.typography.bodyMedium)
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text("重置") }
-            Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text("应用筛选") }
+            OutlinedButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_reset)) }
+            Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_apply)) }
         }
         HorizontalDivider(modifier = Modifier.padding(top = 12.dp))
     }
@@ -493,9 +495,9 @@ private fun DatePickerField(
                         onValueChanged(formatter.format(Date(millis)))
                     }
                     showDialog = false
-                }) { Text("确定") }
+                }) { Text(stringResource(R.string.common_confirm)) }
             },
-            dismissButton = { TextButton(onClick = { showDialog = false }) { Text("取消") } }
+            dismissButton = { TextButton(onClick = { showDialog = false }) { Text(stringResource(R.string.common_cancel)) } }
         ) {
             DatePicker(state = datePickerState)
         }
@@ -606,7 +608,7 @@ private fun BillTabErrorContent(errorMessage: String) {
     Box(modifier = Modifier.fillMaxWidth().padding(vertical = 64.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "⚠️ $errorMessage",
+                text = "⚠ $errorMessage",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
             )
@@ -627,7 +629,7 @@ private fun BillEmptyListContent(tabNo: Int) {
             Icon(imageVector = Icons.Filled.Receipt, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f))
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = when (tabNo) { 2 -> "暂无未付款订单"; 4 -> "暂无成功交易"; 5 -> "暂无失败交易"; else -> "暂无交易记录" },
+                text = when (tabNo) { 2 -> stringResource(R.string.bill_no_unpaid); 4 -> stringResource(R.string.bill_no_success); 5 -> stringResource(R.string.bill_no_failed); else -> stringResource(R.string.bill_no_records) },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
@@ -666,7 +668,7 @@ private fun BillFooterContent(uiState: BillUiState, pageInfo: BillPageInfo, view
         } else if (pageInfo.records.isNotEmpty()) {
             val isCapped = pageInfo.records.size >= 100
             Text(
-                text = if (isCapped) "— 仅展示最近 100 条，更多请前往网页版 —" else "— 已加载全部 ${pageInfo.records.size} 条 —",
+                text = if (isCapped) stringResource(R.string.bill_capped_hint) else stringResource(R.string.bill_all_loaded, pageInfo.records.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

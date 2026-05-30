@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Home                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="home_title">Home</string>
+    <string name="home_search_apps">Search apps…</string>
+    <string name="home_no_match">No matching apps found</string>
+    <string name="home_search_result">Search results (%1$d total)</string>
+    <string name="home_my_services">My Services</string>
+    <string name="home_custom_website">Custom Website</string>
+    <string name="home_external_app_title">Open External App</string>
+    <string name="home_external_app_message">"%1$s" needs to be opened inside Campusphere. Continue?</string>
+    <string name="home_install_campus_app">Please install Campusphere App to use "%1$s"</string>
+    <string name="home_open_failed">Open failed: %1$s</string>
+    <string name="home_edit_my_services">Edit My Services</string>
+    <string name="home_confirm_exit_edit">Done</string>
+    <string name="home_load_failed">Load failed</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Hall                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="hall_title">Hall</string>
+    <string name="hall_no_favorites">No favorites yet</string>
+    <string name="hall_tab_all">All</string>
+    <string name="hall_tab_favorites">Favorites</string>
+    <string name="hall_favorited">Favorited</string>
+    <string name="hall_unfavorited">Not favorited</string>
+</resources>

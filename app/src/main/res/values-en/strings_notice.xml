@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Notices                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="notice_title">Notices</string>
+    <string name="notice_total_count">%1$d notices total</string>
+    <string name="notice_search_hint">Search notices</string>
+    <string name="notice_search_result">Search "%1$s" — %2$d results</string>
+    <string name="notice_detail_title">Notice Details</string>
+    <string name="notice_loading_detail">Loading details…</string>
+    <string name="notice_publisher">Publisher</string>
+    <string name="notice_publish_time">Published</string>
+    <string name="notice_view_count">Views</string>
+    <string name="notice_searching">Searching…</string>
+    <string name="notice_loading_list">Loading notices…</string>
+    <string name="notice_share">Share Notice</string>
+    <string name="notice_load_failed">Failed to load details</string>
+    <string name="notice_no_content">No content</string>
+    <string name="notice_no_more">— No more —</string>
+</resources>

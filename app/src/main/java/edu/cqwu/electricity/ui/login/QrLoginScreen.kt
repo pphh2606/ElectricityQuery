@@ -166,7 +166,7 @@ fun QrLoginScreen(
             // Step 1: 获取登录页，解析 lt/execution
             val pageResult = api.fetchLoginPage()
             if (pageResult.isFailure) {
-                uiState = QrLoginUiState.Error(pageResult.exceptionOrNull()?.message ?: "获取登录页失败")
+                uiState = QrLoginUiState.Error(pageResult.exceptionOrNull()?.message ?: context.getString(R.string.login_get_page_failed))
                 isRefreshing = false
                 return@launch
             }
@@ -175,7 +175,7 @@ fun QrLoginScreen(
             // Step 2: 获取二维码 UUID
             val uuidResult = api.fetchQrCodeUuid()
             if (uuidResult.isFailure) {
-                uiState = QrLoginUiState.Error(uuidResult.exceptionOrNull()?.message ?: "获取二维码失败")
+                uiState = QrLoginUiState.Error(uuidResult.exceptionOrNull()?.message ?: context.getString(R.string.qrcode_fetch_failed))
                 isRefreshing = false
                 return@launch
             }
@@ -184,7 +184,7 @@ fun QrLoginScreen(
             // Step 2.5: 下载二维码图片并解码为内容字符串
             val decodeResult = api.downloadAndDecodeQrCode(uuid)
             if (decodeResult.isFailure) {
-                uiState = QrLoginUiState.Error(decodeResult.exceptionOrNull()?.message ?: "二维码解码失败")
+                uiState = QrLoginUiState.Error(decodeResult.exceptionOrNull()?.message ?: context.getString(R.string.qrcode_decode_failed))
                 isRefreshing = false
                 return@launch
             }
@@ -223,17 +223,17 @@ fun QrLoginScreen(
                                     android.util.Log.w("QrLoginScreen", "保存用户到 AccountStore 失败", e)
                                 }
                             }
-                            snackbar.show("登录成功", ToastUtils.Type.SUCCESS)
+                            snackbar.show(context.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
                             onLoginSuccess()
                         } else {
                             uiState = QrLoginUiState.Error(
-                                submitResult.exceptionOrNull()?.message ?: "登录失败"
+                                submitResult.exceptionOrNull()?.message ?: context.getString(R.string.login_failed)
                             )
                         }
                         break
                     }
                     "3" -> {
-                        uiState = QrLoginUiState.Error("二维码已过期，请重试")
+                        uiState = QrLoginUiState.Error(context.getString(R.string.login_qr_expired))
                         break
                     }
                 }
@@ -373,9 +373,9 @@ fun QrLoginScreen(
                                                     saveQrCodeToGallery(context, content)
                                                 }
                                                 if (success) {
-                                                    snackbar.show("二维码已保存到相册", ToastUtils.Type.SUCCESS)
+                                                    snackbar.show(context.getString(R.string.qrcode_save_success), ToastUtils.Type.SUCCESS)
                                                 } else {
-                                                    snackbar.show("保存失败", ToastUtils.Type.ERROR)
+                                                    snackbar.show(context.getString(R.string.qrcode_save_failed), ToastUtils.Type.ERROR)
                                                 }
                                             }
                                         }
@@ -383,7 +383,7 @@ fun QrLoginScreen(
                                     enabled = !qrCodeDecodedContent.isNullOrBlank(),
                                 ) {
                                     Text(
-                                        "保存到相册",
+                                        stringResource(R.string.scan_save_to_album),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         style = MaterialTheme.typography.bodyMedium,
                                     )
@@ -410,7 +410,7 @@ fun QrLoginScreen(
                                     enabled = !qrCodeDecodedContent.isNullOrBlank(),
                                 ) {
                                     Text(
-                                        "其他应用打开",
+                                        stringResource(R.string.scan_open_external),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         style = MaterialTheme.typography.bodyMedium,
                                     )

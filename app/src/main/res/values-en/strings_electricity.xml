@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Dashboard                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="dashboard_select_room">Select a dorm room to view:</string>
+    <string name="dashboard_room_info">Room Info</string>
+    <string name="dashboard_power_info">Power Info</string>
+    <string name="dashboard_unit_degree">kWh</string>
+    <string name="dashboard_remaining_power">Remaining Power</string>
+    <string name="dashboard_account_balance">Account Balance</string>
+    <string name="dashboard_online_pay">Online Payment</string>
+    <string name="dashboard_more_features">More Features</string>
+    <string name="dashboard_recent_6months">Last 6 Months Usage</string>
+    <string name="dashboard_daily_this_month">Daily Usage This Month</string>
+    <string name="dashboard_24h_detail">Last 24h Detail</string>
+    <string name="dashboard_meter_status">Meter Status</string>
+    <string name="dashboard_query_recharge_records">Recharge Records</string>
+    <string name="dashboard_reselect_room">Change Room</string>
+    <string name="dashboard_title">Electricity Query Result</string>
+    <string name="dashboard_select_dorm">Select Dorm</string>
+    <string name="dashboard_cash_balance">Cash Balance</string>
+    <string name="dashboard_subsidy_balance">Subsidy Balance</string>
+    <string name="dashboard_base_balance">Base Balance</string>
+    <string name="dashboard_querying_balance">Querying balance…</string>
+    <string name="dashboard_room_name">Room Name</string>
+    <string name="dashboard_room_id">Room ID</string>
+    <string name="dashboard_switch_dorm">Switch Dorm</string>
+    <string name="dashboard_unknown">Unknown</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Electricity Detail                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="detail_empty_record">No usage records</string>
+    <string name="detail_empty_daily">No daily usage data</string>
+    <string name="detail_power_consumption">Consumption: %1$s kWh</string>
+    <string name="detail_cost">Cost: %1$s CNY</string>
+    <string name="detail_total_consumption">Consumption: %1$s kWh</string>
+    <string name="detail_title_6months">Last 6 Months Usage</string>
+    <string name="detail_title_daily">Daily Usage This Month</string>
+    <string name="detail_title_hourly">Last 24h Detail</string>
+    <string name="detail_title_meter">Meter Status</string>
+    <string name="detail_chart_usage_kwh">Usage (kWh)</string>
+    <string name="detail_chart_cost_yuan">Cost (CNY)</string>
+    <string name="detail_section_data">Details</string>
+    <string name="detail_section_meter_status">Meter Status</string>
+    <string name="detail_current">Current</string>
+    <string name="detail_voltage">Voltage</string>
+    <string name="detail_power_cumulative">Power / Cumulative</string>
+    <string name="detail_power_status">Power Status</string>
+    <string name="detail_empty_24h">No 24h usage data</string>
+    <string name="detail_empty_meter">No meter data</string>
+    <string name="detail_export_time_header">Time</string>
+    <string name="detail_export_kwh_header">Usage (kWh)</string>
+    <string name="detail_export_yuan_header">Cost (CNY)</string>
+    <string name="detail_export_current_bracket">[Current]</string>
+    <string name="detail_export_voltage_bracket">[Voltage]</string>
+    <string name="detail_export_power_bracket">[Power / Cumulative]</string>
+    <string name="detail_export_power_status_bracket">[Power Status]</string>
+    <string name="detail_export_empty_meter">No meter data</string>
+    <string name="electricity_tab_query">Query</string>
+    <string name="electricity_tab_recharge">Recharge</string>
+    <string name="electricity_tab_myroom">My</string>
+    <string name="electricity_tab_my_dorm">My Dorm</string>
+    <string name="building_no_campus">No campus data</string>
+    <string name="building_no_floors">No floors in this building</string>
+    <string name="building_back_to_building">Back to Buildings</string>
+    <string name="building_click_to_expand">Tap to expand</string>
+    <string name="building_no_rooms">No rooms</string>
+    <string name="building_reload">Reload</string>
+    <string name="building_no_buildings">No buildings in this campus</string>
+    <string name="building_rooms_count">%1$d rooms</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Electricity Query                          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="electricity_query_title">Electricity Query</string>
+    <string name="electricity_recharge">Recharge</string>
+    <string name="electricity_switch_dorm">Switch Dorm</string>
+    <string name="electricity_myroom_querying">Fetching dorm info…</string>
+    <string name="electricity_recharge_hint_item2">2. If you still get user info errors after registration, try entering the dorm admin\'s student ID or the first student who registered on the platform.</string>
+    <string name="electricity_recharge_hint_item3">3. Recharge records are tied to the student ID used. Please use other methods if this concerns you.</string>
+</resources>

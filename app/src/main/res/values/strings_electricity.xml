@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  电费仪表盘模块                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="dashboard_select_room">请选择要查看的寝室：</string>
+    <string name="dashboard_room_info">房间信息</string>
+    <string name="dashboard_power_info">用电信息</string>
+    <string name="dashboard_unit_degree">度</string>
+    <string name="dashboard_remaining_power">剩余电量</string>
+    <string name="dashboard_account_balance">账户余额</string>
+    <string name="dashboard_online_pay">在线支付</string>
+    <string name="dashboard_more_features">更多功能</string>
+    <string name="dashboard_recent_6months">最近6个月用电记录</string>
+    <string name="dashboard_daily_this_month">本月每日用电</string>
+    <string name="dashboard_24h_detail">近24h用电明细</string>
+    <string name="dashboard_meter_status">电表实时状态</string>
+    <string name="dashboard_query_recharge_records">查询充值记录</string>
+    <string name="dashboard_reselect_room">重新选择房间</string>
+    <string name="dashboard_title">电费查询结果</string>
+    <string name="dashboard_select_dorm">选择寝室</string>
+    <string name="dashboard_cash_balance">现金余额</string>
+    <string name="dashboard_subsidy_balance">补贴余额</string>
+    <string name="dashboard_base_balance">基础余额</string>
+    <string name="dashboard_querying_balance">正在查询余额…</string>
+    <string name="dashboard_room_name">房间名称</string>
+    <string name="dashboard_room_id">房间 ID</string>
+    <string name="dashboard_switch_dorm">切换寝室</string>
+    <string name="dashboard_unknown">未知</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  电费详情模块                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="detail_empty_record">暂无用电记录</string>
+    <string name="detail_empty_daily">暂无每日用电数据</string>
+    <string name="detail_power_consumption">用电量: %1$s 度</string>
+    <string name="detail_cost">费用: %1$s 元</string>
+    <string name="detail_total_consumption">用电量: %1$s 度</string>
+    <string name="detail_title_6months">最近6个月用电记录</string>
+    <string name="detail_title_daily">本月每日用电</string>
+    <string name="detail_title_hourly">近24h用电明细</string>
+    <string name="detail_title_meter">电表实时状态</string>
+    <string name="detail_chart_usage_kwh">用电量(度)</string>
+    <string name="detail_chart_cost_yuan">费用(元)</string>
+    <string name="detail_section_data">明细数据</string>
+    <string name="detail_section_meter_status">电表实时状态</string>
+    <string name="detail_current">电流</string>
+    <string name="detail_voltage">电压</string>
+    <string name="detail_power_cumulative">当前功率/累计值</string>
+    <string name="detail_power_status">电源状态</string>
+    <string name="detail_empty_24h">暂无24h用电数据</string>
+    <string name="detail_empty_meter">暂无电表数据</string>
+    <string name="detail_export_time_header">时间</string>
+    <string name="detail_export_kwh_header">用电量(度)</string>
+    <string name="detail_export_yuan_header">费用(元)</string>
+    <string name="detail_export_current_bracket">【电流】</string>
+    <string name="detail_export_voltage_bracket">【电压】</string>
+    <string name="detail_export_power_bracket">【当前功率/累计值】</string>
+    <string name="detail_export_power_status_bracket">【电源状态】</string>
+    <string name="detail_export_empty_meter">暂无电表数据</string>
+    <string name="electricity_tab_query">查询</string>
+    <string name="electricity_tab_recharge">充值</string>
+    <string name="electricity_tab_myroom">我的</string>
+    <string name="electricity_tab_my_dorm">我的寝室</string>
+    <string name="building_no_campus">暂无校区数据</string>
+    <string name="building_no_floors">该楼栋下无楼层数据</string>
+    <string name="building_back_to_building">返回楼栋选择</string>
+    <string name="building_click_to_expand">点击展开</string>
+    <string name="building_no_rooms">暂无房间</string>
+    <string name="building_reload">重新加载</string>
+    <string name="building_no_buildings">该校区下无楼栋</string>
+    <string name="building_rooms_count">%1$d 间</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  电费查询页面                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="electricity_query_title">电费查询</string>
+    <string name="electricity_recharge">充值电费</string>
+    <string name="electricity_switch_dorm">切换寝室</string>
+    <string name="electricity_myroom_querying">正在获取我的寝室信息…</string>
+    <string name="electricity_recharge_hint_item2">2.若注册后还是提示获取用户信息失败，请尝试填写寝室管理员学号/寝室内第一个注册了平台的学号。</string>
+    <string name="electricity_recharge_hint_item3">3.充值记录会记录在学号所对应的用户头上。如介意请查看其他充值方式。</string>
+</resources>

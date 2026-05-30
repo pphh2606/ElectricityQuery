@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Feedback                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="feedback_title">Feedback</string>
+    <string name="feedback_attach_log">Attach app logs (including crash records)</string>
+    <string name="feedback_crash_count">%1$d historical crash records found; will be attached automatically</string>
+    <string name="feedback_log_preview">Log Preview</string>
+    <string name="feedback_title_label">Title (optional)</string>
+    <string name="feedback_content_label">Feedback Content</string>
+    <string name="feedback_no_mail_app">No email app found. Please install an email client</string>
+    <string name="feedback_enable_log_first">Please enable logging first</string>
+    <string name="feedback_share_failed">Share failed</string>
+    <string name="feedback_preview_log">Preview Log</string>
+    <string name="feedback_subject_prefix">Electricity Query App Feedback</string>
+    <string name="feedback_no_logs">(No log content)</string>
+    <string name="feedback_loading_logs">(Loading logs, please wait…)</string>
+    <string name="feedback_device_info_template">Device: %1$s\nOS: Android %2$s (API %3$d)\nApp Version: %4$s (%5$s)</string>
+</resources>

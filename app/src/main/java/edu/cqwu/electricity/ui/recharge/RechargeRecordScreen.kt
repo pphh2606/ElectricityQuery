@@ -123,9 +123,9 @@ fun RechargeRecordScreen(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show("已导出到文件: $pendingExportLabel", ToastUtils.Type.SUCCESS)
+                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show("导出失败: ${e.message}", ToastUtils.Type.ERROR)
+                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -144,7 +144,12 @@ fun RechargeRecordScreen(
         }
     }
 
-    val timeRangeOptions = listOf("一个月", "三个月", "一年", "四年")
+    val timeRangeOptions = listOf(
+        stringResource(R.string.recharge_time_1month),
+        stringResource(R.string.recharge_time_3months),
+        stringResource(R.string.recharge_time_1year),
+        stringResource(R.string.recharge_time_4years),
+    )
 
     Box(Modifier.fillMaxSize()) {
         Scaffold(
@@ -190,7 +195,7 @@ fun RechargeRecordScreen(
                                 onClick = {
                                     showMenu = false
                                     val text = getRechargeRecordTextContent(recordState)
-                                    copyToClipboard(context, text, "查询充值记录", snackbar)
+                                    copyToClipboard(context, text, context.getString(R.string.recharge_record_export_title), snackbar)
                                 }
                             )
                             DropdownMenuItem(
@@ -199,7 +204,7 @@ fun RechargeRecordScreen(
                                 onClick = {
                                     showMenu = false
                                     pendingExportText = getRechargeRecordTextContent(recordState)
-                                    pendingExportLabel = "查询充值记录"
+                                    pendingExportLabel = context.getString(R.string.recharge_record_export_title)
                                     saveFileLauncher.launch("electricity_recharge_record.txt")
                                 }
                             )
@@ -458,5 +463,5 @@ private fun copyToClipboard(context: Context, text: String, label: String, snack
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(label, text)
     clipboard.setPrimaryClip(clip)
-    snackbar.show("已复制到剪贴板", ToastUtils.Type.SUCCESS)
+    snackbar.show(context.getString(R.string.common_copied_to_clipboard), ToastUtils.Type.SUCCESS)
 }

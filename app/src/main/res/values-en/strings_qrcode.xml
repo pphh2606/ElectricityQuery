@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QR Code Display                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qrcode_display_settings">QR Code Settings</string>
+    <string name="qrcode_display_scan_hint">Aim the QR code at the scanner</string>
+    <string name="qrcode_display_auto_refresh">Auto Refresh</string>
+    <string name="qrcode_display_balance">Balance %1$s CNY</string>
+
+    <string name="qrcode_login_expired">Login expired, please re-login</string>
+    <string name="qrcode_fetch_failed">Failed to fetch QR code</string>
+    <string name="qrcode_refresh_failed">Refresh failed</string>
+    <string name="qrcode_decode_failed">QR code decoding failed</string>
+    <string name="qrcode_no_result">No QR code detected</string>
+    <string name="qrcode_camera_failed">Camera start failed</string>
+    <string name="qrcode_scan_result">Scan result: %1$s</string>
+    <string name="qrcode_cannot_handle_link">Cannot handle this link: %1$s</string>
+    <string name="qrcode_save_success">QR code saved to gallery</string>
+    <string name="qrcode_save_failed">Save failed</string>
+    <string name="scan_save_to_album">Save to Gallery</string>
+    <string name="scan_open_external">Open with Other App</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Scan                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="scan_title">Scan</string>
+    <string name="scan_torch_on">Turn Off Flashlight</string>
+    <string name="scan_torch_off">Turn On Flashlight</string>
+    <string name="scan_album">Gallery</string>
+    <string name="scan_need_permission">Camera permission is required to scan</string>
+    <string name="scan_reauthorize">Grant Permission</string>
+    <string name="scan_permission_denied">Camera permission permanently denied</string>
+    <string name="scan_go_to_settings">Go to Settings</string>
+</resources>

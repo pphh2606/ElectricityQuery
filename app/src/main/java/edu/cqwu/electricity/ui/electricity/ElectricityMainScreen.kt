@@ -84,15 +84,24 @@ private data class TabItem(
     val icon: ImageVector
 )
 
-/** 底部导航栏的三个 Tab */
-private val electricityTabs = listOf(
-    TabItem("查询", Icons.Default.Search),
-    TabItem("充值", Icons.Default.AccountBalance),
-    TabItem("我的", Icons.Default.Home),
+/** 底部导航栏的三个 Tab（标签在 Composable 内通过 stringResource 获取） */
+private val electricityTabIcons = listOf(
+    Icons.Default.Search,
+    Icons.Default.AccountBalance,
+    Icons.Default.Home,
 )
 
-/** 各 Tab 的 TopAppBar 标题 */
-private val tabTitles = listOf("电费查询", "充值", "我的寝室")
+private val electricityTabLabelKeys = listOf(
+    R.string.electricity_tab_query,
+    R.string.electricity_tab_recharge,
+    R.string.electricity_tab_myroom,
+)
+
+private val electricityTitleKeys = listOf(
+    R.string.electricity_query_title,
+    R.string.electricity_tab_recharge,
+    R.string.electricity_tab_my_dorm,
+)
 
 /**
  * 电费查询主页 — 底部导航栏容器
@@ -116,7 +125,7 @@ fun ElectricityMainScreen(
     onNavigateToH5Recharge: () -> Unit,
     onNavigateToRechargeRecord: (String) -> Unit,
 ) {
-    val pagerState = rememberPagerState(pageCount = { electricityTabs.size })
+    val pagerState = rememberPagerState(pageCount = { electricityTabIcons.size })
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -139,8 +148,8 @@ fun ElectricityMainScreen(
 
     // 当前 Tab 标题：查询 Tab 选中房间后显示"电费查询结果"
     val currentTitle = when {
-        pagerState.currentPage == 0 && uiState.selectedRoom != null -> "电费查询结果"
-        else -> tabTitles[pagerState.currentPage]
+        pagerState.currentPage == 0 && uiState.selectedRoom != null -> stringResource(R.string.dashboard_title)
+        else -> stringResource(electricityTitleKeys[pagerState.currentPage])
     }
 
     // ── 三点菜单状态（查询 Tab 和我的 Tab 各自独立）──
@@ -158,9 +167,9 @@ fun ElectricityMainScreen(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show("已导出到文件: $pendingExportLabel", ToastUtils.Type.SUCCESS)
+                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show("导出失败: ${e.message}", ToastUtils.Type.ERROR)
+                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -223,21 +232,21 @@ fun ElectricityMainScreen(
                                 onDismissRequest = { showMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("复制") },
+                                    text = { Text(stringResource(R.string.common_copy)) },
                                     leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                                     onClick = {
                                         showMenu = false
                                         val text = getDashboardTextContent(room, balance)
-                                        copyToClipboard(context, text, "电费查询结果", snackbar)
+                                        copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("导出") },
+                                    text = { Text(stringResource(R.string.common_export)) },
                                     leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
                                     onClick = {
                                         showMenu = false
                                         pendingExportText = getDashboardTextContent(room, balance)
-                                        pendingExportLabel = "电费查询结果"
+                                        pendingExportLabel = context.getString(R.string.dashboard_title)
                                         saveFileLauncher.launch("electricity_dashboard.txt")
                                     }
                                 )
@@ -278,21 +287,21 @@ fun ElectricityMainScreen(
                                 onDismissRequest = { showMyRoomMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("复制") },
+                                    text = { Text(stringResource(R.string.common_copy)) },
                                     leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                                     onClick = {
                                         showMyRoomMenu = false
                                         val text = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
-                                        copyToClipboard(context, text, "电费查询结果", snackbar)
+                                        copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("导出") },
+                                    text = { Text(stringResource(R.string.common_export)) },
                                     leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
                                     onClick = {
                                         showMyRoomMenu = false
                                         pendingExportText = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
-                                        pendingExportLabel = "电费查询结果"
+                                        pendingExportLabel = context.getString(R.string.dashboard_title)
                                         saveFileLauncher.launch("electricity_dashboard.txt")
                                     }
                                 )
@@ -305,7 +314,8 @@ fun ElectricityMainScreen(
         },
         bottomBar = {
             NavigationBar {
-                electricityTabs.forEachIndexed { index, tab ->
+                electricityTabIcons.forEachIndexed { index, icon ->
+                    val label = stringResource(electricityTabLabelKeys[index])
                     NavigationBarItem(
                         selected = pagerState.currentPage == index,
                         onClick = {
@@ -313,8 +323,8 @@ fun ElectricityMainScreen(
                                 scope.launch { pagerState.animateScrollToPage(index) }
                             }
                         },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
+                        icon = { Icon(icon, contentDescription = label) },
+                        label = { Text(label) },
                     )
                 }
             }
@@ -424,7 +434,7 @@ fun ElectricityMainScreen(
                                 )
                                 context.startActivity(intent)
                             } catch (_: ActivityNotFoundException) {
-                                snackbar.show("未找到可用的浏览器应用")
+                                snackbar.show(context.getString(R.string.common_no_browser))
                             }
                         }
                     )
@@ -441,13 +451,13 @@ fun ElectricityMainScreen(
 
                 // 第2条：纯文本
                 Text(
-                    text = "2.若注册后还是提示获取用户信息失败，请尝试填写寝室管理员学号/寝室内第一个注册了平台的学号。",
+                    text = stringResource(R.string.electricity_recharge_hint_item2),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 // 第3条：纯文本
                 Text(
-                    text = "3.充值记录会记录在学号所对应的用户头上。如介意请查看其他充值方式。",
+                    text = stringResource(R.string.electricity_recharge_hint_item3),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -525,7 +535,7 @@ private fun MyRoomDashboardTab(
                 CircularProgressIndicator()
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    "正在获取我的寝室信息...",
+                    stringResource(R.string.electricity_myroom_querying),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -535,7 +545,7 @@ private fun MyRoomDashboardTab(
         // 查询失败或未登录
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                "暂无房间数据",
+                stringResource(R.string.common_no_room_data),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

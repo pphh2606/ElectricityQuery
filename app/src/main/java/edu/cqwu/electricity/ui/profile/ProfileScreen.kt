@@ -59,7 +59,6 @@ import edu.cqwu.electricity.ui.components.OpenUrlDialog
 
 /** 「我的信息」H5 页面 URL（与首页「我的信息」一致） */
 private const val MY_INFO_URL = "https://cqwu.campusphere.net/wec-counselor-stuinfo-apps/student/mobile/index.html"
-private const val MY_INFO_TITLE = "我的信息"
 
 /**
  * 「我的」页面 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
@@ -139,7 +138,7 @@ fun ProfilePageContent(
     } else {
         "?"
     }
-    val displayStudentId = username ?: "未登录"
+    val displayStudentId = username ?: stringResource(R.string.profile_not_logged_in)
     val displayName = ""
 
     Column(
@@ -247,7 +246,7 @@ fun ProfilePageContent(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = if (isLoggedIn) "我的信息" else null,
+                        contentDescription = if (isLoggedIn) stringResource(R.string.profile_my_info_cd) else null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp),
                     )
@@ -346,7 +345,7 @@ fun ProfilePageContent(
                 } else {
                     url
                 }
-                onNavigateToWebView(finalUrl, "打开网址")
+                onNavigateToWebView(finalUrl, context.getString(R.string.profile_open_url))
             }
         )
     }

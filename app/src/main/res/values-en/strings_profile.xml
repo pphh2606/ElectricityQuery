@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Profile                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_open_url">Open URL</string>
+    <string name="profile_feedback">Feedback</string>
+    <string name="profile_manage_accounts">Manage Accounts</string>
+    <string name="profile_toggle_night_mode">Toggle Night Mode</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  My Info                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="my_info_title">My Info</string>
+    <string name="my_info_gender">Gender</string>
+    <string name="my_info_grade">Grade</string>
+    <string name="my_info_department">Department</string>
+    <string name="my_info_major">Major</string>
+    <string name="my_info_class">Class</string>
+    <string name="my_info_phone">Phone</string>
+    <string name="my_info_campus">Campus</string>
+    <string name="my_info_degree">Student Category</string>
+    <string name="my_info_status">Status</string>
+    <string name="my_info_collapse">Collapse</string>
+    <string name="my_info_expand">Expand</string>
+    <string name="my_info_load_failed">Load failed</string>
+    <string name="my_info_login_expired">Login expired, please re-login</string>
+    <string name="profile_not_logged_in">Not logged in</string>
+    <string name="profile_my_info_cd">My Info</string>
+    <string name="profile_my_room_loading">Fetching dorm info…</string>
+    <string name="profile_no_room_data">No room data</string>
+</resources>

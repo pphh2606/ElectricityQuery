@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Login                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_title">Login</string>
+    <string name="login_unified_auth">Unified Identity Authentication</string>
+    <string name="login_remember_password">Remember password</string>
+    <string name="login_relogin">Re-login</string>
+    <string name="login_security_notice_title">Security Notice</string>
+    <string name="login_security_notice_1">    The password is encrypted on-device via AES-CBC and sent directly to the school CAS unified authentication server. Encryption uses a dynamic salt issued by the school login page, unique for each request. This app never sends passwords to any third-party server.</string>
+    <string name="login_security_notice_2">    After successful login, only cookies are stored locally on the device, persisted via the Android system WebKit CookieManager, accessible only by this app. The remember password feature encrypts and stores credentials in the device private storage, enabled only when the user chooses.</string>
+    <string name="login_security_notice_3">    Each user login session is stored independently and does not interfere with others. Local login data can be deleted at any time from the login screen.</string>
+    <string name="login_security_notice_4">    QR login and adding accounts use independent cookie environments and do not carry any existing user session information.</string>
+    <string name="login_security_notice_5">    Exporting login credentials requires device password verification. Exported data is AES-encrypted with custom password protection, and importing requires the same decryption password, ensuring safe credential migration between devices.</string>
+    <string name="login_export_credential_title">Export Credentials</string>
+    <string name="login_not_entered">(not entered)</string>
+    <string name="login_security_notice">Security Notice</string>
+    <string name="login_delete_account_title">Delete Account</string>
+    <string name="login_paste_credential_label">Paste encrypted credential string:</string>
+    <string name="login_paste_credential_hint">Encrypted credentials exported from another device</string>
+    <string name="login_current_account">Current account: %1$s</string>
+    <string name="login_export_password_label">Set export password (used to encrypt credentials):</string>
+    <string name="login_delete_account_confirm">Are you sure you want to delete account "%1$s" and all its local data?\n\nYou will need to log in again to use this account.</string>
+
+    <!-- ── Login Form ── -->
+    <string name="login_student_id">Student ID</string>
+    <string name="login_student_id_hint">Enter Student ID</string>
+    <string name="login_password">Password</string>
+    <string name="login_password_hint">Enter password</string>
+    <string name="login_show_password">Show password</string>
+    <string name="login_hide_password">Hide password</string>
+    <string name="login_login_button">Login</string>
+    <string name="login_scan_login">QR Login</string>
+    <string name="login_add_account">Add Account</string>
+    <string name="login_export_credential">Export Credentials</string>
+    <string name="login_import_credential">Import Credentials</string>
+    <string name="login_copy_to_clipboard">Copy to Clipboard</string>
+    <string name="login_import_and_login">Import and Login</string>
+    <string name="login_import_title">Import Credentials</string>
+    <string name="login_import_paste_hint">Paste encrypted string here…</string>
+    <string name="login_export_password">Export Password</string>
+    <string name="login_export_password_hint">Enter the password set during export</string>
+    <string name="login_export_password_set_hint">Set an export password (at least 4 characters)</string>
+    <string name="login_show_import_password">Show password</string>
+    <string name="login_hide_import_password">Hide password</string>
+    <string name="login_device_auth_title">Identity Verification</string>
+    <string name="login_device_auth_desc">Verify to export encrypted credentials</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  QR Login                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="qr_login_title">QR Login</string>
+    <string name="qr_login_fetching_qrcode">Fetching QR code…</string>
+    <string name="qr_login_scan_hint">Scan the QR code with Campusphere App</string>
+    <string name="qr_login_expiry">QR code valid for 3 minutes</string>
+    <string name="qr_login_scan_success">Scan successful</string>
+    <string name="qr_login_confirm_on_phone">Tap "Confirm Login" on your phone</string>
+    <string name="qr_login_completing">Completing login…</string>
+    <string name="login_success">Login successful</string>
+    <string name="login_failed">Login failed</string>
+    <string name="login_qr_expired">QR code expired, please retry</string>
+    <string name="login_get_page_failed">Failed to get login page</string>
+    <string name="login_verifying">Logging in, please wait…</string>
+    <string name="login_password_too_short">Password must be at least 4 characters</string>
+    <string name="login_credential_copied">Credentials copied to clipboard</string>
+</resources>

@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.ui.platform.LocalContext
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.runtime.Composable
@@ -90,6 +91,7 @@ fun CardLostScreen(
     var showConfirmDialog by remember { mutableStateOf(false) }
     // 操作结果提示
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val snackbar = LocalSnackbarController.current
     var errorDialogMessage by remember { mutableStateOf<String?>(null) }
 
@@ -114,9 +116,9 @@ fun CardLostScreen(
                 isRefreshing = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
-                    errorMessage = "登录已过期，请重新登录"
+                    errorMessage = context.getString(R.string.card_lost_login_expired)
                 } else {
-                    errorMessage = error.message ?: "获取卡信息失败"
+                    errorMessage = error.message ?: context.getString(R.string.card_lost_fetch_error)
                 }
             }
         }
@@ -136,16 +138,16 @@ fun CardLostScreen(
             result.onSuccess { response ->
                 if (response.retcode == "0") {
                     // 挂失成功 — Toast 提示
-                    snackbar.show("挂失成功", ToastUtils.Type.SUCCESS)
+                    snackbar.show(context.getString(R.string.card_lost_success), ToastUtils.Type.SUCCESS)
                     // 延迟后刷新卡信息，更新卡状态为"挂失"
                     delay(800)
                     loadCardInfo()
                 } else {
                     // 挂失失败 — 显示错误对话框
-                    errorDialogMessage = response.retmsg.ifBlank { "挂失失败" }
+                    errorDialogMessage = response.retmsg.ifBlank { context.getString(R.string.card_lost_failure) }
                 }
             }.onFailure { error ->
-                errorDialogMessage = error.message ?: "请求异常"
+                errorDialogMessage = error.message ?: context.getString(R.string.card_lost_request_error)
             }
         }
     }
@@ -231,8 +233,8 @@ fun CardLostScreen(
     if (showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
-            title = { Text("确认挂失") },
-            text = { Text("确定要挂失该卡片吗？挂失后卡片将立即无法使用。") },
+            title = { Text(stringResource(R.string.card_lost_confirm_title)) },
+            text = { Text(stringResource(R.string.card_lost_confirm_text)) },
             confirmButton = {
                 TextButton(
                     onClick = { executeCardLost() },
@@ -240,12 +242,12 @@ fun CardLostScreen(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("确定挂失")
+                    Text(stringResource(R.string.card_lost_confirm_btn))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -276,7 +278,7 @@ private fun CardLostContent(
     onConfirmLost: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isCardNormal = cardInfo.cardStatus.contains("正常", ignoreCase = true)
+    val isCardNormal = cardInfo.cardStatus.contains(stringResource(R.string.card_lost_normal_status), ignoreCase = true)
 
     LazyColumn(
         modifier = modifier,
@@ -337,7 +339,7 @@ private fun CardLostContent(
                         Spacer(modifier = Modifier.width(8.dp))
                     }
                     Text(
-                        text = if (isSubmitting) "正在处理..." else "确认挂失",
+                        text = if (isSubmitting) stringResource(R.string.card_lost_processing) else stringResource(R.string.card_lost_confirm_btn),
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -346,7 +348,7 @@ private fun CardLostContent(
 
                 // 提示文字
                 Text(
-                    text = "⚠ 挂失后卡片将立即无法使用，请确认后再操作",
+                    text = stringResource(R.string.card_lost_warning),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,

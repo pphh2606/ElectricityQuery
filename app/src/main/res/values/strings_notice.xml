@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  通知公告                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="notice_title">通知公告</string>
+    <string name="notice_total_count">共 %1$d 条通知</string>
+    <string name="notice_search_hint">搜索通知公告</string>
+    <string name="notice_search_result">搜索 \"%1$s\" 共 %2$d 条结果</string>
+    <string name="notice_detail_title">通知详情</string>
+    <string name="notice_loading_detail">正在加载详情…</string>
+    <string name="notice_publisher">发布单位</string>
+    <string name="notice_publish_time">发布时间</string>
+    <string name="notice_view_count">浏览次数</string>
+    <string name="notice_searching">正在搜索…</string>
+    <string name="notice_loading_list">正在加载通知公告…</string>
+    <string name="notice_share">分享通知</string>
+    <string name="notice_load_failed">加载详情失败</string>
+    <string name="notice_no_content">暂无内容</string>
+    <string name="notice_no_more">— 没有更多了 —</string>
+</resources>

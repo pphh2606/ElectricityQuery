@@ -318,12 +318,12 @@ private fun handleScanResult(
                 context.startActivity(intent)
                 onBack()
             } catch (e: ActivityNotFoundException) {
-                showSnackbar("无法处理此链接: $text")
+                showSnackbar(context.getString(R.string.qrcode_cannot_handle_link, text))
                 onResumeScan()
             }
         }
         else -> {
-            showSnackbar("扫码结果: $text")
+            showSnackbar(context.getString(R.string.qrcode_scan_result, text))
             onBack()
         }
     }
@@ -422,7 +422,7 @@ fun ScanScreen(
             if (text != null) {
                 handleScanResult(text, context, onOpenUrl, onBack, { isScanPaused = false }) { msg -> snackbar.show(msg) }
             } else {
-                snackbar.show("未识别到二维码")
+                snackbar.show(context.getString(R.string.qrcode_no_result))
                 isScanPaused = false
             }
         }
@@ -479,7 +479,7 @@ fun ScanScreen(
                 camera = cam
             } catch (e: Exception) {
                 Log.e(TAG, "Camera bind failed", e)
-                snackbar.show("相机启动失败")
+                snackbar.show(context.getString(R.string.qrcode_camera_failed))
             }
         }, executor)
 

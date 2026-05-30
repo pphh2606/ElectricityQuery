@@ -83,7 +83,7 @@ fun OrderDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("订单详情", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.fee_order_detail_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
@@ -145,7 +145,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
 
         // 项目名称
         Text(
-            text = order.projectName ?: order.productDesc ?: "未知",
+            text = order.projectName ?: order.productDesc ?: stringResource(R.string.dashboard_unknown),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,

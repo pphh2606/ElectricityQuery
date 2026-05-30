@@ -60,6 +60,7 @@ fun CustomWebsiteDialog(
     var iconUri by remember { mutableStateOf<Uri?>(null) }
     var titleError by remember { mutableStateOf<String?>(null) }
     var urlError by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
 
     // 系统图片选择器
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -74,7 +75,7 @@ fun CustomWebsiteDialog(
         icon = Icons.Default.Language,
         leadingButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.common_cancel))
             }
         },
         trailingButton = {
@@ -92,7 +93,7 @@ fun CustomWebsiteDialog(
                     }
                 }
             ) {
-                Text("确认")
+                Text(stringResource(R.string.common_confirm))
             }
         }
     ) {
@@ -152,8 +153,8 @@ fun CustomWebsiteDialog(
                 titleInput = it
                 titleError = null
             },
-            label = { Text("标题") },
-            placeholder = { Text("例如：教务系统") },
+            label = { Text(stringResource(R.string.custom_website_label)) },
+            placeholder = { Text(stringResource(R.string.custom_website_label_placeholder)) },
             singleLine = true,
             isError = titleError != null,
             supportingText = titleError?.let {
@@ -175,8 +176,8 @@ fun CustomWebsiteDialog(
                 urlInput = it
                 urlError = null
             },
-            label = { Text("网址") },
-            placeholder = { Text("example.com") },
+            label = { Text(stringResource(R.string.custom_website_url_label)) },
+            placeholder = { Text(stringResource(R.string.custom_website_url_placeholder)) },
             singleLine = true,
             isError = urlError != null,
             supportingText = urlError?.let {
@@ -194,11 +195,11 @@ fun CustomWebsiteDialog(
             keyboardActions = KeyboardActions(
                 onGo = {
                     if (titleInput.isBlank()) {
-                        titleError = "请输入标题"
+                        titleError = context.getString(R.string.custom_website_title_required)
                     } else if (isValidUrl(urlInput)) {
                         onConfirm(titleInput.trim(), normalizeUrl(urlInput), iconUri?.toString())
                     } else {
-                        urlError = "请输入有效的网址"
+                        urlError = context.getString(R.string.custom_website_url_invalid)
                     }
                 }
             )

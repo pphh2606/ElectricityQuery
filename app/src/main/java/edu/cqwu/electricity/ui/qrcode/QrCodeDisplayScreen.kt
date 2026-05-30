@@ -193,7 +193,7 @@ fun QrCodeDisplayScreen(
                 isLoading = false
                 isRefreshing = false
                 requiresReLogin = true
-                errorMessage = "登录已过期，请重新登录"
+                errorMessage = context.getString(R.string.qrcode_login_expired)
                 return@launch
             }
 
@@ -213,9 +213,9 @@ fun QrCodeDisplayScreen(
                 isRefreshing = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
-                    errorMessage = "登录已过期，请重新登录"
+                    errorMessage = context.getString(R.string.qrcode_login_expired)
                 } else {
-                    errorMessage = error.message ?: "获取二维码失败"
+                    errorMessage = error.message ?: context.getString(R.string.qrcode_fetch_failed)
                 }
             }
         }
@@ -268,10 +268,10 @@ fun QrCodeDisplayScreen(
                     result.onSuccess { content ->
                         qrCodeContent = content
                     }.onFailure { error ->
-                        val msg = error.message ?: "刷新失败"
+                        val msg = error.message ?: context.getString(R.string.qrcode_refresh_failed)
                         if (error is SessionExpiredException) {
                             requiresReLogin = true
-                            errorMessage = "登录已过期，请重新登录"
+                            errorMessage = context.getString(R.string.qrcode_login_expired)
                         } else {
                             snackbar.show(msg, ToastUtils.Type.ERROR)
                         }
@@ -434,7 +434,7 @@ fun QrCodeDisplayScreen(
                             ) {
                                 if (balance != null) {
                                     Text(
-                                        text = "剩余 $balance ￥",
+                                        text = stringResource(R.string.qrcode_display_balance, balance ?: "0.00"),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
