@@ -225,12 +225,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 // 直接调用 SessionValidator 验证（内部会从 UserCookieStore 和系统 CookieManager 兜底）
                 when (val result = SessionValidator.validate(userStore)) {
                     is SessionValidationResult.Valid -> {
-                        // Cookie 有效，自动切换
-                        AccountManager.switchToUser(username)
-                        android.util.Log.d("LoginViewModel",
-                            "智能切换: 用户[$username] Cookie 有效，自动切换成功")
-                        _events.send(LoginEvent.AutoSwitchSuccess(username))
-                        return@launch
+                        // Cookie 有效，校验返回的学号与目标一致（防止 Cookie 串号）
+                        if (result.info.username != username) {
+                            android.util.Log.w("LoginViewModel",
+                                "智能切换: Cookie 返回学号[${result.info.username}]与目标[$username]不一致，拒绝自动切换")
+                        } else {
+                            AccountManager.switchToUser(username)
+                            android.util.Log.d("LoginViewModel",
+                                "智能切换: 用户[$username] Cookie 有效，自动切换成功")
+                            _events.send(LoginEvent.AutoSwitchSuccess(username))
+                            return@launch
+                        }
                     }
                     is SessionValidationResult.Invalid -> {
                         android.util.Log.d("LoginViewModel",

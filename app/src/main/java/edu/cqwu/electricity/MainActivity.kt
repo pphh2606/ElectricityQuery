@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import edu.cqwu.electricity.data.local.SettingsPreferences
+import edu.cqwu.electricity.util.ShortcutHelper
 import edu.cqwu.electricity.data.local.ThemeColorSource
 import edu.cqwu.electricity.ui.navigation.AppShell
 import edu.cqwu.electricity.ui.theme.AnimationSettings
@@ -46,6 +47,8 @@ class MainActivity : ComponentActivity() {
         // 系统栏图标颜色由 Compose 层的 Theme.kt 中的 SideEffect 动态管理
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+            // 读取桌面快捷方式携带的 Intent 信息
+            val shortcutAppInfo = remember { ShortcutHelper.extractShortcutAppInfo(intent) }
             val settingsPrefs = remember { SettingsPreferences(this@MainActivity) }
 
             // ── 夜间模式状态 ──
@@ -154,7 +157,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         val navController = rememberNavController()
-                        AppShell(navController = navController)
+                        AppShell(
+                            navController = navController,
+                            shortcutAppInfo = shortcutAppInfo,
+                        )
                     }
                 }
             }

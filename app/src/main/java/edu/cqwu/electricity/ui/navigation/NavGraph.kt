@@ -84,6 +84,7 @@ import edu.cqwu.electricity.ui.theme.LocalColorSourceState
 import edu.cqwu.electricity.ui.theme.LocalNightModeState
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.util.ToastUtils
+import edu.cqwu.electricity.ui.shortcut.AddShortcutScreen
 import edu.cqwu.electricity.ui.webview.UnifiedWebViewScreen
 
 /**
@@ -191,6 +192,9 @@ object Routes {
 
     /** 我的信息（原生页面） */
     const val MY_INFO = "my_info"
+
+    /** 添加快捷方式 */
+    const val ADD_SHORTCUT = "add_shortcut"
 }
 
 /** 从动画设置生成过渡 EnterTransition */
@@ -280,6 +284,7 @@ private fun NavGraphBuilder.animatedComposable(
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
+    shortcutAppInfo: edu.cqwu.electricity.util.ShortcutHelper.ShortcutAppInfo? = null,
     modifier: Modifier = Modifier,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -313,6 +318,36 @@ fun AppNavGraph(
         }
     }
 
+    // 处理桌面快捷方式启动的导航
+    LaunchedEffect(shortcutAppInfo) {
+        if (shortcutAppInfo != null) {
+            val appId = shortcutAppInfo.appId
+            val openUrl = shortcutAppInfo.openUrl
+            when (appId) {
+                edu.cqwu.electricity.data.model.HomeAppIds.PAY_QR ->
+                    navController.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.PAY))
+                edu.cqwu.electricity.data.model.HomeAppIds.BUS_QR ->
+                    navController.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.BUS))
+                edu.cqwu.electricity.data.model.HomeAppIds.DORM_ELECTRICITY ->
+                    navController.navigate(Routes.ELECTRICITY_MAIN)
+                edu.cqwu.electricity.data.model.HomeAppIds.CARD_CENTER ->
+                    navController.navigate(Routes.CARD_CENTER)
+                edu.cqwu.electricity.data.model.HomeAppIds.NOTICE ->
+                    navController.navigate(Routes.NOTICE)
+                edu.cqwu.electricity.data.model.HomeAppIds.FEE_SERVICE_HALL ->
+                    navController.navigate(Routes.FEE_SERVICE_HALL)
+                edu.cqwu.electricity.data.model.HomeAppIds.MY_INFO ->
+                    navController.navigate(Routes.MY_INFO)
+                else -> {
+                    // 网页类功能 → 在内置浏览器中打开
+                    if (openUrl.isNotBlank()) {
+                        navController.navigate(Routes.unifiedWebViewRoute(openUrl, shortcutAppInfo.appName))
+                    }
+                }
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Routes.MAIN_TABS,
@@ -333,6 +368,7 @@ fun AppNavGraph(
                 onNavigateToFeedback = { navController.navigate(Routes.FEEDBACK) },
                 onNavigateToFeeServiceHall = { navController.navigate(Routes.FEE_SERVICE_HALL) },
                 onNavigateToMyInfo = { navController.navigate(Routes.MY_INFO) },
+                onNavigateToAddShortcut = { navController.navigate(Routes.ADD_SHORTCUT) },
             )
         }
 
@@ -686,6 +722,13 @@ fun AppNavGraph(
 
         animatedComposable(settings = animationSettings, route = Routes.FEEDBACK) {
             FeedbackScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 添加快捷方式页面
+        animatedComposable(settings = animationSettings, route = Routes.ADD_SHORTCUT) {
+            AddShortcutScreen(
                 onBack = { navController.popBackStack() },
             )
         }

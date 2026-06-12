@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Shortcut                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_add_shortcut">Shortcuts</string>
+    <string name="shortcut_title">Add Shortcut</string>
+    <string name="shortcut_name_label">Shortcut Name</string>
+    <string name="shortcut_select_function">Select Function</string>
+    <string name="shortcut_select_function_hint">Please select a function</string>
+    <string name="shortcut_preview">Preview</string>
+    <string name="shortcut_create">Add to Home</string>
+    <string name="shortcut_success">Shortcut added to home screen</string>
+    <string name="shortcut_failed">Failed to add shortcut</string>
+    <string name="shortcut_name_hint">Enter a name</string>
+    <string name="shortcut_no_function_selected">Please select a function first</string>
+    <string name="shortcut_name_too_long">Name too long, 10 characters max recommended</string>
+</resources>

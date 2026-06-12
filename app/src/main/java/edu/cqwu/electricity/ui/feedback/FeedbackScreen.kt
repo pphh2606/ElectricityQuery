@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -396,6 +397,7 @@ fun FeedbackScreen(
                 label = { Text(stringResource(R.string.feedback_title_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -407,6 +409,7 @@ fun FeedbackScreen(
                 label = { Text(stringResource(R.string.feedback_content_label)) },
                 minLines = 5,
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
             )
 
             Spacer(modifier = Modifier.height(24.dp))

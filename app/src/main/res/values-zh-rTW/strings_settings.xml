@@ -78,6 +78,7 @@
     <string name="about_project_home">專案首頁</string>
     <string name="about_developer">開發者</string>
     <string name="about_contact">聯絡方式</string>
+    <string name="about_build_info">構建資訊</string>
     <string name="about_ai_notice">本應用程式使用了 AI 技術</string>
     <string name="about_contact_title">聯絡方式</string>
     <string name="about_contact_qq">QQ 聯絡</string>

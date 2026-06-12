@@ -53,10 +53,10 @@ object SessionValidator {
     private val baseClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(5, TimeUnit.SECONDS)
-            .writeTimeout(5, TimeUnit.SECONDS)
-            .followRedirects(false)
-            .followSslRedirects(false)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .followRedirects(true)
+            .followSslRedirects(true)
             .addInterceptor(UserAgentInterceptor)
             .build()
     }

@@ -323,7 +323,7 @@ fun QrLoginScreen(
                             // 支持用户自定义的颜色模式、圆角等主题设置
                             Box(
                                 modifier = Modifier
-                                    .size(240.dp),
+                                    .size(320.dp),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 qrCodeDecodedContent?.let { content ->

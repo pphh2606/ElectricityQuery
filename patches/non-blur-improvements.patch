@@ -1,0 +1,322 @@
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index cf0c624..6ec01e5 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -1,6 +1,8 @@
+ import java.util.Properties
+ import java.io.FileInputStream
+ import java.io.FileWriter
++import java.time.LocalDateTime
++import java.time.format.DateTimeFormatter
+ 
+ plugins {
+     alias(libs.plugins.android.application)
+@@ -20,6 +22,23 @@ if (versionPropsFile.exists()) {
+ 
+ val currentVersionCode = (versionProps["VERSION_CODE"] as? String)?.toIntOrNull() ?: 1
+ 
++// ============================================================
++// Git commit hash (兜底 "unknown" 防止无 .git 时构建失败)
++// 使用纯 Java ProcessBuilder，不需要 Gradle API
++// ============================================================
++val gitCommitHash: String by lazy {
++    try {
++        val process = ProcessBuilder("git", "rev-parse", "HEAD")
++            .directory(project.rootDir)
++            .start()
++        val stdout = process.inputStream.bufferedReader().readText().trim()
++        process.waitFor()
++        if (process.exitValue() == 0 && stdout.isNotEmpty()) stdout else "unknown"
++    } catch (_: Exception) {
++        "unknown"
++    }
++}
++
+ android {
+     namespace = "edu.cqwu.electricity"
+     compileSdk {
+@@ -35,6 +54,10 @@ android {
+         versionCode = currentVersionCode
+         versionName = "1.0"
+ 
++        buildConfigField("String", "BUILD_TIME",
++            "\"${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}\"")
++        buildConfigField("String", "GIT_COMMIT_HASH", "\"${gitCommitHash}\"")
++
+         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+     }
+ 
+diff --git a/app/src/main/java/edu/cqwu/electricity/data/network/SessionValidator.kt b/app/src/main/java/edu/cqwu/electricity/data/network/SessionValidator.kt
+index 9d78643..a9c8aaf 100644
+--- a/app/src/main/java/edu/cqwu/electricity/data/network/SessionValidator.kt
++++ b/app/src/main/java/edu/cqwu/electricity/data/network/SessionValidator.kt
+@@ -53,10 +53,10 @@ object SessionValidator {
+     private val baseClient by lazy {
+         OkHttpClient.Builder()
+             .connectTimeout(5, TimeUnit.SECONDS)
+-            .readTimeout(5, TimeUnit.SECONDS)
+-            .writeTimeout(5, TimeUnit.SECONDS)
+-            .followRedirects(false)
+-            .followSslRedirects(false)
++            .readTimeout(15, TimeUnit.SECONDS)
++            .writeTimeout(15, TimeUnit.SECONDS)
++            .followRedirects(true)
++            .followSslRedirects(true)
+             .addInterceptor(UserAgentInterceptor)
+             .build()
+     }
+diff --git a/app/src/main/java/edu/cqwu/electricity/ui/components/LoadingDialog.kt b/app/src/main/java/edu/cqwu/electricity/ui/components/LoadingDialog.kt
+index 5d16513..bbab069 100644
+--- a/app/src/main/java/edu/cqwu/electricity/ui/components/LoadingDialog.kt
++++ b/app/src/main/java/edu/cqwu/electricity/ui/components/LoadingDialog.kt
+@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Spacer
+ import androidx.compose.foundation.layout.height
+ import androidx.compose.foundation.layout.padding
+ import androidx.compose.foundation.layout.size
++import androidx.compose.foundation.shape.RoundedCornerShape
++import androidx.compose.material3.Card
++import androidx.compose.material3.CardDefaults
+ import androidx.compose.material3.CircularProgressIndicator
+ import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.Text
+@@ -36,23 +39,31 @@ fun LoadingDialog(
+             dismissOnClickOutside = false,
+         ),
+     ) {
+-        Column(
+-            modifier = modifier
+-                .padding(32.dp),
+-            horizontalAlignment = Alignment.CenterHorizontally,
+-            verticalArrangement = Arrangement.Center,
++        Card(
++            shape = RoundedCornerShape(16.dp),
++            colors = CardDefaults.cardColors(
++                containerColor = MaterialTheme.colorScheme.surface,
++            ),
++            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+         ) {
+-            CircularProgressIndicator(
+-                modifier = Modifier.size(48.dp),
+-                color = MaterialTheme.colorScheme.primary,
+-                strokeWidth = 4.dp,
+-            )
+-            Spacer(modifier = Modifier.height(16.dp))
+-            Text(
+-                text = message,
+-                style = MaterialTheme.typography.bodyMedium,
+-                color = MaterialTheme.colorScheme.onSurface,
+-            )
++            Column(
++                modifier = modifier
++                    .padding(32.dp),
++                horizontalAlignment = Alignment.CenterHorizontally,
++                verticalArrangement = Arrangement.Center,
++            ) {
++                CircularProgressIndicator(
++                    modifier = Modifier.size(48.dp),
++                    color = MaterialTheme.colorScheme.primary,
++                    strokeWidth = 4.dp,
++                )
++                Spacer(modifier = Modifier.height(16.dp))
++                Text(
++                    text = message,
++                    style = MaterialTheme.typography.bodyMedium,
++                    color = MaterialTheme.colorScheme.onSurface,
++                )
++            }
+         }
+     }
+ }
+diff --git a/app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt b/app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt
+index ca17803..9c30193 100644
+--- a/app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt
++++ b/app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt
+@@ -225,12 +225,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
+                 // 直接调用 SessionValidator 验证（内部会从 UserCookieStore 和系统 CookieManager 兜底）
+                 when (val result = SessionValidator.validate(userStore)) {
+                     is SessionValidationResult.Valid -> {
+-                        // Cookie 有效，自动切换
+-                        AccountManager.switchToUser(username)
+-                        android.util.Log.d("LoginViewModel",
+-                            "智能切换: 用户[$username] Cookie 有效，自动切换成功")
+-                        _events.send(LoginEvent.AutoSwitchSuccess(username))
+-                        return@launch
++                        // Cookie 有效，校验返回的学号与目标一致（防止 Cookie 串号）
++                        if (result.info.username != username) {
++                            android.util.Log.w("LoginViewModel",
++                                "智能切换: Cookie 返回学号[${result.info.username}]与目标[$username]不一致，拒绝自动切换")
++                        } else {
++                            AccountManager.switchToUser(username)
++                            android.util.Log.d("LoginViewModel",
++                                "智能切换: 用户[$username] Cookie 有效，自动切换成功")
++                            _events.send(LoginEvent.AutoSwitchSuccess(username))
++                            return@launch
++                        }
+                     }
+                     is SessionValidationResult.Invalid -> {
+                         android.util.Log.d("LoginViewModel",
+diff --git a/app/src/main/java/edu/cqwu/electricity/ui/login/QrLoginScreen.kt b/app/src/main/java/edu/cqwu/electricity/ui/login/QrLoginScreen.kt
+index a4d1258..0f739b2 100644
+--- a/app/src/main/java/edu/cqwu/electricity/ui/login/QrLoginScreen.kt
++++ b/app/src/main/java/edu/cqwu/electricity/ui/login/QrLoginScreen.kt
+@@ -323,7 +323,7 @@ fun QrLoginScreen(
+                             // 支持用户自定义的颜色模式、圆角等主题设置
+                             Box(
+                                 modifier = Modifier
+-                                    .size(240.dp),
++                                    .size(320.dp),
+                                 contentAlignment = Alignment.Center,
+                             ) {
+                                 qrCodeDecodedContent?.let { content ->
+diff --git a/app/src/main/java/edu/cqwu/electricity/ui/settings/AboutScreen.kt b/app/src/main/java/edu/cqwu/electricity/ui/settings/AboutScreen.kt
+index f2c5503..58f453b 100644
+--- a/app/src/main/java/edu/cqwu/electricity/ui/settings/AboutScreen.kt
++++ b/app/src/main/java/edu/cqwu/electricity/ui/settings/AboutScreen.kt
+@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.Chat
+ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+ import androidx.compose.material.icons.filled.Code
+ import androidx.compose.material.icons.filled.Email
++import androidx.compose.material.icons.filled.Info
+ import androidx.compose.material.icons.filled.Person
+ import androidx.compose.material.icons.filled.VideogameAsset
+ import androidx.compose.material3.ExperimentalMaterial3Api
+@@ -161,7 +162,23 @@ fun AboutScreen(
+                         },
+                     )
+ 
+-                    AboutDivider()
++                    // 构建信息
++                    AboutEntry(
++                        icon = Icons.Default.Info,
++                        title = stringResource(R.string.about_build_info),
++                        subtitle = "Build Time: ${BuildConfig.BUILD_TIME}\nCommit Hash: ${BuildConfig.GIT_COMMIT_HASH}",
++                        onClick = {
++                            try {
++                                val intent = Intent(
++                                    Intent.ACTION_VIEW,
++                                    Uri.parse("https://github.com/pphh2606/ElectricityQuery/commit/${BuildConfig.GIT_COMMIT_HASH}")
++                                )
++                                context.startActivity(intent)
++                            } catch (e: Exception) {
++                                snackbar.show(context.getString(R.string.common_no_browser))
++                            }
++                        },
++                    )
+ 
+                     // 开发者
+                     AboutEntry(
+@@ -173,8 +190,6 @@ fun AboutScreen(
+                         },
+                     )
+ 
+-                    AboutDivider()
+-
+                     // 联系方式（点击弹出底部选择弹窗）
+                     AboutEntry(
+                         icon = Icons.AutoMirrored.Filled.Chat,
+@@ -214,6 +229,7 @@ fun AboutScreen(
+                 icon = Icons.AutoMirrored.Filled.Chat,
+                 title = stringResource(R.string.about_contact_qq),
+                 onClick = {
++                    showContactSheet = false
+                     try {
+                         val intent = Intent(
+                             Intent.ACTION_VIEW,
+@@ -231,6 +247,7 @@ fun AboutScreen(
+                 icon = Icons.Default.VideogameAsset,
+                 title = stringResource(R.string.about_contact_bilibili),
+                 onClick = {
++                    showContactSheet = false
+                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                     clipboard.setPrimaryClip(ClipData.newPlainText("Bilibili UID", "1858606373"))
+                     snackbar.show(context.getString(R.string.common_copied_to_clipboard))
+@@ -242,6 +259,7 @@ fun AboutScreen(
+                 icon = Icons.Default.Email,
+                 title = stringResource(R.string.about_contact_email),
+                 onClick = {
++                    showContactSheet = false
+                     val intent = Intent(Intent.ACTION_SENDTO).apply {
+                         data = Uri.parse("mailto:2606841932@qq.com")
+                     }
+diff --git a/app/src/main/res/values-ar/strings_settings.xml b/app/src/main/res/values-ar/strings_settings.xml
+index 2573420..e505fb5 100644
+--- a/app/src/main/res/values-ar/strings_settings.xml
++++ b/app/src/main/res/values-ar/strings_settings.xml
+@@ -78,6 +78,7 @@
+     <string name="about_project_home">الصفحة الرئيسية للمشروع</string>
+     <string name="about_developer">المطور</string>
+     <string name="about_contact">جهات الاتصال</string>
++    <string name="about_build_info">معلومات البناء</string>
+     <string name="about_ai_notice">يستخدم هذا التطبيق تقنية الذكاء الاصطناعي</string>
+     <string name="about_contact_title">جهات الاتصال</string>
+     <string name="about_contact_qq">QQ</string>
+diff --git a/app/src/main/res/values-en/strings_settings.xml b/app/src/main/res/values-en/strings_settings.xml
+index 8966a07..3beb05a 100644
+--- a/app/src/main/res/values-en/strings_settings.xml
++++ b/app/src/main/res/values-en/strings_settings.xml
+@@ -78,6 +78,7 @@
+     <string name="about_project_home">Project Homepage</string>
+     <string name="about_developer">Developer</string>
+     <string name="about_contact">Contact</string>
++    <string name="about_build_info">Build Info</string>
+     <string name="about_ai_notice">This app uses AI technology</string>
+     <string name="about_contact_title">Contact</string>
+     <string name="about_contact_qq">QQ</string>
+diff --git a/app/src/main/res/values-fr/strings_settings.xml b/app/src/main/res/values-fr/strings_settings.xml
+index 0097152..710e34f 100644
+--- a/app/src/main/res/values-fr/strings_settings.xml
++++ b/app/src/main/res/values-fr/strings_settings.xml
+@@ -78,6 +78,7 @@
+     <string name="about_project_home">Page du projet</string>
+     <string name="about_developer">Développeur</string>
+     <string name="about_contact">Contact</string>
++    <string name="about_build_info">Infos de build</string>
+     <string name="about_ai_notice">Cette application utilise l\'IA</string>
+     <string name="about_contact_title">Contact</string>
+     <string name="about_contact_qq">QQ</string>
+diff --git a/app/src/main/res/values-ja/strings_settings.xml b/app/src/main/res/values-ja/strings_settings.xml
+index 34bfa53..14eb2b2 100644
+--- a/app/src/main/res/values-ja/strings_settings.xml
++++ b/app/src/main/res/values-ja/strings_settings.xml
+@@ -78,6 +78,7 @@
+     <string name="about_project_home">プロジェクトホームページ</string>
+     <string name="about_developer">開発者</string>
+     <string name="about_contact">連絡先</string>
++    <string name="about_build_info">ビルド情報</string>
+     <string name="about_ai_notice">本アプリはAI技術を使用しています</string>
+     <string name="about_contact_title">連絡先</string>
+     <string name="about_contact_qq">QQ連絡</string>
+diff --git a/app/src/main/res/values-zh-rTW/strings_settings.xml b/app/src/main/res/values-zh-rTW/strings_settings.xml
+index 26d498a..4e19fe4 100644
+--- a/app/src/main/res/values-zh-rTW/strings_settings.xml
++++ b/app/src/main/res/values-zh-rTW/strings_settings.xml
+@@ -78,6 +78,7 @@
+     <string name="about_project_home">專案首頁</string>
+     <string name="about_developer">開發者</string>
+     <string name="about_contact">聯絡方式</string>
++    <string name="about_build_info">構建資訊</string>
+     <string name="about_ai_notice">本應用程式使用了 AI 技術</string>
+     <string name="about_contact_title">聯絡方式</string>
+     <string name="about_contact_qq">QQ 聯絡</string>
+diff --git a/app/src/main/res/values/strings_settings.xml b/app/src/main/res/values/strings_settings.xml
+index 0d1357d..ea55cd3 100644
+--- a/app/src/main/res/values/strings_settings.xml
++++ b/app/src/main/res/values/strings_settings.xml
+@@ -78,6 +78,7 @@
+     <string name="about_project_home">项目主页</string>
+     <string name="about_developer">开发者</string>
+     <string name="about_contact">联系方式</string>
++    <string name="about_build_info">构建信息</string>
+     <string name="about_ai_notice">本应用使用了AI技术</string>
+     <string name="about_contact_title">联系方式</string>
+     <string name="about_contact_qq">QQ联系</string>
+diff --git a/app/version.properties b/app/version.properties
+index 93128f6..a34d1ca 100644
+--- a/app/version.properties
++++ b/app/version.properties
+@@ -1,3 +1,3 @@
+ #Auto-incremented by build
+-#Sun May 31 03:56:11 CST 2026
+-VERSION_CODE=1103
++#Fri Jun 12 21:16:20 CST 2026
++VERSION_CODE=1178

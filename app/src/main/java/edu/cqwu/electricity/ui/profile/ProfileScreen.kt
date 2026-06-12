@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.AddToHomeScreen
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Settings
@@ -122,6 +123,7 @@ fun ProfilePageContent(
     onNavigateToLogin: () -> Unit = {},
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToMyInfo: () -> Unit = {},
+    onNavigateToAddShortcut: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
@@ -321,6 +323,42 @@ fun ProfilePageContent(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = stringResource(R.string.profile_feedback),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        // ── 快捷方式 ──
+        Spacer(modifier = Modifier.height(16.dp))
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onNavigateToAddShortcut() },
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AddToHomeScreen,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = stringResource(R.string.profile_add_shortcut),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = stringResource(R.string.profile_add_shortcut),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

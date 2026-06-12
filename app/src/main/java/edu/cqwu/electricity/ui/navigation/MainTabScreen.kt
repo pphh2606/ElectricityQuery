@@ -54,6 +54,7 @@ fun MainTabScreen(
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToFeeServiceHall: () -> Unit = {},
     onNavigateToMyInfo: () -> Unit = {},
+    onNavigateToAddShortcut: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val pagerState = rememberPagerState(pageCount = { bottomNavTabs.size })
@@ -138,6 +139,7 @@ fun MainTabScreen(
                     onNavigateToLogin = onNavigateToLogin,
                     onNavigateToFeedback = onNavigateToFeedback,
                     onNavigateToMyInfo = onNavigateToMyInfo,
+                    onNavigateToAddShortcut = onNavigateToAddShortcut,
                 )
             }
         }

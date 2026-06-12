@@ -85,6 +85,8 @@ fun BottomSheetDialog(
     icon: ImageVector? = null,
     fullscreen: Boolean = true,
     sheetGesturesEnabled: Boolean = true,
+    /** 显式覆盖 skipPartiallyExpanded，默认根据 fullscreen 推断 */
+    skipPartiallyExpanded: Boolean? = null,
     leadingButton: @Composable (() -> Unit)? = null,
     trailingButton: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit
@@ -92,12 +94,10 @@ fun BottomSheetDialog(
     // Android 7+：skipPartiallyExpanded = false 支持拖拽中间态动画
     // Android 6：skipPartiallyExpanded = true 避免 AnchoredDraggableState
     //           偏移量在布局前未初始化导致的崩溃
+    val computedSkip = skipPartiallyExpanded
+        ?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) !fullscreen else true
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            !fullscreen
-        } else {
-            true
-        }
+        skipPartiallyExpanded = computedSkip
     )
 
     ModalBottomSheet(
@@ -111,21 +111,23 @@ fun BottomSheetDialog(
                     .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 左侧按钮（靠左对齐，尺寸完全由内容决定）
+                // 左侧按钮（weight 等分空间，确保手柄始终居中）
                 Box(
-                    modifier = Modifier.wrapContentSize(align = Alignment.CenterStart)
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     leadingButton?.invoke()
                 }
 
-                // 居中拖拽手柄
-                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                // 居中拖拽手柄（固定宽度，自然居中）
+                Box(contentAlignment = Alignment.Center) {
                     BottomSheetDefaults.DragHandle()
                 }
 
-                // 右侧按钮（靠右对齐，尺寸完全由内容决定）
+                // 右侧按钮（weight 等分空间，确保手柄始终居中）
                 Box(
-                    modifier = Modifier.wrapContentSize(align = Alignment.CenterEnd)
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
                     trailingButton?.invoke()
                 }

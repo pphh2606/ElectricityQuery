@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -161,7 +162,23 @@ fun AboutScreen(
                         },
                     )
 
-                    AboutDivider()
+                    // 构建信息
+                    AboutEntry(
+                        icon = Icons.Default.Info,
+                        title = stringResource(R.string.about_build_info),
+                        subtitle = "Build Time: ${BuildConfig.BUILD_TIME}\nCommit Hash: ${BuildConfig.GIT_COMMIT_HASH}",
+                        onClick = {
+                            try {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://github.com/pphh2606/ElectricityQuery/commit/${BuildConfig.GIT_COMMIT_HASH}")
+                                )
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                snackbar.show(context.getString(R.string.common_no_browser))
+                            }
+                        },
+                    )
 
                     // 开发者
                     AboutEntry(
@@ -172,8 +189,6 @@ fun AboutScreen(
                             // 预留：可跳转开发者主页
                         },
                     )
-
-                    AboutDivider()
 
                     // 联系方式（点击弹出底部选择弹窗）
                     AboutEntry(
@@ -214,6 +229,7 @@ fun AboutScreen(
                 icon = Icons.AutoMirrored.Filled.Chat,
                 title = stringResource(R.string.about_contact_qq),
                 onClick = {
+                    showContactSheet = false
                     try {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
@@ -231,6 +247,7 @@ fun AboutScreen(
                 icon = Icons.Default.VideogameAsset,
                 title = stringResource(R.string.about_contact_bilibili),
                 onClick = {
+                    showContactSheet = false
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("Bilibili UID", "1858606373"))
                     snackbar.show(context.getString(R.string.common_copied_to_clipboard))
@@ -242,6 +259,7 @@ fun AboutScreen(
                 icon = Icons.Default.Email,
                 title = stringResource(R.string.about_contact_email),
                 onClick = {
+                    showContactSheet = false
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:2606841932@qq.com")
                     }

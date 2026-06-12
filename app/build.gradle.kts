@@ -1,6 +1,8 @@
 import java.util.Properties
 import java.io.FileInputStream
 import java.io.FileWriter
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 plugins {
     alias(libs.plugins.android.application)
@@ -20,6 +22,23 @@ if (versionPropsFile.exists()) {
 
 val currentVersionCode = (versionProps["VERSION_CODE"] as? String)?.toIntOrNull() ?: 1
 
+// ============================================================
+// Git commit hash (兜底 "unknown" 防止无 .git 时构建失败)
+// 使用纯 Java ProcessBuilder，不需要 Gradle API
+// ============================================================
+val gitCommitHash: String by lazy {
+    try {
+        val process = ProcessBuilder("git", "rev-parse", "HEAD")
+            .directory(project.rootDir)
+            .start()
+        val stdout = process.inputStream.bufferedReader().readText().trim()
+        process.waitFor()
+        if (process.exitValue() == 0 && stdout.isNotEmpty()) stdout else "unknown"
+    } catch (_: Exception) {
+        "unknown"
+    }
+}
+
 android {
     namespace = "edu.cqwu.electricity"
     compileSdk {
@@ -34,6 +53,10 @@ android {
         targetSdk = 36
         versionCode = currentVersionCode
         versionName = "1.0"
+
+        buildConfigField("String", "BUILD_TIME",
+            "\"${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}\"")
+        buildConfigField("String", "GIT_COMMIT_HASH", "\"${gitCommitHash}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

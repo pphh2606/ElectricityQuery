@@ -78,6 +78,7 @@
     <string name="about_project_home">Project Homepage</string>
     <string name="about_developer">Developer</string>
     <string name="about_contact">Contact</string>
+    <string name="about_build_info">Build Info</string>
     <string name="about_ai_notice">This app uses AI technology</string>
     <string name="about_contact_title">Contact</string>
     <string name="about_contact_qq">QQ</string>

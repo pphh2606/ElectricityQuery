@@ -78,6 +78,7 @@
     <string name="about_project_home">الصفحة الرئيسية للمشروع</string>
     <string name="about_developer">المطور</string>
     <string name="about_contact">جهات الاتصال</string>
+    <string name="about_build_info">معلومات البناء</string>
     <string name="about_ai_notice">يستخدم هذا التطبيق تقنية الذكاء الاصطناعي</string>
     <string name="about_contact_title">جهات الاتصال</string>
     <string name="about_contact_qq">QQ</string>

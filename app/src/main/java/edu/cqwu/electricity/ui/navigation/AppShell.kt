@@ -41,6 +41,7 @@ import edu.cqwu.electricity.util.ToastUtils
 @Composable
 fun AppShell(
     navController: NavHostController,
+    shortcutAppInfo: edu.cqwu.electricity.util.ShortcutHelper.ShortcutAppInfo? = null,
     modifier: Modifier = Modifier,
 ) {
     val snackbarController = remember { SnackbarController() }
@@ -50,6 +51,7 @@ fun AppShell(
             // AppNavGraph 使用独立的 fillMaxSize()，避免外部 modifier 中的 padding 叠加影响布局
             AppNavGraph(
                 navController = navController,
+                shortcutAppInfo = shortcutAppInfo,
                 modifier = Modifier.fillMaxSize(),
             )
 
