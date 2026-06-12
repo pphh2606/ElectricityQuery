@@ -40,6 +40,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,15 +63,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.local.AccountStore
-import edu.cqwu.electricity.data.model.DetailType
 import edu.cqwu.electricity.data.model.SelectionStep
 import edu.cqwu.electricity.data.network.AccountManager
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
+import edu.cqwu.electricity.ui.navigation.Routes
 import edu.cqwu.electricity.ui.recharge.RechargeScreen
 import edu.cqwu.electricity.ui.recharge.RechargeViewModel
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
@@ -120,10 +122,6 @@ fun ElectricityMainScreen(
     rechargeViewModel: RechargeViewModel,
     myRoomViewModel: MyRoomViewModel,
     onBack: () -> Unit,
-    onNavigateToDetail: (DetailType, String) -> Unit,
-    onNavigateToPayment: () -> Unit,
-    onNavigateToH5Recharge: () -> Unit,
-    onNavigateToRechargeRecord: (String) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { electricityTabIcons.size })
     val scope = rememberCoroutineScope()
@@ -131,6 +129,7 @@ fun ElectricityMainScreen(
     val uiState by viewModel.uiState.collectAsState()
     val myRoomState by myRoomViewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
+    val nav = LocalNavController.current
 
     // ── 我的寝室 Tab 控制状态 ──
     var showRoomSwitchSheet by remember { mutableStateOf(false) }
@@ -152,8 +151,7 @@ fun ElectricityMainScreen(
         else -> stringResource(electricityTitleKeys[pagerState.currentPage])
     }
 
-    // ── 三点菜单状态（查询 Tab 和我的 Tab 各自独立）──
-    var showMenu by remember { mutableStateOf(false) }
+    // ── 我的寝室三点菜单状态 ──
     var showMyRoomMenu by remember { mutableStateOf(false) }
 
     // ── 文件导出启动器 ──
@@ -219,39 +217,7 @@ fun ElectricityMainScreen(
                 actions = {
                     // ── Tab 0：查询 Tab 显示余额结果时，显示三点菜单 ──
                     if (pagerState.currentPage == 0 && showQueryResult) {
-                        Box {
-                            IconButton(onClick = { showMenu = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(R.string.common_more_options),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.common_copy)) },
-                                    leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
-                                    onClick = {
-                                        showMenu = false
-                                        val text = getDashboardTextContent(room, balance)
-                                        copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.common_export)) },
-                                    leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
-                                    onClick = {
-                                        showMenu = false
-                                        pendingExportText = getDashboardTextContent(room, balance)
-                                        pendingExportLabel = context.getString(R.string.dashboard_title)
-                                        saveFileLauncher.launch("electricity_dashboard.txt")
-                                    }
-                                )
-                            }
-                        }
+                        DashboardMenuButton(room = room, balance = balance)
                     }
                     // ── Tab 1：充值 Tab 显示提示按钮 ──
                     if (pagerState.currentPage == 1) {
@@ -349,24 +315,11 @@ fun ElectricityMainScreen(
                             onBackToSelection = {
                                 viewModel.onReturnedFromDashboard()
                             },
-                            onNavigateToDetail = { detailType ->
-                                onNavigateToDetail(detailType, uiState.selectedRoom?.id ?: "")
-                            },
-                            onNavigateToAccountSelection = {
-                                scope.launch { pagerState.animateScrollToPage(1) }
-                            },
-                            onNavigateToH5Recharge = onNavigateToH5Recharge,
-                            onNavigateToRechargeRecord = { onNavigateToRechargeRecord(uiState.selectedRoom?.id ?: "") },
-                            showTopBar = false,
                         )
                     } else {
                         BuildingSelectionScreen(
                             viewModel = viewModel,
                             onBack = {},
-                            onNavigateToAccountSelection = {
-                                scope.launch { pagerState.animateScrollToPage(1) }
-                            },
-                            showTopBar = false,
                         )
                     }
                 }
@@ -375,9 +328,6 @@ fun ElectricityMainScreen(
                     RechargeScreen(
                         viewModel = rechargeViewModel,
                         onBack = {},
-                        onNavigateToPayment = onNavigateToPayment,
-                        onNavigateToH5Recharge = onNavigateToH5Recharge,
-                        showTopBar = false,
                     )
                 }
                 2 -> {
@@ -391,11 +341,6 @@ fun ElectricityMainScreen(
                         onSwitchToRecharge = {
                             scope.launch { pagerState.animateScrollToPage(1) }
                         },
-                        onNavigateToDetail = { detailType ->
-                            onNavigateToDetail(detailType, myRoomState.selectedRoom?.id ?: "")
-                        },
-                        onNavigateToH5Recharge = onNavigateToH5Recharge,
-                        onNavigateToRechargeRecord = { onNavigateToRechargeRecord(myRoomState.selectedRoom?.id ?: "") },
                     )
                 }
             }
@@ -468,7 +413,25 @@ fun ElectricityMainScreen(
     if (showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty()) {
         BottomSheetDialog(
             onDismissRequest = { showRoomSwitchSheet = false },
-            title = stringResource(R.string.dashboard_select_dorm)
+            title = stringResource(R.string.dashboard_select_dorm),
+            leadingButton = {
+                TextButton(onClick = {
+                    showRoomSwitchSheet = false
+                    nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
+                        context.getString(R.string.electricity_bind_account)))
+                }) {
+                    Text(stringResource(R.string.electricity_bind_account))
+                }
+            },
+            trailingButton = {
+                TextButton(onClick = {
+                    showRoomSwitchSheet = false
+                    nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
+                        context.getString(R.string.electricity_unbind_account)))
+                }) {
+                    Text(stringResource(R.string.electricity_unbind_account))
+                }
+            }
         ) {
             Text(
                 text = stringResource(R.string.dashboard_select_room),
@@ -502,9 +465,6 @@ private fun MyRoomDashboardTab(
     loggedInStudentId: String?,
     onSwitchToQuery: () -> Unit,
     onSwitchToRecharge: () -> Unit,
-    onNavigateToDetail: (DetailType) -> Unit,
-    onNavigateToH5Recharge: () -> Unit,
-    onNavigateToRechargeRecord: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -561,12 +521,7 @@ private fun MyRoomDashboardTab(
             error = uiState.error,
             onRefresh = { viewModel.refreshBalance() },
             onBackToSelection = onSwitchToQuery,
-            onNavigateToDetail = onNavigateToDetail,
-            onNavigateToAccountSelection = onSwitchToRecharge,
-            onNavigateToH5Recharge = onNavigateToH5Recharge,
-            onNavigateToRechargeRecord = { onNavigateToRechargeRecord(uiState.selectedRoom?.id ?: "") },
             onSwitchRoom = { viewModel.switchToMyRoom(it) },
-            showTopBar = false,
         )
     }
 }

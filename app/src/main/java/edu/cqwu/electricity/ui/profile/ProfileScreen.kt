@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.ui.profile
 
+import android.util.Log
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -38,6 +39,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import edu.cqwu.electricity.data.local.NightMode
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalNightModeState
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
@@ -66,9 +69,8 @@ private const val MY_INFO_URL = "https://cqwu.campusphere.net/wec-counselor-stui
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileTopBar(
-    onNavigateToSettings: () -> Unit = {},
-) {
+fun ProfileTopBar() {
+    val nav = LocalNavController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
     TopAppBar(
@@ -101,7 +103,7 @@ fun ProfileTopBar(
                 )
             }
             IconButton(
-                onClick = onNavigateToSettings,
+                onClick = { nav.navigate(Routes.SETTINGS) },
             ) {
                 Icon(
                     imageVector = Icons.Default.Settings,
@@ -118,13 +120,8 @@ fun ProfileTopBar(
  * 由 [MainTabScreen] 的 HorizontalPager 在 page 1 中调用。
  */
 @Composable
-fun ProfilePageContent(
-    onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
-    onNavigateToLogin: () -> Unit = {},
-    onNavigateToFeedback: () -> Unit = {},
-    onNavigateToMyInfo: () -> Unit = {},
-    onNavigateToAddShortcut: () -> Unit = {},
-) {
+fun ProfilePageContent() {
+    val nav = LocalNavController.current
     val context = LocalContext.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
 
@@ -141,7 +138,6 @@ fun ProfilePageContent(
         "?"
     }
     val displayStudentId = username ?: stringResource(R.string.profile_not_logged_in)
-    val displayName = ""
 
     Column(
         modifier = Modifier
@@ -154,9 +150,9 @@ fun ProfilePageContent(
                 .fillMaxWidth()
                 .clickable {
                     if (isLoggedIn) {
-                        onNavigateToMyInfo()
+                        nav.navigate(Routes.MY_INFO)
                     } else {
-                        onNavigateToLogin()
+                        nav.navigate(Routes.LOGIN)
                     }
                 },
             shape = RoundedCornerShape(16.dp),
@@ -192,24 +188,10 @@ fun ProfilePageContent(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    if (displayName.isNotEmpty()) {
-                        Text(
-                            text = displayName,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
                     Text(
                         text = displayStudentId,
-                        style = if (displayName.isEmpty())
-                            MaterialTheme.typography.titleMedium
-                        else
-                            MaterialTheme.typography.bodyMedium,
-                        fontWeight = if (displayName.isEmpty()) FontWeight.Bold else FontWeight.Normal,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
                         color = if (isLoggedIn)
                             MaterialTheme.colorScheme.onSurfaceVariant
                         else
@@ -224,7 +206,7 @@ fun ProfilePageContent(
                 // ── 右侧：编辑按钮（仅登录后显示）+ > 箭头 ──
                 if (isLoggedIn) {
                     IconButton(
-                        onClick = onNavigateToLogin,
+                        onClick = { nav.navigate(Routes.LOGIN) },
                         modifier = Modifier.size(36.dp),
                     ) {
                         Icon(
@@ -239,9 +221,9 @@ fun ProfilePageContent(
                 IconButton(
                     onClick = {
                         if (isLoggedIn) {
-                            onNavigateToMyInfo()
+                            nav.navigate(Routes.MY_INFO)
                         } else {
-                            onNavigateToLogin()
+                            nav.navigate(Routes.LOGIN)
                         }
                     },
                     modifier = Modifier.size(36.dp),
@@ -297,7 +279,7 @@ fun ProfilePageContent(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onNavigateToFeedback() },
+                .clickable { nav.navigate(Routes.FEEDBACK) },
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
         ) {
@@ -333,7 +315,7 @@ fun ProfilePageContent(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onNavigateToAddShortcut() },
+                .clickable { nav.navigate(Routes.ADD_SHORTCUT) },
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
         ) {
@@ -377,13 +359,14 @@ fun ProfilePageContent(
                 val finalUrl = if (isInternal) {
                     try {
                         WebVpnEncoder.transform(url)
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
+                        Log.w("ProfileScreen", "WebVpnEncoder.transform failed for: $url", e)
                         url
                     }
                 } else {
                     url
                 }
-                onNavigateToWebView(finalUrl, context.getString(R.string.profile_open_url))
+                nav.navigate(Routes.unifiedWebViewRoute(finalUrl, context.getString(R.string.profile_open_url)))
             }
         )
     }

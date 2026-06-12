@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,7 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -53,7 +51,6 @@ import edu.cqwu.electricity.data.model.SelectionStep
 import edu.cqwu.electricity.data.model.displayName
 import edu.cqwu.electricity.data.network.AccountManager
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
-import edu.cqwu.electricity.ui.components.TabScaffold
 import edu.cqwu.electricity.util.ToastUtils
 
 /**
@@ -65,8 +62,6 @@ import edu.cqwu.electricity.util.ToastUtils
 fun BuildingSelectionScreen(
     viewModel: ElectricityViewModel,
     onBack: () -> Unit,
-    onNavigateToAccountSelection: () -> Unit = {},
-    showTopBar: Boolean = true
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -94,37 +89,19 @@ fun BuildingSelectionScreen(
         }
     }
 
-    // 使用统一 TabScaffold（独立页面显示 TopAppBar，Tab 内嵌时不自带）
-    TabScaffold(
-        showTopBar = showTopBar,
-        title = stringResource(R.string.electricity_query_title),
-        onBack = onBack,
-        actions = {
-            IconButton(onClick = onNavigateToAccountSelection) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = stringResource(R.string.electricity_recharge)
-                )
-            }
-        }
-    ) { paddingValues ->
-        ContentArea(
-            viewModel = viewModel,
-            uiState = uiState,
-            paddingValues = paddingValues
-        )
-    }
+    ContentArea(
+        viewModel = viewModel,
+        uiState = uiState,
+    )
 }
 
 /**
- * 建筑选择页面的内容区域（不含 Scaffold/TopAppBar）
- * 通过 [showTopBar] 控制是否被 Scaffold 包裹
+ * 建筑选择页面的内容区域
  */
 @Composable
 private fun ContentArea(
     viewModel: ElectricityViewModel,
     uiState: ElectricityUiState,
-    paddingValues: PaddingValues
 ) {
     // 仅在校区列表步骤启用下拉刷新（ROOM_GRID 无网络请求，禁用以免用户困惑）
     val pullToRefreshEnabled = uiState.currentStep == SelectionStep.AREA
@@ -141,7 +118,6 @@ private fun ContentArea(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
             // 可滚动的列表区域 + 下拉刷新

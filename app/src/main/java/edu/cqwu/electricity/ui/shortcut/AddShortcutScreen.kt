@@ -1,8 +1,5 @@
 package edu.cqwu.electricity.ui.shortcut
 
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -54,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -62,6 +59,7 @@ import edu.cqwu.electricity.data.model.HomeApp
 import edu.cqwu.electricity.data.model.HomeCategory
 import edu.cqwu.electricity.data.repository.HomeJsonLoader
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
@@ -95,6 +93,7 @@ fun AddShortcutScreen(
     var selectedApp by remember { mutableStateOf<HomeApp?>(null) }
     var shortcutName by remember { mutableStateOf("") }
     var showFunctionSheet by remember { mutableStateOf(false) }
+    var isCreating by remember { mutableStateOf(false) }
 
     // 加载首页功能列表
     LaunchedEffect(Unit) {
@@ -248,7 +247,7 @@ fun AddShortcutScreen(
 
                     // ── 创建按钮 ──
                     Button(
-                        enabled = selectedApp != null,
+                        enabled = selectedApp != null && !isCreating,
                         onClick = {
                             val app = selectedApp
                             if (app == null) {
@@ -258,6 +257,7 @@ fun AddShortcutScreen(
                                 )
                                 return@Button
                             }
+                            isCreating = true
                             val label = shortcutName.ifEmpty { app.name }
                             val appInfo = ShortcutHelper.ShortcutAppInfo(
                                 appId = app.appId,
@@ -274,6 +274,7 @@ fun AddShortcutScreen(
                                     )
                                     onBack()
                                 } else {
+                                    isCreating = false
                                     snackbar.show(
                                         context.getString(R.string.shortcut_failed),
                                         ToastUtils.Type.ERROR
@@ -327,9 +328,17 @@ fun AddShortcutScreen(
                         items = category.apps,
                         key = { it.appId }
                     ) { app ->
-                        FunctionSelectionItem(
-                            app = app,
-                            isSelected = selectedApp?.appId == app.appId,
+                        BottomSheetItem(
+                            icon = null,
+                            title = app.name,
+                            selected = selectedApp?.appId == app.appId,
+                            iconUrl = app.iconUrl.ifBlank { null },
+                            containerColor = if (selectedApp?.appId == app.appId) {
+                                MaterialTheme.colorScheme.secondaryContainer
+                            } else {
+                                androidx.compose.ui.graphics.Color.Transparent
+                            },
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             onClick = {
                                 selectedApp = app
                                 showFunctionSheet = false
@@ -396,61 +405,6 @@ private fun ShortcutPreview(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-        }
-    }
-}
-
-/**
- * 功能选择弹窗中的列表项
- */
-@Composable
-private fun FunctionSelectionItem(
-    app: HomeApp,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-            } else {
-                MaterialTheme.colorScheme.surface
-            }
-        ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = if (isSelected) 2.dp else 0.dp),
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AppIcon(
-                iconUrl = app.iconUrl,
-                fallbackText = app.name.firstOrNull()?.toString() ?: "?",
-                modifier = Modifier.size(36.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = app.name,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
         }
     }
 }

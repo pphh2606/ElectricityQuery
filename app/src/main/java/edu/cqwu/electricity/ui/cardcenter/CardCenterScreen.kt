@@ -54,6 +54,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.network.QrCodeType
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import kotlinx.coroutines.delay
@@ -75,13 +77,10 @@ import kotlinx.coroutines.launch
 fun CardCenterScreen(
     onBack: () -> Unit,
     onNavigateToQrCode: (QrCodeType) -> Unit,
-    onNavigateToWebView: (url: String, title: String) -> Unit,
-    onNavigateToAccountInfo: () -> Unit = {},
-    onNavigateToCardLost: () -> Unit = {},
-    onNavigateToBill: () -> Unit = {}
 ) {
     var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val nav = LocalNavController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
     Scaffold(
@@ -132,12 +131,12 @@ fun CardCenterScreen(
                         items = cardCenterItems,
                         onItemClick = { item ->
                             when (item.action) {
-                                CardAction.ACCOUNT_INFO -> onNavigateToAccountInfo()
+                                CardAction.ACCOUNT_INFO -> nav.navigate(Routes.ACCOUNT_INFO)
                                 CardAction.QR_CODE_PAY -> onNavigateToQrCode(QrCodeType.PAY)
                                 CardAction.QR_CODE_BUS -> onNavigateToQrCode(QrCodeType.BUS)
-                                CardAction.CARD_LOST -> onNavigateToCardLost()
-                                CardAction.BILL -> onNavigateToBill()
-                                is CardAction.WEB_VIEW -> onNavigateToWebView(item.action.url, ctx.getString(item.labelRes))
+                                CardAction.CARD_LOST -> nav.navigate(Routes.CARD_LOST)
+                                CardAction.BILL -> nav.navigate(Routes.BILL)
+                                is CardAction.WEB_VIEW -> nav.navigate(Routes.unifiedWebViewRoute(item.action.url, ctx.getString(item.labelRes)))
                             }
                         }
                     )

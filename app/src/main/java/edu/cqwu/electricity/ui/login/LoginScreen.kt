@@ -81,6 +81,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.ui.components.LanguageSwitchButton
 import edu.cqwu.electricity.ui.components.LoadingDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
@@ -102,13 +104,13 @@ import kotlinx.coroutines.flow.catch
 @Composable
 fun LoginScreen(
     onBack: () -> Unit,
-    onNavigateToQrLogin: () -> Unit = {},
     loginViewModel: LoginViewModel = viewModel()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val nav = LocalNavController.current
 
     // 每次页面变为可见时刷新已保存账号列表（例如从扫码登录返回后）
     DisposableEffect(lifecycleOwner) {
@@ -442,7 +444,7 @@ fun LoginScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(
-                        onClick = { onNavigateToQrLogin() },
+                        onClick = { nav.navigate(Routes.QR_LOGIN) },
                         enabled = !uiState.isLoading
                     ) {
                         Text(

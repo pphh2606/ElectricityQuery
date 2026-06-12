@@ -57,6 +57,8 @@ android {
         buildConfigField("String", "BUILD_TIME",
             "\"${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}\"")
         buildConfigField("String", "GIT_COMMIT_HASH", "\"${gitCommitHash}\"")
+        buildConfigField("String", "BUILD_SOURCE",
+            "\"${if (System.getenv("GITHUB_ACTIONS") == "true") "github-actions" else "local"}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

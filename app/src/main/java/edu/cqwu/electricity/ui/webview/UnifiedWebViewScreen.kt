@@ -64,6 +64,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import edu.cqwu.electricity.data.network.WebVpnEncoder
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.WebViewErrorOverlay
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
@@ -88,11 +90,10 @@ fun UnifiedWebViewScreen(
     url: String,
     initialTitle: String = "",
     onClose: () -> Unit,
-    onNavigateToLogin: () -> Unit = {},
-    onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
     skipNextCasRedirect: Boolean = false,
     onSkipConsumed: () -> Unit = {}
 ) {
+    val nav = LocalNavController.current
     // Campusphere 提醒：只弹一次
     var campusphereToastShown by remember { mutableStateOf(false) }
 
@@ -164,7 +165,7 @@ fun UnifiedWebViewScreen(
         if (pendingLoginNavigation) {
             Log.d("WebView_DIAG", ">>> CAS登录检测触发，准备跳转到本地登录")
             pendingLoginNavigation = false
-            onNavigateToLogin()
+            nav.navigate(Routes.LOGIN)
         }
     }
 
@@ -310,7 +311,7 @@ fun UnifiedWebViewScreen(
                                         null
                                     }
                                     if (toggledUrl != null) {
-                                        onNavigateToWebView(toggledUrl, pageTitle)
+                                        nav.navigate(Routes.unifiedWebViewRoute(toggledUrl, pageTitle))
                                     }
                                 }
                             )

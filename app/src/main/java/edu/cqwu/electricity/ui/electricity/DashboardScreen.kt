@@ -45,6 +45,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,10 +65,9 @@ import edu.cqwu.electricity.data.model.BuildingNode
 import edu.cqwu.electricity.data.model.DetailType
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.model.displayName
-import edu.cqwu.electricity.ui.components.BottomSheetDialog
-import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
-import edu.cqwu.electricity.ui.components.TabScaffold
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.util.ToastUtils
 
 /**
@@ -78,18 +78,13 @@ import edu.cqwu.electricity.util.ToastUtils
  *
  * @param room 当前选中的房间（可能为 null）
  * @param balance 余额数据（可能为 null，表示加载中或查询失败）
- * @param myRoomList 我的寝室房间列表，用于房间切换弹窗（查询 Tab 传入空列表即可）
+ * @param myRoomList 我的寝室房间列表（查询 Tab 传入空列表即可）
  * @param isRefreshing 当前是否正在刷新
  * @param isLoading 当前是否正在加载
  * @param error 错误信息
  * @param onRefresh 下拉刷新回调
  * @param onBackToSelection 返回选择页面回调
- * @param onNavigateToDetail 导航到详情页
- * @param onNavigateToAccountSelection 导航到账户选择（充值 Tab）
- * @param onNavigateToH5Recharge 导航到 H5 充值
- * @param onNavigateToRechargeRecord 导航到充值记录
  * @param onSwitchRoom 切换房间回调（我的 Tab 使用）
- * @param showTopBar 是否显示自带的 TopAppBar
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,136 +97,15 @@ fun DashboardScreen(
     error: String?,
     onRefresh: () -> Unit,
     onBackToSelection: () -> Unit,
-    onNavigateToDetail: (DetailType) -> Unit,
-    onNavigateToAccountSelection: () -> Unit = {},
-    onNavigateToH5Recharge: () -> Unit = {},
-    onNavigateToRechargeRecord: () -> Unit = {},
     onSwitchRoom: (UserRoomInfo) -> Unit = {},
-    showTopBar: Boolean = true
 ) {
-    val snackbar = LocalSnackbarController.current
-    val context = LocalContext.current
+    val nav = LocalNavController.current
 
-    // 三点菜单
-    var showMenu by remember { mutableStateOf(false) }
-
-    // 我的寝室房间切换弹窗
-    var showRoomSwitchSheet by remember { mutableStateOf(false) }
-
-    // 文件导出启动器
-    var pendingExportText by remember { mutableStateOf("") }
-    var pendingExportLabel by remember { mutableStateOf("") }
-    val saveFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/plain")
-    ) { uri ->
-        if (uri != null && pendingExportText.isNotEmpty()) {
-            try {
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(pendingExportText.toByteArray(Charsets.UTF_8))
-                }
-                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
-            } catch (e: Exception) {
-                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-            }
-            pendingExportText = ""
-            pendingExportLabel = ""
-        }
-    }
-
-    // 使用统一 TabScaffold
-    TabScaffold(
-        showTopBar = showTopBar,
-        title = stringResource(R.string.dashboard_title),
-        onBack = { onBackToSelection() },
-        actions = {
-            // 我的寝室切换按钮（仅多房间时显示）
-            if (myRoomList.size > 1) {
-                IconButton(onClick = { showRoomSwitchSheet = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = stringResource(R.string.electricity_switch_dorm)
-                    )
-                }
-            }
-            Box {
-                IconButton(onClick = { showMenu = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = stringResource(R.string.common_more_options)
-                    )
-                }
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.common_copy)) },
-                        leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
-                        onClick = {
-                            showMenu = false
-                            val text = getDashboardTextContent(room, balance)
-                            copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.common_export)) },
-                        leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
-                        onClick = {
-                            showMenu = false
-                            pendingExportText = getDashboardTextContent(room, balance)
-                            pendingExportLabel = context.getString(R.string.dashboard_title)
-                            saveFileLauncher.launch("electricity_dashboard.txt")
-                        }
-                    )
-                }
-            }
-        }
-    ) { paddingValues ->
-        DashboardContent(
-            myRoomList = myRoomList,
-            room = room,
-            balance = balance,
-            isRefreshing = isRefreshing,
-            isLoading = isLoading,
-            error = error,
-            paddingValues = paddingValues,
-            showRoomSwitchSheet = showRoomSwitchSheet,
-            onShowRoomSwitchSheetChange = { showRoomSwitchSheet = it },
-            onRefresh = onRefresh,
-            onBackToSelection = onBackToSelection,
-            onNavigateToDetail = onNavigateToDetail,
-            onNavigateToRechargeRecord = onNavigateToRechargeRecord,
-            onSwitchRoom = onSwitchRoom,
-        )
-    }
-}
-
-/**
- * Dashboard 内容区域（不含 Scaffold/TopAppBar）
- */
-@Composable
-private fun DashboardContent(
-    myRoomList: List<UserRoomInfo>,
-    room: BuildingNode?,
-    balance: BalanceResponse?,
-    isRefreshing: Boolean,
-    isLoading: Boolean,
-    error: String?,
-    paddingValues: PaddingValues,
-    showRoomSwitchSheet: Boolean,
-    onShowRoomSwitchSheetChange: (Boolean) -> Unit,
-    onRefresh: () -> Unit,
-    onBackToSelection: () -> Unit,
-    onNavigateToDetail: (DetailType) -> Unit,
-    onNavigateToRechargeRecord: () -> Unit,
-    onSwitchRoom: (UserRoomInfo) -> Unit,
-) {
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
             .padding(horizontal = 16.dp)
     ) {
         LazyColumn(
@@ -272,8 +146,8 @@ private fun DashboardContent(
             if (balance != null) {
                 item(key = "more_functions") {
                     MoreFunctionsSection(
-                        onNavigateToDetail = onNavigateToDetail,
-                        onNavigateToRechargeRecord = onNavigateToRechargeRecord
+                        onNavigateToDetail = { detailType -> nav.navigate(Routes.detailRoute(detailType, room?.id ?: "")) },
+                        onNavigateToRechargeRecord = { nav.navigate(Routes.rechargeRecordRoute(room?.id ?: "")) }
                     )
                 }
             }
@@ -289,29 +163,73 @@ private fun DashboardContent(
             }
         }
     }
+}
 
-    // ── 我的寝室房间切换 BottomSheet ──
-    if (showRoomSwitchSheet && myRoomList.isNotEmpty()) {
-        BottomSheetDialog(
-            onDismissRequest = { onShowRoomSwitchSheetChange(false) },
-            title = stringResource(R.string.dashboard_select_dorm)
-        ) {
-            Text(
-                text = stringResource(R.string.dashboard_select_room),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            myRoomList.forEach { room ->
-                BottomSheetItem(
-                    icon = Icons.Default.Home,
-                    title = room.fullName.ifBlank { room.roomName },
-                    onClick = {
-                        onSwitchRoom(room)
-                        onShowRoomSwitchSheetChange(false)
-                    }
-                )
+/**
+ * 仪表盘三点菜单按钮（复制/导出）— 可嵌入 TopAppBar actions。
+ *
+ * @param room 当前房间
+ * @param balance 当前余额数据
+ */
+@Composable
+fun DashboardMenuButton(
+    room: BuildingNode?,
+    balance: BalanceResponse?,
+) {
+    val snackbar = LocalSnackbarController.current
+    val context = LocalContext.current
+
+    var showMenu by remember { mutableStateOf(false) }
+    var pendingExportText by remember { mutableStateOf("") }
+    var pendingExportLabel by remember { mutableStateOf("") }
+    val saveFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/plain")
+    ) { uri ->
+        if (uri != null && pendingExportText.isNotEmpty()) {
+            try {
+                context.contentResolver.openOutputStream(uri)?.use { out ->
+                    out.write(pendingExportText.toByteArray(Charsets.UTF_8))
+                }
+                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
+            } catch (e: Exception) {
+                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
+            pendingExportText = ""
+            pendingExportLabel = ""
+        }
+    }
+
+    Box {
+        IconButton(onClick = { showMenu = true }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.common_more_options),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.common_copy)) },
+                leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                onClick = {
+                    showMenu = false
+                    val text = getDashboardTextContent(room, balance)
+                    copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
+                }
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.common_export)) },
+                leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
+                onClick = {
+                    showMenu = false
+                    pendingExportText = getDashboardTextContent(room, balance)
+                    pendingExportLabel = context.getString(R.string.dashboard_title)
+                    saveFileLauncher.launch("electricity_dashboard.txt")
+                }
+            )
         }
     }
 }

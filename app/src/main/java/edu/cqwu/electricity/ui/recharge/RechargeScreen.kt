@@ -37,6 +37,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -73,8 +74,8 @@ import edu.cqwu.electricity.data.network.AccountManager
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
-import edu.cqwu.electricity.ui.components.TabScaffold
 import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.util.ToastUtils
 
 /**
@@ -93,13 +94,11 @@ private val PRESET_AMOUNTS = listOf(5.0, 10.0, 20.0, 50.0, 100.0, 200.0)
 fun RechargeScreen(
     viewModel: RechargeViewModel,
     onBack: () -> Unit,
-    onNavigateToPayment: () -> Unit,
-    onNavigateToH5Recharge: () -> Unit = {},
-    showTopBar: Boolean = true
 ) {
     val recharge by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val snackbar = LocalSnackbarController.current
+    val nav = LocalNavController.current
 
     // 房间切换弹窗状态
     var showRoomSwitchDialog by remember { mutableStateOf(false) }
@@ -159,76 +158,10 @@ fun RechargeScreen(
     // 是否可以切换账户（仅账号模式有多房间时允许切换）
     val canSwitchAccount = recharge.roomList.size > 1
 
-    // 使用统一 TabScaffold
-    TabScaffold(
-        showTopBar = showTopBar,
-        title = stringResource(R.string.recharge_title),
-        onBack = {
-            viewModel.clearRechargeState()
-            viewModel.clearAccountRechargeState()
-            onBack()
-        },
-        actions = {
-            // 提示按钮始终显示
-            IconButton(onClick = { showInfoDialog = true }) {
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = stringResource(R.string.recharge_hint),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    ) { paddingValues ->
-        RechargeContent(
-            viewModel = viewModel,
-            recharge = recharge,
-            showInfoDialog = showInfoDialog,
-            onShowInfoDialogChange = { showInfoDialog = it },
-            showOtherRechargeDialog = showOtherRechargeDialog,
-            onShowOtherRechargeDialogChange = { showOtherRechargeDialog = it },
-            showRoomSwitchDialog = showRoomSwitchDialog,
-            onShowRoomSwitchDialogChange = { showRoomSwitchDialog = it },
-            paddingValues = paddingValues,
-            hasValidAmount = hasValidAmount,
-            accountName = accountName,
-            canSwitchAccount = canSwitchAccount,
-            showRechargeContent = showRechargeContent,
-            onNavigateToPayment = onNavigateToPayment,
-            onNavigateToH5Recharge = onNavigateToH5Recharge,
-        )
-    }
-}
-
-/**
- * 充值页面内容区域（不含 Scaffold/TopAppBar）
- */
-@Composable
-private fun RechargeContent(
-    viewModel: RechargeViewModel,
-    recharge: RechargeUiState,
-    showInfoDialog: Boolean,
-    onShowInfoDialogChange: (Boolean) -> Unit,
-    showOtherRechargeDialog: Boolean,
-    onShowOtherRechargeDialogChange: (Boolean) -> Unit,
-    showRoomSwitchDialog: Boolean,
-    onShowRoomSwitchDialogChange: (Boolean) -> Unit,
-    paddingValues: PaddingValues,
-    hasValidAmount: Boolean,
-    accountName: String,
-    canSwitchAccount: Boolean,
-    showRechargeContent: Boolean,
-    onNavigateToPayment: () -> Unit,
-    onNavigateToH5Recharge: () -> Unit,
-) {
-    val context = LocalContext.current
-    val snackbar = LocalSnackbarController.current
-
     PullToRefreshBox(
         isRefreshing = recharge.isRefreshing,
         onRefresh = { viewModel.refreshRechargeData() },
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -294,10 +227,11 @@ private fun RechargeContent(
         }
 
         // 错误提示
-        if (recharge.error != null) {
+        val errorMsg = recharge.error
+        if (errorMsg != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = recharge.error,
+                text = errorMsg,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.fillMaxWidth()
@@ -325,7 +259,7 @@ private fun RechargeContent(
                             .fillMaxWidth()
                             .then(
                                 if (canSwitchAccount) {
-                                    Modifier.clickable { onShowRoomSwitchDialogChange(true) }
+                                    Modifier.clickable { showRoomSwitchDialog = true }
                                 } else {
                                     Modifier
                                 }
@@ -434,7 +368,7 @@ private fun RechargeContent(
 
             // ── "立即充值"按钮 ──
             Button(
-                onClick = { onNavigateToPayment() },
+                onClick = { nav.navigate(Routes.PAYMENT_SELECTION) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -457,7 +391,7 @@ private fun RechargeContent(
                 text = stringResource(R.string.recharge_other_methods),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onShowOtherRechargeDialogChange(true) }
+                    .clickable { showOtherRechargeDialog = true }
                     .padding(vertical = 10.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
@@ -470,7 +404,7 @@ private fun RechargeContent(
             ImportantNotesCard()
         }
     }
-} // PullToRefreshBox
+    } // PullToRefreshBox
 
     // ================================================================
     //  房间切换弹窗（仅账号模式有多房间时显示）
@@ -478,12 +412,13 @@ private fun RechargeContent(
     if (showRoomSwitchDialog && recharge.roomList.isNotEmpty()) {
         RoomSelectionDialog(
             rooms = recharge.roomList,
+            onNavigateToWebView = { url, title -> nav.navigate(Routes.unifiedWebViewRoute(url, title)) },
             onRoomSelected = { room ->
                 viewModel.switchAccountRoom(room)
-                onShowRoomSwitchDialogChange(false)
+                showRoomSwitchDialog = false
             },
             onDismiss = {
-                onShowRoomSwitchDialogChange(false)
+                showRoomSwitchDialog = false
             }
         )
     }
@@ -493,7 +428,7 @@ private fun RechargeContent(
     // ================================================================
     if (showInfoDialog) {
         BottomSheetDialog(
-            onDismissRequest = { onShowInfoDialogChange(false) },
+            onDismissRequest = { showInfoDialog = false },
             title = stringResource(R.string.recharge_hint)
         ) {
             Column(
@@ -558,8 +493,8 @@ private fun RechargeContent(
                                 )
                             )
                         ) {
-                            onShowInfoDialogChange(false)
-                            onShowOtherRechargeDialogChange(true)
+                            showInfoDialog = false
+                            showOtherRechargeDialog = true
                         }
                     )
                     append(stringResource(R.string.recharge_hint_item1_link))
@@ -581,7 +516,7 @@ private fun RechargeContent(
     // ================================================================
     if (showOtherRechargeDialog) {
         BottomSheetDialog(
-            onDismissRequest = { onShowOtherRechargeDialogChange(false) },
+            onDismissRequest = { showOtherRechargeDialog = false },
             title = stringResource(R.string.recharge_other_method_title)
         ) {
             // 今日校园充值
@@ -595,7 +530,7 @@ private fun RechargeContent(
                     } catch (_: ActivityNotFoundException) {
                         snackbar.show(context.getString(R.string.recharge_install_campus_app))
                     }
-                    onShowOtherRechargeDialogChange(false)
+                    showOtherRechargeDialog = false
                 }
             )
 
@@ -604,8 +539,8 @@ private fun RechargeContent(
                 icon = Icons.Default.Public,
                 title = stringResource(R.string.recharge_method_inapp_h5),
                 onClick = {
-                    onShowOtherRechargeDialogChange(false)
-                    onNavigateToH5Recharge()
+                    showOtherRechargeDialog = false
+                    nav.navigate(Routes.RECHARGE_H5_WEBVIEW)
                 }
             )
 
@@ -623,7 +558,7 @@ private fun RechargeContent(
                     } catch (_: ActivityNotFoundException) {
                         snackbar.show(context.getString(R.string.common_no_browser))
                     }
-                    onShowOtherRechargeDialogChange(false)
+                    showOtherRechargeDialog = false
                 }
             )
         }
@@ -748,11 +683,31 @@ private fun ImportantNotesCard() {
 private fun RoomSelectionDialog(
     rooms: List<UserRoomInfo>,
     onRoomSelected: (UserRoomInfo) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onNavigateToWebView: (String, String) -> Unit = { _, _ -> }
 ) {
+    val context = LocalContext.current
     BottomSheetDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.recharge_select_room_title)
+        title = stringResource(R.string.recharge_select_room_title),
+        leadingButton = {
+            TextButton(onClick = {
+                onDismiss()
+                onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
+                    context.getString(R.string.electricity_bind_account))
+            }) {
+                Text(stringResource(R.string.electricity_bind_account))
+            }
+        },
+        trailingButton = {
+            TextButton(onClick = {
+                onDismiss()
+                onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
+                    context.getString(R.string.electricity_unbind_account))
+            }) {
+                Text(stringResource(R.string.electricity_unbind_account))
+            }
+        }
     ) {
         Text(
             text = stringResource(R.string.recharge_select_room_hint),

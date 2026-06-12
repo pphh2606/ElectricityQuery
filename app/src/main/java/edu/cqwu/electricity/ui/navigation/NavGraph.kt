@@ -46,8 +46,6 @@ import edu.cqwu.electricity.ui.cardcenter.BillScreen
 import edu.cqwu.electricity.ui.cardcenter.BillViewModel
 import edu.cqwu.electricity.ui.cardcenter.CardCenterScreen
 import edu.cqwu.electricity.ui.cardcenter.CardLostScreen
-import edu.cqwu.electricity.ui.electricity.BuildingSelectionScreen
-import edu.cqwu.electricity.ui.electricity.DashboardScreen
 import edu.cqwu.electricity.ui.electricity.DetailScreen
 import edu.cqwu.electricity.ui.electricity.DetailViewModel
 import edu.cqwu.electricity.ui.electricity.ElectricityMainScreen
@@ -97,9 +95,7 @@ object Routes {
     const val PERSONALIZATION = "personalization"
     const val QR_CODE_SETTINGS = "qr_code_settings"
     const val QR_LOGIN = "qr_login"
-    const val BUILDING_SELECTION = "building_selection"
     const val ELECTRICITY_MAIN = "electricity_main"
-    const val DASHBOARD = "dashboard"
     const val DETAIL = "detail/{detailType}/{roomId}"
     const val RECHARGE = "recharge"
     const val PAYMENT_SELECTION = "payment_selection"
@@ -357,18 +353,6 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.MAIN_TABS) {
             MainTabScreen(
                 animationSettings = animationSettings,
-                onNavigateToBuildingSelection = { navController.navigate(Routes.ELECTRICITY_MAIN) },
-                onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
-                onNavigateToLogin = { navController.navigate(Routes.LOGIN) },
-                onNavigateToScan = { navController.navigate(Routes.SCAN) },
-                onNavigateToQrCode = { type -> navController.navigate(Routes.qrCodeRoute(type)) },
-                onNavigateToCardCenter = { navController.navigate(Routes.CARD_CENTER) },
-                onNavigateToNotice = { navController.navigate(Routes.NOTICE) },
-                onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
-                onNavigateToFeedback = { navController.navigate(Routes.FEEDBACK) },
-                onNavigateToFeeServiceHall = { navController.navigate(Routes.FEE_SERVICE_HALL) },
-                onNavigateToMyInfo = { navController.navigate(Routes.MY_INFO) },
-                onNavigateToAddShortcut = { navController.navigate(Routes.ADD_SHORTCUT) },
             )
         }
 
@@ -394,10 +378,6 @@ fun AppNavGraph(
             CardCenterScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToQrCode = { type -> navController.navigate(Routes.qrCodeRoute(type)) },
-                onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
-                onNavigateToAccountInfo = { navController.navigate(Routes.ACCOUNT_INFO) },
-                onNavigateToCardLost = { navController.navigate(Routes.CARD_LOST) },
-                onNavigateToBill = { navController.navigate(Routes.BILL) },
             )
         }
 
@@ -469,10 +449,6 @@ fun AppNavGraph(
                 url = url,
                 initialTitle = title.ifBlank { "" },
                 onClose = { navController.popBackStack() },
-                onNavigateToLogin = { skipNextCasRedirect = false; navController.navigate(Routes.LOGIN) },
-                onNavigateToWebView = { newUrl, newTitle ->
-                    navController.navigate(Routes.unifiedWebViewRoute(newUrl, newTitle))
-                },
                 skipNextCasRedirect = skipNextCasRedirect,
                 onSkipConsumed = { skipNextCasRedirect = false },
             )
@@ -484,44 +460,6 @@ fun AppNavGraph(
                 rechargeViewModel = rechargeViewModel,
                 myRoomViewModel = myRoomViewModel,
                 onBack = { navController.popBackStack() },
-                onNavigateToDetail = { detailType, roomId -> navController.navigate(Routes.detailRoute(detailType, roomId)) },
-                onNavigateToPayment = { navController.navigate(Routes.PAYMENT_SELECTION) },
-                onNavigateToH5Recharge = { navController.navigate(Routes.RECHARGE_H5_WEBVIEW) },
-                onNavigateToRechargeRecord = { roomId -> navController.navigate(Routes.rechargeRecordRoute(roomId)) },
-            )
-        }
-
-        // 保留旧的 BUILDING_SELECTION + DASHBOARD 路由支持（Tab 容器内部使用的独立页面）：
-        // 当从其他页面直接导航到这些路由时仍然可用
-        animatedComposable(settings = animationSettings, route = Routes.BUILDING_SELECTION) {
-            BuildingSelectionScreen(
-                viewModel = viewModel,
-                onBack = { navController.popBackStack() },
-                onNavigateToAccountSelection = { navController.navigate(Routes.RECHARGE) },
-            )
-        }
-
-        animatedComposable(settings = animationSettings, route = Routes.DASHBOARD) {
-            val s by viewModel.uiState.collectAsState()
-            DashboardScreen(
-                room = s.selectedRoom,
-                balance = s.balance,
-                myRoomList = emptyList(),
-                isRefreshing = s.isBalanceRefreshing,
-                isLoading = s.isLoading,
-                error = s.error,
-                onRefresh = { viewModel.refreshBalance() },
-                onBackToSelection = { navController.popBackStack(Routes.BUILDING_SELECTION, false) },
-                onNavigateToDetail = { detailType ->
-                    val roomId = s.selectedRoom?.id ?: ""
-                    navController.navigate(Routes.detailRoute(detailType, roomId))
-                },
-                onNavigateToAccountSelection = { navController.navigate(Routes.RECHARGE) },
-                onNavigateToH5Recharge = { navController.navigate(Routes.RECHARGE_H5_WEBVIEW) },
-                onNavigateToRechargeRecord = {
-                    val roomId = s.selectedRoom?.id ?: ""
-                    navController.navigate(Routes.rechargeRecordRoute(roomId))
-                },
             )
         }
 
@@ -550,8 +488,6 @@ fun AppNavGraph(
             RechargeScreen(
                 viewModel = rechargeViewModel,
                 onBack = { navController.popBackStack() },
-                onNavigateToPayment = { navController.navigate(Routes.PAYMENT_SELECTION) },
-                onNavigateToH5Recharge = { navController.navigate(Routes.RECHARGE_H5_WEBVIEW) },
             )
         }
 
@@ -559,7 +495,7 @@ fun AppNavGraph(
             PaymentSelectionScreen(
                 viewModel = rechargeViewModel,
                 onBack = { navController.popBackStack() },
-                onPaymentComplete = { navController.popBackStack(Routes.DASHBOARD, false) },
+                onPaymentComplete = { navController.popBackStack(Routes.ELECTRICITY_MAIN, false) },
             )
         }
 
@@ -580,7 +516,7 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.RECHARGE_H5_WEBVIEW) {
             UnifiedWebViewScreen(
                 url = Routes.H5_RECHARGE_URL,
-                onClose = { navController.popBackStack(Routes.DASHBOARD, false) },
+                onClose = { navController.popBackStack(Routes.ELECTRICITY_MAIN, false) },
             )
         }
 
@@ -596,8 +532,6 @@ fun AppNavGraph(
             QrCodeDisplayScreen(
                 qrCodeType = qrCodeType, title = title,
                 onBack = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(Routes.LOGIN) },
-                onNavigateToQrCodeSettings = { navController.navigate(Routes.QR_CODE_SETTINGS) },
             )
         }
 
@@ -605,7 +539,6 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.LOGIN) {
             LoginScreen(
                 onBack = { skipNextCasRedirect = true; navController.popBackStack() },
-                onNavigateToQrLogin = { navController.navigate(Routes.QR_LOGIN) },
             )
         }
 
@@ -623,7 +556,6 @@ fun AppNavGraph(
         ) {
             LoginScreen(
                 onBack = { skipNextCasRedirect = true; navController.popBackStack() },
-                onNavigateToQrLogin = { navController.navigate(Routes.QR_LOGIN) },
             )
         }
 
@@ -640,9 +572,6 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
-                onNavigateToPersonalization = { navController.navigate(Routes.PERSONALIZATION) },
-                onNavigateToConfig = { navController.navigate(Routes.CONFIG) },
-                onNavigateToAbout = { navController.navigate(Routes.ABOUT) },
             )
         }
 

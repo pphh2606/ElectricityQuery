@@ -59,6 +59,8 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.data.model.HallItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.ReLoginContent
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import kotlinx.coroutines.launch
@@ -90,14 +92,13 @@ fun HallTopBar() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HallPageContent(
-    onNavigateToWebView: (url: String, title: String) -> Unit,
-    onNavigateToLogin: () -> Unit = {},
     hallViewModel: HallViewModel = viewModel(),
 ) {
     val uiState by hallViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     val hallPagerState = rememberPagerState(pageCount = { 2 })
     val snackbar = LocalSnackbarController.current
+    val nav = LocalNavController.current
 
     // 收藏点击回调：仅触发 ViewModel 网络请求（不再乐观显示 Toast）
     val handleFavoriteClick: (HallItem) -> Unit = { item ->
@@ -165,7 +166,7 @@ fun HallPageContent(
                             togglingAppId = uiState.togglingFavoriteAppId,
                             onItemClick = { item ->
                                 val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                onNavigateToWebView(url, item.appName)
+                                nav.navigate(Routes.unifiedWebViewRoute(url, item.appName))
                             },
                             onFavoriteClick = handleFavoriteClick,
                         )
@@ -179,9 +180,9 @@ fun HallPageContent(
                             errorMessage = uiState.errorMessage,
                             onItemClick = { item ->
                                 val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                onNavigateToWebView(url, item.appName)
+                                nav.navigate(Routes.unifiedWebViewRoute(url, item.appName))
                             },
-                            onReLogin = onNavigateToLogin,
+                            onReLogin = { nav.navigate(Routes.LOGIN) },
                             onRetry = { hallViewModel.loadFavorites() },
                         )
                     }

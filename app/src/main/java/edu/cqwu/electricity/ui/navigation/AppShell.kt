@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import edu.cqwu.electricity.ui.components.CustomSnackbarVisuals
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.SnackbarController
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.util.ToastUtils
 
 /**
@@ -46,7 +47,10 @@ fun AppShell(
 ) {
     val snackbarController = remember { SnackbarController() }
 
-    CompositionLocalProvider(LocalSnackbarController provides snackbarController) {
+    CompositionLocalProvider(
+        LocalSnackbarController provides snackbarController,
+        LocalNavController provides navController,
+    ) {
         Box(modifier = modifier.fillMaxSize()) {
             // AppNavGraph 使用独立的 fillMaxSize()，避免外部 modifier 中的 padding 叠加影响布局
             AppNavGraph(

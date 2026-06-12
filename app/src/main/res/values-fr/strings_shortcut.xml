@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Raccourcis                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_add_shortcut">Raccourcis</string>
+    <string name="shortcut_title">Ajouter un raccourci</string>
+    <string name="shortcut_name_label">Nom du raccourci</string>
+    <string name="shortcut_select_function">Sélectionner une fonction</string>
+    <string name="shortcut_select_function_hint">Veuillez sélectionner une fonction</string>
+    <string name="shortcut_preview">Aperçu</string>
+    <string name="shortcut_create">Ajouter à l\'écran d\'accueil</string>
+    <string name="shortcut_success">Raccourci ajouté à l\'écran d\'accueil</string>
+    <string name="shortcut_failed">Échec de l\'ajout du raccourci</string>
+    <string name="shortcut_name_hint">Veuillez saisir un nom</string>
+    <string name="shortcut_no_function_selected">Veuillez d\'abord sélectionner une fonction</string>
+    <string name="shortcut_name_too_long">Nom trop long, 10 caractères max recommandé</string>
+</resources>

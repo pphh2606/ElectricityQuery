@@ -80,4 +80,6 @@
     <string name="electricity_myroom_querying">Récupération des infos du dortoir…</string>
     <string name="electricity_recharge_hint_item2">2. Si vous obtenez toujours une erreur après l\'inscription, essayez de saisir le numéro étudiant de l\'administrateur du dortoir ou du premier inscrit de la chambre.</string>
     <string name="electricity_recharge_hint_item3">3. L\'historique de recharge est enregistré sous le numéro étudiant correspondant. Si cela vous dérange, veuillez utiliser d\'autres moyens de recharge.</string>
+    <string name="electricity_bind_account">Lier le compte</string>
+    <string name="electricity_unbind_account">Dissocier le compte</string>
 </resources>

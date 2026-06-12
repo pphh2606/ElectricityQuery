@@ -68,6 +68,8 @@ import edu.cqwu.electricity.data.network.SessionExpiredException
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.QrCodeView
 import edu.cqwu.electricity.ui.components.ReLoginContent
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -90,11 +92,10 @@ fun QrCodeDisplayScreen(
     qrCodeType: QrCodeType,
     title: String,
     onBack: () -> Unit,
-    onNavigateToLogin: () -> Unit = {},
-    onNavigateToQrCodeSettings: () -> Unit = {},
 ) {
     var qrCodeContent by rememberSaveable { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    val nav = LocalNavController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val qrCodeSettings = LocalQrCodeSettings.current
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
@@ -324,7 +325,7 @@ fun QrCodeDisplayScreen(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    IconButton(onClick = onNavigateToQrCodeSettings) {
+                    IconButton(onClick = { nav.navigate(Routes.QR_CODE_SETTINGS) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = stringResource(R.string.qrcode_display_settings),
@@ -365,7 +366,7 @@ fun QrCodeDisplayScreen(
                         ReLoginContent(
                             errorMessage = errorMessage,
                             requiresReLogin = true,
-                            onReLogin = onNavigateToLogin,
+                            onReLogin = { nav.navigate(Routes.LOGIN) },
                             onRetry = {
                                 requiresReLogin = false
                                 isLoading = true

@@ -95,11 +95,6 @@ fun ConfigScreen(
                         onClick = onNavigateToUserAgent,
                     )
 
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                    )
-
                     // ── 语言 ──
                     ConfigEntry(
                         icon = Icons.Default.Language,

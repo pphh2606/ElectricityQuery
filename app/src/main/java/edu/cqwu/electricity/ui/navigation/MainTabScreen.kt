@@ -28,6 +28,7 @@ import edu.cqwu.electricity.ui.home.HomeViewModel
 import edu.cqwu.electricity.ui.profile.ProfilePageContent
 import edu.cqwu.electricity.ui.profile.ProfileTopBar
 import edu.cqwu.electricity.ui.theme.AnimationSettings
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import kotlinx.coroutines.launch
 
 /**
@@ -43,24 +44,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainTabScreen(
     animationSettings: AnimationSettings,
-    onNavigateToBuildingSelection: () -> Unit,
-    onNavigateToWebView: (url: String, title: String) -> Unit,
-    onNavigateToLogin: () -> Unit,
-    onNavigateToQrCode: (type: QrCodeType) -> Unit,
-    onNavigateToScan: () -> Unit,
-    onNavigateToCardCenter: () -> Unit,
-    onNavigateToNotice: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToFeedback: () -> Unit = {},
-    onNavigateToFeeServiceHall: () -> Unit = {},
-    onNavigateToMyInfo: () -> Unit = {},
-    onNavigateToAddShortcut: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val pagerState = rememberPagerState(pageCount = { bottomNavTabs.size })
     val scope = rememberCoroutineScope()
     // 共享 HomeViewModel，让 TopAppBar 和 HomePageContent 访问同一搜索状态
     val homeViewModel: HomeViewModel = viewModel()
+    val nav = LocalNavController.current
 
     val userScrollEnabled = animationSettings.reduceMotion != ReduceMotion.ON
 
@@ -72,7 +62,6 @@ fun MainTabScreen(
                     val searchQuery = uiState.searchQuery
                     val isSearching = uiState.isSearching
                     HomeTopBar(
-                        onNavigateToScan = onNavigateToScan,
                         searchQuery = searchQuery,
                         isSearching = isSearching,
                         onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
@@ -81,9 +70,7 @@ fun MainTabScreen(
                     )
                 }
                 1 -> HallTopBar()
-                2 -> ProfileTopBar(
-                    onNavigateToSettings = onNavigateToSettings,
-                )
+                2 -> ProfileTopBar()
             }
         },
         bottomBar = {
@@ -117,30 +104,15 @@ fun MainTabScreen(
         ) { page ->
             when (page) {
                 0 -> HomePageContent(
-                    onNavigateToBuildingSelection = onNavigateToBuildingSelection,
-                    onNavigateToWebView = onNavigateToWebView,
-                    onNavigateToQrCode = onNavigateToQrCode,
-                    onNavigateToCardCenter = onNavigateToCardCenter,
-                    onNavigateToNotice = onNavigateToNotice,
-                    onNavigateToFeeServiceHall = onNavigateToFeeServiceHall,
-                    onNavigateToMyInfo = onNavigateToMyInfo,
                     homeViewModel = homeViewModel,
                 )
                 1 -> {
                     val hallViewModel: HallViewModel = viewModel()
                     HallPageContent(
-                        onNavigateToWebView = onNavigateToWebView,
-                        onNavigateToLogin = onNavigateToLogin,
                         hallViewModel = hallViewModel,
                     )
                 }
-                2 -> ProfilePageContent(
-                    onNavigateToWebView = onNavigateToWebView,
-                    onNavigateToLogin = onNavigateToLogin,
-                    onNavigateToFeedback = onNavigateToFeedback,
-                    onNavigateToMyInfo = onNavigateToMyInfo,
-                    onNavigateToAddShortcut = onNavigateToAddShortcut,
-                )
+                2 -> ProfilePageContent()
             }
         }
     }

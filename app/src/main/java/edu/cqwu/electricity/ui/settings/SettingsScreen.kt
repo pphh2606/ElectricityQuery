@@ -29,6 +29,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import androidx.compose.ui.Alignment
@@ -44,10 +46,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    onNavigateToPersonalization: () -> Unit,
-    onNavigateToConfig: () -> Unit = {},
-    onNavigateToAbout: () -> Unit = {},
 ) {
+    val nav = LocalNavController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
     Scaffold(
@@ -87,21 +87,21 @@ fun SettingsScreen(
                         icon = Icons.Default.Palette,
                         title = stringResource(R.string.settings_personalization),
                         subtitle = stringResource(R.string.settings_personalization_desc),
-                        onClick = onNavigateToPersonalization,
+                        onClick = { nav.navigate(Routes.PERSONALIZATION) },
                     )
 
                     SettingsEntry(
                         icon = Icons.Default.Tune,
                         title = stringResource(R.string.settings_config),
                         subtitle = stringResource(R.string.settings_config_desc),
-                        onClick = onNavigateToConfig,
+                        onClick = { nav.navigate(Routes.CONFIG) },
                     )
 
                     SettingsEntry(
                         icon = Icons.Default.Info,
                         title = stringResource(R.string.settings_about),
                         subtitle = stringResource(R.string.settings_about_desc),
-                        onClick = onNavigateToAbout,
+                        onClick = { nav.navigate(Routes.ABOUT) },
                     )
                 }
             }

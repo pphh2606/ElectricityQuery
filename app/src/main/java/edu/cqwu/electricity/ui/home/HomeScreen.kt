@@ -83,6 +83,8 @@ import edu.cqwu.electricity.data.model.HomeAppIds
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.CustomWebsiteDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
@@ -95,13 +97,13 @@ import edu.cqwu.electricity.util.WebViewUrlUtil
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopBar(
-    onNavigateToScan: () -> Unit,
     searchQuery: String,
     isSearching: Boolean,
     onSearchQueryChange: (String) -> Unit,
     onToggleSearch: () -> Unit,
     onCloseSearch: () -> Unit,
 ) {
+    val nav = LocalNavController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -191,7 +193,7 @@ fun HomeTopBar(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                IconButton(onClick = onNavigateToScan) {
+                IconButton(onClick = { nav.navigate(Routes.SCAN) }) {
                     Icon(
                         imageVector = Icons.Default.PhotoCamera,
                         contentDescription = stringResource(R.string.common_scan),
@@ -212,18 +214,12 @@ fun HomeTopBar(
  */
 @Composable
 fun HomePageContent(
-    onNavigateToBuildingSelection: () -> Unit,
-    onNavigateToWebView: (url: String, title: String) -> Unit,
-    onNavigateToQrCode: (edu.cqwu.electricity.data.network.QrCodeType) -> Unit,
-    onNavigateToCardCenter: () -> Unit,
-    onNavigateToNotice: () -> Unit,
-    onNavigateToFeeServiceHall: () -> Unit = {},
-    onNavigateToMyInfo: () -> Unit = {},
     homeViewModel: HomeViewModel = viewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val snackbar = LocalSnackbarController.current
+    val nav = LocalNavController.current
 
     // 外部 Intent 确认弹窗状态：（appName, url）
     var pendingExternalIntent by remember { mutableStateOf<Pair<String, String>?>(null) }
@@ -262,13 +258,7 @@ fun HomePageContent(
     val handleAppClickInternal: (HomeApp) -> Unit = { app ->
         handleAppClick(
             app = app,
-            onNavigateToBuildingSelection = onNavigateToBuildingSelection,
-            onNavigateToWebView = onNavigateToWebView,
-            onNavigateToQrCode = onNavigateToQrCode,
-            onNavigateToCardCenter = onNavigateToCardCenter,
-            onNavigateToNotice = onNavigateToNotice,
-            onNavigateToFeeServiceHall = onNavigateToFeeServiceHall,
-            onNavigateToMyInfo = onNavigateToMyInfo,
+            nav = nav,
             onExternalIntent = { url, name -> pendingExternalIntent = name to url }
         )
     }
@@ -416,7 +406,7 @@ fun HomePageContent(
                             },
                             onServiceClick = { app -> handleAppClickInternal(app) },
                             onCustomServiceClick = { entry ->
-                                onNavigateToWebView(entry.url, entry.title)
+                                nav.navigate(Routes.unifiedWebViewRoute(entry.url, entry.title))
                             },
                             onAddCustomService = {
                                 showCustomWebsiteDialog = true
@@ -495,48 +485,42 @@ private const val TAG = "HomeScreen"
 
 private fun handleAppClick(
     app: HomeApp,
-    onNavigateToBuildingSelection: () -> Unit,
-    onNavigateToWebView: (url: String, title: String) -> Unit,
-    onNavigateToQrCode: (type: edu.cqwu.electricity.data.network.QrCodeType) -> Unit,
-    onNavigateToCardCenter: () -> Unit,
-    onNavigateToNotice: () -> Unit,
-    onNavigateToFeeServiceHall: () -> Unit = {},
-    onNavigateToMyInfo: () -> Unit = {},
+    nav: androidx.navigation.NavHostController,
     onExternalIntent: (url: String, appName: String) -> Unit
 ) {
     // 支付码 → 原生二维码显示
     if (app.appId == HomeAppIds.PAY_QR) {
-        onNavigateToQrCode(edu.cqwu.electricity.data.network.QrCodeType.PAY)
+        nav.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.PAY))
         return
     }
     // 乘车码 → 原生二维码显示
     if (app.appId == HomeAppIds.BUS_QR) {
-        onNavigateToQrCode(edu.cqwu.electricity.data.network.QrCodeType.BUS)
+        nav.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.BUS))
         return
     }
     // 学生宿舍电费充值 → 打开原生电费查询
     if (app.appId == HomeAppIds.DORM_ELECTRICITY) {
-        onNavigateToBuildingSelection()
+        nav.navigate(Routes.ELECTRICITY_MAIN)
         return
     }
     // 卡中心 → 原生卡中心页面
     if (app.appId == HomeAppIds.CARD_CENTER) {
-        onNavigateToCardCenter()
+        nav.navigate(Routes.CARD_CENTER)
         return
     }
     // 通知公告 → 原生通知公告列表页
     if (app.appId == HomeAppIds.NOTICE) {
-        onNavigateToNotice()
+        nav.navigate(Routes.NOTICE)
         return
     }
     // 缴费服务大厅 → 打开原生页面
     if (app.appId == HomeAppIds.FEE_SERVICE_HALL) {
-        onNavigateToFeeServiceHall()
+        nav.navigate(Routes.FEE_SERVICE_HALL)
         return
     }
     // 我的信息 → 打开原生页面
     if (app.appId == HomeAppIds.MY_INFO) {
-        onNavigateToMyInfo()
+        nav.navigate(Routes.MY_INFO)
         return
     }
 
@@ -549,7 +533,7 @@ private fun handleAppClick(
     }
 
     // http/https → 统一内置浏览器
-    onNavigateToWebView(url, app.name)
+    nav.navigate(Routes.unifiedWebViewRoute(url, app.name))
 }
 
 /**

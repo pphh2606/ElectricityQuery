@@ -151,14 +151,6 @@ fun PersonalizationScreen(
                         onClick = {
                             showColorPicker = true
                         },
-                        trailing = {
-                            Box(
-                                modifier = Modifier
-                                    .size(24.dp).clip(CircleShape)
-                                    .background(customSeedColor, CircleShape)
-                                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), CircleShape)
-                            )
-                        },
                     )
                     SettingRow(
                         icon = Icons.Default.FormatPaint, title = stringResource(R.string.personalization_topbar_color),

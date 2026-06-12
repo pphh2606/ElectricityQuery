@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  اختصارات                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="profile_add_shortcut">اختصارات</string>
+    <string name="shortcut_title">إضافة اختصار</string>
+    <string name="shortcut_name_label">اسم الاختصار</string>
+    <string name="shortcut_select_function">اختر وظيفة</string>
+    <string name="shortcut_select_function_hint">يرجى اختيار وظيفة</string>
+    <string name="shortcut_preview">معاينة</string>
+    <string name="shortcut_create">إضافة إلى الشاشة الرئيسية</string>
+    <string name="shortcut_success">تمت إضافة الاختصار إلى الشاشة الرئيسية</string>
+    <string name="shortcut_failed">فشل إضافة الاختصار</string>
+    <string name="shortcut_name_hint">يرجى إدخال اسم</string>
+    <string name="shortcut_no_function_selected">يرجى اختيار وظيفة أولاً</string>
+    <string name="shortcut_name_too_long">الاسم طويل جداً، يُوصى بعدم تجاوز 10 أحرف</string>
+</resources>

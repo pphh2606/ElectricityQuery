@@ -80,4 +80,6 @@
     <string name="electricity_myroom_querying">マイ寮室情報を取得中…</string>
     <string name="electricity_recharge_hint_item2">2.登録後もユーザー情報取得に失敗する場合は、寮室管理者の学籍番号または寮室で最初にプラットフォームに登録した学籍番号を入力してみてください。</string>
     <string name="electricity_recharge_hint_item3">3.チャージ記録は学籍番号に対応するユーザーに記録されます。気になる場合は他のチャージ方法をご確認ください。</string>
+    <string name="electricity_bind_account">口座紐付け</string>
+    <string name="electricity_unbind_account">口座紐付け解除</string>
 </resources>

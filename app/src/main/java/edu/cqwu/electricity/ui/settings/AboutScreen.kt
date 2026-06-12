@@ -163,19 +163,24 @@ fun AboutScreen(
                     )
 
                     // 构建信息
+                    val isCiBuild = BuildConfig.BUILD_SOURCE == "github-actions"
                     AboutEntry(
                         icon = Icons.Default.Info,
                         title = stringResource(R.string.about_build_info),
-                        subtitle = "Build Time: ${BuildConfig.BUILD_TIME}\nCommit Hash: ${BuildConfig.GIT_COMMIT_HASH}",
+                        subtitle = "Build Time: ${BuildConfig.BUILD_TIME}\n" +
+                            "Commit Hash: ${BuildConfig.GIT_COMMIT_HASH}\n" +
+                            "Source: ${if (isCiBuild) "GitHub Actions" else "Local Build"}",
                         onClick = {
-                            try {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("https://github.com/pphh2606/ElectricityQuery/commit/${BuildConfig.GIT_COMMIT_HASH}")
-                                )
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                snackbar.show(context.getString(R.string.common_no_browser))
+                            if (isCiBuild) {
+                                try {
+                                    val intent = Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://github.com/pphh2606/ElectricityQuery/commit/${BuildConfig.GIT_COMMIT_HASH}")
+                                    )
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    snackbar.show(context.getString(R.string.common_no_browser))
+                                }
                             }
                         },
                     )

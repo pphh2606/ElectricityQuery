@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowInsetsControllerCompat
 import edu.cqwu.electricity.data.local.NightMode
@@ -84,6 +85,10 @@ data class QrCodeSettings(
 
 val LocalQrCodeSettings = staticCompositionLocalOf<QrCodeSettings> {
     error("No QrCodeSettings provided")
+}
+
+val LocalNavController = staticCompositionLocalOf<NavHostController> {
+    error("No NavController provided")
 }
 
 @Composable
