@@ -69,22 +69,34 @@ object ShortcutHelper {
     }
 
     /**
+     * 快捷方式创建结果
+     */
+    sealed class CreateResult {
+        /** 创建成功 */
+        data object Success : CreateResult()
+        /** 系统不支持快捷方式创建 */
+        data object NotSupported : CreateResult()
+        /** 创建失败（权限不足或系统拦截） */
+        data class Failed(val exception: Exception?) : CreateResult()
+    }
+
+    /**
      * 创建桌面固定快捷方式。
      *
      * @param context 上下文
      * @param appInfo 快捷方式携带的应用信息
      * @param label 在桌面显示的名称
-     * @return true 表示请求已提交成功，false 表示创建失败
+     * @return [CreateResult] 创建结果
      */
     suspend fun createPinnedShortcut(
         context: Context,
         appInfo: ShortcutAppInfo,
         label: String
-    ): Boolean {
+    ): CreateResult {
         // 前置检查：桌面是否支持固定快捷方式
         if (!isSupported(context)) {
             Log.w(TAG, "当前桌面不支持固定快捷方式")
-            return false
+            return CreateResult.NotSupported
         }
 
         return try {
@@ -114,10 +126,10 @@ object ShortcutHelper {
 
             ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
             Log.d(TAG, "快捷方式创建请求已提交: id=$shortcutId, label=$label")
-            true
+            CreateResult.Success
         } catch (e: Exception) {
             Log.e(TAG, "创建快捷方式失败", e)
-            false
+            CreateResult.Failed(e)
         }
     }
 

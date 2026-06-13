@@ -281,6 +281,7 @@ private fun NavGraphBuilder.animatedComposable(
 fun AppNavGraph(
     navController: NavHostController,
     shortcutAppInfo: edu.cqwu.electricity.util.ShortcutHelper.ShortcutAppInfo? = null,
+    shortcutLaunchId: Int = 0,
     modifier: Modifier = Modifier,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -315,7 +316,7 @@ fun AppNavGraph(
     }
 
     // 处理桌面快捷方式启动的导航
-    LaunchedEffect(shortcutAppInfo) {
+    LaunchedEffect(shortcutLaunchId) {
         if (shortcutAppInfo != null) {
             val appId = shortcutAppInfo.appId
             val openUrl = shortcutAppInfo.openUrl

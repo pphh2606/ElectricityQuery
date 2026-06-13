@@ -1,6 +1,6 @@
 # 电费查询 — 校园服务 Android 客户端
 
-基于 **Kotlin + Jetpack Compose** 构建的校园综合服务应用，主要功能包括电费查询与充值、校园卡服务、办事大厅、扫码支付等。
+基于 **Kotlin + Jetpack Compose** 构建的校园综合服务应用，主要功能包括电费查询与充值、校园卡服务、办事大厅、扫码支付、桌面快捷方式等。
 
 ---
 
@@ -8,18 +8,18 @@
 
 | 类别 | 技术选型 |
 |------|---------|
-| 语言 | Kotlin |
-| UI 框架 | Jetpack Compose + Material 3 |
-| 网络请求 | OkHttp 4.12 |
-| JSON 解析 | Gson 2.11 |
-| 异步框架 | Kotlin Coroutines |
-| 导航 | Navigation Compose 2.8 |
+| 语言 | Kotlin 2.3 |
+| UI 框架 | Jetpack Compose (BOM 2026.05) + Material 3 |
+| 网络请求 | OkHttp 5.3 |
+| JSON 解析 | Gson 2.14 |
+| 异步框架 | Kotlin Coroutines 1.11 |
+| 导航 | Navigation Compose 2.9 |
 | 图片加载 | Coil 2.7 |
 | 二维码 | ZXing 3.5 |
-| 相机 | CameraX 1.4 |
+| 相机 | CameraX 1.6 |
 | 动态取色 | MaterialKolor 4.1 |
-| 加密存储 | AndroidX Security Crypto |
-| 构建系统 | Gradle 9.x + Version Catalog |
+| 加密存储 | AndroidX Security Crypto 1.1 |
+| 构建系统 | Gradle + AGP 9.1 + Version Catalog |
 
 ---
 
@@ -48,9 +48,12 @@ graph TB
 ```
 .
 ├── .github/                          # CI/CD 配置
+│   └── workflows/build.yml          # GitHub Actions 自动构建
 ├── .kotlin/                          # Kotlin 编译缓存
 ├── gradle/                           # Gradle Wrapper 与版本目录
-├── plans/                            # 开发计划与分析文档
+│   ├── libs.versions.toml           # Version Catalog（依赖版本集中管理）
+│   ├── gradle-daemon-jvm.properties # Gradle Daemon JVM 配置
+│   └── wrapper/                     # Gradle Wrapper
 └── app/                              # Android 应用模块
     ├── build.gradle.kts              # 模块构建脚本
     ├── version.properties            # 版本号自动递增记录
@@ -58,7 +61,7 @@ graph TB
     └── src/main/
         ├── AndroidManifest.xml       # 应用清单
         ├── assets/                   # 静态资源（JSON 配置）
-        ├── res/                      # Android 资源文件
+        ├── res/                      # Android 资源文件（含 6 语言国际化）
         └── java/edu/cqwu/electricity/
             ├── ElectricityApp.kt     # Application 入口
             ├── MainActivity.kt       # 唯一 Activity
@@ -75,7 +78,7 @@ graph TB
             │   ├── feeservicehall/   # 缴费服务大厅
             │   ├── hall/             # 办事大厅
             │   ├── home/             # 首页
-            │   ├── login/            # 登录（账号 + 扫码）
+            │   ├── login/            # 登录（账号 + 扫码 + 多账号管理）
             │   ├── myroom/           # 我的宿舍
             │   ├── navigation/       # 路由与导航壳
             │   ├── notice/           # 通知公告
@@ -83,7 +86,8 @@ graph TB
             │   ├── qrcode/           # 二维码显示
             │   ├── recharge/         # 电费充值
             │   ├── scan/             # 扫码页面
-            │   ├── settings/         # 设置（主题、UA、关于等）
+            │   ├── settings/         # 设置（主题、UA、语言、关于等）
+            │   ├── shortcut/         # 桌面快捷方式
             │   ├── theme/            # Material 3 主题系统
             │   └── webview/          # 内置浏览器
             └── util/                 # 工具类
@@ -115,24 +119,24 @@ graph TB
 
 | 文件 | 作用 |
 |------|------|
-| [`app/build.gradle.kts`](app/build.gradle.kts) | app 模块构建脚本：配置 compileSdk 36、minSdk 23、targetSdk 36；启用 Compose 和 BuildConfig；声明所有依赖；实现 **versionCode 自动递增**（每次 assemble 后 +1） |
-| [`app/version.properties`](app/version.properties) | 记录当前 versionCode（当前值：1029），由构建脚本自动更新 |
+| [`app/build.gradle.kts`](app/build.gradle.kts) | app 模块构建脚本：配置 compileSdk 36、minSdk 23、targetSdk 36；启用 Compose 和 BuildConfig；声明所有依赖；实现 **versionCode 自动递增**（每次 assemble 后 +1）；注入 `BUILD_TIME`、`GIT_COMMIT_HASH`、`BUILD_SOURCE` 到 BuildConfig |
+| [`app/version.properties`](app/version.properties) | 记录当前 versionCode（当前值：1226），由构建脚本自动更新 |
 | [`app/proguard-rules.pro`](app/proguard-rules.pro) | Release 构建的 ProGuard/R8 混淆规则 |
-| [`app/src/main/AndroidManifest.xml`](app/src/main/AndroidManifest.xml) | 应用清单：声明 `INTERNET` 和 `CAMERA` 权限、注册 `ElectricityApp` 为 Application、注册 `MainActivity` 为启动 Activity、配置 FileProvider |
+| [`app/src/main/AndroidManifest.xml`](app/src/main/AndroidManifest.xml) | 应用清单：声明 `INTERNET` 和 `CAMERA` 权限、注册 `ElectricityApp` 为 Application、注册 `MainActivity` 为启动 Activity（`adjustResize`）、配置 FileProvider |
 
 ### 4. 应用入口
 
 | 文件 | 作用 |
 |------|------|
 | [`ElectricityApp.kt`](app/src/main/java/edu/cqwu/electricity/ElectricityApp.kt) | 自定义 `Application` 类。负责：① 初始化 `CrashHandler`（崩溃捕获）；② 初始化 `SharedHttpClient`（全局共享 OkHttp 客户端）；③ 配置 Coil `ImageLoader`（内存缓存 30%、磁盘缓存 100MB、crossfade 动画） |
-| [`MainActivity.kt`](app/src/main/java/edu/cqwu/electricity/MainActivity.kt) | 唯一 Activity。启用边到边绘制，管理全局状态（夜间模式、主题颜色源、动画设置、标题栏样式），通过 `CompositionLocalProvider` 向下传递设置状态，挂载 `AppShell` 导航壳 |
+| [`MainActivity.kt`](app/src/main/java/edu/cqwu/electricity/MainActivity.kt) | 唯一 Activity。启用边到边绘制，管理全局状态（夜间模式、主题颜色源、动画设置、标题栏样式、二维码设置），通过 `CompositionLocalProvider` 向下传递设置状态，挂载 `AppShell` 导航壳。支持桌面快捷方式启动时的路由分发 |
 
 ### 5. 数据层 — data/local（本地存储）
 
 | 文件 | 作用 |
 |------|------|
 | [`AccountStore.kt`](app/src/main/java/edu/cqwu/electricity/data/local/AccountStore.kt) | 多账号持久化存储（加密版）。使用 `EncryptedSharedPreferences`（AES-256）加密保存学号和密码，支持多账号列表管理、记住密码开关 |
-| [`SettingsPreferences.kt`](app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt) | 应用设置持久化存储。保存：夜间模式（跟随系统/浅色/深色）、主题颜色源（动态取色/自定义种子色）、页面过渡动画类型、减少动画开关、QR 码设置、自定义服务入口列表、WebView User-Agent 配置等。定义了 `NightMode`、`ThemeColorSource`、`PageTransition`、`ReduceMotion` 等枚举 |
+| [`SettingsPreferences.kt`](app/src/main/java/edu/cqwu/electricity/data/local/SettingsPreferences.kt) | 应用设置持久化存储。保存：夜间模式（跟随系统/浅色/深色）、主题颜色源（动态取色/自定义种子色）、页面过渡动画类型、减少动画开关、QR 码设置（颜色模式、圆角、屏幕亮度）、自定义服务入口列表、WebView User-Agent 配置、应用语言偏好等。定义了 `NightMode`、`ThemeColorSource`、`PageTransition`、`ReduceMotion` 等枚举 |
 | [`CredentialExporter.kt`](app/src/main/java/edu/cqwu/electricity/data/local/CredentialExporter.kt) | 凭据加密导出/解密导入工具。使用 PBKDF2-HMAC-SHA256 派生密钥 + AES-256-GCM 认证加密，输出 Base64 格式，支持多账号批量导出 |
 
 ### 6. 数据层 — data/model（数据模型）
@@ -159,7 +163,7 @@ graph TB
 | [`QrCodeApi.kt`](app/src/main/java/edu/cqwu/electricity/data/network/QrCodeApi.kt) | 二维码 API。获取支付码/乘车码，通过 followRedirects 自动完成 CAS ticket 交换 |
 | [`QrLoginApi.kt`](app/src/main/java/edu/cqwu/electricity/data/network/QrLoginApi.kt) | 扫码登录 API。处理扫码登录的轮询和确认流程 |
 | [`SessionChecker.kt`](app/src/main/java/edu/cqwu/electricity/data/network/SessionChecker.kt) | 会话检查器，检测当前登录态是否有效 |
-| [`SessionValidator.kt`](app/src/main/java/edu/cqwu/electricity/data/network/SessionValidator.kt) | 会话验证器，提供更细粒度的会话有效性校验 |
+| [`SessionValidator.kt`](app/src/main/java/edu/cqwu/electricity/data/network/SessionValidator.kt) | 会话验证器，提供更细粒度的会话有效性校验（超时 15s，支持自动重定向） |
 | [`SessionExpiredException.kt`](app/src/main/java/edu/cqwu/electricity/data/network/SessionExpiredException.kt) | 会话过期异常类 |
 | [`CookieStore.kt`](app/src/main/java/edu/cqwu/electricity/data/network/CookieStore.kt) | Cookie 存储，桥接 `android.webkit.CookieManager` 实现磁盘持久化 |
 | [`CookieStoreOkHttpJar.kt`](app/src/main/java/edu/cqwu/electricity/data/network/CookieStoreOkHttpJar.kt) | OkHttp `CookieJar` 实现，将 OkHttp 的 Cookie 读写桥接到 `CookieStore`，使 OkHttp 与 WebView 共享同一 Cookie Session |
@@ -184,7 +188,7 @@ graph TB
 
 | 文件 | 作用 |
 |------|------|
-| [`NavGraph.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/NavGraph.kt) | **导航图核心文件**。定义所有路由常量（`Routes` 对象）和 `NavHost`，管理页面跳转与参数传递，实现页面过渡动画（支持滑动、淡入、缩放、Cupertino 等 6 种效果） |
+| [`NavGraph.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/NavGraph.kt) | **导航图核心文件**。定义所有路由常量（`Routes` 对象）和 `NavHost`，管理页面跳转与参数传递，实现页面过渡动画（支持滑动、淡入、缩放、Cupertino 等 6 种效果）。支持桌面快捷方式启动时的路由分发 |
 | [`AppShell.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/AppShell.kt) | 导航壳组件，包含底部导航栏和 `NavHost`，是整个应用的 UI 骨架 |
 | [`BottomNavTab.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/BottomNavTab.kt) | 底部导航栏 Tab 定义（首页、我的等） |
 | [`MainTabScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/MainTabScreen.kt) | 主 Tab 页面容器，使用 `HorizontalPager` 实现左右滑动切换 Tab |
@@ -193,16 +197,21 @@ graph TB
 
 | 文件 | 作用 |
 |------|------|
-| [`HomeScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/home/HomeScreen.kt) | 首页界面（1000+ 行）。展示校园服务入口网格（电费查询、充值、卡中心、办事大厅等），支持搜索、下拉刷新、自定义服务入口管理、打开外部链接等 |
+| [`HomeScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/home/HomeScreen.kt) | 首页界面（1000+ 行）。展示校园服务入口网格（电费查询、充值、卡中心、办事大厅等），支持搜索、下拉刷新、自定义服务入口管理（含自定义网站图标/标题/网址）、打开外部链接等 |
 | [`HomeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/home/HomeViewModel.kt) | 首页 ViewModel，管理首页数据加载与状态 |
 
 ### 11. UI 层 — login（登录）
 
 | 文件 | 作用 |
 |------|------|
-| [`LoginScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/LoginScreen.kt) | 登录界面。支持学号+密码登录，提供多账号下拉选择、记住密码、账号管理等功能 |
-| [`LoginViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt) | 登录 ViewModel，处理登录逻辑、错误提示、会话管理 |
+| [`LoginScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/LoginScreen.kt) | 登录界面。支持学号+密码登录，提供多账号下拉选择、记住密码、账号管理、凭据导入导出、其他登录方式入口（扫码登录、手机号找回、邮箱找回）等功能 |
+| [`LoginViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt) | 登录 ViewModel，处理登录逻辑、错误提示、会话管理、智能切换账号（含 Cookie 串号校验） |
 | [`QrLoginScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/QrLoginScreen.kt) | 扫码登录界面，展示二维码供用户扫码认证 |
+| [`AccountDropdownMenu.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/AccountDropdownMenu.kt) | 多账号下拉选择菜单组件 |
+| [`DeleteAccountSheet.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/DeleteAccountSheet.kt) | 删除账号确认弹窗 |
+| [`ExportCredentialDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/ExportCredentialDialog.kt) | 凭据导出对话框，生成加密的 Base64 凭据字符串供备份 |
+| [`ImportCredentialDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/ImportCredentialDialog.kt) | 凭据导入对话框，解析 Base64 凭据字符串恢复账号 |
+| [`SecurityNoticeSheet.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/SecurityNoticeSheet.kt) | 安全提示弹窗，凭据导入导出前的安全警告 |
 
 ### 12. UI 层 — electricity（电费查询）
 
@@ -231,7 +240,7 @@ graph TB
 |------|------|
 | [`CardCenterScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt) | 校园卡中心主页 |
 | [`AccountInfoScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/AccountInfoScreen.kt) | 账户信息页面 |
-| [`BillScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/BillScreen.kt) | 账单查询页面 |
+| [`BillScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/BillScreen.kt) | 账单查询页面（含筛选面板） |
 | [`BillViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/BillViewModel.kt) | 账单 ViewModel |
 | [`CardLostScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardLostScreen.kt) | 卡挂失页面 |
 
@@ -265,7 +274,7 @@ graph TB
 
 | 文件 | 作用 |
 |------|------|
-| [`ProfileScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/profile/ProfileScreen.kt) | 个人中心页面（「我的」Tab），展示用户头像、学号、功能入口列表 |
+| [`ProfileScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/profile/ProfileScreen.kt) | 个人中心页面（「我的」Tab），展示用户头像、学号、功能入口列表、桌面快捷方式入口卡片 |
 | [`MyInfoScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/profile/MyInfoScreen.kt) | 我的信息页面，展示详细的学生信息 |
 | [`MyInfoViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/profile/MyInfoViewModel.kt) | 我的信息 ViewModel |
 
@@ -273,7 +282,7 @@ graph TB
 
 | 文件 | 作用 |
 |------|------|
-| [`QrCodeDisplayScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/qrcode/QrCodeDisplayScreen.kt) | 二维码展示页面（支付码、乘车码） |
+| [`QrCodeDisplayScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/qrcode/QrCodeDisplayScreen.kt) | 二维码展示页面（支付码、乘车码），支持颜色模式、圆角、屏幕亮度调节 |
 | [`ScanScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt) | 扫码页面，使用 CameraX 实现实时扫码 |
 
 ### 20. UI 层 — settings（设置）
@@ -281,40 +290,48 @@ graph TB
 | 文件 | 作用 |
 |------|------|
 | [`SettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/SettingsScreen.kt) | 设置主页 |
-| [`PersonalizationScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/PersonalizationScreen.kt) | 个性化设置页面（夜间模式、主题色、动画效果） |
-| [`QrCodeSettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/QrCodeSettingsScreen.kt) | 二维码样式设置页面 |
+| [`PersonalizationScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/PersonalizationScreen.kt) | 个性化设置页面（夜间模式、主题色、动画效果、语言切换） |
+| [`QrCodeSettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/QrCodeSettingsScreen.kt) | 二维码样式设置页面（颜色模式、圆角、屏幕亮度） |
 | [`UserAgentSettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/UserAgentSettingsScreen.kt) | 浏览器标识 UA 设置页面 |
 | [`UserAgentEditScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/UserAgentEditScreen.kt) | 编辑/添加自定义 UA 条目 |
 | [`ConfigScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/ConfigScreen.kt) | 高级配置页面 |
-| [`AboutScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/AboutScreen.kt) | 关于页面 |
+| [`AboutScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/AboutScreen.kt) | 关于页面，展示版本信息、构建信息（构建时间、Git commit hash）、联系方式 |
 
-### 21. UI 层 — webview（内置浏览器）
+### 21. UI 层 — shortcut（桌面快捷方式）
+
+| 文件 | 作用 |
+|------|------|
+| [`AddShortcutScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/shortcut/AddShortcutScreen.kt) | 桌面快捷方式创建页面。包含预览区、名称输入、底部弹窗选择功能列表，支持 Coil 异步加载图标，通过 `ShortcutHelper` + `ShortcutManagerCompat` 创建 Pinned Shortcut |
+
+### 22. UI 层 — webview（内置浏览器）
 
 | 文件 | 作用 |
 |------|------|
 | [`UnifiedWebViewScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/webview/UnifiedWebViewScreen.kt) | 通用内置浏览器页面，封装 WebView 组件，支持加载任意 URL、自定义标题、错误页面覆盖等 |
 
-### 22. UI 层 — feedback（意见反馈）
+### 23. UI 层 — feedback（意见反馈）
 
 | 文件 | 作用 |
 |------|------|
-| [`FeedbackScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/feedback/FeedbackScreen.kt) | 意见反馈页面 |
+| [`FeedbackScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/feedback/FeedbackScreen.kt) | 意见反馈页面，支持日志附件 |
 | [`LogCapture.kt`](app/src/main/java/edu/cqwu/electricity/ui/feedback/LogCapture.kt) | 日志捕获工具，收集应用运行日志用于反馈附件 |
 
-### 23. UI 层 — myroom（我的宿舍）
+### 24. UI 层 — myroom（我的宿舍）
 
 | 文件 | 作用 |
 |------|------|
 | [`MyRoomViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/myroom/MyRoomViewModel.kt) | 我的宿舍 ViewModel，管理用户绑定的房间信息 |
 
-### 24. UI 层 — components（通用组件）
+### 25. UI 层 — components（通用组件）
 
 | 文件 | 作用 |
 |------|------|
-| [`BottomSheetDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/BottomSheetDialog.kt) | 底部弹出对话框组件 |
-| [`CustomWebsiteDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/CustomWebsiteDialog.kt) | 自定义网站输入对话框 |
+| [`BottomSheetDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/BottomSheetDialog.kt) | 底部弹出对话框组件，封装 MD3 `ModalBottomSheet`。支持标题、图标、左右按钮、全屏/半屏模式、键盘弹出自动展开 |
+| [`CustomWebsiteDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/CustomWebsiteDialog.kt) | 自定义网站输入对话框，支持选择本地图标、输入标题和网址 |
 | [`DeferredContent.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/DeferredContent.kt) | 延迟加载内容组件 |
+| [`LanguageSwitchComponents.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LanguageSwitchComponents.kt) | 语言切换组件，支持 6 种语言选择（中文、英文、日文、繁体中文、法语、阿拉伯语） |
 | [`LineChartCard.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LineChartCard.kt) | 折线图卡片组件（用于用电趋势展示） |
+| [`LoadingDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LoadingDialog.kt) | 加载中对话框组件（Card 包裹，圆角 + 阴影） |
 | [`OpenUrlDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/OpenUrlDialog.kt) | 打开链接确认对话框 |
 | [`QrCodeView.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/QrCodeView.kt) | 二维码渲染组件（基于 ZXing） |
 | [`ReLoginContent.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/ReLoginContent.kt) | 重新登录提示内容组件（会话过期时展示） |
@@ -322,7 +339,7 @@ graph TB
 | [`TabScaffold.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/TabScaffold.kt) | Tab 页脚手架组件（带顶部栏和 Tab 切换） |
 | [`WebViewErrorOverlay.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/WebViewErrorOverlay.kt) | WebView 错误覆盖层组件，WebView 加载失败时显示自定义错误页面 |
 
-### 25. UI 层 — theme（主题系统）
+### 26. UI 层 — theme（主题系统）
 
 | 文件 | 作用 |
 |------|------|
@@ -331,29 +348,32 @@ graph TB
 | [`Type.kt`](app/src/main/java/edu/cqwu/electricity/ui/theme/Type.kt) | 字体排版样式定义 |
 | [`ThemeColorGenerator.kt`](app/src/main/java/edu/cqwu/electricity/ui/theme/ThemeColorGenerator.kt) | 主题色生成器，基于 MaterialKolor 从种子色生成完整调色板 |
 
-### 26. 工具类 — util
+### 27. 工具类 — util
 
 | 文件 | 作用 |
 |------|------|
 | [`CrashHandler.kt`](app/src/main/java/edu/cqwu/electricity/util/CrashHandler.kt) | 全局崩溃捕获器，捕获未处理异常并保存崩溃日志到本地 |
+| [`LocaleContextWrapper.kt`](app/src/main/java/edu/cqwu/electricity/util/LocaleContextWrapper.kt) | 语言上下文包装器，根据用户语言偏好包装 Context 实现应用内语言切换 |
+| [`ShortcutHelper.kt`](app/src/main/java/edu/cqwu/electricity/util/ShortcutHelper.kt) | 桌面快捷方式工具类，封装 `createPinnedShortcut`、`extractShortcutAppInfo`、`loadIconFromUrl`（Coil 下载 + `Bitmap.copy` 防缓存回收） |
 | [`ToastUtils.kt`](app/src/main/java/edu/cqwu/electricity/util/ToastUtils.kt) | Toast 工具类 |
 | [`WebViewUrlUtil.kt`](app/src/main/java/edu/cqwu/electricity/util/WebViewUrlUtil.kt) | WebView URL 处理工具 |
 
-### 27. 静态资源 — assets
+### 28. 静态资源 — assets
 
 | 文件 | 作用 |
 |------|------|
 | [`hall_apps.json`](app/src/main/assets/hall_apps.json) | 办事大厅应用列表本地配置，作为网络请求失败时的兜底数据 |
 | [`home_apps.json`](app/src/main/assets/home_apps.json) | 首页服务入口应用列表本地配置 |
 
-### 28. Android 资源 — res
+### 29. Android 资源 — res
 
 | 文件/目录 | 作用 |
 |-----------|------|
-| `res/values/strings.xml` | 字符串资源（应用名称等） |
+| `res/values/strings*.xml` | 按功能模块拆分的字符串资源（共 16 个文件：主 strings、login、electricity、recharge、home、profile、settings、notice、cardcenter、feehall、qrcode、webview、dialogs、feedback、shortcut 等） |
 | `res/values/colors.xml` | 颜色资源 |
 | `res/values/themes.xml` | 浅色主题样式 |
 | `res/values-night/themes.xml` | 深色主题样式 |
+| `res/values-{ar,en,fr,ja,zh-rTW}/` | **6 语言国际化**：阿拉伯语、英语、法语、日语、繁体中文，每个语言目录下包含对应的所有 strings 文件 |
 | `res/drawable/ic_launcher_background.xml` | 启动图标背景 |
 | `res/drawable-v24/ic_launcher_foreground.xml` | 启动图标前景（API 24+自适应图标） |
 | `res/mipmap-*/` | 各分辨率启动图标（webp 格式） |
@@ -361,12 +381,22 @@ graph TB
 | `res/xml/data_extraction_rules.xml` | 数据提取规则 |
 | `res/xml/file_paths.xml` | FileProvider 路径配置（用于日志文件分享等） |
 
-### 29. 根目录辅助文件
+---
 
-| 文件 | 作用 |
-|------|------|
-| `*.har.txt` | HTTP 抓包记录文件（ProxyPin 导出），用于接口分析和调试参考 |
-| `*.txt` | 服务器请求记录、接口文档等开发参考资料 |
+## 国际化
+
+应用支持 **6 种语言**，通过 Android 资源限定符实现：
+
+| 语言 | 资源目录 | 说明 |
+|------|---------|------|
+| 简体中文 | `values/` | 默认语言 |
+| English | `values-en/` | 英语 |
+| 日本語 | `values-ja/` | 日语 |
+| 繁體中文 | `values-zh-rTW/` | 繁体中文 |
+| Français | `values-fr/` | 法语 |
+| العربية | `values-ar/` | 阿拉伯语（RTL 布局支持） |
+
+语言切换通过 [`LanguageSwitchComponents.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LanguageSwitchComponents.kt) 实现，使用 [`LocaleContextWrapper.kt`](app/src/main/java/edu/cqwu/electricity/util/LocaleContextWrapper.kt) 在应用内动态切换语言。
 
 ---
 
@@ -380,7 +410,7 @@ graph TB
 ./gradlew assembleRelease
 ```
 
-> **注意：** 每次构建后 `app/version.properties` 中的 `VERSION_CODE` 会自动递增。
+> **注意：** 每次构建后 `app/version.properties` 中的 `VERSION_CODE` 会自动递增。构建信息（时间、Git commit hash、构建来源）会注入到 `BuildConfig` 中。
 
 ---
 

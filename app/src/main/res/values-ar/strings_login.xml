@@ -47,6 +47,14 @@
     <string name="login_device_auth_title">التحقق من الهوية</string>
     <string name="login_device_auth_desc">تحقق لتصدير بيانات الاعتماد المشفرة</string>
 
+    <!-- ── طرق تسجيل الدخول الأخرى ── -->
+    <string name="login_other_login">طرق أخرى</string>
+    <string name="login_method_qr_scan">تسجيل الدخول عبر QR</string>
+    <string name="login_method_credential">تسجيل الدخول بالبيانات</string>
+    <string name="login_method_phone_recovery">استعادة برقم الهاتف</string>
+    <string name="login_method_email_recovery">استعادة بالبريد الإلكتروني</string>
+    <string name="login_method_coming_soon">قريباً</string>
+
     <!-- ═══════════════════════════════════════════ -->
     <!--  تسجيل الدخول عبر QR                        -->
     <!-- ═══════════════════════════════════════════ -->

@@ -15,4 +15,6 @@
     <string name="shortcut_name_hint">Enter a name</string>
     <string name="shortcut_no_function_selected">Please select a function first</string>
     <string name="shortcut_name_too_long">Name too long, 10 characters max recommended</string>
+    <string name="shortcut_not_supported">Current system does not support creating home screen shortcuts</string>
+    <string name="shortcut_permission_hint">Creation failed. Please check if this app is allowed to create shortcuts in system settings</string>
 </resources>

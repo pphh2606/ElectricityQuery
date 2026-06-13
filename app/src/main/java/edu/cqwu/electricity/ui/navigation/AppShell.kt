@@ -43,6 +43,7 @@ import edu.cqwu.electricity.util.ToastUtils
 fun AppShell(
     navController: NavHostController,
     shortcutAppInfo: edu.cqwu.electricity.util.ShortcutHelper.ShortcutAppInfo? = null,
+    shortcutLaunchId: Int = 0,
     modifier: Modifier = Modifier,
 ) {
     val snackbarController = remember { SnackbarController() }
@@ -56,6 +57,7 @@ fun AppShell(
             AppNavGraph(
                 navController = navController,
                 shortcutAppInfo = shortcutAppInfo,
+                shortcutLaunchId = shortcutLaunchId,
                 modifier = Modifier.fillMaxSize(),
             )
 

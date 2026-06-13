@@ -30,8 +30,14 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -78,6 +84,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LanguageSwitchButton
 import edu.cqwu.electricity.ui.components.LoadingDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
@@ -131,6 +139,8 @@ fun LoginScreen(
     var showExportDialog by remember { mutableStateOf(false) }
     // 安全说明弹窗
     var showSecurityNotice by remember { mutableStateOf(false) }
+    // 其他登录方式弹窗
+    var showOtherLoginSheet by remember { mutableStateOf(false) }
     // 学号下拉选择
     var showAccountDropdown by remember { mutableStateOf(false) }
     // 删除账号确认弹窗：记录待删除的学号
@@ -275,8 +285,15 @@ fun LoginScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
             ) {
+                // ═══ 主体内容区（可伸缩，将底部按钮推至页面底端）═══
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
                 Spacer(modifier = Modifier.height(48.dp))
 
                 // 标题
@@ -299,6 +316,13 @@ fun LoginScreen(
                         placeholder = { Text(stringResource(R.string.login_student_id_hint)) },
                         singleLine = true,
                         enabled = !uiState.isLoading,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
@@ -347,6 +371,13 @@ fun LoginScreen(
                     placeholder = { Text(stringResource(R.string.login_password_hint)) },
                     singleLine = true,
                     enabled = !uiState.isLoading,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
                     visualTransformation = if (uiState.passwordRevealed)
                         VisualTransformation.None
                     else
@@ -384,7 +415,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 记住密码复选框
                 Row(
@@ -413,7 +444,7 @@ fun LoginScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 登录按钮（无加载动画，文字固定）
                 Button(
@@ -433,9 +464,23 @@ fun LoginScreen(
                     Text(stringResource(R.string.login_login_button), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // 底部按钮区：扫码登录 | 添加账号
+                // 取消按钮（点击相当于返回）
+                TextButton(
+                    onClick = onBack,
+                    enabled = !uiState.isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        stringResource(R.string.common_cancel),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                } // 关闭内层 weight Column
+
+                // ═══ 底部固定区：扫码登录 | 添加账号 ═══
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -444,11 +489,11 @@ fun LoginScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(
-                        onClick = { nav.navigate(Routes.QR_LOGIN) },
+                        onClick = { showOtherLoginSheet = true },
                         enabled = !uiState.isLoading
                     ) {
                         Text(
-                            stringResource(R.string.login_scan_login),
+                            stringResource(R.string.login_other_login),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -473,6 +518,8 @@ fun LoginScreen(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
         }
@@ -494,6 +541,55 @@ fun LoginScreen(
         SecurityNoticeSheet(
             onDismiss = { showSecurityNotice = false },
         )
+    }
+
+    // ========== 其他登录方式弹窗 ==========
+    if (showOtherLoginSheet) {
+        val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
+        val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
+        BottomSheetDialog(
+            onDismissRequest = { showOtherLoginSheet = false },
+            title = stringResource(R.string.login_other_login),
+        ) {
+            BottomSheetItem(
+                icon = Icons.Default.QrCodeScanner,
+                title = stringResource(R.string.login_method_qr_scan),
+                onClick = {
+                    showOtherLoginSheet = false
+                    nav.navigate(Routes.QR_LOGIN)
+                }
+            )
+            BottomSheetItem(
+                icon = Icons.Default.Key,
+                title = stringResource(R.string.login_method_credential),
+                onClick = {
+                    showOtherLoginSheet = false
+                    showImportDialog = true
+                }
+            )
+            BottomSheetItem(
+                icon = Icons.Default.Phone,
+                title = phoneRecoveryTitle,
+                onClick = {
+                    showOtherLoginSheet = false
+                    nav.navigate(Routes.unifiedWebViewRoute(
+                        "https://authserver.cqwu.edu.cn/authserver/mobileGetPasswordController.do",
+                        phoneRecoveryTitle
+                    ))
+                }
+            )
+            BottomSheetItem(
+                icon = Icons.Default.Email,
+                title = emailRecoveryTitle,
+                onClick = {
+                    showOtherLoginSheet = false
+                    nav.navigate(Routes.unifiedWebViewRoute(
+                        "https://authserver.cqwu.edu.cn/authserver/moblieFindPwdByMailPage.do",
+                        emailRecoveryTitle
+                    ))
+                }
+            )
+        }
     }
 
     // ========== 导入凭据对话框 ==========

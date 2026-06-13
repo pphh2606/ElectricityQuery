@@ -47,6 +47,14 @@
     <string name="login_device_auth_title">Identity Verification</string>
     <string name="login_device_auth_desc">Verify to export encrypted credentials</string>
 
+    <!-- ── Other Login Methods Sheet ── -->
+    <string name="login_other_login">Other Login</string>
+    <string name="login_method_qr_scan">QR Login</string>
+    <string name="login_method_credential">Credential Login</string>
+    <string name="login_method_phone_recovery">Phone Recovery</string>
+    <string name="login_method_email_recovery">Email Recovery</string>
+    <string name="login_method_coming_soon">Coming soon</string>
+
     <!-- ═══════════════════════════════════════════ -->
     <!--  QR Login                                   -->
     <!-- ═══════════════════════════════════════════ -->

@@ -1,12 +1,14 @@
 package edu.cqwu.electricity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +38,10 @@ import edu.cqwu.electricity.util.LocaleContextWrapper
 
 class MainActivity : ComponentActivity() {
 
+    // 快捷方式状态：onNewIntent 时更新，Compose 自动重组
+    private val _shortcutAppInfo = mutableStateOf<edu.cqwu.electricity.util.ShortcutHelper.ShortcutAppInfo?>(null)
+    private val _shortcutLaunchId = mutableIntStateOf(0)
+
     override fun attachBaseContext(newBase: Context) {
         val language = SettingsPreferences(newBase).getAppLanguage().value
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, language))
@@ -47,8 +53,16 @@ class MainActivity : ComponentActivity() {
         // 系统栏图标颜色由 Compose 层的 Theme.kt 中的 SideEffect 动态管理
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            // 读取桌面快捷方式携带的 Intent 信息
-            val shortcutAppInfo = remember { ShortcutHelper.extractShortcutAppInfo(intent) }
+            // 首次启动时从 intent 提取快捷方式信息
+            val initialInfo = remember { ShortcutHelper.extractShortcutAppInfo(intent) }
+            LaunchedEffect(initialInfo) {
+                if (initialInfo != null && _shortcutAppInfo.value == null) {
+                    _shortcutAppInfo.value = initialInfo
+                    _shortcutLaunchId.intValue++
+                }
+            }
+            val shortcutAppInfo = _shortcutAppInfo.value
+            val shortcutLaunchId = _shortcutLaunchId.intValue
             val settingsPrefs = remember { SettingsPreferences(this@MainActivity) }
 
             // ── 夜间模式状态 ──
@@ -160,10 +174,21 @@ class MainActivity : ComponentActivity() {
                         AppShell(
                             navController = navController,
                             shortcutAppInfo = shortcutAppInfo,
+                            shortcutLaunchId = shortcutLaunchId,
                         )
                     }
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val info = ShortcutHelper.extractShortcutAppInfo(intent)
+        if (info != null) {
+            _shortcutAppInfo.value = info
+            _shortcutLaunchId.intValue++
         }
     }
 }

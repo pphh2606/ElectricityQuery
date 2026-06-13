@@ -15,4 +15,6 @@
     <string name="shortcut_name_hint">请输入名称</string>
     <string name="shortcut_no_function_selected">请先选择一个功能</string>
     <string name="shortcut_name_too_long">名称过长，建议不超过10个字符</string>
+    <string name="shortcut_not_supported">当前系统不支持创建桌面快捷方式</string>
+    <string name="shortcut_permission_hint">创建失败，请在系统设置中检查是否允许本应用创建桌面快捷方式</string>
 </resources>

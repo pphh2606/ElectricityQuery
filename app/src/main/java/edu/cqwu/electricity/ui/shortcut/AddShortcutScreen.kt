@@ -266,19 +266,30 @@ fun AddShortcutScreen(
                                 iconUrl = app.iconUrl
                             )
                             scope.launch {
-                                val success = ShortcutHelper.createPinnedShortcut(context, appInfo, label)
-                                if (success) {
-                                    snackbar.show(
-                                        context.getString(R.string.shortcut_success),
-                                        ToastUtils.Type.SUCCESS
-                                    )
-                                    onBack()
-                                } else {
-                                    isCreating = false
-                                    snackbar.show(
-                                        context.getString(R.string.shortcut_failed),
-                                        ToastUtils.Type.ERROR
-                                    )
+                                when (val result = ShortcutHelper.createPinnedShortcut(context, appInfo, label)) {
+                                    is ShortcutHelper.CreateResult.Success -> {
+                                        snackbar.show(
+                                            context.getString(R.string.shortcut_success),
+                                            ToastUtils.Type.SUCCESS
+                                        )
+                                        isCreating = false
+                                        selectedApp = null
+                                        shortcutName = ""
+                                    }
+                                    is ShortcutHelper.CreateResult.NotSupported -> {
+                                        isCreating = false
+                                        snackbar.show(
+                                            context.getString(R.string.shortcut_not_supported),
+                                            ToastUtils.Type.ERROR
+                                        )
+                                    }
+                                    is ShortcutHelper.CreateResult.Failed -> {
+                                        isCreating = false
+                                        snackbar.show(
+                                            context.getString(R.string.shortcut_permission_hint),
+                                            ToastUtils.Type.ERROR
+                                        )
+                                    }
                                 }
                             }
                         },

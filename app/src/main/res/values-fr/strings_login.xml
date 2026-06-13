@@ -47,6 +47,14 @@
     <string name="login_device_auth_title">Vérification</string>
     <string name="login_device_auth_desc">Vérifier pour exporter les identifiants</string>
 
+    <!-- ── Autres méthodes de connexion ── -->
+    <string name="login_other_login">Autre connexion</string>
+    <string name="login_method_qr_scan">Connexion QR</string>
+    <string name="login_method_credential">Connexion par identifiant</string>
+    <string name="login_method_phone_recovery">Récupération par téléphone</string>
+    <string name="login_method_email_recovery">Récupération par e-mail</string>
+    <string name="login_method_coming_soon">Bientôt disponible</string>
+
     <!-- ═══════════════════════════════════════════ -->
     <!--  Connexion QR                               -->
     <!-- ═══════════════════════════════════════════ -->

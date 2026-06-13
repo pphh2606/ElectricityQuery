@@ -1,29 +1,29 @@
 # 更改日志
 
 ## 新增功能
-- 用户无法从个人页面快速启动常用功能，新增桌面快捷方式入口（ProfileScreen 添加 `AddToHomeScreen` 图标卡片），支持选择首页功能并自定义名称后通过 `ShortcutHelper` + `ShortcutManagerCompat` 创建 Pinned Shortcut，启动时自动导航到对应页面
-- 关于页面缺少构建溯源信息，新增构建信息条目（`BuildConfig.BUILD_TIME` / `BuildConfig.GIT_COMMIT_HASH`），点击可跳转 GitHub 对应 commit 页面，`build.gradle.kts` 使用 `ProcessBuilder` 获取 git hash 并兜底 "unknown"
-- 桌面快捷方式启动时缺少路由分发逻辑，NavGraph 新增 `LaunchedEffect(shortcutAppInfo)` 根据 `HomeAppIds` 分发到对应路由（二维码/电费/卡务中心/通知/缴费大厅/我的信息），网页类功能通过 `Routes.unifiedWebViewRoute` 打开内置浏览器
-- 新增 `AddShortcutScreen` 完整页面：预览区 + 名称输入 + 底部弹窗选择功能列表 + 创建按钮，支持 Coil `AsyncImage` 异步加载图标
-- 新增 `ShortcutHelper` 工具类：封装 `createPinnedShortcut`、`extractShortcutAppInfo`、`loadIconFromUrl`（Coil 下载 + `Bitmap.copy` 防缓存回收）
-- 新增中英文双语 `strings_shortcut.xml` 资源文件（12 条字符串），支持快捷方式功能的完整国际化
+- 登录页面新增「其他登录方式」底部弹窗，整合扫码登录、凭据登录、手机号找回、邮箱找回四种入口，替代原来单一的扫码登录按钮
+- 登录页面学号和密码输入框添加 `Icons.Default.Person` / `Icons.Default.Lock` 前置图标，提升视觉辨识度
+- 登录页面新增取消按钮，点击可直接返回上一页
+- 桌面快捷方式创建失败时区分「系统不支持」和「权限不足」两种场景，分别显示 `shortcut_not_supported` / `shortcut_permission_hint` 提示
+- 桌面快捷方式支持应用已在前台运行时通过 `onNewIntent` 响应新的快捷方式启动，不再需要冷启动
 
 ## Bug 修复
-- 会话验证在弱网或 HTTPS 重定向场景下频繁失败，`SessionValidator` 的 `readTimeout`/`writeTimeout` 从 5s 增大到 15s，`followRedirects`/`followSslRedirects` 从 false 改为 true 允许自动跟随重定向
-- 智能切换账号时可能出现 Cookie 串号（返回的学号与目标不一致），`LoginViewModel` 新增 `result.info.username != username` 校验，不匹配时拒绝自动切换并输出 warn 日志
-- 关于页面联系方式弹窗点击任一选项后弹窗未自动关闭，`AboutScreen` 中 QQ/Bilibili/Email 三个 `onClick` 回调添加 `showContactSheet = false`
+- 自定义网站弹窗点击输入框后弹窗只上移固定距离（小于键盘高度），导致输入框被输入法部分遮挡，`BottomSheetDialog` 新增键盘可见性检测（`WindowInsets.ime.getBottom`），键盘弹出时自动将半展开的 sheet 展开到全屏状态（`LaunchedEffect` + `sheetState.expand()`）
+- `BottomSheetDialog` 的 `contentWindowInsets` 已包含 `systemBars`（含导航栏），但 Column 又额外调用了 `.navigationBarsPadding()`，导致导航栏 padding 被双重计算，移除多余的 `navigationBarsPadding()`
+- `AndroidManifest.xml` 的 Activity 缺少 `windowSoftInputMode` 声明，添加 `adjustResize` 确保系统正确处理软键盘弹出时的窗口调整
 
 ## 架构改进
-- `BottomSheetDialog` 左右按钮从 `wrapContentSize` 改为 `weight(1f)` 等分空间，拖拽手柄改为固定宽度自然居中，解决手柄偏移问题；新增 `skipPartiallyExpanded: Boolean?` 可选参数支持显式覆盖
-- `LoadingDialog` 从裸 `Column` 升级为 `Card` 包裹（`RoundedCornerShape(16.dp)` + 8dp 阴影），视觉更统一
-- `FeedbackScreen` 标题和内容输入框添加 `RoundedCornerShape(12.dp)` 圆角，与整体风格一致
-- `BillScreen` 筛选面板 `FilterPanel` 添加 `horizontal = 16.dp` 水平内边距，避免内容贴边
-- `QrLoginScreen` 二维码显示区域从 240dp 增大到 320dp，提升扫码识别率
-- `MainTabScreen` / `AppShell` / `NavGraph` / `MainActivity` 逐层传递 `shortcutAppInfo` 参数，保持组件职责单一
+- `ProfileScreen` 个人页面功能入口从三个独立的 `ElevatedCard` 重构为单个 `Surface` 容器 + 可复用的 `ProfileEntry` 组件，与 `SettingsScreen` 的 `SettingsEntry` 风格统一
+- `ShortcutHelper.createPinnedShortcut` 返回值从 `Boolean` 改为 `CreateResult` 密封类（`Success` / `NotSupported` / `Failed`），调用方可精确区分失败原因
+- `MainActivity` 快捷方式状态从 `remember` 改为 `mutableStateOf` + `onNewIntent` 更新，新增 `shortcutLaunchId` 计数器确保 Compose 重组，`AppShell` / `NavGraph` 逐层透传
+- `BottomSheetDialog` 新增 `contentWindowInsets = { WindowInsets.systemBars.union(WindowInsets.ime) }` 参数，显式声明 sheet 内容区域的窗口 insets
 
 ## 依赖变更
-- `VERSION_CODE` 从 1103 升至 1193
-- `build.gradle.kts` 新增 `java.time.LocalDateTime` / `DateTimeFormatter` 导入用于构建时间戳
+- `VERSION_CODE` 从 1193 升至 1226
 
 ## 国际化
-- 6 语言新增 `about_build_info` 字符串：中文"构建信息" / 英文"Build Info" / 日文"ビルド情報" / 繁中"構建資訊" / 法语"Infos de build" / 阿拉伯语"معلومات البناء"
+- 6 语言新增 `login_other_login` / `login_method_qr_scan` / `login_method_credential` / `login_method_phone_recovery` / `login_method_email_recovery` / `login_method_coming_soon` 字符串（中/英/日/繁中/法/阿拉伯）
+- 中英文新增 `shortcut_not_supported` / `shortcut_permission_hint` 字符串
+
+## 文档
+- `README.md` 根据项目实际更新：技术栈版本号（OkHttp 5.3、Gson 2.14、Navigation 2.9、CameraX 1.6 等）、目录结构（新增 shortcut/、login/ 扩展、components/ 扩展、util/ 扩展）、新增文件详解、新增国际化章节

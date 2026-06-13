@@ -47,6 +47,14 @@
     <string name="login_device_auth_title">身份驗證</string>
     <string name="login_device_auth_desc">驗證後匯出加密憑證</string>
 
+    <!-- ── 其他登入方式彈窗 ── -->
+    <string name="login_other_login">其他登入</string>
+    <string name="login_method_qr_scan">掃碼登入</string>
+    <string name="login_method_credential">憑證登入</string>
+    <string name="login_method_phone_recovery">手機號找回</string>
+    <string name="login_method_email_recovery">郵箱找回</string>
+    <string name="login_method_coming_soon">功能開發中</string>
+
     <!-- ═══════════════════════════════════════════ -->
     <!--  掃碼登入模組                               -->
     <!-- ═══════════════════════════════════════════ -->

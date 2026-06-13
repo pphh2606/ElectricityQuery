@@ -47,6 +47,14 @@
     <string name="login_device_auth_title">本人確認</string>
     <string name="login_device_auth_desc">確認後に暗号化資格情報をエクスポート</string>
 
+    <!-- ── その他のログイン方法 ── -->
+    <string name="login_other_login">他のログイン</string>
+    <string name="login_method_qr_scan">QRログイン</string>
+    <string name="login_method_credential">資格情報ログイン</string>
+    <string name="login_method_phone_recovery">電話番号で復旧</string>
+    <string name="login_method_email_recovery">メールで復旧</string>
+    <string name="login_method_coming_soon">準備中</string>
+
     <!-- ═══════════════════════════════════════════ -->
     <!--  QRログインモジュール                       -->
     <!-- ═══════════════════════════════════════════ -->
