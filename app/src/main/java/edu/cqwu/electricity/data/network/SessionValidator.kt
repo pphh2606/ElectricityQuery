@@ -68,21 +68,25 @@ object SessionValidator {
     /**
      * 验证指定用户的 Cookie 是否有效。
      *
-     * @param userStore 该用户的 [UserCookieStore]（可能为空，会从系统 [CookieManager] 兜底读取）
+     * @param userStore 该用户的 [UserCookieStore]
+     * @param syncFromSystem 是否在 UserCookieStore 为空时从系统 [CookieManager] 兜底导入。
+     *                       启动验证时应为 true（系统 CookieManager 中有上次登录的 Cookie）；
+     *                       账号切换时应为 false（系统 CookieManager 中是当前用户的 Cookie，不是目标用户的）。
      * @return [SessionValidationResult.Valid]（Cookie 有效）、
      *         [SessionValidationResult.Invalid]（Cookie 过期）、
      *         [SessionValidationResult.NetworkError]（网络异常）
      */
-    suspend fun validate(userStore: UserCookieStore): SessionValidationResult = withContext(Dispatchers.IO) {
+    suspend fun validate(
+        userStore: UserCookieStore,
+        syncFromSystem: Boolean = true,
+    ): SessionValidationResult = withContext(Dispatchers.IO) {
         try {
-            // === 兜底：如果 UserCookieStore 为空，尝试从系统 CookieManager 导入 ===
-            val existingCookie = userStore.getCookie("https://authserver.cqwu.edu.cn")
-            if (existingCookie.isNullOrBlank()) {
-                android.util.Log.d("SessionValidator", "UserCookieStore 为空，尝试从系统 CookieManager 兜底")
-                userStore.syncFromCookieManager()
-                val afterSync = userStore.getCookie("https://authserver.cqwu.edu.cn")
-                if (afterSync != null) {
-                    android.util.Log.d("SessionValidator", "从系统 CookieManager 兜底成功")
+            // 兜底：如果 UserCookieStore 为空，尝试从系统 CookieManager 导入
+            if (syncFromSystem) {
+                val existingCookie = userStore.getCookie("https://authserver.cqwu.edu.cn")
+                if (existingCookie.isNullOrBlank()) {
+                    android.util.Log.d("SessionValidator", "UserCookieStore 为空，从系统 CookieManager 兜底导入")
+                    userStore.syncFromCookieManager()
                 }
             }
 
@@ -106,14 +110,14 @@ object SessionValidator {
             }
 
             // 提取学号：data-name="id">学号</div>
-            val username = USERNAME_REGEX.find(html)?.groupValues?.getOrNull(1)
+            val username = USERNAME_REGEX.find(html)?.groupValues?.getOrNull(1)?.trim()
                 ?: run {
                     android.util.Log.w("SessionValidator", "无法从 index.do 提取学号，HTML长度=${html.length}")
                     return@withContext SessionValidationResult.Invalid
                 }
 
             // 提取实名：data-name="name">姓名</div>
-            val realName = REAL_NAME_REGEX.find(html)?.groupValues?.getOrNull(1) ?: ""
+            val realName = REAL_NAME_REGEX.find(html)?.groupValues?.getOrNull(1)?.trim() ?: ""
 
             android.util.Log.d("SessionValidator", "Cookie 有效！学号=$username, 实名=$realName")
 

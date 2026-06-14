@@ -73,4 +73,14 @@
     <string name="login_auto_switching">尝试自动登录…</string>
     <string name="login_password_too_short">密码长度至少 4 位</string>
     <string name="login_credential_copied">凭据已复制到剪贴板</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  账号管理弹窗                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="account_manager_title">账号管理</string>
+    <string name="account_manager_current">当前</string>
+    <string name="account_manager_add">添加账号</string>
+    <string name="account_manager_auto_login">自动登录中…</string>
+    <string name="account_manager_switch_success">已切换到 %1$s</string>
+    <string name="account_manager_switch_failed">自动验证失败，请手动登录</string>
+    <string name="account_manager_refresh_login">刷新登录信息</string>
 </resources>

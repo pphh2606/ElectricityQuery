@@ -51,7 +51,7 @@ class QrCodeApi {
 
             Log.d("QrCodeApi", "GET $url")
             // 使用 SharedHttpClient 的同一个 OkHttpClient 实例
-            // 该 client 包含 CasAuthApi.login() 登录后的 CASTGC Cookie，
+            // 该 client 包含登录后的 CASTGC Cookie（由 CookieStoreOkHttpJar 桥接系统 CookieManager），
             // 首次请求 epay 时通过 followRedirects 自动完成 ticket 交换获取 JSESSIONID
             val response = SharedHttpClient.client.newCall(
                 Request.Builder()

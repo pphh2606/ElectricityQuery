@@ -45,10 +45,14 @@ import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalNightModeState
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +66,7 @@ import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.network.AccountManager
 import edu.cqwu.electricity.data.network.WebVpnEncoder
 import edu.cqwu.electricity.ui.components.OpenUrlDialog
+import edu.cqwu.electricity.ui.login.AccountManagerSheet
 
 /** 「我的信息」H5 页面 URL（与首页「我的信息」一致） */
 private const val MY_INFO_URL = "https://cqwu.campusphere.net/wec-counselor-stuinfo-apps/student/mobile/index.html"
@@ -126,9 +131,22 @@ fun ProfilePageContent() {
     val nav = LocalNavController.current
     val context = LocalContext.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
+    var showAccountManagerSheet by remember { mutableStateOf(false) }
 
-    // 获取当前登录学号：优先取内存中的活跃用户，其次取本地持久化的最近登录学号
-    val username = remember {
+    // 响应式刷新用户名：页面从后台恢复时重新读取（支持切换账号后自动更新）
+    var usernameRefreshKey by remember { mutableStateOf(0) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                usernameRefreshKey++
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val username = remember(usernameRefreshKey) {
         AccountManager.getActiveUser()
             ?: AccountStore(context).getAllAccountNames().firstOrNull()
     }
@@ -208,7 +226,7 @@ fun ProfilePageContent() {
                 // ── 右侧：编辑按钮（仅登录后显示）+ > 箭头 ──
                 if (isLoggedIn) {
                     IconButton(
-                        onClick = { nav.navigate(Routes.LOGIN) },
+                        onClick = { showAccountManagerSheet = true },
                         modifier = Modifier.size(36.dp),
                     ) {
                         Icon(
@@ -269,6 +287,21 @@ fun ProfilePageContent() {
         // ── 底部区域（占位） ──
         Spacer(modifier = Modifier.height(16.dp))
     }
+
+    // ── 账号管理弹窗 ──
+    AccountManagerSheet(
+        show = showAccountManagerSheet,
+        onDismiss = { showAccountManagerSheet = false },
+        onNavigateToLogin = {
+            showAccountManagerSheet = false
+            nav.navigate(Routes.LOGIN)
+        },
+        onSwitchSuccess = {
+            // 切换成功后刷新用户名（Lifecycle ON_RESUME 已自动处理，
+            // 此处额外 +1 确保即时更新）
+            usernameRefreshKey++
+        },
+    )
 
     // ── 打开网址对话框 ──
     if (showOpenUrlDialog) {

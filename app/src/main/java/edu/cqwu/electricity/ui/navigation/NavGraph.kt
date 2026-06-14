@@ -70,6 +70,7 @@ import edu.cqwu.electricity.ui.settings.ConfigScreen
 import edu.cqwu.electricity.ui.settings.PersonalizationScreen
 import edu.cqwu.electricity.ui.settings.QrCodeSettingsScreen
 import edu.cqwu.electricity.ui.settings.SettingsScreen
+import edu.cqwu.electricity.ui.settings.StorageClearScreen
 import edu.cqwu.electricity.ui.settings.UserAgentEditScreen
 import edu.cqwu.electricity.ui.settings.UserAgentSettingsScreen
 import edu.cqwu.electricity.ui.theme.AnimationSettings
@@ -191,6 +192,9 @@ object Routes {
 
     /** 添加快捷方式 */
     const val ADD_SHORTCUT = "add_shortcut"
+
+    /** 清除存储空间 */
+    const val STORAGE_CLEAR = "storage_clear"
 }
 
 /** 从动画设置生成过渡 EnterTransition */
@@ -588,6 +592,14 @@ fun AppNavGraph(
             ConfigScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToUserAgent = { navController.navigate(Routes.USER_AGENT_SETTINGS) },
+                onNavigateToStorageClear = { navController.navigate(Routes.STORAGE_CLEAR) },
+            )
+        }
+
+        // 清除存储空间页
+        animatedComposable(settings = animationSettings, route = Routes.STORAGE_CLEAR) {
+            StorageClearScreen(
+                onBack = { navController.popBackStack() },
             )
         }
 

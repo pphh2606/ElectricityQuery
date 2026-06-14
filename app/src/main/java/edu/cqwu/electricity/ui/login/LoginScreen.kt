@@ -26,13 +26,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
@@ -41,7 +37,6 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -60,7 +55,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -80,9 +74,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.BottomSheetItem
@@ -115,21 +106,14 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
+
+    // 每次进入登录页时重置状态，防止 ViewModel 跨导航残留旧数据
+    LaunchedEffect(Unit) {
+        loginViewModel.resetState()
+    }
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val nav = LocalNavController.current
-
-    // 每次页面变为可见时刷新已保存账号列表（例如从扫码登录返回后）
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                loginViewModel.refreshSavedAccounts()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
 
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
@@ -141,11 +125,7 @@ fun LoginScreen(
     var showSecurityNotice by remember { mutableStateOf(false) }
     // 其他登录方式弹窗
     var showOtherLoginSheet by remember { mutableStateOf(false) }
-    // 学号下拉选择
-    var showAccountDropdown by remember { mutableStateOf(false) }
-    // 删除账号确认弹窗：记录待删除的学号
     val snackbar = LocalSnackbarController.current
-    var deleteConfirmAccount by remember { mutableStateOf<String?>(null) }
 
     // 锁屏验证启动器
     val authLauncher = rememberLauncherForActivityResult(
@@ -157,8 +137,8 @@ fun LoginScreen(
     }
 
     // 拦截系统返回（包括侧滑手势和物理返回键）
-    // 加载中/自动切换中拦截，防止登录请求中误触退出导致状态丢失
-    BackHandler(enabled = uiState.isLoading || uiState.isAutoSwitching) {
+    // 加载中拦截，防止登录请求中误触退出导致状态丢失
+    BackHandler(enabled = uiState.isLoading) {
         snackbar.show(context.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
     }
 
@@ -173,11 +153,6 @@ fun LoginScreen(
                 is LoginEvent.LoginSuccess -> {
                     snackbar.show(context.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
                     delay(1500)
-                    onBack()
-                }
-                is LoginEvent.AutoSwitchSuccess -> {
-                    android.util.Log.d("LoginScreen", "智能切换成功: 用户[${event.username}] 已自动切换 Cookie 环境")
-                    delay(500)
                     onBack()
                 }
                 is LoginEvent.ExportSuccess -> {
@@ -307,59 +282,34 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 学号输入框（带下拉选择已有用户）
-                Box {
-                    TextField(
-                        value = uiState.username,
-                        onValueChange = { loginViewModel.updateUsername(it) },
-                        label = { Text(stringResource(R.string.login_student_id)) },
-                        placeholder = { Text(stringResource(R.string.login_student_id_hint)) },
-                        singleLine = true,
-                        enabled = !uiState.isLoading,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                        ),
-                        trailingIcon = {
-                            if (uiState.savedAccounts.isNotEmpty()) {
-                                IconButton(onClick = { showAccountDropdown = !showAccountDropdown }) {
-                                    Icon(
-                                        imageVector = if (showAccountDropdown)
-                                            Icons.Default.KeyboardArrowUp
-                                        else
-                                            Icons.Default.ArrowDropDown,
-                                        contentDescription = stringResource(R.string.common_select_saved_user)
-                                    )
-                                }
-                            }
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // 学号下拉选择菜单（类似QQ样式：账号居左，删除按钮居右）
-                    AccountDropdownMenu(
-                        savedAccounts = uiState.savedAccounts,
-                        expanded = showAccountDropdown,
-                        onDismiss = { showAccountDropdown = false },
-                        onSelectAccount = { loginViewModel.switchToUser(it) },
-                        onDeleteAccount = { deleteConfirmAccount = it },
-                        modifier = Modifier.fillMaxWidth(0.9f),
-                    )
-                }
+                // 学号输入框
+                TextField(
+                    value = uiState.username,
+                    onValueChange = { loginViewModel.updateUsername(it) },
+                    label = { Text(stringResource(R.string.login_student_id)) },
+                    placeholder = { Text(stringResource(R.string.login_student_id_hint)) },
+                    singleLine = true,
+                    enabled = !uiState.isLoading,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -480,7 +430,7 @@ fun LoginScreen(
                 }
                 } // 关闭内层 weight Column
 
-                // ═══ 底部固定区：扫码登录 | 添加账号 ═══
+                // ═══ 底部固定区：其他登录方式 ═══
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -498,25 +448,6 @@ fun LoginScreen(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-
-                    Text(
-                        text = "|",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                    )
-
-                    TextButton(
-                        onClick = {
-                            loginViewModel.updateUsername("")
-                            loginViewModel.updatePassword("")
-                        },
-                        enabled = !uiState.isLoading
-                    ) {
-                        Text(
-                            stringResource(R.string.login_add_account),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -525,15 +456,9 @@ fun LoginScreen(
         }
     }
 
-    // ========== 登录/切换账号加载弹窗 ==========
-    val showLoading = uiState.isLoading || uiState.isAutoSwitching
-    if (showLoading) {
-        LoadingDialog(
-            message = if (uiState.isAutoSwitching)
-                stringResource(R.string.login_auto_switching)
-            else
-                stringResource(R.string.login_verifying)
-        )
+    // ========== 登录加载弹窗 ==========
+    if (uiState.isLoading) {
+        LoadingDialog(message = stringResource(R.string.login_verifying))
     }
 
     // ========== 安全说明弹窗 ==========
@@ -610,17 +535,6 @@ fun LoginScreen(
         onConfirm = { password ->
             loginViewModel.exportCredentials(password)
             showExportDialog = false
-        },
-    )
-
-    // ── 删除账号确认弹窗 ──
-    DeleteAccountSheet(
-        account = deleteConfirmAccount,
-        onDismiss = { deleteConfirmAccount = null },
-        onConfirm = {
-            loginViewModel.removeAccount(deleteConfirmAccount!!)
-            deleteConfirmAccount = null
-            showAccountDropdown = false
         },
     )
 

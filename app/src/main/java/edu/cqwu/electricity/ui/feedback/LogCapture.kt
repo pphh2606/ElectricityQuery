@@ -40,7 +40,7 @@ object LogCapture {
         // ── 优先级 1：持久化崩溃文件 ──
         val crashReports = CrashHandler.getCrashReports(maxFiles = 10)
         if (crashReports.isNotBlank()) {
-            parts.add("═══ 崩溃记录（持久化文件） ═══")
+            parts.add("═══ 崩溃记录 ═══")
             parts.add("")
             parts.add(crashReports)
         }

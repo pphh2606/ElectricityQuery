@@ -234,8 +234,8 @@ class QrLoginApi {
             android.util.Log.d("QrLoginApi", "提交认证响应: code=${response.code}, Location=$location")
 
             // 从独立 cookieStore 中提取 CASTGC（由 UserAwareCookieJar 自动从 Set-Cookie 保存到 store）
-            val castgc = getCookieValueFromStore(
-                cookieStore, "https://authserver.cqwu.edu.cn", "CASTGC"
+            val castgc = cookieStore.getCookieValue(
+                "https://authserver.cqwu.edu.cn", "CASTGC"
             )
 
             if (castgc == null) {
@@ -307,18 +307,6 @@ class QrLoginApi {
     }
 
     // ==================== 辅助方法 ====================
-
-    /**
-     * 从 UserCookieStore 中解析指定名称的 Cookie 值
-     */
-    private fun getCookieValueFromStore(store: UserCookieStore, url: String, name: String): String? {
-        val cookieString = store.getCookie(url) ?: return null
-        val prefix = "$name="
-        return cookieString.split(";")
-            .map { it.trim() }
-            .firstOrNull { it.startsWith(prefix) }
-            ?.substringAfter(prefix)
-    }
 
     /**
      * 从 HTML 中提取 <input name="name"> 的 value 属性

@@ -108,7 +108,6 @@ fun FeedbackScreen(
     var previewLogText by remember { mutableStateOf("") }
 
     val canSend = content.isNotBlank() && !isSending
-    val canShareLogs = !isSending
 
     // 合并 PackageInfo 查询，只查一次
     val pkgInfo = remember(context) {
@@ -191,10 +190,6 @@ fun FeedbackScreen(
 
     fun shareLogs() {
         if (isSending) return
-        if (!includeLogs && !hasCrashReports) {
-            snackbar.show("请先开启日志开关", ToastUtils.Type.ERROR)
-            return
-        }
         isSending = true
 
         scope.launch {
@@ -296,15 +291,6 @@ fun FeedbackScreen(
                                 contentDescription = stringResource(R.string.common_send_email),
                             )
                         }
-                        IconButton(
-                            onClick = { shareLogs() },
-                            enabled = canShareLogs,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Share,
-                                contentDescription = stringResource(R.string.common_share_log),
-                            )
-                        }
                     }
                 },
                 colors = topBarColors,
@@ -363,6 +349,18 @@ fun FeedbackScreen(
                         )
                     }
                     Text(stringResource(R.string.feedback_preview_log))
+                }
+
+                TextButton(
+                    onClick = { shareLogs() },
+                    enabled = !isSending,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 4.dp),
+                    )
+                    Text(stringResource(R.string.common_share_log))
                 }
             }
 

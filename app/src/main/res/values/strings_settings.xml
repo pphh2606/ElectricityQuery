@@ -95,4 +95,30 @@
     <string name="language_select">选择语言</string>
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  清除存储空间                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="storage_clear_title">清除存储空间</string>
+    <string name="storage_clear_desc">分类型清除应用数据</string>
+    <string name="storage_clear_safe_group">安全清除</string>
+    <string name="storage_clear_caution_group">需谨慎清除</string>
+    <string name="storage_clear_image_cache">图片缓存</string>
+    <string name="storage_clear_crash_logs">崩溃日志</string>
+    <string name="storage_clear_temp_logs">临时日志文件</string>
+    <string name="storage_clear_webview_data">WebView 浏览数据</string>
+    <string name="storage_clear_cookie_data">Cookie / 会话数据</string>
+    <string name="storage_clear_cookie_hint">清除所有网站的 Cookie，需重新登录</string>
+    <string name="storage_clear_settings">应用设置</string>
+    <string name="storage_clear_settings_hint">清除后设置恢复默认</string>
+    <string name="storage_clear_account_data">账号数据</string>
+    <string name="storage_clear_account_hint">清除所有用户账号信息</string>
+    <string name="storage_clear_button">清除选中项目</string>
+    <string name="storage_clear_confirm_title">确认清除</string>
+    <string name="storage_clear_confirm_message">以下数据将被永久清除：\n%1$s\n\n此操作不可撤销，是否继续？</string>
+    <string name="storage_clear_confirm_button">清除</string>
+    <string name="storage_clear_cancel_button">取消</string>
+    <string name="storage_clear_success">清除完成</string>
+    <string name="storage_clear_nothing_selected">请至少选择一项</string>
+    <string name="storage_clear_zero_size">0 B</string>
 </resources>

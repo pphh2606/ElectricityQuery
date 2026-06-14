@@ -95,4 +95,30 @@
     <string name="language_select">Select Language</string>
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Clear Storage                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="storage_clear_title">Clear Storage</string>
+    <string name="storage_clear_desc">Clear app data by category</string>
+    <string name="storage_clear_safe_group">Safe to Clear</string>
+    <string name="storage_clear_caution_group">Clear with Caution</string>
+    <string name="storage_clear_image_cache">Image Cache</string>
+    <string name="storage_clear_crash_logs">Crash Logs</string>
+    <string name="storage_clear_temp_logs">Temporary Log Files</string>
+    <string name="storage_clear_webview_data">WebView Browsing Data</string>
+    <string name="storage_clear_cookie_data">Cookie / Session Data</string>
+    <string name="storage_clear_cookie_hint">Clears all website cookies, requires re-login</string>
+    <string name="storage_clear_settings">App Settings</string>
+    <string name="storage_clear_settings_hint">Settings will reset to defaults</string>
+    <string name="storage_clear_account_data">Account Data</string>
+    <string name="storage_clear_account_hint">Clear all user account information</string>
+    <string name="storage_clear_button">Clear Selected</string>
+    <string name="storage_clear_confirm_title">Confirm Clear</string>
+    <string name="storage_clear_confirm_message">The following data will be permanently deleted:\n%1$s\n\nThis action cannot be undone. Continue?</string>
+    <string name="storage_clear_confirm_button">Clear</string>
+    <string name="storage_clear_cancel_button">Cancel</string>
+    <string name="storage_clear_success">Clear complete</string>
+    <string name="storage_clear_nothing_selected">Please select at least one item</string>
+    <string name="storage_clear_zero_size">0 B</string>
 </resources>

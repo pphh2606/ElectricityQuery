@@ -1,28 +1,20 @@
 package edu.cqwu.electricity.data.network
 
 import android.webkit.CookieManager
+import edu.cqwu.electricity.data.local.AccountStore
 
 /**
- * 统一的 Cookie 管理层
+ * 统一的 Cookie 管理层（桥接 android.webkit.CookieManager）。
  *
  * 所有 Cookie 统一保存在 android.webkit.CookieManager（浏览器缓存，磁盘持久化）。
- * 提供增删改查、导入导出、会话检测等完整 API。
+ * 提供增删改查等基础 API。
  *
  * 使用方式：
- *   CookieStore.init(context)  // Application.onCreate() 中调用
- *   CookieStore.getCookie("https://example.com", "JSESSIONID")
- *   CookieStore.importFromString("JSESSIONID=xxx; CASTGC=yyy")
- *   CookieStore.exportToString()
+ *   CookieStore.init()  // Application.onCreate() 中调用
+ *   CookieStore.getCookie("https://example.com")
+ *   CookieStore.getCookieValue("https://example.com", "JSESSIONID")
  */
 object CookieStore {
-
-    // 应用涉及的已知域名列表
-    private val KNOWN_DOMAINS = listOf(
-        "https://authserver.cqwu.edu.cn",
-        "https://electricitypay.cqwu.edu.cn",
-        "https://pay.cqwu.edu.cn",
-        "http://218.194.176.214:8382"
-    )
 
     private var isInitialized = false
 
@@ -70,59 +62,12 @@ object CookieStore {
     }
 
     /**
-     * 为所有已知域名设置同一个 Cookie
-     * 用于导入时，不确定 Cookie 属于哪个域名的场景
-     */
-    fun setCookieForAllDomains(cookieValue: String) {
-        for (url in KNOWN_DOMAINS) {
-            CookieManager.getInstance().setCookie(url, cookieValue)
-        }
-        CookieManager.getInstance().flush()
-    }
-
-    /**
      * 清除所有 Cookie
      */
     fun removeAllCookies() {
         checkInitialized()
         CookieManager.getInstance().removeAllCookies(null)
         CookieManager.getInstance().flush()
-    }
-
-    /**
-     * 从格式化的 Cookie 字符串导入
-     * 支持格式：JSESSIONID=xxx; CASTGC=yyy; ...
-     * 会写入所有已知域名
-     *
-     * @return 成功导入的 Cookie 数量
-     */
-    fun importFromString(cookieString: String): Int {
-        val pairs = parseCookieString(cookieString)
-        if (pairs.isEmpty()) return 0
-
-        for ((name, value) in pairs) {
-            setCookieForAllDomains("$name=$value")
-        }
-
-        return pairs.size
-    }
-
-    /**
-     * 导出所有已知域名的 Cookie 为格式化的字符串
-     * @return "JSESSIONID=xxx; CASTGC=yyy; ..."
-     */
-    fun exportToString(): String {
-        val allPairs = linkedMapOf<String, String>()  // 保持顺序 + 去重
-
-        for (url in KNOWN_DOMAINS) {
-            val cookies = getCookie(url) ?: continue
-            val parsed = parseCookieString(cookies)
-            for ((name, value) in parsed) {
-                allPairs[name] = value
-            }
-        }
-
-        return allPairs.entries.joinToString("; ") { "${it.key}=${it.value}" }
     }
 
     // ==================== 内部方法 ====================
@@ -133,19 +78,6 @@ object CookieStore {
         }
     }
 
-    /**
-     * 解析 "name1=val1; name2=val2" 格式的 Cookie 字符串
-     */
-    private fun parseCookieString(cookieString: String): List<Pair<String, String>> {
-        return cookieString
-            .split(";")
-            .map { it.trim() }
-            .filter { it.contains("=") }
-            .map { pair ->
-                val eqIndex = pair.indexOf("=")
-                pair.substring(0, eqIndex).trim() to pair.substring(eqIndex + 1).trim()
-            }
-    }
 }
 
 /**
@@ -170,6 +102,13 @@ class UserCookieStore {
         val domainCookies = cookieMap[normalizeUrl(url)] ?: return null
         if (domainCookies.isEmpty()) return null
         return domainCookies.entries.joinToString("; ") { "${it.key}=${it.value}" }
+    }
+
+    /**
+     * 获取指定 URL 中特定名称的 Cookie 值
+     */
+    fun getCookieValue(url: String, name: String): String? {
+        return cookieMap[normalizeUrl(url)]?.get(name)
     }
 
     /**
@@ -258,6 +197,18 @@ class UserCookieStore {
 }
 
 /**
+ * 自动切换结果
+ */
+sealed interface AutoSwitchResult {
+    /** Cookie 有效，切换成功 */
+    data object Success : AutoSwitchResult
+    /** Cookie 无效或无 Cookie，需要手动登录 */
+    data class NeedManualLogin(val username: String, val password: String?) : AutoSwitchResult
+    /** 验证过程中发生异常 */
+    data class Error(val message: String) : AutoSwitchResult
+}
+
+/**
  * 多用户 Cookie 管理器。
  *
  * 管理多个用户的 UserCookieStore，提供切换、同步功能。
@@ -304,6 +255,54 @@ object AccountManager {
         userCookies.remove(username)
         if (activeUser == username) {
             activeUser = null
+        }
+    }
+
+    /**
+     * 自动切换到指定用户（智能切换逻辑）。
+     *
+     * 验证该用户的 Cookie 有效性：
+     * - Cookie 有效且学号匹配 → 执行切换，返回 [AutoSwitchResult.Success]
+     * - Cookie 无效或无 Cookie → 返回 [AutoSwitchResult.NeedManualLogin]
+     * - 网络异常 → 返回 [AutoSwitchResult.Error]
+     *
+     * 此方法可由账号管理弹窗直接调用，无需 LoginViewModel 实例。
+     *
+     * @param username 目标学号
+     * @param accountStore 用于获取密码的 AccountStore 实例
+     */
+    suspend fun autoSwitchToUser(
+        username: String,
+        accountStore: AccountStore,
+    ): AutoSwitchResult {
+        return try {
+            val userStore = getCookiesForUser(username)
+            when (val result = SessionValidator.validate(userStore, syncFromSystem = false)) {
+                is SessionValidationResult.Valid -> {
+                    if (result.info.username != username) {
+                        android.util.Log.w("AccountManager", "学号不匹配: 期望[$username] 实际[${result.info.username}]")
+                        AutoSwitchResult.Error("Cookie 返回学号与目标不一致")
+                    } else {
+                        switchToUser(username)
+                        AutoSwitchResult.Success
+                    }
+                }
+                is SessionValidationResult.Invalid -> {
+                    AutoSwitchResult.NeedManualLogin(
+                        username = username,
+                        password = accountStore.getPassword(username)
+                    )
+                }
+                is SessionValidationResult.NetworkError -> {
+                    AutoSwitchResult.Error("网络异常，请检查网络")
+                }
+            }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // 不要吞掉协程取消异常，必须重新抛出
+            throw e
+        } catch (e: Exception) {
+            android.util.Log.e("AccountManager", "autoSwitchToUser 异常: ${e::class.simpleName}: ${e.message}", e)
+            AutoSwitchResult.Error(e.message ?: "验证失败")
         }
     }
 }

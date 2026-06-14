@@ -6,9 +6,6 @@ import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.local.CredentialExporter
 import edu.cqwu.electricity.data.network.AccountManager
-import edu.cqwu.electricity.data.network.CookieStore
-import edu.cqwu.electricity.data.network.SessionValidationResult
-import edu.cqwu.electricity.data.network.SessionValidator
 import edu.cqwu.electricity.data.repository.LoginRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -26,10 +23,6 @@ data class LoginUiState(
     val username: String = "",
     val password: String = "",               // UI 显示的密码（可能为假占位符）
     val isLoading: Boolean = false,
-    // 多用户相关
-    val savedAccounts: List<String> = emptyList(),   // 所有已保存的学号列表
-    // 智能切换相关
-    val isAutoSwitching: Boolean = false,             // 是否正在自动验证 Cookie
     // 记住密码
     val rememberPassword: Boolean = true,             // 是否记住密码（默认记住）
     // 密码显隐控制
@@ -47,7 +40,6 @@ private const val PLACEHOLDER_PASSWORD = "12345678"
  * - 用户名/密码输入状态
  * - 登录加载/错误/成功状态（一次性事件通过 Channel 发送）
  * - 自动加载已保存的凭据
- * - 多用户账号列表 & 智能切换
  * - 扫码登录后保存用户信息
  *
  * 安全设计：
@@ -105,10 +97,32 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
         }
+    }
 
-        // 加载所有已保存的学号列表
-        _uiState.update {
-            it.copy(savedAccounts = allAccounts.map { it.username })
+    /**
+     * 重置所有输入状态为初始值。
+     *
+     * 每次进入 LoginScreen 时调用，确保不残留上一次登录的数据。
+     */
+    fun resetState() {
+        actualPassword = ""
+        val rememberPwd = accountStore.getRememberPassword()
+        val lastAccount = accountStore.getAllAccounts().firstOrNull()
+        if (lastAccount != null && lastAccount.password != null && rememberPwd) {
+            actualPassword = lastAccount.password
+            _uiState.value = LoginUiState(
+                username = lastAccount.username,
+                password = PLACEHOLDER_PASSWORD,
+                rememberPassword = true,
+                passwordFromStorage = true
+            )
+        } else {
+            _uiState.value = LoginUiState(
+                username = lastAccount?.username ?: "",
+                password = "",
+                rememberPassword = rememberPwd,
+                passwordFromStorage = false
+            )
         }
     }
 
@@ -163,100 +177,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * 删除指定账号：
-     * 1. 从本地 AccountStore 中移除学号
-     * 2. 清除内存中该用户的 Cookie（UserCookieStore）
-     * 3. 如果删除的是当前登录用户，切换到未登录状态
-     *
-     * 注意：不清除系统 CookieManager（removeAllCookies），
-     * 否则会误伤其他已登录用户的会话。
-     */
-    fun removeAccount(username: String) {
-        accountStore.removeAccount(username)
-
-        // 清除系统 CookieManager（必须在 removeUser 之前，因为 removeUser 会清空 activeUser）
-        val isActiveUser = username == AccountManager.getActiveUser()
-        if (isActiveUser) {
-            CookieStore.removeAllCookies()
-        }
-
-        AccountManager.removeUser(username)
-
-        _uiState.update {
-            val isCurrent = it.username == username
-            it.copy(
-                savedAccounts = accountStore.getAllAccountNames(),
-                username = if (isCurrent) "" else it.username,
-                password = if (isCurrent) "" else it.password,
-                passwordFromStorage = if (isCurrent) false else it.passwordFromStorage,
-                passwordRevealed = if (isCurrent) false else it.passwordRevealed
-            )
-        }
-    }
-
-    /**
-     * 切换到指定用户（智能切换逻辑）。
-     *
-     * 行为：
-     * 1. 总是先填充学号+密码到输入框（保持 UI 响应）
-     * 2. 异步检查 AccountManager 是否有该用户的 Cookie
-     * 3. 有 Cookie → 调用 SessionValidator 验证有效性
-     * 4. Cookie 有效 → 自动切换，通过 LoginEvent.AutoSwitchSuccess 通知
-     * 5. Cookie 无效 / 无 Cookie → 保持在输入状态，等待用户操作
-     */
-    fun switchToUser(username: String) {
-        val pwd = accountStore.getPassword(username) ?: ""
-        actualPassword = pwd  // 真实密码保存在内部
-        _uiState.update {
-            it.copy(
-                username = username,
-                password = if (pwd.isNotEmpty()) PLACEHOLDER_PASSWORD else "",  // UI 显示假密码
-                isAutoSwitching = true,
-                passwordFromStorage = pwd.isNotEmpty(),  // 有密码则标记为存储来源
-                passwordRevealed = false
-            )
-        }
-
-        // 异步检查 Cookie
-        viewModelScope.launch {
-            try {
-                val userStore = AccountManager.getCookiesForUser(username)
-
-                // 直接调用 SessionValidator 验证（内部会从 UserCookieStore 和系统 CookieManager 兜底）
-                when (val result = SessionValidator.validate(userStore)) {
-                    is SessionValidationResult.Valid -> {
-                        // Cookie 有效，校验返回的学号与目标一致（防止 Cookie 串号）
-                        if (result.info.username != username) {
-                            android.util.Log.w("LoginViewModel",
-                                "智能切换: Cookie 返回学号[${result.info.username}]与目标[$username]不一致，拒绝自动切换")
-                        } else {
-                            AccountManager.switchToUser(username)
-                            android.util.Log.d("LoginViewModel",
-                                "智能切换: 用户[$username] Cookie 有效，自动切换成功")
-                            _events.send(LoginEvent.AutoSwitchSuccess(username))
-                            return@launch
-                        }
-                    }
-                    is SessionValidationResult.Invalid -> {
-                        android.util.Log.d("LoginViewModel",
-                            "智能切换: 用户[$username] Cookie 无效或无 Cookie")
-                    }
-                    is SessionValidationResult.NetworkError -> {
-                        android.util.Log.e("LoginViewModel", "智能切换网络异常: ${result.message}")
-                        _events.send(LoginEvent.Error("自动验证失败，请手动登录"))
-                    }
-                }
-            } catch (e: Exception) {
-                android.util.Log.e("LoginViewModel", "智能切换异常", e)
-                _events.send(LoginEvent.Error("自动验证失败，请手动登录"))
-            } finally {
-                // 确保 isAutoSwitching 始终被重置，防止 UI 永久转圈
-                _uiState.update { it.copy(isAutoSwitching = false) }
-            }
-        }
-    }
-
-    /**
      * 执行登录
      * 使用该用户独立的 Cookie 存储，避免影响已有用户的会话
      */
@@ -304,11 +224,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
                         // 切换为该用户的 Cookie 环境
                         AccountManager.switchToUser(username)
-
-                        // 刷新已保存的学号列表
-                        _uiState.update {
-                            it.copy(savedAccounts = accountStore.getAllAccountNames())
-                        }
                     }
                     .onFailure { e ->
                         val loginEndTime = System.currentTimeMillis()
@@ -342,18 +257,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-    /**
-     * 刷新已保存的学号列表（用于页面重新可见时更新下拉列表）
-     */
-    fun refreshSavedAccounts() {
-        _uiState.update {
-            it.copy(savedAccounts = accountStore.getAllAccountNames())
-        }
-    }
-
-    // ==================== 扫码登录回调 ====================
-
     // ==================== 凭据导出 ====================
 
     /**
@@ -440,7 +343,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 sealed interface LoginEvent {
     data class Error(val msg: String) : LoginEvent
     data class LoginSuccess(val cookie: String) : LoginEvent
-    data class AutoSwitchSuccess(val username: String) : LoginEvent
     data class ExportSuccess(val encryptedData: String) : LoginEvent
 }
 

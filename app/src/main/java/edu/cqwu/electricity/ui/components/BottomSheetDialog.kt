@@ -224,6 +224,7 @@ fun BottomSheetItem(
     iconUrl: String? = null,
     containerColor: androidx.compose.ui.graphics.Color? = null,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+    trailingContent: (@Composable () -> Unit)? = null,
     onClick: () -> Unit
 ) {
     Surface(
@@ -311,8 +312,14 @@ fun BottomSheetItem(
                     MaterialTheme.colorScheme.onSurface
                 } else {
                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                }
+                },
+                modifier = Modifier.weight(1f)
             )
+
+            // 尾部内容（可选）
+            if (trailingContent != null) {
+                trailingContent()
+            }
         }
     }
 }

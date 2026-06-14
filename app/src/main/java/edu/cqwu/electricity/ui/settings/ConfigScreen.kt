@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +52,7 @@ import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 fun ConfigScreen(
     onBack: () -> Unit,
     onNavigateToUserAgent: () -> Unit,
+    onNavigateToStorageClear: () -> Unit = {},
 ) {
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val context = LocalContext.current
@@ -101,6 +103,14 @@ fun ConfigScreen(
                         title = stringResource(R.string.language_title),
                         subtitle = currentLanguage.displayName,
                         onClick = { showLanguageSheet = true },
+                    )
+
+                    // ── 清除存储空间 ──
+                    ConfigEntry(
+                        icon = Icons.Default.CleaningServices,
+                        title = stringResource(R.string.storage_clear_title),
+                        subtitle = stringResource(R.string.storage_clear_desc),
+                        onClick = onNavigateToStorageClear,
                     )
                 }
             }

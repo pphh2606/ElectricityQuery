@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit
  * 4. POST 表单到 LOGIN_URL
  * 5. 从 Cookie 中提取 CASTGC
  *
- * Cookie 统一保存在 android.webkit.CookieManager（浏览器缓存，磁盘持久化）中，
- * 通过 CookieStoreOkHttpJar 桥接 OkHttp 直接读写，无需手动同步。
+ * 所有登录均使用用户隔离的 Cookie 存储（UserCookieStore + UserAwareCookieJar），
+ * 与系统 CookieManager 完全隔离，避免多用户串号。
  */
 
 /**
@@ -110,16 +110,6 @@ class CasAuthApi {
 
 
     /**
-     * 执行 CAS 登录（共享 CookieManager）。
-     * 使用 SharedHttpClient.client（全局 CookieJar，Cookie 由 CookieManager 持久化）。
-     */
-    suspend fun login(username: String, password: String): Result<LoginResult> {
-        return performLogin(username, password, SharedHttpClient.client, tag = "") { url ->
-            CookieStore.getCookie(url) ?: ""
-        }
-    }
-
-    /**
      * 为指定用户执行 CAS 登录（使用该用户独立的 Cookie 存储）。
      * 使用 createClientForUser(username) 创建的独立 OkHttpClient，
      * Cookie 通过 UserAwareCookieJar 操作 UserCookieStore，与系统 CookieManager 隔离。
@@ -133,12 +123,12 @@ class CasAuthApi {
     }
 
     /**
-     * CAS 登录公共实现（抽取 login 与 loginForUser 的重复代码）。
+     * CAS 登录核心实现。
      *
      * @param username    学号
      * @param password    密码
      * @param client      用于 HTTP 请求的 OkHttpClient
-     * @param tag         日志标签后缀（空 或 "(user)"）
+     * @param tag         日志标签后缀
      * @param cookieProvider 从指定 URL 获取 Cookie 字符串的函数
      * @return Result<LoginResult>
      */

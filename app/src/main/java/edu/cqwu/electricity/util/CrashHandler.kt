@@ -145,7 +145,6 @@ class CrashHandler private constructor(
             appendLine()
 
             // ── 应用信息 ──
-            appendLine("--- 应用信息 ---")
             appendLine("包名: ${appContext.packageName}")
             try {
                 val pkgInfo = appContext.packageManager.getPackageInfo(
@@ -164,7 +163,6 @@ class CrashHandler private constructor(
             appendLine()
 
             // ── 设备信息 ──
-            appendLine("--- 设备信息 ---")
             appendLine("设备型号: ${Build.MODEL}")
             appendLine("制造商: ${Build.MANUFACTURER}")
             appendLine("品牌: ${Build.BRAND}")
@@ -173,7 +171,6 @@ class CrashHandler private constructor(
             appendLine()
 
             // ── 进程 / 线程信息 ──
-            appendLine("--- 进程/线程信息 ---")
             appendLine("进程 PID: ${Process.myPid()}")
             appendLine("线程名: ${thread.name}")
             @Suppress("DEPRECATION")
@@ -198,10 +195,6 @@ class CrashHandler private constructor(
                 level++
             }
 
-            appendLine()
-            appendLine("==========================================")
-            appendLine("报告结束")
-            appendLine("==========================================")
         }
     }
 

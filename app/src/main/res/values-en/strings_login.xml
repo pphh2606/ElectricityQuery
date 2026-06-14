@@ -73,4 +73,14 @@
     <string name="login_auto_switching">Attempting auto-login…</string>
     <string name="login_password_too_short">Password must be at least 4 characters</string>
     <string name="login_credential_copied">Credentials copied to clipboard</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Account Manager Sheet                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="account_manager_title">Account Manager</string>
+    <string name="account_manager_current">Current</string>
+    <string name="account_manager_add">Add Account</string>
+    <string name="account_manager_auto_login">Auto logging in…</string>
+    <string name="account_manager_switch_success">Switched to %1$s</string>
+    <string name="account_manager_switch_failed">Auto verification failed, please log in manually</string>
+    <string name="account_manager_refresh_login">Refresh login</string>
 </resources>
