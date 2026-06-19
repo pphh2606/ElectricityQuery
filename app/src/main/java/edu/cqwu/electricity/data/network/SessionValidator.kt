@@ -1,12 +1,5 @@
 package edu.cqwu.electricity.data.network
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.net.SocketTimeoutException
-import java.util.concurrent.TimeUnit
-
 /**
  * CAS 会话验证结果：学号和实名
  *
@@ -49,22 +42,6 @@ object SessionValidator {
     private const val INDEX_URL =
         "https://authserver.cqwu.edu.cn/authserver/index.do?locale=zh_CN"
 
-    /** 复用的 OkHttpClient 基础配置，cookieJar 通过 newBuilder() 动态替换 */
-    private val baseClient by lazy {
-        OkHttpClient.Builder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .addInterceptor(UserAgentInterceptor)
-            .build()
-    }
-
-    /** 预编译正则，避免每次调用临时构造 */
-    private val USERNAME_REGEX = Regex("""data-name="id">([^<]+)</div>""")
-    private val REAL_NAME_REGEX = Regex("""data-name="name">([^<]+)</div>""")
-
     /**
      * 验证指定用户的 Cookie 是否有效。
      *
@@ -76,61 +53,33 @@ object SessionValidator {
      *         [SessionValidationResult.Invalid]（Cookie 过期）、
      *         [SessionValidationResult.NetworkError]（网络异常）
      */
+    /**
+     * 验证指定用户的 Cookie 是否有效。
+     *
+     * 委托给 [SessionManager.validateCookie]，保留此方法作为向后兼容入口。
+     */
     suspend fun validate(
         userStore: UserCookieStore,
         syncFromSystem: Boolean = true,
-    ): SessionValidationResult = withContext(Dispatchers.IO) {
-        try {
-            // 兜底：如果 UserCookieStore 为空，尝试从系统 CookieManager 导入
-            if (syncFromSystem) {
-                val existingCookie = userStore.getCookie("https://authserver.cqwu.edu.cn")
-                if (existingCookie.isNullOrBlank()) {
-                    android.util.Log.d("SessionValidator", "UserCookieStore 为空，从系统 CookieManager 兜底导入")
-                    userStore.syncFromCookieManager()
-                }
-            }
-
-            val client = baseClient.newBuilder()
-                .cookieJar(UserAwareCookieJar(userStore))
-                .build()
-
-            val response = client.newCall(
-                Request.Builder()
-                    .url(INDEX_URL)
-                    .get()
-                    .build()
-            ).execute()
-
-            val html = response.body.string()
-
-            // 检查是否是 CAS 登录页（Cookie 无效场景）
-            if (SessionChecker.isCasLoginPage(html)) {
-                android.util.Log.d("SessionValidator", "Cookie 无效：响应为 CAS 登录页")
-                return@withContext SessionValidationResult.Invalid
-            }
-
-            // 提取学号：data-name="id">学号</div>
-            val username = USERNAME_REGEX.find(html)?.groupValues?.getOrNull(1)?.trim()
-                ?: run {
-                    android.util.Log.w("SessionValidator", "无法从 index.do 提取学号，HTML长度=${html.length}")
-                    return@withContext SessionValidationResult.Invalid
-                }
-
-            // 提取实名：data-name="name">姓名</div>
-            val realName = REAL_NAME_REGEX.find(html)?.groupValues?.getOrNull(1)?.trim() ?: ""
-
-            android.util.Log.d("SessionValidator", "Cookie 有效！学号=$username, 实名=$realName")
-
-            SessionValidationResult.Valid(CasUserInfo(username = username, realName = realName))
-        } catch (e: SocketTimeoutException) {
-            android.util.Log.w("SessionValidator", "验证 Cookie 网络超时", e)
-            SessionValidationResult.NetworkError("网络超时，请检查网络连接")
-        } catch (e: java.net.UnknownHostException) {
-            android.util.Log.w("SessionValidator", "验证 Cookie DNS 解析失败", e)
-            SessionValidationResult.NetworkError("无法连接服务器，请检查网络")
-        } catch (e: Exception) {
-            android.util.Log.w("SessionValidator", "验证 Cookie 时发生异常", e)
-            SessionValidationResult.NetworkError("网络异常: ${e.message}")
-        }
+    ): SessionValidationResult {
+        return SessionManager.validateCookie(userStore, syncFromSystem)
     }
 }
+
+/**
+ * CAS 登录状态检测工具（向后兼容包装器）。
+ *
+ * 实际逻辑已迁移到 [HtmlFormParser]，此类保留以避免大规模修改调用方。
+ * 所有方法直接委托给 [HtmlFormParser]。
+ */
+object SessionChecker {
+    fun isCasLoginPage(html: String): Boolean = HtmlFormParser.isCasLoginPage(html)
+    fun checkAndThrow(html: String) = HtmlFormParser.checkAndThrow(html)
+}
+
+/**
+ * Session 过期异常。
+ * 当 API 请求响应被重定向到 CAS 登录页时抛出此异常。
+ * UI 层捕获后应提示用户重新登录。
+ */
+class SessionExpiredException(message: String) : Exception(message)

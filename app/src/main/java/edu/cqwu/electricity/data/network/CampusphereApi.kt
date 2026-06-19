@@ -61,7 +61,7 @@ class CampusphereApi {
     }
 
     /**
-     * 执行 CAS ticket 交换，获取 campusphere 域下的 MOD_AUTH_CAS Cookie。
+     * 执行 CAS ticket 交换（委托给 SessionManager）。
      *
      * 流程：
      *   1. GET /student/mobile/index.html（未登录 → 302）
@@ -70,36 +70,7 @@ class CampusphereApi {
      *   4. 最终回到 index.html（已认证）
      */
     private fun doCasTicketExchange(client: OkHttpClient, cookieReader: (String) -> String?) {
-        android.util.Log.d(TAG, ">>> 执行 CAS ticket 交换 >>>")
-
-        val resp = client.newCall(
-            Request.Builder()
-                .url(INDEX_URL)
-                .addHeader("User-Agent",
-                    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36")
-                .addHeader("Accept",
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
-                .get()
-                .build()
-        ).execute()
-
-        // 消费响应体
-        resp.body.string()
-        val finalUrl = resp.request.url.toString()
-        val code = resp.code
-        android.util.Log.d(TAG, "CAS ticket 交换: code=$code, finalUrl=${finalUrl.take(100)}")
-
-        // 检查是否获得了 MOD_AUTH_CAS
-        val campusCookie = cookieReader(BASE)
-        val hasModAuthCas = campusCookie?.contains("MOD_AUTH_CAS=") == true
-        val hasJsessionid = campusCookie?.contains("JSESSIONID=") == true
-        android.util.Log.d(TAG, "交换后 Cookie: MOD_AUTH_CAS=$hasModAuthCas, JSESSIONID=$hasJsessionid, cookie=${campusCookie?.take(80)}")
-
-        if (!hasModAuthCas) {
-            android.util.Log.w(TAG, "CAS ticket 交换失败，仍未获取到 MOD_AUTH_CAS")
-            throw SessionExpiredException("校园信息会话已过期，请先登录")
-        }
+        SessionManager.performCasTicketExchange(client, cookieReader)
     }
 
     /**

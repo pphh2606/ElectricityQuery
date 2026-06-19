@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.local.CredentialExporter
 import edu.cqwu.electricity.data.network.AccountManager
-import edu.cqwu.electricity.data.repository.LoginRepository
+import edu.cqwu.electricity.data.network.CasAuthApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +50,7 @@ private const val PLACEHOLDER_PASSWORD = "12345678"
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val accountStore = AccountStore(application)
-    private val repository = LoginRepository()
+    private val authApi = CasAuthApi()
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -198,44 +198,25 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // === 诊断日志：登录前的用户 Cookie 状态 ===
-                val userStore = AccountManager.getCookiesForUser(username)
-                val preLoginCookies = userStore.getCookie("https://authserver.cqwu.edu.cn") ?: "(空)"
-                android.util.Log.d("LoginViewModel", "=== 诊断 === 用户[$username] 登录前Cookie: $preLoginCookies")
-
-                val loginStartTime = System.currentTimeMillis()
-
-                repository.login(username, password)
+                authApi.loginForUser(username, password)
                     .onSuccess { result ->
-                        val loginEndTime = System.currentTimeMillis()
-                        android.util.Log.d("LoginViewModel", "=== 诊断 === 用户[$username] 登录成功, 总耗时=${loginEndTime - loginStartTime}ms")
+                        // 提交临时 Cookie 到持久存储并切换用户
+                        result.cookieStore?.let { tempStore ->
+                            AccountManager.commitLoginCookies(username, tempStore)
+                        }
 
                         _uiState.update { it.copy(isLoading = false) }
-                        // 发送登录成功事件
                         _events.send(LoginEvent.LoginSuccess(result.cookieString))
 
-                        // 保存到 AccountStore（学号始终保存，密码按复选框决定）
+                        // 保存账号信息到本地
                         val rememberPwd = _uiState.value.rememberPassword
                         accountStore.saveAccount(
                             username = username,
                             password = password,
                             rememberPassword = rememberPwd
                         )
-
-                        // 切换为该用户的 Cookie 环境
-                        AccountManager.switchToUser(username)
                     }
                     .onFailure { e ->
-                        val loginEndTime = System.currentTimeMillis()
-                        val elapsed = loginEndTime - loginStartTime
-
-                        // === 诊断日志：登录失败后的 Cookie 状态 ===
-                        val failCookies = userStore.getCookie("https://authserver.cqwu.edu.cn") ?: "(空)"
-                        val allCookies = userStore.getAllCookies()
-                        android.util.Log.e("LoginViewModel", "=== 诊断 === 用户[$username] 登录失败, 耗时=${elapsed}ms, 异常=${e::class.simpleName}: ${e.message}")
-                        android.util.Log.e("LoginViewModel", "=== 诊断 === 失败后Cookie: $failCookies")
-                        android.util.Log.e("LoginViewModel", "=== 诊断 === UserCookieStore完整内容: $allCookies")
-
                         val errorMsg = when {
                             e.message?.contains("无法获取加密 salt") == true -> "获取登录参数失败，请检查网络"
                             e.message?.contains("无法获取 lt") == true -> "获取登录参数失败"

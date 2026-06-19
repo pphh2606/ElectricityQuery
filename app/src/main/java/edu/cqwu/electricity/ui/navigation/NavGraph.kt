@@ -75,8 +75,8 @@ import edu.cqwu.electricity.ui.settings.UserAgentEditScreen
 import edu.cqwu.electricity.ui.settings.UserAgentSettingsScreen
 import edu.cqwu.electricity.ui.theme.AnimationSettings
 import edu.cqwu.electricity.ui.theme.LocalAnimationSettings
+import edu.cqwu.electricity.data.network.SessionManager
 import edu.cqwu.electricity.data.network.SessionValidationResult
-import edu.cqwu.electricity.data.network.SessionValidator
 import edu.cqwu.electricity.data.network.UserCookieStore
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalColorSourceState
@@ -304,7 +304,7 @@ fun AppNavGraph(
     // 启动时后台静默验证 Cookie 有效性
     LaunchedEffect(Unit) {
         val store = UserCookieStore() // 空 store，validate 内部会从系统 CookieManager 兜底
-        when (val result = SessionValidator.validate(store)) {
+        when (val result = SessionManager.validateCookie(store)) {
             is SessionValidationResult.Valid -> {
                 android.util.Log.d("NavGraph", "启动 Cookie 验证：有效")
             }

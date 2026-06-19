@@ -2,12 +2,9 @@ package edu.cqwu.electricity.data.network
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Dns
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.net.InetAddress
-import java.util.concurrent.TimeUnit
 
 /**
  * CAS 统一认证登录 API
@@ -27,80 +24,6 @@ import java.util.concurrent.TimeUnit
  * 与系统 CookieManager 完全隔离，避免多用户串号。
  */
 
-/**
- * 自定义 DNS 解析器：优先使用 IPv4 地址。
- *
- * 日志数据显示 `authserver.cqwu.edu.cn` 的 IPv6 地址（2001:250:2407::12）端口 80 不可用，
- * 导致 OkHttp 先尝试 IPv6 连接等待 15 秒超时后，才回退到 IPv4（120ms 成功）。
- *
- * 此解析器将 IPv4 地址排在 IPv6 前面，使 OkHttp 优先尝试 IPv4，
- * 彻底避免 15 秒的 IPv6 连接超时。
- */
-object PreferIPv4Dns : Dns {
-    private val fallbackDns = Dns.SYSTEM
-
-    override fun lookup(hostname: String): List<InetAddress> {
-        val allAddresses = fallbackDns.lookup(hostname)
-        val ipv4 = mutableListOf<InetAddress>()
-        val ipv6 = mutableListOf<InetAddress>()
-        for (addr in allAddresses) {
-            if (addr is java.net.Inet4Address) {
-                ipv4.add(addr)
-            } else if (addr is java.net.Inet6Address) {
-                ipv6.add(addr)
-            }
-        }
-        // IPv4 在前，IPv6 在后
-        return ipv4 + ipv6
-    }
-}
-
-/**
- * 共享的 OkHttpClient 单例，
- * 使 CasAuthApi（登录）和 QrCodeApi（二维码获取）共享同一 Cookie Session。
- *
- * 需在 Application.onCreate() 中调用 SharedHttpClient.init(context) 初始化。
- */
-object SharedHttpClient {
-    val client: OkHttpClient by lazy {
-        OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .cookieJar(CookieStoreOkHttpJar)
-            .dns(PreferIPv4Dns)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .addInterceptor(UserAgentInterceptor)
-            .build()
-    }
-
-    fun init() {
-        CookieStore.init()
-    }
-
-    /**
-     * 为指定用户创建独立的 OkHttpClient。
-     *
-     * 使用 UserAwareCookieJar 绑定到该用户的独立 UserCookieStore，
-     * 与系统 CookieManager 完全隔离。
-     * 用于多用户场景，每个用户的登录会话互不干扰。
-     */
-    fun createClientForUser(username: String): OkHttpClient {
-        val userStore = AccountManager.getCookiesForUser(username)
-        return OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .cookieJar(UserAwareCookieJar(userStore))
-            .dns(PreferIPv4Dns)
-            .addInterceptor(UserAgentInterceptor)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .build()
-    }
-}
-
 class CasAuthApi {
 
     companion object {
@@ -110,15 +33,28 @@ class CasAuthApi {
 
 
     /**
-     * 为指定用户执行 CAS 登录（使用该用户独立的 Cookie 存储）。
-     * 使用 createClientForUser(username) 创建的独立 OkHttpClient，
-     * Cookie 通过 UserAwareCookieJar 操作 UserCookieStore，与系统 CookieManager 隔离。
+     * 为指定用户执行 CAS 登录。
+     *
+     * 使用隔离的临时 UserCookieStore，与持久存储完全隔离：
+     * - 登录过程中所有 Cookie 写入临时存储
+     * - 登录失败时临时存储随对象销毁，不影响持久存储
+     * - 登录成功后由调用方通过 AccountManager.commitLoginCookies() 迁移到持久存储
      */
     suspend fun loginForUser(username: String, password: String): Result<LoginResult> {
-        val userClient = SharedHttpClient.createClientForUser(username)
-        val userStore = AccountManager.getCookiesForUser(username)
-        return performLogin(username, password, userClient, tag = "(user)") { url ->
-            userStore.getCookie(url) ?: ""
+        // 每次登录创建全新的隔离 Cookie 存储，避免脏 Cookie 残留
+        val tempStore = UserCookieStore()
+        val tempClient = HttpClientFactory.createNoRedirect(
+            cookieJar = UserAwareCookieJar(tempStore)
+        ).newBuilder()
+            .followRedirects(true)
+            .followSslRedirects(true)
+            .build()
+
+        return performLogin(username, password, tempClient, tag = "(user)") { url ->
+            tempStore.getCookie(url) ?: ""
+        }.also { result ->
+            // 登录成功时，将临时存储附加到结果中供调用方提交
+            result.getOrNull()?.cookieStore = tempStore
         }
     }
 
@@ -166,13 +102,13 @@ class CasAuthApi {
             android.util.Log.d("CasAuthApi", "步骤1 HTML头部预览$tag: $htmlHeadPreview")
 
             // 步骤 2：解析登录页参数
-            val salt = extractRegex(loginPageHtml, """var pwdDefaultEncryptSalt = "(.+?)"""")
+            val salt = HtmlFormParser.extractRegex(loginPageHtml, """var pwdDefaultEncryptSalt = "(.+?)"""")
                 ?: throw RuntimeException("无法获取加密 salt")
-            val lt = extractInputValue(loginPageHtml, "lt")
+            val lt = HtmlFormParser.extractInputValue(loginPageHtml, "lt")
                 ?: throw RuntimeException("无法获取 lt")
-            val execution = extractInputValue(loginPageHtml, "execution")
+            val execution = HtmlFormParser.extractInputValue(loginPageHtml, "execution")
                 ?: throw RuntimeException("无法获取 execution")
-            val dllt = extractInputValue(loginPageHtml, "dllt") ?: ""
+            val dllt = HtmlFormParser.extractInputValue(loginPageHtml, "dllt") ?: ""
 
             val t2 = System.currentTimeMillis()
             android.util.Log.d("CasAuthApi", "步骤2耗时$tag: ${t2 - t1}ms, salt=$salt, lt=$lt, execution=$execution, dllt=$dllt")
@@ -262,28 +198,7 @@ class CasAuthApi {
         }
     }
 
-    /**
-     * 从 HTML 中提取指定正则表达式的第一个匹配组
-     */
-    private fun extractRegex(html: String, pattern: String): String? {
-        val regex = Regex(pattern, RegexOption.DOT_MATCHES_ALL)
-        return regex.find(html)?.groupValues?.getOrNull(1)
-    }
-
-    /**
-     * 从 HTML 中提取 <input name="name"> 的 value 属性
-     */
-    private fun extractInputValue(html: String, name: String): String? {
-        val pattern1 = Regex("""<input[^>]*\sname\s*=\s*["']$name["'][^>]*\svalue\s*=\s*["']([^"']*)["']""", RegexOption.IGNORE_CASE)
-        val match1 = pattern1.find(html)
-        if (match1 != null) return match1.groupValues[1]
-
-        val pattern2 = Regex("""<input[^>]*\svalue\s*=\s*["']([^"']*)["'][^>]*\sname\s*=\s*["']$name["']""", RegexOption.IGNORE_CASE)
-        val match2 = pattern2.find(html)
-        if (match2 != null) return match2.groupValues[1]
-
-        return null
-    }
+    // HTML 解析已统一使用 HtmlFormParser
 }
 
 /**
@@ -294,5 +209,7 @@ class CasAuthApi {
  */
 data class LoginResult(
     val username: String,
-    val cookieString: String
+    val cookieString: String,
+    /** 登录成功后的临时 Cookie 存储，由调用方通过 AccountManager.commitLoginCookies() 提交到持久存储 */
+    var cookieStore: UserCookieStore? = null
 )

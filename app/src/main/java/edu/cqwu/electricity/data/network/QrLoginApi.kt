@@ -43,14 +43,11 @@ class QrLoginApi {
     private val cookieStore = UserCookieStore()
 
     /** 使用独立 CookieJar 的 OkHttpClient，不携带任何已有登录信息 */
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .writeTimeout(15, TimeUnit.SECONDS)
-        .cookieJar(UserAwareCookieJar(cookieStore))
+    private val client = HttpClientFactory.createNoRedirect(
+        cookieJar = UserAwareCookieJar(cookieStore)
+    ).newBuilder()
         .followRedirects(true)
         .followSslRedirects(true)
-        .addInterceptor(UserAgentInterceptor)
         .build()
 
     // ═══════════════════════════════════════════
@@ -70,11 +67,11 @@ class QrLoginApi {
             val html = response.body.string()
 
             // 解析 lt (Login Ticket)
-            val lt = extractInputValue(html, "lt")
+            val lt = HtmlFormParser.extractInputValue(html, "lt")
                 ?: throw RuntimeException("无法从扫码登录页解析 lt")
 
             // 解析 execution (Spring Web Flow 状态)
-            val execution = extractInputValue(html, "execution")
+            val execution = HtmlFormParser.extractInputValue(html, "execution")
                 ?: throw RuntimeException("无法从扫码登录页解析 execution")
 
             Result.success(LoginPageData(lt, execution))
@@ -211,15 +208,9 @@ class QrLoginApi {
 
             // 使用独立的临时客户端（禁用 followRedirects），只请求第一个 302 响应
             // 避免 CAS 重定向链最后一步超时（>15s）
-            val submitClient = OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .addInterceptor(UserAgentInterceptor)
-                .readTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(15, TimeUnit.SECONDS)
-                .cookieJar(UserAwareCookieJar(cookieStore))
-                .followRedirects(false)       // ← 关键：不跟随重定向
-                .followSslRedirects(false)
-                .build()
+            val submitClient = HttpClientFactory.createNoRedirect(
+                cookieJar = UserAwareCookieJar(cookieStore)
+            )
 
             val response = submitClient.newCall(
                 Request.Builder()
@@ -265,29 +256,14 @@ class QrLoginApi {
                 ).execute()
 
                 val html = indexResponse.body.string()
-                if (true) {
-                    val usernameRegex = Regex("""data-name="id">([^<]+)</div>""")
-                    val extracted = usernameRegex.find(html)?.groupValues?.getOrNull(1)
-                    if (extracted != null) {
-                        username = extracted
-                        // 提取实名（仅用于日志）
-                        val nameRegex = Regex("""data-name="name">([^<]+)</div>""")
-                        val realName = nameRegex.find(html)?.groupValues?.getOrNull(1) ?: ""
-                        android.util.Log.d("QrLoginApi",
-                            "扫码登录: 学号=$username, 实名=$realName")
+                val extracted = HtmlFormParser.extractUsername(html)
+                if (extracted != null) {
+                    username = extracted
+                    val realName = HtmlFormParser.extractRealName(html) ?: ""
+                    android.util.Log.d("QrLoginApi", "扫码登录: 学号=$username, 实名=$realName")
 
-                        // ★★★ 拷贝私有 cookieStore 中所有 Cookie 到 AccountManager ★★★
-                        // 使用 getAllCookies() 遍历所有域名和所有 Cookie，逐个复制
-                        val userStore = AccountManager.getCookiesForUser(username)
-                        val allCookies = cookieStore.getAllCookies()
-                        for ((domain, domainCookies) in allCookies) {
-                            for ((cookieName, cookieValue) in domainCookies) {
-                                userStore.setCookie(domain, "$cookieName=$cookieValue")
-                            }
-                        }
-                        // 切换到该用户的 Cookie 环境
-                        AccountManager.switchToUser(username)
-                    }
+                    // 使用统一的提交方法，将临时 CookieStore 迁移到持久存储
+                    AccountManager.commitLoginCookies(username, cookieStore)
                 }
             } catch (e: Exception) {
                 android.util.Log.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
@@ -306,22 +282,7 @@ class QrLoginApi {
         }
     }
 
-    // ==================== 辅助方法 ====================
-
-    /**
-     * 从 HTML 中提取 <input name="name"> 的 value 属性
-     */
-    private fun extractInputValue(html: String, name: String): String? {
-        val pattern1 = Regex("""<input[^>]*\sname\s*=\s*["']$name["'][^>]*\svalue\s*=\s*["']([^"']*)["']""", RegexOption.IGNORE_CASE)
-        val match1 = pattern1.find(html)
-        if (match1 != null) return match1.groupValues[1]
-
-        val pattern2 = Regex("""<input[^>]*\svalue\s*=\s*["']([^"']*)["'][^>]*\sname\s*=\s*["']$name["']""", RegexOption.IGNORE_CASE)
-        val match2 = pattern2.find(html)
-        if (match2 != null) return match2.groupValues[1]
-
-        return null
-    }
+    // HTML 解析已统一使用 HtmlFormParser
 }
 
 /**
