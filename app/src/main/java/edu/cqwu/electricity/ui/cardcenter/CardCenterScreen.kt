@@ -1,10 +1,5 @@
 package edu.cqwu.electricity.ui.cardcenter
 
-import android.content.Context
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,11 +44,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import edu.cqwu.electricity.data.network.QrCodeType
+import edu.cqwu.electricity.R
+import edu.cqwu.electricity.data.network.qrcode.QrCodeType
 import edu.cqwu.electricity.ui.navigation.Routes
 import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState

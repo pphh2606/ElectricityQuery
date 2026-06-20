@@ -25,7 +25,6 @@
     <string name="dashboard_querying_balance">正在查詢餘額…</string>
     <string name="dashboard_room_name">房間名稱</string>
     <string name="dashboard_room_id">房間 ID</string>
-    <string name="dashboard_switch_dorm">切換寢室</string>
     <string name="dashboard_unknown">未知</string>
 
     <!-- ═══════════════════════════════════════════ -->
@@ -50,14 +49,6 @@
     <string name="detail_power_status">電源狀態</string>
     <string name="detail_empty_24h">暫無24h用電資料</string>
     <string name="detail_empty_meter">暫無電表資料</string>
-    <string name="detail_export_time_header">時間</string>
-    <string name="detail_export_kwh_header">用電量(度)</string>
-    <string name="detail_export_yuan_header">費用(元)</string>
-    <string name="detail_export_current_bracket">【電流】</string>
-    <string name="detail_export_voltage_bracket">【電壓】</string>
-    <string name="detail_export_power_bracket">【目前功率/累計值】</string>
-    <string name="detail_export_power_status_bracket">【電源狀態】</string>
-    <string name="detail_export_empty_meter">暫無電表資料</string>
     <string name="electricity_tab_query">查詢</string>
     <string name="electricity_tab_recharge">加值</string>
     <string name="electricity_tab_myroom">我的</string>
@@ -75,7 +66,6 @@
     <!--  電費查詢                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="electricity_query_title">電費查詢</string>
-    <string name="electricity_recharge">加值電費</string>
     <string name="electricity_switch_dorm">切換寢室</string>
     <string name="electricity_myroom_querying">正在取得我的寢室資訊…</string>
     <string name="electricity_recharge_hint_item2">2.若註冊後還是提示取得使用者資訊失敗，請嘗試填寫寢室管理員學號/寢室內第一個註冊了平台的學號。</string>

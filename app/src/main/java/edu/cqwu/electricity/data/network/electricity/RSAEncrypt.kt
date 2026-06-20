@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.electricity
 
 import android.util.Base64
 import java.net.URL

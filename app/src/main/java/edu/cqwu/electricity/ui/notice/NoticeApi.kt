@@ -6,7 +6,7 @@ import edu.cqwu.electricity.data.model.NoticeDetailQp
 import edu.cqwu.electricity.data.model.NoticeDetailResponse
 import edu.cqwu.electricity.data.model.NoticeItem
 import edu.cqwu.electricity.data.model.NoticeResponse
-import edu.cqwu.electricity.data.network.SharedHttpClient
+import edu.cqwu.electricity.data.network.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -14,7 +14,7 @@ import okhttp3.Request
 /**
  * 通知公告 API
  *
- * 使用 SharedHttpClient（与 CAS 登录共享 CookieJar），
+ * 使用 HttpClientFactory.shared（与 CAS 登录共享 CookieJar），
  * 自动携带 _WEU、MOD_AUTH_CAS 等认证 Cookie。
  */
 class NoticeApi {
@@ -50,7 +50,7 @@ class NoticeApi {
             }
             Log.d(TAG, "请求通知公告: GET $url")
 
-            val response = SharedHttpClient.client.newCall(
+            val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
                     .url(url)
                     .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -95,7 +95,7 @@ class NoticeApi {
             val url = "$NOTICE_DETAIL_URL?noticeId=$wid"
             Log.d(TAG, "请求通知详情: GET $url")
 
-            val response = SharedHttpClient.client.newCall(
+            val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
                     .url(url)
                     .addHeader("X-Requested-With", "XMLHttpRequest")

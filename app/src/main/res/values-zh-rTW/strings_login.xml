@@ -31,8 +31,6 @@
     <string name="login_show_password">顯示密碼</string>
     <string name="login_hide_password">隱藏密碼</string>
     <string name="login_login_button">登  入</string>
-    <string name="login_scan_login">掃碼登入</string>
-    <string name="login_add_account">新增帳號</string>
     <string name="login_export_credential">匯出憑證</string>
     <string name="login_import_credential">匯入憑證</string>
     <string name="login_copy_to_clipboard">複製到剪貼簿</string>
@@ -53,7 +51,6 @@
     <string name="login_method_credential">憑證登入</string>
     <string name="login_method_phone_recovery">手機號找回</string>
     <string name="login_method_email_recovery">郵箱找回</string>
-    <string name="login_method_coming_soon">功能開發中</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  掃碼登入模組                               -->
@@ -70,7 +67,5 @@
     <string name="login_qr_expired">QR 碼已過期，請重試</string>
     <string name="login_get_page_failed">取得登入頁面失敗</string>
     <string name="login_verifying">正在登入，請稍候…</string>
-    <string name="login_auto_switching">嘗試自動登入…</string>
-    <string name="login_password_too_short">密碼長度至少 4 位</string>
     <string name="login_credential_copied">憑證已複製到剪貼簿</string>
 </resources>

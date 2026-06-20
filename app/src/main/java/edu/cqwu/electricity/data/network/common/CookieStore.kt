@@ -1,6 +1,8 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.common
 
+import android.net.Uri
 import android.webkit.CookieManager
+import kotlin.collections.iterator
 
 /**
  * 统一的 Cookie 管理层（桥接 android.webkit.CookieManager）。
@@ -61,7 +63,10 @@ object CookieStore {
     }
 
     /**
-     * 清除所有 Cookie
+     * 清除所有 Cookie。
+     *
+     * CookieManager 内部操作是排队执行的，removeAllCookies 和后续的
+     * setCookie 调用会按顺序处理，因此无需同步等待。
      */
     fun removeAllCookies() {
         checkInitialized()
@@ -187,7 +192,7 @@ class UserCookieStore {
     private fun normalizeUrl(url: String): String {
         // 只保留协议 + host，忽略 path 和 query
         return try {
-            val uri = android.net.Uri.parse(url)
+            val uri = Uri.parse(url)
             "${uri.scheme}://${uri.host}"
         } catch (e: Exception) {
             url

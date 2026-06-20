@@ -4,8 +4,8 @@ import android.util.Log
 import com.google.gson.Gson
 import edu.cqwu.electricity.data.model.HallItem
 import edu.cqwu.electricity.data.model.ServiceCenterDataResponse
-import edu.cqwu.electricity.data.network.SessionExpiredException
-import edu.cqwu.electricity.data.network.SharedHttpClient
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
+import edu.cqwu.electricity.data.network.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -32,7 +32,7 @@ class HallServiceCenterApi {
     }
 
     private val gson = Gson()
-    private val client get() = SharedHttpClient.client
+    private val client get() = HttpClientFactory.shared
 
     /**
      * 获取服务数据中心的应用列表。

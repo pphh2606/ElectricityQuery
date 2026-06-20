@@ -25,7 +25,6 @@
     <string name="dashboard_querying_balance">Querying balance…</string>
     <string name="dashboard_room_name">Room Name</string>
     <string name="dashboard_room_id">Room ID</string>
-    <string name="dashboard_switch_dorm">Switch Dorm</string>
     <string name="dashboard_unknown">Unknown</string>
 
     <!-- ═══════════════════════════════════════════ -->
@@ -50,14 +49,6 @@
     <string name="detail_power_status">Power Status</string>
     <string name="detail_empty_24h">No 24h usage data</string>
     <string name="detail_empty_meter">No meter data</string>
-    <string name="detail_export_time_header">Time</string>
-    <string name="detail_export_kwh_header">Usage (kWh)</string>
-    <string name="detail_export_yuan_header">Cost (CNY)</string>
-    <string name="detail_export_current_bracket">[Current]</string>
-    <string name="detail_export_voltage_bracket">[Voltage]</string>
-    <string name="detail_export_power_bracket">[Power / Cumulative]</string>
-    <string name="detail_export_power_status_bracket">[Power Status]</string>
-    <string name="detail_export_empty_meter">No meter data</string>
     <string name="electricity_tab_query">Query</string>
     <string name="electricity_tab_recharge">Recharge</string>
     <string name="electricity_tab_myroom">My</string>
@@ -75,7 +66,6 @@
     <!--  Electricity Query                          -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="electricity_query_title">Electricity Query</string>
-    <string name="electricity_recharge">Recharge</string>
     <string name="electricity_switch_dorm">Switch Dorm</string>
     <string name="electricity_myroom_querying">Fetching dorm info…</string>
     <string name="electricity_recharge_hint_item2">2. If you still get user info errors after registration, try entering the dorm admin\'s student ID or the first student who registered on the platform.</string>

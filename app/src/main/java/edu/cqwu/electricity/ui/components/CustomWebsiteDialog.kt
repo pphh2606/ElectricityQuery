@@ -52,6 +52,7 @@ import coil.request.ImageRequest
  */
 @Composable
 fun CustomWebsiteDialog(
+    visible: Boolean = true,
     onDismiss: () -> Unit,
     onConfirm: (title: String, url: String, iconUri: String?) -> Unit
 ) {
@@ -70,6 +71,7 @@ fun CustomWebsiteDialog(
     }
 
     BottomSheetDialog(
+        visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.custom_website_title),
         icon = Icons.Default.Language,

@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -163,7 +162,7 @@ fun AboutScreen(
                     )
 
                     // 构建信息
-                    val isCiBuild = BuildConfig.BUILD_SOURCE == "github-actions"
+                    val isCiBuild = false
                     AboutEntry(
                         icon = Icons.Default.Info,
                         title = stringResource(R.string.about_build_info),
@@ -224,11 +223,11 @@ fun AboutScreen(
     }
 
     // ─── 联系方式底部弹窗 ───
-    if (showContactSheet) {
-        BottomSheetDialog(
-            onDismissRequest = { showContactSheet = false },
-            title = stringResource(R.string.about_contact_title),
-        ) {
+    BottomSheetDialog(
+        visible = showContactSheet,
+        onDismissRequest = { showContactSheet = false },
+        title = stringResource(R.string.about_contact_title),
+    ) {
             // QQ
             BottomSheetItem(
                 icon = Icons.AutoMirrored.Filled.Chat,
@@ -276,7 +275,6 @@ fun AboutScreen(
                 },
             )
         }
-    }
 }
 
 /**
@@ -333,14 +331,3 @@ private fun AboutEntry(
     }
 }
 
-/**
- * 选项间的分隔线
- */
-@Composable
-private fun AboutDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        thickness = 0.5.dp,
-        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-    )
-}

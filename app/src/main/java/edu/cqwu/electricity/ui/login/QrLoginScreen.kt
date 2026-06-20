@@ -58,7 +58,7 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.local.QrCodeColorMode
-import edu.cqwu.electricity.data.network.QrLoginApi
+import edu.cqwu.electricity.data.network.auth.QrLoginApi
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.QrCodeView
 import edu.cqwu.electricity.ui.theme.LocalQrCodeSettings
@@ -217,7 +217,7 @@ fun QrLoginScreen(
                                     accountStore.saveAccount(
                                         username = loginResult.username,
                                         password = null,
-                                        rememberPassword = false
+                                        rememberPassword = true
                                     )
                                 } catch (e: Exception) {
                                     android.util.Log.w("QrLoginScreen", "保存用户到 AccountStore 失败", e)

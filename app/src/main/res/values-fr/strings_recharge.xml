@@ -3,7 +3,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Recharge                                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="recharge_title">Recharge</string>
     <string name="recharge_hint">Astuce</string>
     <string name="recharge_query">Consulter</string>
     <string name="recharge_student_id_label">Saisir le numéro étudiant ou userId</string>
@@ -57,14 +56,6 @@
     <string name="recharge_time_1year">1 an</string>
     <string name="recharge_time_4years">4 ans</string>
     <string name="recharge_install_campus_app">Veuillez d\'abord installer Campusphere</string>
-    <string name="recharge_no_room_selected">Aucune chambre sélectionnée</string>
-    <string name="recharge_invalid_amount">Veuillez saisir un montant valide</string>
-    <string name="recharge_amount_out_of_range">Montant hors plage (0–1000 ¥)</string>
-    <string name="recharge_order_create_failed">Échec de création de commande : %1$s</string>
-    <string name="recharge_no_room_bound">Aucune chambre liée à ce compte</string>
-    <string name="recharge_query_failed">Échec de la consultation : %1$s</string>
-    <string name="recharge_enter_student_id">Veuillez saisir un numéro étudiant</string>
-    <string name="recharge_record_query_failed">Échec de consultation de l\'historique</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Paiement                                   -->

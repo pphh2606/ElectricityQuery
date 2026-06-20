@@ -25,7 +25,6 @@
     <string name="dashboard_querying_balance">جارٍ استعلام الرصيد…</string>
     <string name="dashboard_room_name">اسم الغرفة</string>
     <string name="dashboard_room_id">معرف الغرفة</string>
-    <string name="dashboard_switch_dorm">تغيير السكن</string>
     <string name="dashboard_unknown">غير معروف</string>
 
     <!-- ═══════════════════════════════════════════ -->
@@ -50,14 +49,6 @@
     <string name="detail_power_status">حالة الطاقة</string>
     <string name="detail_empty_24h">لا توجد بيانات 24 ساعة</string>
     <string name="detail_empty_meter">لا توجد بيانات عداد</string>
-    <string name="detail_export_time_header">الوقت</string>
-    <string name="detail_export_kwh_header">الاستهلاك(ك.و.س)</string>
-    <string name="detail_export_yuan_header">التكلفة(¥)</string>
-    <string name="detail_export_current_bracket">【التيار】</string>
-    <string name="detail_export_voltage_bracket">【الجهد】</string>
-    <string name="detail_export_power_bracket">【الطاقة الحالية / التراكمي】</string>
-    <string name="detail_export_power_status_bracket">【حالة الطاقة】</string>
-    <string name="detail_export_empty_meter">لا توجد بيانات عداد</string>
     <string name="electricity_tab_query">استعلام</string>
     <string name="electricity_tab_recharge">شحن</string>
     <string name="electricity_tab_myroom">حسابي</string>
@@ -75,7 +66,6 @@
     <!--  استعلام الكهرباء                           -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="electricity_query_title">استعلام الكهرباء</string>
-    <string name="electricity_recharge">شحن الكهرباء</string>
     <string name="electricity_switch_dorm">تغيير السكن</string>
     <string name="electricity_myroom_querying">جارٍ جلب معلومات السكن…</string>
     <string name="electricity_recharge_hint_item2">2. إذا استمر فشل الحصول على معلومات المستخدم بعد التسجيل، جرب إدخال الرقم الجامعي لمسؤول السكن أو أول مسجل في الغرفة.</string>

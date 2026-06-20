@@ -35,9 +35,6 @@
     <string name="common_clear_search">検索をクリア</string>
     <string name="common_exit_search">検索を終了</string>
     <string name="common_scan">スキャン</string>
-    <string name="common_no_more">— これ以上ありません —</string>
-    <string name="common_delete_account">アカウントを削除</string>
-    <string name="common_select_saved_user">保存済みユーザーを選択</string>
     <string name="common_send_email">メールを送信</string>
     <string name="common_share_log">ログを共有</string>
     <string name="common_web_version">Web版</string>

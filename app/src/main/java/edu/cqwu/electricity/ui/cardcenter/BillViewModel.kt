@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.BillFilter
 import edu.cqwu.electricity.data.model.BillPageInfo
-import edu.cqwu.electricity.data.network.ElectricityApi
-import edu.cqwu.electricity.data.network.SessionExpiredException
+import edu.cqwu.electricity.data.network.electricity.ElectricityApi
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel

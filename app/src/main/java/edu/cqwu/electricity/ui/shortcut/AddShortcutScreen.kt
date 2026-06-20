@@ -309,18 +309,18 @@ fun AddShortcutScreen(
     }
 
     // ── 功能选择底部弹窗 ──
-    if (showFunctionSheet) {
-        BottomSheetDialog(
-            onDismissRequest = { showFunctionSheet = false },
-            title = stringResource(R.string.shortcut_select_function),
-            fullscreen = false,
-            skipPartiallyExpanded = false,
-            leadingButton = {
-                TextButton(onClick = { showFunctionSheet = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
+    BottomSheetDialog(
+        visible = showFunctionSheet,
+        onDismissRequest = { showFunctionSheet = false },
+        title = stringResource(R.string.shortcut_select_function),
+        fullscreen = false,
+        skipPartiallyExpanded = false,
+        leadingButton = {
+            TextButton(onClick = { showFunctionSheet = false }) {
+                Text(stringResource(R.string.common_cancel))
             }
-        ) {
+        }
+    ) {
             LazyColumn(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -361,7 +361,6 @@ fun AddShortcutScreen(
                 item { Spacer(modifier = Modifier.height(16.dp)) }
             }
         }
-    }
 }
 
 // ═══════════════════════════════════════════════

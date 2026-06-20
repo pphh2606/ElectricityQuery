@@ -3,7 +3,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Recharge                                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="recharge_title">Recharge</string>
     <string name="recharge_hint">Tips</string>
     <string name="recharge_query">Query</string>
     <string name="recharge_student_id_label">Enter Student ID or userId</string>
@@ -57,14 +56,6 @@
     <string name="recharge_time_1year">1 Year</string>
     <string name="recharge_time_4years">4 Years</string>
     <string name="recharge_install_campus_app">Please install Campusphere App first</string>
-    <string name="recharge_no_room_selected">No room selected</string>
-    <string name="recharge_invalid_amount">Please enter a valid amount</string>
-    <string name="recharge_amount_out_of_range">Amount out of range (0-1000 CNY)</string>
-    <string name="recharge_order_create_failed">Order creation failed: %1$s</string>
-    <string name="recharge_no_room_bound">No rooms linked to this account</string>
-    <string name="recharge_query_failed">Query failed: %1$s</string>
-    <string name="recharge_enter_student_id">Please enter student ID</string>
-    <string name="recharge_record_query_failed">Failed to query recharge records</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Payment Selection                          -->

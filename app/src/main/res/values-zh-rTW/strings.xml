@@ -35,9 +35,6 @@
     <string name="common_clear_search">清除搜尋</string>
     <string name="common_exit_search">退出搜尋</string>
     <string name="common_scan">掃描</string>
-    <string name="common_no_more">— 沒有更多了 —</string>
-    <string name="common_delete_account">刪除帳號</string>
-    <string name="common_select_saved_user">選取已儲存的使用者</string>
     <string name="common_send_email">傳送郵件</string>
     <string name="common_share_log">分享記錄</string>
     <string name="common_web_version">網頁版</string>

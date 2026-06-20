@@ -58,30 +58,29 @@ fun LanguageSwitchSheet(
     val settingsPrefs = remember { SettingsPreferences(context) }
     val currentLanguage by remember { mutableStateOf(settingsPrefs.getAppLanguage()) }
 
-    if (showSheet) {
-        BottomSheetDialog(
-            onDismissRequest = onDismiss,
-            title = stringResource(R.string.language_select),
-            fullscreen = false,
-        ) {
-            AppLanguage.entries.forEach { language ->
-                BottomSheetItem(
-                    icon = null,
-                    title = language.displayName,
-                    selected = language == currentLanguage,
-                    onClick = {
-                        settingsPrefs.setAppLanguage(language)
-                        onDismiss()
-                        // 重启 Activity 应用新语言
-                        val activity = context as? Activity ?: return@BottomSheetItem
-                        val intent = Intent(activity, activity.javaClass)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                        activity.startActivity(intent)
-                        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                        activity.finish()
-                    },
-                )
-            }
+    BottomSheetDialog(
+        visible = showSheet,
+        onDismissRequest = onDismiss,
+        title = stringResource(R.string.language_select),
+        fullscreen = false,
+    ) {
+        AppLanguage.entries.forEach { language ->
+            BottomSheetItem(
+                icon = null,
+                title = language.displayName,
+                selected = language == currentLanguage,
+                onClick = {
+                    settingsPrefs.setAppLanguage(language)
+                    onDismiss()
+                    // 重启 Activity 应用新语言
+                    val activity = context as? Activity ?: return@BottomSheetItem
+                    val intent = Intent(activity, activity.javaClass)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    activity.startActivity(intent)
+                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                    activity.finish()
+                },
+            )
         }
     }
 }

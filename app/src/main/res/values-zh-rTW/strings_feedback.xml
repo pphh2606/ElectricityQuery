@@ -9,12 +9,5 @@
     <string name="feedback_log_preview">記錄預覽</string>
     <string name="feedback_title_label">標題（可選）</string>
     <string name="feedback_content_label">回饋內容</string>
-    <string name="feedback_no_mail_app">找不到郵件應用程式，請安裝郵件用戶端</string>
-    <string name="feedback_enable_log_first">請先開啟記錄開關</string>
-    <string name="feedback_share_failed">分享失敗</string>
     <string name="feedback_preview_log">預覽記錄</string>
-    <string name="feedback_subject_prefix">電費查詢 App 回饋</string>
-    <string name="feedback_no_logs">(無記錄內容)</string>
-    <string name="feedback_loading_logs">(記錄載入中，請稍後再試)</string>
-    <string name="feedback_device_info_template">裝置: %1$s\n系統: Android %2$s (API %3$d)\nApp 版本: %4$s (%5$s)</string>
 </resources>

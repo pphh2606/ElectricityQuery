@@ -25,7 +25,6 @@
     <string name="dashboard_querying_balance">Consultation du solde…</string>
     <string name="dashboard_room_name">Nom de la chambre</string>
     <string name="dashboard_room_id">ID chambre</string>
-    <string name="dashboard_switch_dorm">Changer de dortoir</string>
     <string name="dashboard_unknown">Inconnu</string>
 
     <!-- ═══════════════════════════════════════════ -->
@@ -50,14 +49,6 @@
     <string name="detail_power_status">État d\'alimentation</string>
     <string name="detail_empty_24h">Aucune donnée 24h</string>
     <string name="detail_empty_meter">Aucune donnée compteur</string>
-    <string name="detail_export_time_header">Heure</string>
-    <string name="detail_export_kwh_header">Conso.(kWh)</string>
-    <string name="detail_export_yuan_header">Coût(¥)</string>
-    <string name="detail_export_current_bracket">【Courant】</string>
-    <string name="detail_export_voltage_bracket">【Tension】</string>
-    <string name="detail_export_power_bracket">【Puissance actuelle / cumul】</string>
-    <string name="detail_export_power_status_bracket">【État d\'alimentation】</string>
-    <string name="detail_export_empty_meter">Aucune donnée compteur</string>
     <string name="electricity_tab_query">Consulter</string>
     <string name="electricity_tab_recharge">Recharger</string>
     <string name="electricity_tab_myroom">Mon compte</string>
@@ -75,7 +66,6 @@
     <!--  Consultation électricité                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="electricity_query_title">Consultation électricité</string>
-    <string name="electricity_recharge">Recharger</string>
     <string name="electricity_switch_dorm">Changer de dortoir</string>
     <string name="electricity_myroom_querying">Récupération des infos du dortoir…</string>
     <string name="electricity_recharge_hint_item2">2. Si vous obtenez toujours une erreur après l\'inscription, essayez de saisir le numéro étudiant de l\'administrateur du dortoir ou du premier inscrit de la chambre.</string>

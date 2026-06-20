@@ -8,14 +8,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * 本地存储的账号信息：学号、密码（可选）、最后登录时间
- * 注意：与 [edu.cqwu.electricity.data.model.AccountInfo]（EPay 账户信息）不同，
- * 此类仅用于本地存储的多账号管理。
+ * 本地存储的账号信息：学号、密码、最后登录时间、记住密码标志
  */
 data class SavedAccountInfo(
     val username: String,
     val password: String? = null,
-    val lastLoginTime: Long = 0
+    val lastLoginTime: Long = 0,
+    val rememberPassword: Boolean = true
 )
 
 /**
@@ -24,18 +23,11 @@ data class SavedAccountInfo(
  * 使用 EncryptedSharedPreferences 对账号密码进行 AES-256 加密存储，
  * 密钥由 Android Keystore 自动管理。
  *
- * 职责：
- * - 多账号列表（含密码、最后登录时间）
- * - "记住密码" 复选框状态（独立 key）
- *
- * 无论用户是否勾选"记住密码"，都会保存学号到列表。
- * 仅在勾选"记住密码"时保存密码。
- *
- * 使用方式：
- *   val store = AccountStore(context)
- *   store.saveAccount("2024xxxxx", "mypassword", rememberPassword = true)
- *   val allAccounts = store.getAllAccounts()  // 按时间降序
- *   val password = store.getPassword("2024xxxxx")
+ * 设计原则：
+ * - 密码始终存储在本地（由 EncryptedSharedPreferences 加密保护）
+ * - 每个账号独立存储"记住密码"标志
+ * - ViewModel 层根据标志决定是否将密码展示到 UI
+ * - 导出凭据时按标志过滤
  */
 @Suppress("DEPRECATION")
 class AccountStore(context: Context) {
@@ -53,18 +45,6 @@ class AccountStore(context: Context) {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-    }
-
-    // ================================================================
-    // 记住密码复选框状态
-    // ================================================================
-
-    fun getRememberPassword(): Boolean {
-        return prefs.getBoolean(KEY_REMEMBER_PASSWORD, true)
-    }
-
-    fun setRememberPassword(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_REMEMBER_PASSWORD, enabled).apply()
     }
 
     // ================================================================
@@ -94,7 +74,8 @@ class AccountStore(context: Context) {
                     SavedAccountInfo(
                         username = obj.getString("u"),
                         password = if (obj.has("p")) obj.getString("p") else null,
-                        lastLoginTime = if (obj.has("t")) obj.getLong("t") else 0
+                        lastLoginTime = if (obj.has("t")) obj.getLong("t") else 0,
+                        rememberPassword = if (obj.has("r")) obj.getBoolean("r") else true
                     )
                 )
             }
@@ -105,11 +86,13 @@ class AccountStore(context: Context) {
     }
 
     /**
-     * 批量获取所有有密码的账号（只解析一次 JSON，避免 O(n²) 重复解析）。
+     * 获取所有勾选了"记住密码"且有密码的账号。
+     * 用于凭据导出。
      */
     fun getAllAccountsWithPassword(): List<Pair<String, String>> {
         return getAllAccounts()
-            .mapNotNull { acc -> acc.password?.let { acc.username to it } }
+            .filter { it.rememberPassword && it.password != null }
+            .map { it.username to it.password!! }
     }
 
     /**
@@ -133,13 +116,14 @@ class AccountStore(context: Context) {
     }
 
     /**
-     * 保存/更新账号信息
-     * - 始终保存学号到列表
-     * - 仅在 rememberPassword 为 true 时保存密码
+     * 保存/更新账号信息。
+     *
+     * 密码始终存储（由 EncryptedSharedPreferences 加密保护）。
+     * rememberPassword 标志控制 ViewModel 是否将密码展示到 UI。
      *
      * @param username 学号
-     * @param password 密码（仅在 rememberPassword 时持久化）
-     * @param rememberPassword 是否记住密码
+     * @param password 密码（始终存储）
+     * @param rememberPassword 是否记住密码（存储到每账号的 r 字段）
      */
     fun saveAccount(username: String, password: String?, rememberPassword: Boolean) {
         val json = prefs.getString(KEY_ACCOUNTS, null)
@@ -150,12 +134,10 @@ class AccountStore(context: Context) {
         for (i in 0 until arr.length()) {
             val obj = arr.getJSONObject(i)
             if (obj.getString("u") == username) {
-                // 更新：始终更新时间，密码按 rememberPassword 决定
                 obj.put("t", System.currentTimeMillis())
-                if (rememberPassword && password != null) {
+                obj.put("r", rememberPassword)
+                if (password != null) {
                     obj.put("p", password)
-                } else if (!rememberPassword) {
-                    obj.remove("p")
                 }
                 found = true
                 break
@@ -166,14 +148,35 @@ class AccountStore(context: Context) {
         if (!found) {
             val newObj = JSONObject()
             newObj.put("u", username)
-            if (rememberPassword && password != null) {
+            if (password != null) {
                 newObj.put("p", password)
             }
             newObj.put("t", System.currentTimeMillis())
+            newObj.put("r", rememberPassword)
             arr.put(newObj)
         }
 
         prefs.edit().putString(KEY_ACCOUNTS, arr.toString()).apply()
+    }
+
+    /**
+     * 更新指定账号的"记住密码"标志（不修改密码）。
+     */
+    fun setRememberPasswordForAccount(username: String, remember: Boolean) {
+        val json = prefs.getString(KEY_ACCOUNTS, null) ?: return
+        try {
+            val arr = JSONArray(json)
+            for (i in 0 until arr.length()) {
+                val obj = arr.getJSONObject(i)
+                if (obj.getString("u") == username) {
+                    obj.put("r", remember)
+                    break
+                }
+            }
+            prefs.edit().putString(KEY_ACCOUNTS, arr.toString()).apply()
+        } catch (e: Exception) {
+            // ignore
+        }
     }
 
     /**
@@ -197,12 +200,7 @@ class AccountStore(context: Context) {
     }
 
     companion object {
-        /**
-         * 新的加密 SP 文件名。
-         * 与旧明文文件 `account_store` 不同，确保隔离。
-         */
         private const val PREF_NAME = "account_store_encrypted"
         private const val KEY_ACCOUNTS = "saved_accounts"
-        private const val KEY_REMEMBER_PASSWORD = "remember_password"
     }
 }

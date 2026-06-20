@@ -49,7 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import edu.cqwu.electricity.data.network.OrderRecord
+import edu.cqwu.electricity.data.network.feeservicehall.OrderRecord
 
 /**
  * 订单 Tab 内容

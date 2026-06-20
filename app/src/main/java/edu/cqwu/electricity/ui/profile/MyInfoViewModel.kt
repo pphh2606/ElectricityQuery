@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.StudentInfo
-import edu.cqwu.electricity.data.network.CampusphereApi
-import edu.cqwu.electricity.data.network.MenuCategory
-import edu.cqwu.electricity.data.network.SessionExpiredException
+import edu.cqwu.electricity.data.network.campusphere.CampusphereApi
+import edu.cqwu.electricity.data.network.campusphere.MenuCategory
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -91,8 +91,4 @@ class MyInfoViewModel : ViewModel() {
         }
     }
 
-    fun reset() {
-        _uiState.value = MyInfoUiState()
-        loadStudentInfo()
-    }
 }

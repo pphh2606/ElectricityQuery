@@ -288,7 +288,7 @@ private fun computeInSampleSize(
     var inSampleSize = 1
     if (rawHeight > reqHeight || rawWidth > reqWidth) {
         val halfHeight = rawHeight / 2
-        var halfWidth = rawWidth / 2
+        val halfWidth = rawWidth / 2
         while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
             inSampleSize *= 2
         }
@@ -448,7 +448,7 @@ fun ScanScreen(
             cameraProvider = provider // 保存实例，避免 dispose 时阻塞
 
             val preview = Preview.Builder().build()
-            preview.setSurfaceProvider(previewView.surfaceProvider)
+            preview.surfaceProvider = previewView.surfaceProvider
 
             val analyzer = QrCodeAnalyzer(
                 previewView = previewView,

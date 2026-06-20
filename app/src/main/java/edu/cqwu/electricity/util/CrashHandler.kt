@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 /**
  * 崩溃捕获处理器。
@@ -107,7 +108,7 @@ class CrashHandler private constructor(
             originalHandler.uncaughtException(thread, throwable)
         } else {
             Process.killProcess(Process.myPid())
-            System.exit(10)
+            exitProcess(10)
         }
     }
 

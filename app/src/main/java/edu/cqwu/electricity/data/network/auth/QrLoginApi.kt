@@ -1,16 +1,19 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.auth
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
+import edu.cqwu.electricity.data.network.common.CookieStore
+import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.common.UserAwareCookieJar
+import edu.cqwu.electricity.data.network.common.UserCookieStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
-import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.concurrent.TimeUnit
 
 /**
  * 扫码登录 API
@@ -149,10 +152,10 @@ class QrLoginApi {
                 throw RuntimeException("二维码解码结果为空")
             }
 
-            android.util.Log.d("QrLoginApi", "二维码解码成功: $decodedText")
+            Log.d("QrLoginApi", "二维码解码成功: $decodedText")
             Result.success(decodedText)
         } catch (e: Exception) {
-            android.util.Log.e("QrLoginApi", "下载并解码二维码失败", e)
+            Log.e("QrLoginApi", "下载并解码二维码失败", e)
             Result.failure(e)
         }
     }
@@ -222,7 +225,7 @@ class QrLoginApi {
 
             // CAS 服务器返回 302 重定向，同时设置 CASTGC Cookie
             val location = response.header("Location") ?: ""
-            android.util.Log.d("QrLoginApi", "提交认证响应: code=${response.code}, Location=$location")
+            Log.d("QrLoginApi", "提交认证响应: code=${response.code}, Location=$location")
 
             // 从独立 cookieStore 中提取 CASTGC（由 UserAwareCookieJar 自动从 Set-Cookie 保存到 store）
             val castgc = cookieStore.getCookieValue(
@@ -260,24 +263,26 @@ class QrLoginApi {
                 if (extracted != null) {
                     username = extracted
                     val realName = HtmlFormParser.extractRealName(html) ?: ""
-                    android.util.Log.d("QrLoginApi", "扫码登录: 学号=$username, 实名=$realName")
+                    Log.d("QrLoginApi", "扫码登录: 学号=$username, 实名=$realName")
 
                     // 使用统一的提交方法，将临时 CookieStore 迁移到持久存储
                     AccountManager.commitLoginCookies(username, cookieStore)
                 }
             } catch (e: Exception) {
-                android.util.Log.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
+                Log.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
             }
 
             val cookieString = cookieStore.getCookie("https://authserver.cqwu.edu.cn") ?: ""
-            android.util.Log.d("QrLoginApi", "扫码登录成功! CASTGC=$castgc, username=$username")
+            Log.d("QrLoginApi", "扫码登录成功! CASTGC=$castgc, username=$username")
 
-            Result.success(LoginResult(
-                username = username,
-                cookieString = cookieString
-            ))
+            Result.success(
+                LoginResult(
+                    username = username,
+                    cookieString = cookieString
+                )
+            )
         } catch (e: Exception) {
-            android.util.Log.e("QrLoginApi", "扫码登录失败", e)
+            Log.e("QrLoginApi", "扫码登录失败", e)
             Result.failure(e)
         }
     }

@@ -25,7 +25,6 @@
     <string name="dashboard_querying_balance">残高を照会中…</string>
     <string name="dashboard_room_name">ルーム名</string>
     <string name="dashboard_room_id">ルーム ID</string>
-    <string name="dashboard_switch_dorm">寮室を切替</string>
     <string name="dashboard_unknown">不明</string>
 
     <!-- ═══════════════════════════════════════════ -->
@@ -50,14 +49,6 @@
     <string name="detail_power_status">電源状態</string>
     <string name="detail_empty_24h">24時間データがありません</string>
     <string name="detail_empty_meter">メーターデータがありません</string>
-    <string name="detail_export_time_header">時刻</string>
-    <string name="detail_export_kwh_header">使用量(度)</string>
-    <string name="detail_export_yuan_header">費用(円)</string>
-    <string name="detail_export_current_bracket">【電流】</string>
-    <string name="detail_export_voltage_bracket">【電圧】</string>
-    <string name="detail_export_power_bracket">【現在電力/累計値】</string>
-    <string name="detail_export_power_status_bracket">【電源状態】</string>
-    <string name="detail_export_empty_meter">メーターデータがありません</string>
     <string name="electricity_tab_query">照会</string>
     <string name="electricity_tab_recharge">チャージ</string>
     <string name="electricity_tab_myroom">マイページ</string>
@@ -75,7 +66,6 @@
     <!--  電気料金照会                               -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="electricity_query_title">電気料金照会</string>
-    <string name="electricity_recharge">電気料金チャージ</string>
     <string name="electricity_switch_dorm">寮室を切替</string>
     <string name="electricity_myroom_querying">マイ寮室情報を取得中…</string>
     <string name="electricity_recharge_hint_item2">2.登録後もユーザー情報取得に失敗する場合は、寮室管理者の学籍番号または寮室で最初にプラットフォームに登録した学籍番号を入力してみてください。</string>

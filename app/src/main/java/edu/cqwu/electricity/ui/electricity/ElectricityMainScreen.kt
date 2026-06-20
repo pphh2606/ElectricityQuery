@@ -58,13 +58,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.model.SelectionStep
-import edu.cqwu.electricity.data.network.AccountManager
+import edu.cqwu.electricity.data.network.auth.AccountManager
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
@@ -77,14 +76,6 @@ import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
 import kotlinx.coroutines.launch
-
-/**
- * Tab 数据模型
- */
-private data class TabItem(
-    val label: String,
-    val icon: ImageVector
-)
 
 /** 底部导航栏的三个 Tab（标签在 Composable 内通过 stringResource 获取） */
 private val electricityTabIcons = listOf(
@@ -319,7 +310,6 @@ fun ElectricityMainScreen(
                     } else {
                         BuildingSelectionScreen(
                             viewModel = viewModel,
-                            onBack = {},
                         )
                     }
                 }
@@ -327,7 +317,6 @@ fun ElectricityMainScreen(
                     // ── 充值 Tab ──
                     RechargeScreen(
                         viewModel = rechargeViewModel,
-                        onBack = {},
                     )
                 }
                 2 -> {
@@ -338,9 +327,6 @@ fun ElectricityMainScreen(
                         onSwitchToQuery = {
                             scope.launch { pagerState.animateScrollToPage(0) }
                         },
-                        onSwitchToRecharge = {
-                            scope.launch { pagerState.animateScrollToPage(1) }
-                        },
                     )
                 }
             }
@@ -348,9 +334,9 @@ fun ElectricityMainScreen(
     }
 
     // ── 充值 Tab 提示信息弹窗 - Bottom Sheet ──
-    if (showRechargeInfoDialog) {
-        BottomSheetDialog(
-            onDismissRequest = { showRechargeInfoDialog = false },
+    BottomSheetDialog(
+        visible = showRechargeInfoDialog,
+        onDismissRequest = { showRechargeInfoDialog = false },
             title = stringResource(R.string.recharge_hint)
         ) {
             Column(
@@ -407,12 +393,11 @@ fun ElectricityMainScreen(
                 )
             }
         }
-    }
 
     // ── 我的寝室房间切换 BottomSheet ──
-    if (showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty()) {
-        BottomSheetDialog(
-            onDismissRequest = { showRoomSwitchSheet = false },
+    BottomSheetDialog(
+        visible = showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty(),
+        onDismissRequest = { showRoomSwitchSheet = false },
             title = stringResource(R.string.dashboard_select_dorm),
             leadingButton = {
                 TextButton(onClick = {
@@ -451,7 +436,6 @@ fun ElectricityMainScreen(
             }
         }
     }
-}
 
 /**
  * "我的" Tab 内容
@@ -464,7 +448,6 @@ private fun MyRoomDashboardTab(
     viewModel: MyRoomViewModel,
     loggedInStudentId: String?,
     onSwitchToQuery: () -> Unit,
-    onSwitchToRecharge: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current

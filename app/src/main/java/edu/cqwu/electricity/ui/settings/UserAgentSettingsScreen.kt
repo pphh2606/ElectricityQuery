@@ -42,8 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.data.network.UserAgentEntry
-import edu.cqwu.electricity.data.network.UserAgentProvider
+import edu.cqwu.electricity.data.network.common.UserAgentEntry
+import edu.cqwu.electricity.data.network.common.UserAgentProvider
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 

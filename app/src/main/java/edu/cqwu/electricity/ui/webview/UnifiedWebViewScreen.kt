@@ -61,7 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import edu.cqwu.electricity.data.network.WebVpnEncoder
+import edu.cqwu.electricity.data.network.common.WebVpnEncoder
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.WebViewErrorOverlay
 import edu.cqwu.electricity.ui.navigation.Routes
@@ -358,7 +358,7 @@ fun UnifiedWebViewScreen(
                             settings.setSupportZoom(true)
                             settings.builtInZoomControls = true
                             settings.displayZoomControls = true
-                            settings.userAgentString = edu.cqwu.electricity.data.network.UserAgentProvider.getActiveUserAgent()
+                            settings.userAgentString = edu.cqwu.electricity.data.network.common.UserAgentProvider.getActiveUserAgent()
 
                             webViewClient = object : WebViewClient() {
                                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {

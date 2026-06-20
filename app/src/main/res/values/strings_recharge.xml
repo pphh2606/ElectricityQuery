@@ -3,7 +3,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  充值模块                                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="recharge_title">充值</string>
     <string name="recharge_hint">提示</string>
     <string name="recharge_query">查询</string>
     <string name="recharge_student_id_label">请输入学号 或 userId</string>
@@ -57,14 +56,6 @@
     <string name="recharge_time_1year">一年</string>
     <string name="recharge_time_4years">四年</string>
     <string name="recharge_install_campus_app">请先安装今日校园App</string>
-    <string name="recharge_no_room_selected">未选择房间</string>
-    <string name="recharge_invalid_amount">请输入有效金额</string>
-    <string name="recharge_amount_out_of_range">金额超出合理范围（0-1000元）</string>
-    <string name="recharge_order_create_failed">创建订单失败: %1$s</string>
-    <string name="recharge_no_room_bound">该账号下未绑定任何房间</string>
-    <string name="recharge_query_failed">查询失败: %1$s</string>
-    <string name="recharge_enter_student_id">请输入学号</string>
-    <string name="recharge_record_query_failed">查询充值记录失败</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  支付选择模块                               -->

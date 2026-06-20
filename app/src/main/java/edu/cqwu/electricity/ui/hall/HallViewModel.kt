@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.HallItem
-import edu.cqwu.electricity.data.network.SessionExpiredException
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import edu.cqwu.electricity.data.repository.HallFavoriteApi
 import edu.cqwu.electricity.data.repository.HallJsonLoader
 import edu.cqwu.electricity.data.repository.HallServiceCenterApi

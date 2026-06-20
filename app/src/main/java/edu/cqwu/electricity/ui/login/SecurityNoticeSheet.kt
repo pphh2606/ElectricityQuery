@@ -19,9 +19,11 @@ import edu.cqwu.electricity.ui.components.BottomSheetDialog
  */
 @Composable
 fun SecurityNoticeSheet(
+    visible: Boolean = true,
     onDismiss: () -> Unit,
 ) {
     BottomSheetDialog(
+        visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.login_security_notice_title),
     ) {

@@ -1,6 +1,9 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.qrcode
 
 import android.util.Log
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
+import edu.cqwu.electricity.data.network.auth.SessionManager
+import edu.cqwu.electricity.data.network.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -16,7 +19,7 @@ enum class QrCodeType {
 /**
  * 获取乘车码/支付码的数据 API
  *
- * 复用 SharedHttpClient 单例的 OkHttpClient（与 CasAuthApi 完全共享同一 CookieJar），
+ * 复用 HttpClientFactory.shared 单例的 OkHttpClient（与 CasAuthApi 完全共享同一 CookieJar），
  * 通过 GET 请求获取二维码页面，解析 HTML 提取 <input id="myText"> 的 value。
  *
  * 利用 OkHttp 的 followRedirects=true 自动完成 epay 会话初始化：
@@ -50,10 +53,10 @@ class QrCodeApi {
             }
 
             Log.d("QrCodeApi", "GET $url")
-            // 使用 SharedHttpClient 的同一个 OkHttpClient 实例
+            // 使用 HttpClientFactory.shared 的同一个 OkHttpClient 实例
             // 该 client 包含登录后的 CASTGC Cookie（由 CookieStoreOkHttpJar 桥接系统 CookieManager），
             // 首次请求 epay 时通过 followRedirects 自动完成 ticket 交换获取 JSESSIONID
-            val response = SharedHttpClient.client.newCall(
+            val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
                     .url(url)
                     .get()
@@ -65,7 +68,7 @@ class QrCodeApi {
             Log.d("QrCodeApi_DEBUG", "fetchQrCode 网络耗时: ${tHttp - t0}ms, 响应状态=${response.code}, HTML长度=${html.length}")
 
             // 检查是否被重定向到 CAS 登录页（Cookie 过期）
-            SessionChecker.checkAndThrow(html)
+            SessionManager.checkSessionOrThrow(html)
 
             // 解析 HTML，提取 <input id="myText"> 的 value
             val value = extractInputValueById(html, "myText")

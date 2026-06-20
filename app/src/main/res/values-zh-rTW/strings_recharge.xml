@@ -3,7 +3,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  加值                                       -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="recharge_title">加值</string>
     <string name="recharge_hint">提示</string>
     <string name="recharge_query">查詢</string>
     <string name="recharge_student_id_label">請輸入學號 或 userId</string>
@@ -57,14 +56,6 @@
     <string name="recharge_time_1year">一年</string>
     <string name="recharge_time_4years">四年</string>
     <string name="recharge_install_campus_app">請先安裝今日校園App</string>
-    <string name="recharge_no_room_selected">未選取房間</string>
-    <string name="recharge_invalid_amount">請輸入有效金額</string>
-    <string name="recharge_amount_out_of_range">金額超出合理範圍（0-1000元）</string>
-    <string name="recharge_order_create_failed">建立訂單失敗: %1$s</string>
-    <string name="recharge_no_room_bound">該帳號下未繫結任何房間</string>
-    <string name="recharge_query_failed">查詢失敗: %1$s</string>
-    <string name="recharge_enter_student_id">請輸入學號</string>
-    <string name="recharge_record_query_failed">查詢加值記錄失敗</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  支付                                       -->

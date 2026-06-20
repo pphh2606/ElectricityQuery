@@ -19,29 +19,31 @@ import edu.cqwu.electricity.ui.components.BottomSheetDialog
  */
 @Composable
 fun DeleteAccountSheet(
+    visible: Boolean = true,
     account: String?,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-    account?.let { username ->
-        BottomSheetDialog(
-            onDismissRequest = onDismiss,
-            title = stringResource(R.string.login_delete_account_title),
-            icon = Icons.Default.Delete,
-            leadingButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            },
-            trailingButton = {
-                TextButton(onClick = onConfirm) {
-                    Text(
-                        text = stringResource(R.string.common_delete),
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            },
-        ) {
+    BottomSheetDialog(
+        visible = visible,
+        onDismissRequest = onDismiss,
+        title = stringResource(R.string.login_delete_account_title),
+        icon = Icons.Default.Delete,
+        leadingButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.common_cancel))
+            }
+        },
+        trailingButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = stringResource(R.string.common_delete),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        },
+    ) {
+        account?.let { username ->
             Text(
                 text = stringResource(R.string.login_delete_account_confirm, username),
                 style = MaterialTheme.typography.bodyMedium,

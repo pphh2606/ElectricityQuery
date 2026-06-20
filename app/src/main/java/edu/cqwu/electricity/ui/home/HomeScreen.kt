@@ -80,6 +80,7 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.data.model.CustomServiceEntry
 import edu.cqwu.electricity.data.model.HomeApp
 import edu.cqwu.electricity.data.model.HomeAppIds
+import edu.cqwu.electricity.data.network.qrcode.QrCodeType
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.CustomWebsiteDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
@@ -435,25 +436,28 @@ fun HomePageContent(
     }
 
     // 外部 Intent 确认底部弹窗
-    pendingExternalIntent?.let { (appName, url) ->
-        BottomSheetDialog(
-            onDismissRequest = { pendingExternalIntent = null },
-            title = stringResource(R.string.home_external_app_title),
-            icon = Icons.Default.OpenInBrowser,
-            leadingButton = {
-                TextButton(onClick = { pendingExternalIntent = null }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            },
-            trailingButton = {
-                TextButton(onClick = {
-                    pendingExternalIntent = null
-                    openExternalIntent(appName, url)
-                }) {
-                    Text(stringResource(R.string.common_confirm))
-                }
+    BottomSheetDialog(
+        visible = pendingExternalIntent != null,
+        onDismissRequest = { pendingExternalIntent = null },
+        title = stringResource(R.string.home_external_app_title),
+        icon = Icons.Default.OpenInBrowser,
+        leadingButton = {
+            TextButton(onClick = { pendingExternalIntent = null }) {
+                Text(stringResource(R.string.common_cancel))
             }
-        ) {
+        },
+        trailingButton = {
+            TextButton(onClick = {
+                pendingExternalIntent?.let { (name, url) ->
+                    pendingExternalIntent = null
+                    openExternalIntent(name, url)
+                }
+            }) {
+                Text(stringResource(R.string.common_confirm))
+            }
+        }
+    ) {
+        pendingExternalIntent?.let { (appName, _) ->
             Text(
                 text = stringResource(R.string.home_external_app_message, appName),
                 style = MaterialTheme.typography.bodyMedium,
@@ -463,15 +467,14 @@ fun HomePageContent(
     }
 
     // ── 自定义网站弹窗 ──
-    if (showCustomWebsiteDialog) {
-        CustomWebsiteDialog(
-            onDismiss = { showCustomWebsiteDialog = false },
-            onConfirm = { title, url, iconUri ->
-                showCustomWebsiteDialog = false
-                homeViewModel.addCustomService(title, url, iconUri)
-            }
-        )
-    }
+    CustomWebsiteDialog(
+        visible = showCustomWebsiteDialog,
+        onDismiss = { showCustomWebsiteDialog = false },
+        onConfirm = { title, url, iconUri ->
+            showCustomWebsiteDialog = false
+            homeViewModel.addCustomService(title, url, iconUri)
+        }
+    )
 
 }
 
@@ -490,12 +493,12 @@ private fun handleAppClick(
 ) {
     // 支付码 → 原生二维码显示
     if (app.appId == HomeAppIds.PAY_QR) {
-        nav.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.PAY))
+        nav.navigate(Routes.qrCodeRoute(QrCodeType.PAY))
         return
     }
     // 乘车码 → 原生二维码显示
     if (app.appId == HomeAppIds.BUS_QR) {
-        nav.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.BUS))
+        nav.navigate(Routes.qrCodeRoute(QrCodeType.BUS))
         return
     }
     // 学生宿舍电费充值 → 打开原生电费查询

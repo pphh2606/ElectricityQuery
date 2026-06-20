@@ -111,7 +111,7 @@ fun NoticeScreen(
                 val isNearBottom = totalItemsCount > 0 && lastVisibleIndex >= totalItemsCount - 3
 
                 if (isNearBottom && hasMoreData && !viewModel.isLoadingMore && !viewModel.isLoading) {
-                    val keyword = if (viewModel.searchKeyword.isNotBlank()) viewModel.searchKeyword else null
+                    val keyword = viewModel.searchKeyword.ifBlank { null }
                     viewModel.loadPage(viewModel.currentPage + 1, keyword = keyword)
                 }
             }
@@ -262,7 +262,7 @@ fun NoticeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {
                             scope.launch {
-                                val keyword = if (viewModel.searchKeyword.isNotBlank()) viewModel.searchKeyword else null
+                                val keyword = viewModel.searchKeyword.ifBlank { null }
                                 viewModel.loadPage(0, keyword = keyword)
                             }
                         }) {
@@ -277,7 +277,7 @@ fun NoticeScreen(
                     isRefreshing = viewModel.isLoading,
                     onRefresh = {
                         scope.launch {
-                            val keyword = if (viewModel.searchKeyword.isNotBlank()) viewModel.searchKeyword else null
+                            val keyword = viewModel.searchKeyword.ifBlank { null }
                             viewModel.loadPage(0, isRefresh = true, keyword = keyword)
                         }
                     },

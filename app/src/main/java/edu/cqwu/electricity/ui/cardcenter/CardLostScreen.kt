@@ -56,8 +56,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.model.CardLostInfo
-import edu.cqwu.electricity.data.network.ElectricityApi
-import edu.cqwu.electricity.data.network.SessionExpiredException
+import edu.cqwu.electricity.data.network.electricity.ElectricityApi
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import edu.cqwu.electricity.ui.components.ReLoginContent
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.util.ToastUtils
@@ -254,17 +254,16 @@ fun CardLostScreen(
     }
 
     // ── 错误提示 - Bottom Sheet ──
-    if (errorDialogMessage != null) {
-        BottomSheetDialog(
-            onDismissRequest = { errorDialogMessage = null },
-            title = stringResource(R.string.card_error_title)
-        ) {
-            Text(
-                text = errorDialogMessage ?: "",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+    BottomSheetDialog(
+        visible = errorDialogMessage != null,
+        onDismissRequest = { errorDialogMessage = null },
+        title = stringResource(R.string.card_error_title)
+    ) {
+        Text(
+            text = errorDialogMessage ?: "",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

@@ -1,17 +1,14 @@
 package edu.cqwu.electricity.data.repository
 
-import edu.cqwu.electricity.data.model.AccountInfo
 import edu.cqwu.electricity.data.model.BalanceResponse
 import edu.cqwu.electricity.data.model.BuildingNode
 import edu.cqwu.electricity.data.model.BuyListResponse
-import edu.cqwu.electricity.data.model.CardLostInfo
-import edu.cqwu.electricity.data.model.CardLostResponse
 import edu.cqwu.electricity.data.model.CurrentDataResponse
 import edu.cqwu.electricity.data.model.OrderStatusResponse
 import edu.cqwu.electricity.data.model.UsageResponse
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.model.WechatUserResponse
-import edu.cqwu.electricity.data.network.ElectricityApi
+import edu.cqwu.electricity.data.network.electricity.ElectricityApi
 
 /**
  * 数据仓库层
@@ -107,13 +104,6 @@ class ElectricityRepository {
     }
 
     /**
-     * 查询 EPay 账户信息
-     */
-    suspend fun queryAccountInfo(): Result<AccountInfo> {
-        return api.fetchAccountInfo()
-    }
-
-    /**
      * 查询订单状态（轮询用）
      * 由 PaymentWebViewOverlay 轮询调用
      */
@@ -123,17 +113,4 @@ class ElectricityRepository {
 
     // ========== 卡挂失 ==========
 
-    /**
-     * 获取卡挂失页面的卡信息
-     */
-    suspend fun queryCardLostInfo(): Result<CardLostInfo> {
-        return api.fetchCardLostInfo()
-    }
-
-    /**
-     * 执行卡挂失
-     */
-    suspend fun performCardLost(): Result<CardLostResponse> {
-        return api.doCardLost()
-    }
 }

@@ -5,14 +5,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="profile_add_shortcut">ショートカット</string>
     <string name="shortcut_title">ショートカットを追加</string>
-    <string name="shortcut_name_label">ショートカット名</string>
     <string name="shortcut_select_function">機能を選択</string>
-    <string name="shortcut_select_function_hint">機能を選択してください</string>
-    <string name="shortcut_preview">プレビュー</string>
     <string name="shortcut_create">ホーム画面に追加</string>
     <string name="shortcut_success">ショートカットがホーム画面に追加されました</string>
-    <string name="shortcut_failed">ショートカットの追加に失敗しました</string>
     <string name="shortcut_name_hint">名前を入力してください</string>
     <string name="shortcut_no_function_selected">まず機能を選択してください</string>
-    <string name="shortcut_name_too_long">名前が長すぎます。10文字以内を推奨します</string>
 </resources>

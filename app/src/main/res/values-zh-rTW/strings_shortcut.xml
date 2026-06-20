@@ -5,14 +5,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="profile_add_shortcut">捷徑</string>
     <string name="shortcut_title">新增捷徑</string>
-    <string name="shortcut_name_label">捷徑名稱</string>
     <string name="shortcut_select_function">選擇功能</string>
-    <string name="shortcut_select_function_hint">請選擇一個功能</string>
-    <string name="shortcut_preview">預覽</string>
     <string name="shortcut_create">新增到桌面</string>
     <string name="shortcut_success">捷徑已新增到桌面</string>
-    <string name="shortcut_failed">新增捷徑失敗</string>
     <string name="shortcut_name_hint">請輸入名稱</string>
     <string name="shortcut_no_function_selected">請先選擇一個功能</string>
-    <string name="shortcut_name_too_long">名稱過長，建議不超過10個字元</string>
 </resources>

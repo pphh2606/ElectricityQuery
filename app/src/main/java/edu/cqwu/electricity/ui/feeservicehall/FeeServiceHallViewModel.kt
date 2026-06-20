@@ -2,10 +2,10 @@ package edu.cqwu.electricity.ui.feeservicehall
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.cqwu.electricity.data.network.FeeCategory
-import edu.cqwu.electricity.data.network.FeeServiceHallApi
-import edu.cqwu.electricity.data.network.OrderRecord
-import edu.cqwu.electricity.data.network.UserProfile
+import edu.cqwu.electricity.data.network.feeservicehall.FeeCategory
+import edu.cqwu.electricity.data.network.feeservicehall.FeeServiceHallApi
+import edu.cqwu.electricity.data.network.feeservicehall.OrderRecord
+import edu.cqwu.electricity.data.network.feeservicehall.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

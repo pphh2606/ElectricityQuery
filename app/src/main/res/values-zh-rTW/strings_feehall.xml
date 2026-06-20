@@ -23,7 +23,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  訂單詳情                                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="fee_order_detail_title">訂單詳情</string>
     <string name="fee_order_info">訂單資訊</string>
     <string name="fee_order_no">訂單號</string>
     <string name="fee_order_product_desc">商品描述</string>
@@ -35,7 +34,6 @@
     <string name="fee_order_transaction_no">支付流水號</string>
     <string name="fee_order_project_id">專案識別碼</string>
     <string name="fee_order_partner">合作夥伴</string>
-    <string name="fee_order_time_range_sep">~</string>
     <string name="fee_hall_no_orders">暫無訂單</string>
     <string name="fee_order_project_name">專案名稱</string>
     <string name="fee_order_loaded_count">已載入 %1$d 筆</string>

@@ -31,8 +31,6 @@
     <string name="login_show_password">パスワードを表示</string>
     <string name="login_hide_password">パスワードを非表示</string>
     <string name="login_login_button">ログイン</string>
-    <string name="login_scan_login">QRログイン</string>
-    <string name="login_add_account">アカウントを追加</string>
     <string name="login_export_credential">資格情報をエクスポート</string>
     <string name="login_import_credential">資格情報をインポート</string>
     <string name="login_copy_to_clipboard">クリップボードにコピー</string>
@@ -53,7 +51,6 @@
     <string name="login_method_credential">資格情報ログイン</string>
     <string name="login_method_phone_recovery">電話番号で復旧</string>
     <string name="login_method_email_recovery">メールで復旧</string>
-    <string name="login_method_coming_soon">準備中</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  QRログインモジュール                       -->
@@ -70,7 +67,5 @@
     <string name="login_qr_expired">QRコードの有効期限が切れました。再試行してください</string>
     <string name="login_get_page_failed">ログインページの取得に失敗</string>
     <string name="login_verifying">ログイン中、お待ちください…</string>
-    <string name="login_auto_switching">自動ログインを試行中…</string>
-    <string name="login_password_too_short">パスワードは4文字以上必要です</string>
     <string name="login_credential_copied">資格情報をクリップボードにコピーしました</string>
 </resources>

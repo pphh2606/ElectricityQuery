@@ -103,13 +103,14 @@ import kotlinx.coroutines.flow.catch
 @Composable
 fun LoginScreen(
     onBack: () -> Unit,
+    clearForm: Boolean = false,
     loginViewModel: LoginViewModel = viewModel()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
 
     // 每次进入登录页时重置状态，防止 ViewModel 跨导航残留旧数据
     LaunchedEffect(Unit) {
-        loginViewModel.resetState()
+        loginViewModel.resetState(clearForm = clearForm)
     }
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -314,6 +315,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 密码输入框（带显隐切换，仅手动输入密码时可用）
+                // hasSavedPassword 时显示占位圆点，眼睛按钮禁用防止查看已保存密码
                 TextField(
                     value = uiState.password,
                     onValueChange = { loginViewModel.updatePassword(it) },
@@ -344,8 +346,8 @@ fun LoginScreen(
                         }
                     ),
                     trailingIcon = {
-                        // 仅用户手动输入的密码才可切换显示
-                        if (!uiState.passwordFromStorage && uiState.password.isNotEmpty()) {
+                        // 仅在用户实际输入了密码时显示眼睛按钮（已保存密码占位状态下不显示）
+                        if (uiState.password.isNotEmpty() && !uiState.hasSavedPassword) {
                             IconButton(onClick = { loginViewModel.togglePasswordRevealed() }) {
                                 Icon(
                                     imageVector = if (uiState.passwordRevealed)
@@ -462,59 +464,57 @@ fun LoginScreen(
     }
 
     // ========== 安全说明弹窗 ==========
-    if (showSecurityNotice) {
-        SecurityNoticeSheet(
-            onDismiss = { showSecurityNotice = false },
-        )
-    }
+    SecurityNoticeSheet(
+        visible = showSecurityNotice,
+        onDismiss = { showSecurityNotice = false },
+    )
 
     // ========== 其他登录方式弹窗 ==========
-    if (showOtherLoginSheet) {
-        val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
-        val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
-        BottomSheetDialog(
-            onDismissRequest = { showOtherLoginSheet = false },
-            title = stringResource(R.string.login_other_login),
-        ) {
-            BottomSheetItem(
-                icon = Icons.Default.QrCodeScanner,
-                title = stringResource(R.string.login_method_qr_scan),
-                onClick = {
-                    showOtherLoginSheet = false
-                    nav.navigate(Routes.QR_LOGIN)
-                }
-            )
-            BottomSheetItem(
-                icon = Icons.Default.Key,
-                title = stringResource(R.string.login_method_credential),
-                onClick = {
-                    showOtherLoginSheet = false
-                    showImportDialog = true
-                }
-            )
-            BottomSheetItem(
-                icon = Icons.Default.Phone,
-                title = phoneRecoveryTitle,
-                onClick = {
-                    showOtherLoginSheet = false
-                    nav.navigate(Routes.unifiedWebViewRoute(
-                        "https://authserver.cqwu.edu.cn/authserver/mobileGetPasswordController.do",
-                        phoneRecoveryTitle
-                    ))
-                }
-            )
-            BottomSheetItem(
-                icon = Icons.Default.Email,
-                title = emailRecoveryTitle,
-                onClick = {
-                    showOtherLoginSheet = false
-                    nav.navigate(Routes.unifiedWebViewRoute(
-                        "https://authserver.cqwu.edu.cn/authserver/moblieFindPwdByMailPage.do",
-                        emailRecoveryTitle
-                    ))
-                }
-            )
-        }
+    val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
+    val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
+    BottomSheetDialog(
+        visible = showOtherLoginSheet,
+        onDismissRequest = { showOtherLoginSheet = false },
+        title = stringResource(R.string.login_other_login),
+    ) {
+        BottomSheetItem(
+            icon = Icons.Default.QrCodeScanner,
+            title = stringResource(R.string.login_method_qr_scan),
+            onClick = {
+                showOtherLoginSheet = false
+                nav.navigate(Routes.QR_LOGIN)
+            }
+        )
+        BottomSheetItem(
+            icon = Icons.Default.Key,
+            title = stringResource(R.string.login_method_credential),
+            onClick = {
+                showOtherLoginSheet = false
+                showImportDialog = true
+            }
+        )
+        BottomSheetItem(
+            icon = Icons.Default.Phone,
+            title = phoneRecoveryTitle,
+            onClick = {
+                showOtherLoginSheet = false
+                nav.navigate(Routes.unifiedWebViewRoute(
+                    "https://authserver.cqwu.edu.cn/authserver/mobileGetPasswordController.do",
+                    phoneRecoveryTitle
+                ))
+            }
+        )
+        BottomSheetItem(
+            icon = Icons.Default.Email,
+            title = emailRecoveryTitle,
+            onClick = {
+                showOtherLoginSheet = false
+                nav.navigate(Routes.unifiedWebViewRoute(
+                    "https://authserver.cqwu.edu.cn/authserver/moblieFindPwdByMailPage.do",
+                    emailRecoveryTitle
+                ))
+            }
+        )
     }
 
     // ========== 导入凭据对话框 ==========

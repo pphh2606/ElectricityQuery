@@ -31,8 +31,6 @@
     <string name="login_show_password">إظهار كلمة المرور</string>
     <string name="login_hide_password">إخفاء كلمة المرور</string>
     <string name="login_login_button">تسجيل الدخول</string>
-    <string name="login_scan_login">تسجيل الدخول عبر QR</string>
-    <string name="login_add_account">إضافة حساب</string>
     <string name="login_export_credential">تصدير بيانات الاعتماد</string>
     <string name="login_import_credential">استيراد بيانات الاعتماد</string>
     <string name="login_copy_to_clipboard">نسخ إلى الحافظة</string>
@@ -53,7 +51,6 @@
     <string name="login_method_credential">تسجيل الدخول بالبيانات</string>
     <string name="login_method_phone_recovery">استعادة برقم الهاتف</string>
     <string name="login_method_email_recovery">استعادة بالبريد الإلكتروني</string>
-    <string name="login_method_coming_soon">قريباً</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  تسجيل الدخول عبر QR                        -->
@@ -70,7 +67,5 @@
     <string name="login_qr_expired">انتهت صلاحية رمز QR، يرجى إعادة المحاولة</string>
     <string name="login_get_page_failed">فشل الحصول على صفحة تسجيل الدخول</string>
     <string name="login_verifying">جارٍ تسجيل الدخول، يرجى الانتظار…</string>
-    <string name="login_auto_switching">محاولة تسجيل الدخول التلقائي…</string>
-    <string name="login_password_too_short">يجب أن تكون كلمة المرور 4 أحرف على الأقل</string>
     <string name="login_credential_copied">تم نسخ بيانات الاعتماد إلى الحافظة</string>
 </resources>

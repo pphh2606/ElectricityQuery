@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.common
 
 import java.net.URI
 import javax.crypto.Cipher

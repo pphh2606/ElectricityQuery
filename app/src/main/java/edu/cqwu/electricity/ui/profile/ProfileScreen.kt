@@ -63,13 +63,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.local.AccountStore
-import edu.cqwu.electricity.data.network.AccountManager
-import edu.cqwu.electricity.data.network.WebVpnEncoder
+import edu.cqwu.electricity.data.network.auth.AccountManager
+import edu.cqwu.electricity.data.network.common.WebVpnEncoder
 import edu.cqwu.electricity.ui.components.OpenUrlDialog
 import edu.cqwu.electricity.ui.login.AccountManagerSheet
-
-/** 「我的信息」H5 页面 URL（与首页「我的信息」一致） */
-private const val MY_INFO_URL = "https://cqwu.campusphere.net/wec-counselor-stuinfo-apps/student/mobile/index.html"
 
 /**
  * 「我的」页面 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
@@ -295,6 +292,10 @@ fun ProfilePageContent() {
         onNavigateToLogin = {
             showAccountManagerSheet = false
             nav.navigate(Routes.LOGIN)
+        },
+        onNavigateToAddAccount = {
+            showAccountManagerSheet = false
+            nav.navigate(Routes.NEW_ACCOUNT_LOGIN)
         },
         onSwitchSuccess = {
             // 切换成功后刷新用户名（Lifecycle ON_RESUME 已自动处理，

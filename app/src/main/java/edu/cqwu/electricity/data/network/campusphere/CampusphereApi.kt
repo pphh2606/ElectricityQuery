@@ -1,16 +1,23 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.campusphere
 
+import android.util.Log
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
+import edu.cqwu.electricity.BuildConfig
+import edu.cqwu.electricity.data.model.StudentInfo
+import edu.cqwu.electricity.data.model.StudentInfoResponse
+import edu.cqwu.electricity.data.network.common.CookieStore
+import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
+import edu.cqwu.electricity.data.network.auth.AccountManager
+import edu.cqwu.electricity.data.network.auth.SessionManager
+import edu.cqwu.electricity.data.network.sso.ServiceLoginManager
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.data.model.StudentInfo
-import edu.cqwu.electricity.data.model.StudentInfoResponse
 
 /**
  * campusphere.net 学生信息服务 API。
@@ -55,22 +62,20 @@ class CampusphereApi {
         if (activeUser != null) {
             val store = AccountManager.getCookiesForUser(activeUser)
             store.syncFromCookieManager()
-            return SharedHttpClient.createClientForUser(activeUser) to { store.getCookie(it) }
+            return HttpClientFactory.createForUser(activeUser) to { store.getCookie(it) }
         }
-        return SharedHttpClient.client to { CookieStore.getCookie(it) }
+        return HttpClientFactory.shared to { CookieStore.getCookie(it) }
     }
 
     /**
-     * 执行 CAS ticket 交换（委托给 SessionManager）。
-     *
-     * 流程：
-     *   1. GET /student/mobile/index.html（未登录 → 302）
-     *   2. 跟随 302 → authserver/login?service=...（携带已有 CASTGC）
-     *   3. authserver 验证通过 → 302 + ticket → Set-Cookie: MOD_AUTH_CAS
-     *   4. 最终回到 index.html（已认证）
+     * 执行 CAS ticket 交换（委托给 ServiceLoginManager）。
      */
-    private fun doCasTicketExchange(client: OkHttpClient, cookieReader: (String) -> String?) {
-        SessionManager.performCasTicketExchange(client, cookieReader)
+    private fun doCasTicketExchange() {
+        ServiceLoginManager.ensureLogin(
+            protectedUrl = INDEX_URL,
+            serviceDomain = BASE,
+            expectedCookie = "MOD_AUTH_CAS"
+        )
     }
 
     /**
@@ -85,7 +90,7 @@ class CampusphereApi {
             if (BuildConfig.DEBUG) {
                 val campusCookie = cookieReader(BASE)
                 val authCookie = cookieReader(AUTH_SERVER)
-                android.util.Log.d(TAG,
+                Log.d(TAG,
                     "activeUser=${AccountManager.getActiveUser()}, " +
                     "campusphere=${campusCookie != null}(len=${campusCookie?.length ?: 0}), " +
                     "auth=${authCookie != null}(len=${authCookie?.length ?: 0})")
@@ -98,8 +103,8 @@ class CampusphereApi {
             // ── 如果失败原因是未登录 → 执行 CAS ticket 交换 ──
             val cause = result.exceptionOrNull()
             if (cause is NotLoggedInException) {
-                android.util.Log.d(TAG, "未登录，执行 CAS ticket 交换后重试")
-                doCasTicketExchange(client, cookieReader)
+                Log.d(TAG, "未登录，执行 CAS ticket 交换后重试")
+                doCasTicketExchange()
                 // ── 第 2 次请求（重试） ──
                 result = doFetchStudentInfo(client)
                 if (result.isSuccess) return@withContext result
@@ -108,12 +113,12 @@ class CampusphereApi {
             // 最终失败
             result
         } catch (e: SessionExpiredException) {
-            android.util.Log.e(TAG, "会话已过期", e)
+            Log.e(TAG, "会话已过期", e)
             Result.failure(e)
-        } catch (e: kotlinx.coroutines.CancellationException) {
+        } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "获取学生信息失败", e)
+            Log.e(TAG, "获取学生信息失败", e)
             Result.failure(e)
         }
     }
@@ -134,15 +139,15 @@ class CampusphereApi {
             val info = client.newCall(request).execute().use { response ->
                 val responseBody = response.body.string()
 
-                android.util.Log.d(TAG, "API 响应(前200): ${responseBody.take(200)}")
+                Log.d(TAG, "API 响应(前200): ${responseBody.take(200)}")
 
                 // ⚠️ 检查未登录响应（body 是 JSON，不是 HTML，不能用 SessionChecker）
                 if (isNotLoggedIn(responseBody)) {
-                    android.util.Log.w(TAG, "API 返回 WEC-HASLOGIN:false，未登录")
+                    Log.w(TAG, "API 返回 WEC-HASLOGIN:false，未登录")
                     throw NotLoggedInException()
                 }
 
-                if (SessionChecker.isCasLoginPage(responseBody)) {
+                if (SessionManager.isCasLoginPage(responseBody)) {
                     throw SessionExpiredException("会话已过期，请重新登录")
                 }
 
@@ -163,7 +168,7 @@ class CampusphereApi {
                     ?: throw Exception("学生信息为空")
             }
 
-            android.util.Log.d(TAG, "学生信息获取成功: ${info.userName}(${info.userId})")
+            Log.d(TAG, "学生信息获取成功: ${info.userName}(${info.userId})")
             Result.success(info)
         } catch (e: NotLoggedInException) {
             Result.failure(e)
@@ -204,7 +209,7 @@ class CampusphereApi {
                 if (isNotLoggedIn(responseBody)) {
                     throw NotLoggedInException()
                 }
-                if (SessionChecker.isCasLoginPage(responseBody)) {
+                if (SessionManager.isCasLoginPage(responseBody)) {
                     throw SessionExpiredException("会话已过期，请重新登录")
                 }
 
@@ -216,10 +221,10 @@ class CampusphereApi {
             }
 
             Result.success(list)
-        } catch (e: kotlinx.coroutines.CancellationException) {
+        } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "获取菜单列表失败", e)
+            Log.e(TAG, "获取菜单列表失败", e)
             Result.failure(e)
         }
     }

@@ -3,7 +3,7 @@ package edu.cqwu.electricity.util
 import android.content.Context
 import android.webkit.CookieManager
 import edu.cqwu.electricity.data.local.AccountStore
-import edu.cqwu.electricity.data.network.CookieStore
+import edu.cqwu.electricity.data.network.common.CookieStore
 import java.io.File
 import java.util.Locale
 

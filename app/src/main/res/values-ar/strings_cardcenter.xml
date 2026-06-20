@@ -62,5 +62,4 @@
     <string name="card_lost_request_error">خطأ في الطلب</string>
     <string name="card_lost_fetch_error">فشل جلب معلومات البطاقة</string>
     <string name="card_lost_login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
-    <string name="card_account_info_fetch_error">فشل جلب معلومات الحساب</string>
 </resources>

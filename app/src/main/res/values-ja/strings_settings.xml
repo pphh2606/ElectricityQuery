@@ -91,8 +91,5 @@
     <!--  言語切り替え                               -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">言語</string>
-    <string name="language_current">現在の言語</string>
     <string name="language_select">言語を選択</string>
-    <string name="language_chinese">中文</string>
-    <string name="language_english">English</string>
 </resources>

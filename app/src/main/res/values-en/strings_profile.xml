@@ -24,10 +24,7 @@
     <string name="my_info_status">Status</string>
     <string name="my_info_collapse">Collapse</string>
     <string name="my_info_expand">Expand</string>
-    <string name="my_info_load_failed">Load failed</string>
     <string name="my_info_login_expired">Login expired, please re-login</string>
     <string name="profile_not_logged_in">Not logged in</string>
     <string name="profile_my_info_cd">My Info</string>
-    <string name="profile_my_room_loading">Fetching dorm info…</string>
-    <string name="profile_no_room_data">No room data</string>
 </resources>

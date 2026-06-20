@@ -1,5 +1,6 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.common
 
+import android.util.Log
 import android.webkit.CookieManager
 import okhttp3.Cookie
 import okhttp3.CookieJar
@@ -15,9 +16,9 @@ import java.util.TimeZone
  * 所有 Cookie 统一保存在 CookieManager（浏览器缓存）中，
  * OkHttp 通过此 CookieJar 直接读写 CookieManager，无需额外同步。
  *
- * 与 SharedHttpClient 配合使用：
- *   SharedHttpClient.init(context)
- *   // client 已自动使用此 CookieJar
+ * 与 HttpClientFactory.shared 配合使用：
+ *   CookieStore.init()
+ *   // HttpClientFactory.shared 已自动使用此 CookieJar
  */
 object CookieStoreOkHttpJar : CookieJar {
 
@@ -67,7 +68,7 @@ object CookieStoreOkHttpJar : CookieJar {
                     }
                     .build()
             } catch (e: Exception) {
-                android.util.Log.w("CookieStoreOkHttpJar", "解析 Cookie 失败: $name=$value", e)
+                Log.w("CookieStoreOkHttpJar", "解析 Cookie 失败: $name=$value", e)
                 null
             }
         }
@@ -153,7 +154,7 @@ class UserAwareCookieJar(
                     }
                     .build()
             } catch (e: Exception) {
-                android.util.Log.w("UserAwareCookieJar", "解析 Cookie 失败: $name=$value", e)
+                Log.w("UserAwareCookieJar", "解析 Cookie 失败: $name=$value", e)
                 null
             }
         }

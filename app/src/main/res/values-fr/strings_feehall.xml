@@ -23,7 +23,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Détail commande                             -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="fee_order_detail_title">Détail commande</string>
     <string name="fee_order_info">Info commande</string>
     <string name="fee_order_no">N° commande</string>
     <string name="fee_order_product_desc">Description</string>
@@ -35,7 +34,6 @@
     <string name="fee_order_transaction_no">N° de transaction</string>
     <string name="fee_order_project_id">ID projet</string>
     <string name="fee_order_partner">Partenaire</string>
-    <string name="fee_order_time_range_sep">~</string>
     <string name="fee_hall_no_orders">Aucune commande</string>
     <string name="fee_order_project_name">Nom du projet</string>
     <string name="fee_order_loaded_count">%1$d chargés</string>

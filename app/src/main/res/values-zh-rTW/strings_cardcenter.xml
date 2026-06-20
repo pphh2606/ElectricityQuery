@@ -62,5 +62,4 @@
     <string name="card_lost_request_error">請求異常</string>
     <string name="card_lost_fetch_error">取得卡片資訊失敗</string>
     <string name="card_lost_login_expired">登入已過期，請重新登入</string>
-    <string name="card_account_info_fetch_error">取得帳戶資訊失敗</string>
 </resources>

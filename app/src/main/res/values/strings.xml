@@ -35,9 +35,6 @@
     <string name="common_clear_search">清除搜索</string>
     <string name="common_exit_search">退出搜索</string>
     <string name="common_scan">扫码</string>
-    <string name="common_no_more">— 没有更多了 —</string>
-    <string name="common_delete_account">删除账号</string>
-    <string name="common_select_saved_user">选择已保存的用户</string>
     <string name="common_send_email">发送邮件</string>
     <string name="common_share_log">分享日志</string>
     <string name="common_web_version">网页版</string>

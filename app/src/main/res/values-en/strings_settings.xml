@@ -91,10 +91,7 @@
     <!--  Language                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">Language</string>
-    <string name="language_current">Current Language</string>
     <string name="language_select">Select Language</string>
-    <string name="language_chinese">中文</string>
-    <string name="language_english">English</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Clear Storage                              -->

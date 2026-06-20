@@ -49,7 +49,7 @@ import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.model.BuildingNode
 import edu.cqwu.electricity.data.model.SelectionStep
 import edu.cqwu.electricity.data.model.displayName
-import edu.cqwu.electricity.data.network.AccountManager
+import edu.cqwu.electricity.data.network.auth.AccountManager
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.util.ToastUtils
 
@@ -61,7 +61,6 @@ import edu.cqwu.electricity.util.ToastUtils
 @Composable
 fun BuildingSelectionScreen(
     viewModel: ElectricityViewModel,
-    onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current

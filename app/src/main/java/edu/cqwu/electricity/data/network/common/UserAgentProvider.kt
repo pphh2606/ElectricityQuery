@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.common
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

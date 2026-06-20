@@ -345,11 +345,11 @@ fun RechargeRecordScreen(
 
 }
     // ========== 提示弹窗 - Bottom Sheet ==========
-    if (showInfoDialog) {
-        BottomSheetDialog(
-            onDismissRequest = { showInfoDialog = false },
-            title = stringResource(R.string.recharge_hint)
-        ) {
+    BottomSheetDialog(
+        visible = showInfoDialog,
+        onDismissRequest = { showInfoDialog = false },
+        title = stringResource(R.string.recharge_hint)
+    ) {
             Column {
                 Text(stringResource(R.string.recharge_record_hint_item1))
                 Spacer(modifier = Modifier.height(8.dp))
@@ -386,7 +386,6 @@ fun RechargeRecordScreen(
                 )
             }
         }
-    }
 }
 
 /**

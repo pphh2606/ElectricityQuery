@@ -62,5 +62,4 @@
     <string name="card_lost_request_error">リクエスト異常</string>
     <string name="card_lost_fetch_error">カード情報の取得に失敗</string>
     <string name="card_lost_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
-    <string name="card_account_info_fetch_error">アカウント情報の取得に失敗</string>
 </resources>

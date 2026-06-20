@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.data.local.ReduceMotion
-import edu.cqwu.electricity.data.network.QrCodeType
 import edu.cqwu.electricity.ui.hall.HallPageContent
 import edu.cqwu.electricity.ui.hall.HallTopBar
 import edu.cqwu.electricity.ui.hall.HallViewModel

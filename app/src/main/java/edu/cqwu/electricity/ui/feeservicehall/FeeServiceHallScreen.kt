@@ -1,22 +1,17 @@
 package edu.cqwu.electricity.ui.feeservicehall
 
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import edu.cqwu.electricity.ui.components.BottomSheetDialog
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -49,21 +44,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import edu.cqwu.electricity.data.network.FeeItem
-import edu.cqwu.electricity.data.network.FeeServiceHallApi
-import edu.cqwu.electricity.data.network.OrderRecord
+import edu.cqwu.electricity.R
+import edu.cqwu.electricity.data.network.feeservicehall.FeeItem
+import edu.cqwu.electricity.data.network.feeservicehall.FeeServiceHallApi
+import edu.cqwu.electricity.data.network.feeservicehall.OrderRecord
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import kotlinx.coroutines.launch
@@ -90,16 +89,17 @@ fun FeeServiceHallScreen(
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-    var selectedOrder by remember { mutableStateOf<edu.cqwu.electricity.data.network.OrderRecord?>(null) }
+    var selectedOrder by remember { mutableStateOf<OrderRecord?>(null) }
 
     LaunchedEffect(Unit) { viewModel.loadIfNeeded() }
 
     // 订单详情底部弹窗
-    selectedOrder?.let { order ->
-        BottomSheetDialog(
-            onDismissRequest = { selectedOrder = null },
-            fullscreen = true,
-        ) {
+    BottomSheetDialog(
+        visible = selectedOrder != null,
+        onDismissRequest = { selectedOrder = null },
+        fullscreen = true,
+    ) {
+        selectedOrder?.let { order ->
             OrderDetailContent(order = order)
         }
     }

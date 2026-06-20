@@ -5,7 +5,7 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
-import edu.cqwu.electricity.data.network.SharedHttpClient
+import edu.cqwu.electricity.data.network.common.CookieStore
 import edu.cqwu.electricity.util.CrashHandler
 import okhttp3.OkHttpClient
 
@@ -23,7 +23,7 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         // 崩溃捕获必须在最前面注册，确保第三方 SDK 初始化前就已就绪
         CrashHandler.init(this)
         instance = this
-        SharedHttpClient.init()
+        CookieStore.init()
     }
 
     companion object {

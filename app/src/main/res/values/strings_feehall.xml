@@ -23,7 +23,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  订单详情                                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="fee_order_detail_title">订单详情</string>
     <string name="fee_order_info">订单信息</string>
     <string name="fee_order_no">订单号</string>
     <string name="fee_order_product_desc">商品描述</string>
@@ -35,7 +34,6 @@
     <string name="fee_order_transaction_no">支付流水号</string>
     <string name="fee_order_project_id">项目标识</string>
     <string name="fee_order_partner">合作伙伴</string>
-    <string name="fee_order_time_range_sep">~</string>
     <string name="fee_hall_no_orders">暂无订单</string>
     <string name="fee_order_project_name">项目名称</string>
     <string name="fee_order_loaded_count">已加载 %1$d 条</string>

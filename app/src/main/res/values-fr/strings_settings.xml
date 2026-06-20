@@ -91,8 +91,5 @@
     <!--  Langue                                     -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">Langue</string>
-    <string name="language_current">Langue actuelle</string>
     <string name="language_select">Choisir la langue</string>
-    <string name="language_chinese">中文</string>
-    <string name="language_english">English</string>
 </resources>

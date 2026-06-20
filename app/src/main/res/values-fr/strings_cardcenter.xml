@@ -62,5 +62,4 @@
     <string name="card_lost_request_error">Erreur de requête</string>
     <string name="card_lost_fetch_error">Échec de récupération des infos de la carte</string>
     <string name="card_lost_login_expired">Session expirée, veuillez vous reconnecter</string>
-    <string name="card_account_info_fetch_error">Échec de récupération du compte</string>
 </resources>

@@ -1,42 +1,21 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.feeservicehall
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import edu.cqwu.electricity.data.network.common.CookieStore
+import edu.cqwu.electricity.data.network.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.concurrent.TimeUnit
+import java.net.SocketTimeoutException
+import java.net.URLDecoder
 
 // ═══════════════════════════════════════════
-//  数据模型 - 缴费项目
+//  内部响应模型（不对外暴露）
 // ═══════════════════════════════════════════
-
-data class FeeCategory(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("type") val type: String,
-    @SerializedName("children") val children: List<FeeItem>?,
-)
-
-data class FeeItem(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("type") val type: String,
-    @SerializedName("imgUrl") val imgUrl: String?,
-    @SerializedName("proModelUrl") val proModelUrl: String?,
-)
-
-// ═══════════════════════════════════════════
-//  通用 API 响应解析器
-// ═══════════════════════════════════════════
-
-/**
- * API 业务异常：服务端返回 [messageCode] != "0"
- */
-class ApiBusinessException(val code: String, message: String) : Exception(message)
 
 /**
  * 通用 API 响应解析器。
@@ -64,70 +43,10 @@ private data class FeeProjectResponse(
     @SerializedName("data") val data: List<FeeCategory>?,
 )
 
-// ═══════════════════════════════════════════
-//  数据模型 - 订单
-// ═══════════════════════════════════════════
-
-data class OrderRecord(
-    @SerializedName("id") val id: String,
-    @SerializedName("orderNo") val orderNo: String,
-    @SerializedName("projectName") val projectName: String?,
-    @SerializedName("productDesc") val productDesc: String?,
-    @SerializedName("amount") val amount: Long, // 单位：分
-    @SerializedName("status") val status: String,
-    @SerializedName("displayStatus") val displayStatus: String?,
-    @SerializedName("createDate") val createDate: String?,
-    @SerializedName("actualCloseTime") val actualCloseTime: String?,
-    @SerializedName("imgUrl") val imgUrl: String?,
-    @SerializedName("proModelUrl") val proModelUrl: String?,
-    @SerializedName("tradeChannel") val tradeChannel: String?,
-    @SerializedName("schdualCloseTime") val schdualCloseTime: String?,
-    @SerializedName("updateDate") val updateDate: String?,
-    @SerializedName("balanceOrderTradeOrderNo") val balanceOrderTradeOrderNo: String?,
-    @SerializedName("partnerId") val partnerId: String?,
-    @SerializedName("engName") val engName: String?,
-) {
-    /** 金额（单位：元），从分的转换 */
-    val amountYuan: Double get() = amount / 100.0
-
-    /** 状态显示文本 */
-    val statusDisplay: String get() = when (status) {
-        "COMPLETED" -> "已支付"
-        "PENDING" -> "待支付"
-        "REFUND" -> "已退款"
-        "CLOSED" -> "已关闭"
-        else -> status
-    }
-
-    /** 支付渠道显示文本 */
-    val tradeChannelDisplay: String get() = when (tradeChannel) {
-        "01" -> "支付宝"
-        "02" -> "微信支付"
-        else -> tradeChannel ?: "未知"
-    }
-}
-
-data class OrderPageData(
-    @SerializedName("records") val records: List<OrderRecord>,
-    @SerializedName("current") val current: Int?,
-    @SerializedName("pages") val pages: Int?,
-    @SerializedName("total") val total: Long?,
-)
-
 private data class OrderListResponse(
     @SerializedName("messageCode") val messageCode: String,
     @SerializedName("message") val message: String,
     @SerializedName("data") val data: OrderPageData?,
-)
-
-// ═══════════════════════════════════════════
-//  数据模型 - 个人资料
-// ═══════════════════════════════════════════
-
-data class UserProfile(
-    @SerializedName("name") val name: String?,
-    @SerializedName("deptName") val deptName: String?,
-    @SerializedName("accountNum") val accountNum: String?,
 )
 
 private data class UserProfileResponse(
@@ -142,13 +61,7 @@ private data class UserProfileResponse(
 
 class FeeServiceHallApi {
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .addInterceptor(UserAgentInterceptor)
-        .cookieJar(CookieStoreOkHttpJar)
-        .build()
+    private val client = HttpClientFactory.createWithTimeout(10, 10, 10)
 
     private val gson = Gson()
     private val jsonMediaType = "application/json;charset=UTF-8".toMediaType()
@@ -165,10 +78,6 @@ class FeeServiceHallApi {
         fun buildPaymentUrl(proModelUrl: String?, projectId: String): String {
             val handler = proModelUrl?.let { "${it}Pay" } ?: "commonPay"
             return "https://pay.cqwu.edu.cn/mobile/#/$handler?projectId=$projectId"
-        }
-
-        fun buildOrderDetailUrl(orderNo: String): String {
-            return "https://pay.cqwu.edu.cn/mobile/#/orderDetail?orderNo=$orderNo"
         }
 
         /** 个人信息 API */
@@ -199,27 +108,27 @@ class FeeServiceHallApi {
          */
         suspend fun obtainPayToken(): Result<String> = withContext(Dispatchers.IO) {
             try {
-                android.util.Log.d("FeeServiceHallApi", ">>> 自动获取 pay JWT Token 开始")
+                Log.d("FeeServiceHallApi", ">>> 自动获取 pay JWT Token 开始")
 
                 // ── 步骤1: 访问 /casLogin/，获取 authserver CAS 登录地址 ──
-                val step1Resp = SharedHttpClient.client.newCall(
+                val step1Resp = HttpClientFactory.shared.newCall(
                     Request.Builder().url(CAS_LOGIN_URL).get().build()
                 ).execute()
                 val step1Html = step1Resp.body.string()
-                android.util.Log.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
+                Log.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
 
                 // 从 HTML 中提取 location.href 重定向地址
                 val locationRegex = Regex("""location\.href\s*=\s*['"]([^'"]+)['"]""")
                 val redirectUrl = locationRegex.find(step1Html)?.groupValues?.getOrNull(1)
                     ?: return@withContext Result.failure(Exception("无法从 /casLogin/ 解析重定向地址"))
-                android.util.Log.d("FeeServiceHallApi", "步骤1: 解析到重定向地址=$redirectUrl")
+                Log.d("FeeServiceHallApi", "步骤1: 解析到重定向地址=$redirectUrl")
 
                 // ── 步骤2: 访问 authserver CAS 登录页（携带 CASTGC）──
-                // SharedHttpClient 带有 CookieStoreOkHttpJar + followRedirects=true，
+                // HttpClientFactory.shared 带有 CookieStoreOkHttpJar + followRedirects=true，
                 // 会自动完成重定向链:
                 //   authserver(302+ticket) → /casLogin/?ticket=...(302+JSESSIONID) → /casLogin/(200)
                 // 最终 /casLogin/ 返回 JS 重定向到 dlyscas 端点
-                val step2Client = SharedHttpClient.client.newBuilder()
+                val step2Client = HttpClientFactory.shared.newBuilder()
                     .followRedirects(true)
                     .followSslRedirects(true)
                     .build()
@@ -228,16 +137,16 @@ class FeeServiceHallApi {
                     Request.Builder().url(redirectUrl).get().build()
                 ).execute()
                 val step2Html = step2Resp.body.string()
-                android.util.Log.d("FeeServiceHallApi", "步骤2: CAS认证完成, 响应码=${step2Resp.code}, HTML长度=${step2Html.length}, finalUrl=${step2Resp.request.url}")
+                Log.d("FeeServiceHallApi", "步骤2: CAS认证完成, 响应码=${step2Resp.code}, HTML长度=${step2Html.length}, finalUrl=${step2Resp.request.url}")
 
                 // 从 HTML 中提取 dlyscas 端点地址（含 idserial）
                 val dlyscasUrl = locationRegex.find(step2Html)?.groupValues?.getOrNull(1)
                     ?: return@withContext Result.failure(Exception("无法从 CAS 响应解析 dlyscas 地址"))
-                android.util.Log.d("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=$dlyscasUrl")
+                Log.d("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=$dlyscasUrl")
 
                 // ── 步骤3: 访问 dlyscas 端点，获取 JWT Token ──
                 // 必须禁用 followRedirects，因为 302 的 Location 中包含 token 参数
-                val step3Client = SharedHttpClient.client.newBuilder()
+                val step3Client = HttpClientFactory.shared.newBuilder()
                     .followRedirects(false)
                     .followSslRedirects(false)
                     .build()
@@ -246,7 +155,7 @@ class FeeServiceHallApi {
                     Request.Builder().url(dlyscasUrl).get().build()
                 ).execute()
                 val location = step3Resp.header("Location") ?: ""
-                android.util.Log.d("FeeServiceHallApi", "步骤3: dlyscas 响应码=${step3Resp.code}, Location=$location")
+                Log.d("FeeServiceHallApi", "步骤3: dlyscas 响应码=${step3Resp.code}, Location=$location")
 
                 // 从 Location 中提取 token 参数
                 val tokenRegex = Regex("""token=([^&]+)""")
@@ -254,8 +163,8 @@ class FeeServiceHallApi {
                     ?: return@withContext Result.failure(Exception("无法从 dlyscas 响应中提取 JWT Token"))
 
                 // URL 解码 token（JWT 可能包含 URL 编码字符）
-                val decodedToken = java.net.URLDecoder.decode(token, "UTF-8")
-                android.util.Log.d("FeeServiceHallApi", ">>> JWT Token 获取成功, 长度=${decodedToken.length}")
+                val decodedToken = URLDecoder.decode(token, "UTF-8")
+                Log.d("FeeServiceHallApi", ">>> JWT Token 获取成功, 长度=${decodedToken.length}")
 
                 // ── 步骤4: 将 Token 写入 CookieManager ──
                 CookieStore.setCookie(PAY_DOMAIN, "$XTOKEN_COOKIE_NAME=$decodedToken")
@@ -264,11 +173,11 @@ class FeeServiceHallApi {
                 CookieStore.setCookie(PAY_DOMAIN, "datalook_login_status=false")
 
                 Result.success(decodedToken)
-            } catch (e: java.net.SocketTimeoutException) {
-                android.util.Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 超时", e)
+            } catch (e: SocketTimeoutException) {
+                Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 超时", e)
                 Result.failure(Exception("获取 Token 超时，请检查网络连接", e))
             } catch (e: Exception) {
-                android.util.Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 失败", e)
+                Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 失败", e)
                 Result.failure(e)
             }
         }
@@ -296,7 +205,7 @@ class FeeServiceHallApi {
     private suspend fun <T> autoRetry(block: suspend () -> Result<T>): Result<T> {
         val result = block()
         if (result.isFailure && getXToken().isNullOrBlank()) {
-            android.util.Log.d("FeeServiceHallApi", "Token 不存在，自动获取后重试")
+            Log.d("FeeServiceHallApi", "Token 不存在，自动获取后重试")
             val tokenResult = obtainPayToken()
             if (tokenResult.isFailure) {
                 return Result.failure(Exception("未登录，请先打开原网页完成认证"))

@@ -1,5 +1,8 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.electricity
 
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import edu.cqwu.electricity.data.model.AccountInfo
 import edu.cqwu.electricity.data.model.BalanceResponse
 import edu.cqwu.electricity.data.model.BillFilter
@@ -12,11 +15,15 @@ import edu.cqwu.electricity.data.model.CardLostInfo
 import edu.cqwu.electricity.data.model.CardLostResponse
 import edu.cqwu.electricity.data.model.CurrentDataResponse
 import edu.cqwu.electricity.data.model.H5BillResponse
+import edu.cqwu.electricity.data.model.OrderStatusResponse
 import edu.cqwu.electricity.data.model.RechargeResponse
 import edu.cqwu.electricity.data.model.UsageResponse
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.model.WechatUserResponse
-import edu.cqwu.electricity.data.model.OrderStatusResponse
+import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
+import edu.cqwu.electricity.data.network.auth.SessionManager
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
@@ -26,7 +33,9 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.collections.iterator
 
 /**
  * API 请求封装类，对应 Python 版 ElectricityQuery 类
@@ -71,9 +80,9 @@ class ElectricityApi {
         /** H5 版账单 JSON API（速度快 ~3s，仅支持分页，不支持筛选） */
         private const val H5_BILL_API = "$EPAY_BASE/epay/thirdapp/loadbill.json"
 
-        /** HTML 版账单查询专用 Client（超时 30 秒，基于 SharedHttpClient 构建确保 CookieJar 同步） */
+        /** HTML 版账单查询专用 Client（超时 30 秒，基于 HttpClientFactory.shared 构建确保 CookieJar 同步） */
         private val billHtmlClient: OkHttpClient by lazy {
-            SharedHttpClient.client.newBuilder()
+            HttpClientFactory.shared.newBuilder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
@@ -88,14 +97,9 @@ class ElectricityApi {
         }
     }
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .addInterceptor(UserAgentInterceptor)
-        .build()
+    private val client = HttpClientFactory.createWithTimeout(10, 10, 10)
 
-    private val gson = com.google.gson.Gson()
+    private val gson = Gson()
 
     /**
      * 获取校区列表
@@ -163,7 +167,7 @@ class ElectricityApi {
      */
     suspend fun queryMonthDailyUsage(roomId: String, userId: String = "0"): Result<UsageResponse> {
         return safeApiCall {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val calendar = Calendar.getInstance()
             val endTime = dateFormat.format(calendar.time)
             // 设置为本月1号
@@ -228,7 +232,7 @@ class ElectricityApi {
                 "payFee" to String.format("%.2f", amount)
             )
             val jsonBody = gson.toJson(payload)
-            android.util.Log.d("ElectricityApi", "充值请求 Body: $jsonBody")
+            Log.d("ElectricityApi", "充值请求 Body: $jsonBody")
 
             val requestBody = jsonBody.toRequestBody("application/json; charset=UTF-8".toMediaType())
             val requestBuilder = Request.Builder()
@@ -239,13 +243,13 @@ class ElectricityApi {
             requestBuilder.addHeader("Content-Type", "application/json; charset=UTF-8")
             requestBuilder.addHeader("X-Requested-With", "XMLHttpRequest")
 
-            android.util.Log.d("ElectricityApi", "充值请求 URL: $RECHARGE_API")
+            Log.d("ElectricityApi", "充值请求 URL: $RECHARGE_API")
             val response = client.newCall(requestBuilder.build()).execute()
             if (!response.isSuccessful) {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
             val body = response.body.string()
-            android.util.Log.d("ElectricityApi", "充值响应: $body")
+            Log.d("ElectricityApi", "充值响应: $body")
 
             val rechargeResponse = gson.fromJson(body, RechargeResponse::class.java)
             val payUrl = rechargeResponse.payUrl
@@ -292,7 +296,7 @@ class ElectricityApi {
                 url = urlString,
                 extraHeaders = mapOf("Authorization" to authHeader)
             )
-            val type = object : com.google.gson.reflect.TypeToken<List<UserRoomInfo>>() {}.type
+            val type = object : TypeToken<List<UserRoomInfo>>() {}.type
             gson.fromJson(json, type)
         }
     }
@@ -332,7 +336,7 @@ class ElectricityApi {
     suspend fun getOrderStatus(orderId: String): Result<OrderStatusResponse> {
         return safeApiCall {
             val url = "${PAY_CASHIER_API}/getOrderById/$orderId"
-            android.util.Log.d("ElectricityApi", "查询订单状态: $url")
+            Log.d("ElectricityApi", "查询订单状态: $url")
 
             val requestBuilder = Request.Builder()
                 .url(url)
@@ -349,7 +353,7 @@ class ElectricityApi {
                 throw RuntimeException("查询订单状态 HTTP ${response.code}: ${response.message}")
             }
             val body = response.body.string()
-            android.util.Log.d("ElectricityApi", "订单状态响应: $body")
+            Log.d("ElectricityApi", "订单状态响应: $body")
 
             gson.fromJson(body, OrderStatusResponse::class.java)
         }
@@ -360,7 +364,7 @@ class ElectricityApi {
     /**
      * 获取 EPay 账户信息（通过 HTML 解析）
      *
-     * 使用 SharedHttpClient（与 QrCodeApi 共享同一 CookieJar），
+     * 使用 HttpClientFactory.shared（与 QrCodeApi 共享同一 CookieJar），
      * 自动完成 CAS ticket 交换获取 JSESSIONID。
      *
      * GET http://218.194.176.214:8382/epay/thirdapp/balance
@@ -370,9 +374,9 @@ class ElectricityApi {
         try {
             val t0 = System.currentTimeMillis()
             val url = "$EPAY_THIRDAPP/balance"
-            android.util.Log.d("ElectricityApi", "获取账户信息: GET $url")
+            Log.d("ElectricityApi", "获取账户信息: GET $url")
 
-            val response = SharedHttpClient.client.newCall(
+            val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
                     .url(url)
                     .get()
@@ -382,19 +386,19 @@ class ElectricityApi {
             val html = response.body.string()
 
             // 检查是否被重定向到 CAS 登录页
-            SessionChecker.checkAndThrow(html)
+            SessionManager.checkSessionOrThrow(html)
 
             // 解析 HTML 提取字段
             val accountInfo = parseAccountInfoHtml(html)
             val elapsed = System.currentTimeMillis() - t0
-            android.util.Log.d("ElectricityApi", "获取账户信息成功: 耗时=${elapsed}ms, $accountInfo")
+            Log.d("ElectricityApi", "获取账户信息成功: 耗时=${elapsed}ms, $accountInfo")
             Result.success(accountInfo)
-        } catch (e: kotlinx.coroutines.CancellationException) {
+        } catch (e: CancellationException) {
             throw e
         } catch (e: SessionExpiredException) {
             Result.failure(e)
         } catch (e: Exception) {
-            android.util.Log.e("ElectricityApi", "获取账户信息失败", e)
+            Log.e("ElectricityApi", "获取账户信息失败", e)
             Result.failure(e)
         }
     }
@@ -434,7 +438,7 @@ class ElectricityApi {
      * 获取卡挂失页面的卡信息（通过 HTML 解析）
      *
      * GET http://218.194.176.214:8382/epay/thirdapp/cardlost
-     * 使用 SharedHttpClient（与 QrCodeApi 共享同一 CookieJar），
+     * 使用 HttpClientFactory.shared（与 QrCodeApi 共享同一 CookieJar），
      * 自动完成 CAS ticket 交换获取 JSESSIONID。
      *
      * HTML 结构示例（与账户信息页面一致）：
@@ -452,9 +456,9 @@ class ElectricityApi {
     suspend fun fetchCardLostInfo(): Result<CardLostInfo> = withContext(Dispatchers.IO) {
         try {
             val url = "$EPAY_THIRDAPP/cardlost"
-            android.util.Log.d("ElectricityApi", "获取卡挂失信息: GET $url")
+            Log.d("ElectricityApi", "获取卡挂失信息: GET $url")
 
-            val response = SharedHttpClient.client.newCall(
+            val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
                     .url(url)
                     .get()
@@ -463,15 +467,15 @@ class ElectricityApi {
 
             val html = response.body.string()
 
-            SessionChecker.checkAndThrow(html)
+            SessionManager.checkSessionOrThrow(html)
 
             val cardInfo = parseCardLostInfoHtml(html)
-            android.util.Log.d("ElectricityApi", "卡挂失信息: $cardInfo")
+            Log.d("ElectricityApi", "卡挂失信息: $cardInfo")
             Result.success(cardInfo)
         } catch (e: SessionExpiredException) {
             Result.failure(e)
         } catch (e: Exception) {
-            android.util.Log.e("ElectricityApi", "获取卡挂失信息失败", e)
+            Log.e("ElectricityApi", "获取卡挂失信息失败", e)
             Result.failure(e)
         }
     }
@@ -480,7 +484,7 @@ class ElectricityApi {
      * 执行卡挂失
      *
      * POST http://218.194.176.214:8382/epay/thirdapp/docardlost.json
-     * 使用 SharedHttpClient（共享 CookieJar）。
+     * 使用 HttpClientFactory.shared（共享 CookieJar）。
      * 请求体为空 JSON: {}
      *
      * 成功响应: { retcode: "0", retmsg: "挂失成功" }
@@ -489,10 +493,11 @@ class ElectricityApi {
     suspend fun doCardLost(): Result<CardLostResponse> = withContext(Dispatchers.IO) {
         try {
             val url = "$EPAY_THIRDAPP/docardlost.json"
-            android.util.Log.d("ElectricityApi", "执行卡挂失: POST $url")
+            Log.d("ElectricityApi", "执行卡挂失: POST $url")
 
             val jsonBody = "{}"
-            val requestBody = jsonBody.toRequestBody("application/json; charset=UTF-8".toMediaType())
+            val requestBody =
+                jsonBody.toRequestBody("application/json; charset=UTF-8".toMediaType())
 
             val requestBuilder = Request.Builder()
                 .url(url)
@@ -500,16 +505,16 @@ class ElectricityApi {
                 .addHeader("Content-Type", "application/json; charset=UTF-8")
                 .addHeader("X-Requested-With", "XMLHttpRequest")
 
-            val response = SharedHttpClient.client.newCall(requestBuilder.build()).execute()
+            val response = HttpClientFactory.shared.newCall(requestBuilder.build()).execute()
 
             val body = response.body.string()
 
-            android.util.Log.d("ElectricityApi", "卡挂失响应: $body")
+            Log.d("ElectricityApi", "卡挂失响应: $body")
 
             val cardLostResponse = gson.fromJson(body, CardLostResponse::class.java)
             Result.success(cardLostResponse)
         } catch (e: Exception) {
-            android.util.Log.e("ElectricityApi", "执行卡挂失失败", e)
+            Log.e("ElectricityApi", "执行卡挂失失败", e)
             Result.failure(e)
         }
     }
@@ -545,21 +550,22 @@ class ElectricityApi {
      * @param filter 筛选条件（仅筛选相关字段生效，tabNo 被忽略）
      * @return Map<tabNo, BillPageInfo> 包含全部 4 个标签页的数据
      */
-    suspend fun fetchBillsAllZones(filter: BillFilter): Result<Map<Int, BillPageInfo>> = withContext(Dispatchers.IO) {
-        try {
-            val html = postBillQuery(filter)
-            SessionChecker.checkAndThrow(html)
-            val allZones = parseAllZones(html)
-            android.util.Log.d("ElectricityApi", "四区解析完成: zone数量=${allZones.size}")
-            Result.success(allZones)
-        } catch (e: SessionExpiredException) {
-            Result.failure(e)
-        } catch (e: Exception) {
-            if (e is kotlinx.coroutines.CancellationException) throw e
-            android.util.Log.e("ElectricityApi", "获取账单失败", e)
-            Result.failure(e)
+    suspend fun fetchBillsAllZones(filter: BillFilter): Result<Map<Int, BillPageInfo>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val html = postBillQuery(filter)
+                SessionManager.checkSessionOrThrow(html)
+                val allZones = parseAllZones(html)
+                Log.d("ElectricityApi", "四区解析完成: zone数量=${allZones.size}")
+                Result.success(allZones)
+            } catch (e: SessionExpiredException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                Log.e("ElectricityApi", "获取账单失败", e)
+                Result.failure(e)
+            }
         }
-    }
 
     /**
      * 执行账单查询的 HTTP POST 请求，返回原始 HTML。
@@ -587,7 +593,7 @@ class ElectricityApi {
 
         val requestBody = formBuilder.build()
 
-        android.util.Log.d("ElectricityApi", "获取账单: POST $BILL_QUERY_URL, filter=$filter")
+        Log.d("ElectricityApi", "获取账单: POST $BILL_QUERY_URL, filter=$filter")
 
         val response = billHtmlClient.newCall(
             Request.Builder()
@@ -604,7 +610,7 @@ class ElectricityApi {
     /**
      * 使用 H5 JSON API 获取账单（速度快，约 3 秒）。
      *
-     * 通过 SharedHttpClient（共享 CookieJar）自动携带 JSESSIONID。
+     * 通过 HttpClientFactory.shared（共享 CookieJar）自动携带 JSESSIONID。
      *
      * POST http://218.194.176.214:8382/epay/thirdapp/loadbill.json
      * Content-Type: application/x-www-form-urlencoded; charset=UTF-8
@@ -620,9 +626,9 @@ class ElectricityApi {
                 .add("pageno", pageNo.toString())
                 .build()
 
-            android.util.Log.d("ElectricityApi", "H5获取账单: POST $H5_BILL_API, pageno=$pageNo")
+            Log.d("ElectricityApi", "H5获取账单: POST $H5_BILL_API, pageno=$pageNo")
 
-            val response = SharedHttpClient.client.newCall(
+            val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
                     .url(H5_BILL_API)
                     .post(formBody)
@@ -635,21 +641,25 @@ class ElectricityApi {
             val json = response.body.string()
 
             // 检查是否被重定向到 CAS 登录页
-            SessionChecker.checkAndThrow(json)
+            SessionManager.checkSessionOrThrow(json)
 
             val h5Response = gson.fromJson(json, H5BillResponse::class.java)
             // 修复 1：校验 retcode，服务器返回错误码时抛异常
             if (h5Response.retcode != "0") {
-                throw RuntimeException(h5Response.retmsg ?: "H5 账单接口错误 (retcode=${h5Response.retcode})")
+                throw RuntimeException(
+                    h5Response.retmsg ?: "H5 账单接口错误 (retcode=${h5Response.retcode})"
+                )
             }
-            android.util.Log.d("ElectricityApi", "H5账单解析完成: ${h5Response.dtls?.size ?: 0}条, " +
-                    "页码=${h5Response.pageno}/${h5Response.totalpage}, retcode=${h5Response.retcode}")
+            Log.d(
+                "ElectricityApi", "H5账单解析完成: ${h5Response.dtls?.size ?: 0}条, " +
+                        "页码=${h5Response.pageno}/${h5Response.totalpage}, retcode=${h5Response.retcode}"
+            )
             Result.success(h5Response)
         } catch (e: SessionExpiredException) {
             Result.failure(e)
         } catch (e: Exception) {
-            if (e is kotlinx.coroutines.CancellationException) throw e
-            android.util.Log.e("ElectricityApi", "H5获取账单失败", e)
+            if (e is CancellationException) throw e
+            Log.e("ElectricityApi", "H5获取账单失败", e)
             Result.failure(e)
         }
     }
@@ -714,7 +724,7 @@ class ElectricityApi {
                 (it.groupValues[1].toIntOrNull() ?: 1) to (it.groupValues[2].toIntOrNull() ?: 1)
             } ?: (1 to 1)
 
-            android.util.Log.d("ElectricityApi", "解析 zone[$zoneId]: ${records.size}条, 第${currentPage}/${totalPages}页")
+            Log.d("ElectricityApi", "解析 zone[$zoneId]: ${records.size}条, 第${currentPage}/${totalPages}页")
 
             result[tabNo] = BillPageInfo(
                 records = records,
@@ -812,7 +822,7 @@ class ElectricityApi {
                 detailUrl = detailUrl
             )
         } catch (e: Exception) {
-            android.util.Log.w("ElectricityApi", "解析账单行失败", e)
+            Log.w("ElectricityApi", "解析账单行失败", e)
             return null
         }
     }
@@ -825,13 +835,13 @@ class ElectricityApi {
         HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
         extraHeaders.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
 
-        android.util.Log.d("ElectricityApi", "请求 URL: $url")
+        Log.d("ElectricityApi", "请求 URL: $url")
         val response = client.newCall(requestBuilder.build()).execute()
         if (!response.isSuccessful) {
             throw RuntimeException("HTTP ${response.code}: ${response.message}")
         }
         val body = response.body.string()
-        android.util.Log.d("ElectricityApi", "响应体原始内容: $body")
+        Log.d("ElectricityApi", "响应体原始内容: $body")
         return body
     }
 
@@ -843,7 +853,7 @@ class ElectricityApi {
         return withContext(Dispatchers.IO) {
             try {
                 Result.success(call())
-            } catch (e: kotlinx.coroutines.CancellationException) {
+            } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 Result.failure(e)

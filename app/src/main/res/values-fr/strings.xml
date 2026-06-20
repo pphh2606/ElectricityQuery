@@ -35,9 +35,6 @@
     <string name="common_clear_search">Effacer la recherche</string>
     <string name="common_exit_search">Quitter la recherche</string>
     <string name="common_scan">Scanner</string>
-    <string name="common_no_more">— Fin de la liste —</string>
-    <string name="common_delete_account">Supprimer le compte</string>
-    <string name="common_select_saved_user">Sélectionner un utilisateur enregistré</string>
     <string name="common_send_email">Envoyer un e-mail</string>
     <string name="common_share_log">Partager les journaux</string>
     <string name="common_web_version">Version Web</string>

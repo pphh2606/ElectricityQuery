@@ -31,8 +31,6 @@
     <string name="login_show_password">显示密码</string>
     <string name="login_hide_password">隐藏密码</string>
     <string name="login_login_button">登  录</string>
-    <string name="login_scan_login">扫码登录</string>
-    <string name="login_add_account">添加账号</string>
     <string name="login_export_credential">导出凭据</string>
     <string name="login_import_credential">导入凭据</string>
     <string name="login_copy_to_clipboard">复制到剪贴板</string>
@@ -53,7 +51,6 @@
     <string name="login_method_credential">凭据登录</string>
     <string name="login_method_phone_recovery">手机号找回</string>
     <string name="login_method_email_recovery">邮箱找回</string>
-    <string name="login_method_coming_soon">功能开发中</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  扫码登录模块                               -->
@@ -70,8 +67,6 @@
     <string name="login_qr_expired">二维码已过期，请重试</string>
     <string name="login_get_page_failed">获取登录页失败</string>
     <string name="login_verifying">正在登录，请稍候…</string>
-    <string name="login_auto_switching">尝试自动登录…</string>
-    <string name="login_password_too_short">密码长度至少 4 位</string>
     <string name="login_credential_copied">凭据已复制到剪贴板</string>
     <!-- ═══════════════════════════════════════════ -->
     <!--  账号管理弹窗                               -->
@@ -79,8 +74,4 @@
     <string name="account_manager_title">账号管理</string>
     <string name="account_manager_current">当前</string>
     <string name="account_manager_add">添加账号</string>
-    <string name="account_manager_auto_login">自动登录中…</string>
-    <string name="account_manager_switch_success">已切换到 %1$s</string>
-    <string name="account_manager_switch_failed">自动验证失败，请手动登录</string>
-    <string name="account_manager_refresh_login">刷新登录信息</string>
 </resources>

@@ -5,9 +5,9 @@ import com.google.gson.Gson
 import edu.cqwu.electricity.data.model.FavoriteAppResponse
 import edu.cqwu.electricity.data.model.HallItem
 import edu.cqwu.electricity.data.model.UserFavoritesResponse
-import edu.cqwu.electricity.data.network.SessionChecker
-import edu.cqwu.electricity.data.network.SessionExpiredException
-import edu.cqwu.electricity.data.network.SharedHttpClient
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
+import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.sso.ServiceLoginManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -15,14 +15,14 @@ import okhttp3.Request
 /**
  * 办事大厅收藏 API 请求封装。
  *
- * 流程（与 [edu.cqwu.electricity.data.network.QrCodeApi] 的 CAS ticket 交换模式一致）：
+ * 流程（与 [edu.cqwu.electricity.data.network.qrcode.QrCodeApi] 的 CAS ticket 交换模式一致）：
  * 1. 先 GET [EHALL_APP_SHOW_URL] 触发 ehall 的 CAS ticket 交换
  *     - ehall 检测到无有效 JSESSIONID → 302 重定向到 CAS
  *     - CAS 检测到现有 CASTGC Cookie → 自动授权 → 回调 ehall
  *     - ehall 下发已认证的 JSESSIONID
  * 2. 再请求 [FAVORITE_APPS_URL] 获取收藏数据
  *
- * 使用 [SharedHttpClient.client]（共享 CookieJar，自动携带登录态 Cookie）。
+ * 使用 [HttpClientFactory.shared]（共享 CookieJar，自动携带登录态 Cookie）。
  *
  * 返回已筛选 [favorite=true] 的 [HallItem] 列表。
  */
@@ -40,36 +40,17 @@ class HallFavoriteApi {
     }
 
     private val gson = Gson()
-    private val client get() = SharedHttpClient.client
+    private val client get() = HttpClientFactory.shared
 
     /**
      * 触发 ehall CAS ticket 交换，建立已认证的 ehall JSESSIONID。
      *
-     * 通过访问 ehall 的受保护页面 [EHALL_APP_SHOW_URL] 触发 CAS 重定向链，
-     * 使 ehall 服务器下发已认证的 JSESSIONID。后续所有 ehall API 请求
-     * （收藏、搜索、应用列表等）都依赖此认证会话。
-     *
-     * 此方法在 [HallViewModel] 初始化时自动调用（先发制人），
-     * 也可由 [fetchFavorites] 在需要时作为兜底再次触发（幂等操作）。
+     * 委托 [ServiceLoginManager.ensureLogin] 完成标准 CAS ticket 交换。
      *
      * @throws SessionExpiredException 用户未登录或 Cookie 过期
      */
     fun initEhallSession() {
-        Log.d("HallFavoriteApi", "初始化 ehall session: GET $EHALL_APP_SHOW_URL（触发 CAS ticket 交换）")
-        val initRequest = Request.Builder()
-            .url(EHALL_APP_SHOW_URL)
-            .get()
-            .build()
-
-        val initResponse = client.newCall(initRequest).execute()
-        val initBody = initResponse.body.string()
-
-        // 检查最终响应是否仍是 CAS 登录页（Cookie 过期或未登录）
-        if (SessionChecker.isCasLoginPage(initBody)) {
-            throw SessionExpiredException("Session 已过期，请重新登录")
-        }
-
-        Log.d("HallFavoriteApi", "ehall session 初始化成功")
+        ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_SHOW_URL)
     }
 
     /**

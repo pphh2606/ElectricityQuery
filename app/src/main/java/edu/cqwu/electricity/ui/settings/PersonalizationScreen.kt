@@ -206,12 +206,11 @@ fun PersonalizationScreen(
         }
     }
 
-    if (showNightModeDialog) {
-        NightModeSelectionDialog(
-            onSelect = { mode -> onNightModeChange(mode); showNightModeDialog = false },
-            onDismiss = { showNightModeDialog = false },
-        )
-    }
+    NightModeSelectionDialog(
+        visible = showNightModeDialog,
+        onSelect = { mode -> onNightModeChange(mode); showNightModeDialog = false },
+        onDismiss = { showNightModeDialog = false },
+    )
     if (showColorPicker) {
         ColorPickerDialog(
             initialColor = customSeedColor,
@@ -223,33 +222,30 @@ fun PersonalizationScreen(
             onDismiss = { showColorPicker = false },
         )
     }
-    if (showTopBarStyleDialog) {
-        SelectionDialog(
-            title = stringResource(R.string.personalization_topbar_color), current = currentTopBarStyle,
-            entries = TopBarStyle.entries,
-            displayText = { it.displayName },
-            onSelect = { onTopBarStyleChange(it); showTopBarStyleDialog = false },
-            onDismiss = { showTopBarStyleDialog = false },
-        )
-    }
-    if (showPageTransitionDialog) {
-        SelectionDialog(
-            title = stringResource(R.string.personalization_page_transition), current = currentPageTransition,
-            entries = PageTransition.entries,
-            displayText = { it.displayName },
-            onSelect = { onPageTransitionChange(it); showPageTransitionDialog = false },
-            onDismiss = { showPageTransitionDialog = false },
-        )
-    }
-    if (showReduceMotionDialog) {
-        SelectionDialog(
-            title = stringResource(R.string.personalization_reduce_motion), current = currentReduceMotion,
-            entries = ReduceMotion.entries,
-            displayText = { it.displayName },
-            onSelect = { onReduceMotionChange(it); showReduceMotionDialog = false },
-            onDismiss = { showReduceMotionDialog = false },
-        )
-    }
+    SelectionDialog(
+        visible = showTopBarStyleDialog,
+        title = stringResource(R.string.personalization_topbar_color), current = currentTopBarStyle,
+        entries = TopBarStyle.entries,
+        displayText = { it.displayName },
+        onSelect = { onTopBarStyleChange(it); showTopBarStyleDialog = false },
+        onDismiss = { showTopBarStyleDialog = false },
+    )
+    SelectionDialog(
+        visible = showPageTransitionDialog,
+        title = stringResource(R.string.personalization_page_transition), current = currentPageTransition,
+        entries = PageTransition.entries,
+        displayText = { it.displayName },
+        onSelect = { onPageTransitionChange(it); showPageTransitionDialog = false },
+        onDismiss = { showPageTransitionDialog = false },
+    )
+    SelectionDialog(
+        visible = showReduceMotionDialog,
+        title = stringResource(R.string.personalization_reduce_motion), current = currentReduceMotion,
+        entries = ReduceMotion.entries,
+        displayText = { it.displayName },
+        onSelect = { onReduceMotionChange(it); showReduceMotionDialog = false },
+        onDismiss = { showReduceMotionDialog = false },
+    )
 }
 
 @Composable
@@ -327,8 +323,9 @@ private fun ThemeColorRow(icon: ImageVector, title: String, subtitle: String, se
 }
 
 @Composable
-private fun NightModeSelectionDialog(onSelect: (NightMode) -> Unit, onDismiss: () -> Unit) {
+private fun NightModeSelectionDialog(visible: Boolean = true, onSelect: (NightMode) -> Unit, onDismiss: () -> Unit) {
     BottomSheetDialog(
+        visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.personalization_night_mode)
     ) {
@@ -405,6 +402,7 @@ private fun ColorPickerDialog(
  */
 @Composable
 private fun <T> SelectionDialog(
+    visible: Boolean = true,
     title: String,
     current: T,
     entries: List<T>,
@@ -413,6 +411,7 @@ private fun <T> SelectionDialog(
     onDismiss: () -> Unit,
 ) {
     BottomSheetDialog(
+        visible = visible,
         onDismissRequest = onDismiss,
         title = title
     ) {

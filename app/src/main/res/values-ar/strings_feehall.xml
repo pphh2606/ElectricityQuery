@@ -23,7 +23,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  تفاصيل الطلب                                -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="fee_order_detail_title">تفاصيل الطلب</string>
     <string name="fee_order_info">معلومات الطلب</string>
     <string name="fee_order_no">رقم الطلب</string>
     <string name="fee_order_product_desc">وصف المنتج</string>
@@ -35,7 +34,6 @@
     <string name="fee_order_transaction_no">رقم المعاملة</string>
     <string name="fee_order_project_id">معرف المشروع</string>
     <string name="fee_order_partner">الشريك</string>
-    <string name="fee_order_time_range_sep">~</string>
     <string name="fee_hall_no_orders">لا توجد طلبات</string>
     <string name="fee_order_project_name">اسم المشروع</string>
     <string name="fee_order_loaded_count">تم تحميل %1$d</string>

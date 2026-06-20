@@ -195,8 +195,7 @@ class ElectricityViewModel(
     }
 
     fun goBack() {
-        val currentStep = _uiState.value.currentStep
-        when (currentStep) {
+        when (val currentStep = _uiState.value.currentStep) {
             SelectionStep.ROOM_GRID -> {
                 _uiState.update {
                     it.copy(currentStep = SelectionStep.AREA, selectedBuilding = null, floors = emptyList(), floorRoomsMap = emptyMap(), balance = null)

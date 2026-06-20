@@ -35,9 +35,6 @@
     <string name="common_clear_search">Clear Search</string>
     <string name="common_exit_search">Exit Search</string>
     <string name="common_scan">Scan</string>
-    <string name="common_no_more">— No more —</string>
-    <string name="common_delete_account">Delete Account</string>
-    <string name="common_select_saved_user">Select saved user</string>
     <string name="common_send_email">Send Email</string>
     <string name="common_share_log">Share Logs</string>
     <string name="common_web_version">Web Version</string>

@@ -354,26 +354,6 @@ class RechargeViewModel(
     }
 
     /**
-     * 清除账号充值状态
-     */
-    fun clearAccountRechargeState() {
-        _uiState.update {
-            it.copy(
-                studentId = "",
-                isQuerying = false,
-                roomList = emptyList(),
-                selectedRoom = null,
-                error = null,
-                fullName = "",
-                targetUserId = "",
-                targetRoomId = "",
-                balance = null,
-                balanceLoading = false
-            )
-        }
-    }
-
-    /**
      * 从当前登录用户自动填充学号并查询房间列表。
      *
      * 仅在充值输入框为空时填充（避免覆盖用户已手动输入的内容）。

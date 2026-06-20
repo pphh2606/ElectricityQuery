@@ -24,10 +24,7 @@
     <string name="my_info_status">在校情况</string>
     <string name="my_info_collapse">收起</string>
     <string name="my_info_expand">展开</string>
-    <string name="my_info_load_failed">加载失败</string>
     <string name="my_info_login_expired">登录已过期，请重新登录</string>
     <string name="profile_not_logged_in">未登录</string>
     <string name="profile_my_info_cd">我的信息</string>
-    <string name="profile_my_room_loading">正在获取我的寝室信息…</string>
-    <string name="profile_no_room_data">暂无房间数据</string>
 </resources>

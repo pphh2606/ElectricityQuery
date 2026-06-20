@@ -12,7 +12,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import edu.cqwu.electricity.MainActivity
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.data.model.HomeApp
 
 /**
  * 桌面快捷方式工具类
@@ -46,19 +45,6 @@ object ShortcutHelper {
         val openUrl = intent.getStringExtra(EXTRA_SHORTCUT_OPEN_URL) ?: ""
         val iconUrl = intent.getStringExtra(EXTRA_SHORTCUT_ICON_URL) ?: ""
         return ShortcutAppInfo(appId = appId, appName = appName, openUrl = openUrl, iconUrl = iconUrl)
-    }
-
-    /**
-     * 将 [ShortcutAppInfo] 转换为 [HomeApp] 对象，
-     * 供首页已有的 `handleAppClick` 路由逻辑使用。
-     */
-    fun buildHomeApp(info: ShortcutAppInfo): HomeApp {
-        return HomeApp(
-            appId = info.appId,
-            name = info.appName,
-            openUrl = info.openUrl,
-            iconUrl = info.iconUrl
-        )
     }
 
     /**

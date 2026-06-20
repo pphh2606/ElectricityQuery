@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Refresh
@@ -36,11 +34,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -70,7 +67,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.model.UserRoomInfo
-import edu.cqwu.electricity.data.network.AccountManager
+import edu.cqwu.electricity.data.network.auth.AccountManager
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
@@ -93,7 +90,6 @@ private val PRESET_AMOUNTS = listOf(5.0, 10.0, 20.0, 50.0, 100.0, 200.0)
 @Composable
 fun RechargeScreen(
     viewModel: RechargeViewModel,
-    onBack: () -> Unit,
 ) {
     val recharge by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -409,26 +405,25 @@ fun RechargeScreen(
     // ================================================================
     //  房间切换弹窗（仅账号模式有多房间时显示）
     // ================================================================
-    if (showRoomSwitchDialog && recharge.roomList.isNotEmpty()) {
-        RoomSelectionDialog(
-            rooms = recharge.roomList,
-            onNavigateToWebView = { url, title -> nav.navigate(Routes.unifiedWebViewRoute(url, title)) },
-            onRoomSelected = { room ->
-                viewModel.switchAccountRoom(room)
-                showRoomSwitchDialog = false
-            },
-            onDismiss = {
-                showRoomSwitchDialog = false
-            }
-        )
-    }
+    RoomSelectionDialog(
+        visible = showRoomSwitchDialog && recharge.roomList.isNotEmpty(),
+        rooms = recharge.roomList,
+        onNavigateToWebView = { url, title -> nav.navigate(Routes.unifiedWebViewRoute(url, title)) },
+        onRoomSelected = { room ->
+            viewModel.switchAccountRoom(room)
+            showRoomSwitchDialog = false
+        },
+        onDismiss = {
+            showRoomSwitchDialog = false
+        }
+    )
 
     // ================================================================
     //  提示信息弹窗 - Bottom Sheet
     // ================================================================
-    if (showInfoDialog) {
-        BottomSheetDialog(
-            onDismissRequest = { showInfoDialog = false },
+    BottomSheetDialog(
+        visible = showInfoDialog,
+        onDismissRequest = { showInfoDialog = false },
             title = stringResource(R.string.recharge_hint)
         ) {
             Column(
@@ -509,14 +504,13 @@ fun RechargeScreen(
                 )
             }
         }
-    }
 
     // ================================================================
     //  其他充值方式 - Bottom Sheet
     // ================================================================
-    if (showOtherRechargeDialog) {
-        BottomSheetDialog(
-            onDismissRequest = { showOtherRechargeDialog = false },
+    BottomSheetDialog(
+        visible = showOtherRechargeDialog,
+        onDismissRequest = { showOtherRechargeDialog = false },
             title = stringResource(R.string.recharge_other_method_title)
         ) {
             // 今日校园充值
@@ -562,7 +556,6 @@ fun RechargeScreen(
                 }
             )
         }
-    }
 }
 
 // ================================================================
@@ -681,6 +674,7 @@ private fun ImportantNotesCard() {
  */
 @Composable
 private fun RoomSelectionDialog(
+    visible: Boolean = true,
     rooms: List<UserRoomInfo>,
     onRoomSelected: (UserRoomInfo) -> Unit,
     onDismiss: () -> Unit,
@@ -688,6 +682,7 @@ private fun RoomSelectionDialog(
 ) {
     val context = LocalContext.current
     BottomSheetDialog(
+        visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.recharge_select_room_title),
         leadingButton = {

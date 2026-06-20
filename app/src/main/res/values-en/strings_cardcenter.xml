@@ -62,5 +62,4 @@
     <string name="card_lost_request_error">Request error</string>
     <string name="card_lost_fetch_error">Failed to fetch card info</string>
     <string name="card_lost_login_expired">Session expired, please login again</string>
-    <string name="card_account_info_fetch_error">Failed to fetch account info</string>
 </resources>

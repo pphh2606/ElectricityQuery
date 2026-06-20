@@ -64,7 +64,7 @@ class PaymentWebViewEngine(
             settings.javaScriptEnabled = true
             settings.javaScriptCanOpenWindowsAutomatically = true
             settings.domStorageEnabled = true
-            settings.userAgentString = edu.cqwu.electricity.data.network.UserAgentProvider.getActiveUserAgent()
+            settings.userAgentString = edu.cqwu.electricity.data.network.common.UserAgentProvider.getActiveUserAgent()
 
             webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -251,12 +251,10 @@ class PaymentWebViewEngine(
             })();
         """.trimIndent()
 
-        webView.evaluateJavascript(jsCode, object : android.webkit.ValueCallback<String> {
-            override fun onReceiveValue(result: String?) {
-                Log.d(TAG, "JS 注入结果: $result")
-                hasInjectedJs = true
-            }
-        })
+        webView.evaluateJavascript(jsCode) { result ->
+            Log.d(TAG, "JS 注入结果: $result")
+            hasInjectedJs = true
+        }
     }
 
     /**

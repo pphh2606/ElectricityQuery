@@ -59,10 +59,10 @@ class NoticeViewModel : ViewModel() {
         }
 
         result.onSuccess { pageResult ->
-            if (isRefresh || pageNo == 0) {
-                items = pageResult.items
+            items = if (isRefresh || pageNo == 0) {
+                pageResult.items
             } else {
-                items = items + pageResult.items
+                items + pageResult.items
             }
             totalItem = pageResult.totalItem
             currentPage = pageNo

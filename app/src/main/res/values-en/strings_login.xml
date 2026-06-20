@@ -31,8 +31,6 @@
     <string name="login_show_password">Show password</string>
     <string name="login_hide_password">Hide password</string>
     <string name="login_login_button">Login</string>
-    <string name="login_scan_login">QR Login</string>
-    <string name="login_add_account">Add Account</string>
     <string name="login_export_credential">Export Credentials</string>
     <string name="login_import_credential">Import Credentials</string>
     <string name="login_copy_to_clipboard">Copy to Clipboard</string>
@@ -53,7 +51,6 @@
     <string name="login_method_credential">Credential Login</string>
     <string name="login_method_phone_recovery">Phone Recovery</string>
     <string name="login_method_email_recovery">Email Recovery</string>
-    <string name="login_method_coming_soon">Coming soon</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  QR Login                                   -->
@@ -70,8 +67,6 @@
     <string name="login_qr_expired">QR code expired, please retry</string>
     <string name="login_get_page_failed">Failed to get login page</string>
     <string name="login_verifying">Logging in, please wait…</string>
-    <string name="login_auto_switching">Attempting auto-login…</string>
-    <string name="login_password_too_short">Password must be at least 4 characters</string>
     <string name="login_credential_copied">Credentials copied to clipboard</string>
     <!-- ═══════════════════════════════════════════ -->
     <!--  Account Manager Sheet                      -->
@@ -79,8 +74,4 @@
     <string name="account_manager_title">Account Manager</string>
     <string name="account_manager_current">Current</string>
     <string name="account_manager_add">Add Account</string>
-    <string name="account_manager_auto_login">Auto logging in…</string>
-    <string name="account_manager_switch_success">Switched to %1$s</string>
-    <string name="account_manager_switch_failed">Auto verification failed, please log in manually</string>
-    <string name="account_manager_refresh_login">Refresh login</string>
 </resources>

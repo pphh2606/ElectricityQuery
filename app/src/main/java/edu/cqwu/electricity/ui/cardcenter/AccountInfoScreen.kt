@@ -52,8 +52,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.model.AccountInfo
-import edu.cqwu.electricity.data.network.ElectricityApi
-import edu.cqwu.electricity.data.network.SessionExpiredException
+import edu.cqwu.electricity.data.network.electricity.ElectricityApi
+import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import edu.cqwu.electricity.ui.components.ReLoginContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

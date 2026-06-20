@@ -3,7 +3,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  الشحن                                      -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="recharge_title">شحن</string>
     <string name="recharge_hint">تلميح</string>
     <string name="recharge_query">استعلام</string>
     <string name="recharge_student_id_label">أدخل الرقم الجامعي أو userId</string>
@@ -57,14 +56,6 @@
     <string name="recharge_time_1year">سنة</string>
     <string name="recharge_time_4years">4 سنوات</string>
     <string name="recharge_install_campus_app">يرجى تثبيت Campusphere أولاً</string>
-    <string name="recharge_no_room_selected">لم يتم اختيار غرفة</string>
-    <string name="recharge_invalid_amount">يرجى إدخال مبلغ صالح</string>
-    <string name="recharge_amount_out_of_range">المبلغ خارج النطاق (0–1000 ¥)</string>
-    <string name="recharge_order_create_failed">فشل إنشاء الطلب: %1$s</string>
-    <string name="recharge_no_room_bound">لا توجد غرفة مرتبطة بهذا الحساب</string>
-    <string name="recharge_query_failed">فشل الاستعلام: %1$s</string>
-    <string name="recharge_enter_student_id">يرجى إدخال الرقم الجامعي</string>
-    <string name="recharge_record_query_failed">فشل استعلام سجل الشحن</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  الدفع                                      -->

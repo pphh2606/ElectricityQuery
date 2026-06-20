@@ -24,10 +24,7 @@
     <string name="my_info_status">الحالة الدراسية</string>
     <string name="my_info_collapse">طي</string>
     <string name="my_info_expand">توسيع</string>
-    <string name="my_info_load_failed">فشل التحميل</string>
     <string name="my_info_login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
     <string name="profile_not_logged_in">لم يتم تسجيل الدخول</string>
     <string name="profile_my_info_cd">معلوماتي</string>
-    <string name="profile_my_room_loading">جارٍ جلب معلومات السكن…</string>
-    <string name="profile_no_room_data">لا توجد بيانات للغرفة</string>
 </resources>

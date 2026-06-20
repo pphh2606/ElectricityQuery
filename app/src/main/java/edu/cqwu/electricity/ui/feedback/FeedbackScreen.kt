@@ -1,8 +1,5 @@
 package edu.cqwu.electricity.ui.feedback
 
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.layout.Column
@@ -11,11 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -45,19 +41,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
-import androidx.core.content.FileProvider
 import edu.cqwu.electricity.util.CrashHandler
 import edu.cqwu.electricity.util.ToastUtils
-import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 private const val FEEDBACK_EMAIL = "2606841932@qq.com"
 
@@ -238,11 +236,11 @@ fun FeedbackScreen(
     }
 
     // ── 日志预览弹窗（下滑或点击外部关闭） ──
-    if (showLogPreview) {
-        BottomSheetDialog(
-            onDismissRequest = { showLogPreview = false },
-            title = stringResource(R.string.feedback_log_preview),
-        ) {
+    BottomSheetDialog(
+        visible = showLogPreview,
+        onDismissRequest = { showLogPreview = false },
+        title = stringResource(R.string.feedback_log_preview),
+    ) {
             // 外层 BottomSheetDialog(fullscreen=true) 已包含 fillMaxHeight + 滚动，
             // 内容只需 fillMaxWidth，不要固定高度和内层滚动，避免冲突
             SelectionContainer {
@@ -255,7 +253,6 @@ fun FeedbackScreen(
                 )
             }
         }
-    }
 
     Scaffold(
         topBar = {

@@ -23,7 +23,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Order Detail                               -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="fee_order_detail_title">Order Details</string>
     <string name="fee_order_info">Order Info</string>
     <string name="fee_order_no">Order No.</string>
     <string name="fee_order_product_desc">Description</string>
@@ -35,7 +34,6 @@
     <string name="fee_order_transaction_no">Transaction No.</string>
     <string name="fee_order_project_id">Project ID</string>
     <string name="fee_order_partner">Partner</string>
-    <string name="fee_order_time_range_sep">~</string>
     <string name="fee_hall_no_orders">No orders</string>
     <string name="fee_order_project_name">Project Name</string>
     <string name="fee_order_loaded_count">%1$d loaded</string>

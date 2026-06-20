@@ -39,7 +39,7 @@ import edu.cqwu.electricity.util.LocaleContextWrapper
 class MainActivity : ComponentActivity() {
 
     // 快捷方式状态：onNewIntent 时更新，Compose 自动重组
-    private val _shortcutAppInfo = mutableStateOf<edu.cqwu.electricity.util.ShortcutHelper.ShortcutAppInfo?>(null)
+    private val _shortcutAppInfo = mutableStateOf<ShortcutHelper.ShortcutAppInfo?>(null)
     private val _shortcutLaunchId = mutableIntStateOf(0)
 
     override fun attachBaseContext(newBase: Context) {

@@ -35,9 +35,6 @@
     <string name="common_clear_search">مسح البحث</string>
     <string name="common_exit_search">الخروج من البحث</string>
     <string name="common_scan">مسح</string>
-    <string name="common_no_more">— لا يوجد المزيد —</string>
-    <string name="common_delete_account">حذف الحساب</string>
-    <string name="common_select_saved_user">اختيار مستخدم محفوظ</string>
     <string name="common_send_email">إرسال بريد إلكتروني</string>
     <string name="common_share_log">مشاركة السجلات</string>
     <string name="common_web_version">نسخة الويب</string>

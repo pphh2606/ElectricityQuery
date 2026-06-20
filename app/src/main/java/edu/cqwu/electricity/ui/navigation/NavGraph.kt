@@ -1,8 +1,5 @@
 package edu.cqwu.electricity.ui.navigation
 
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import android.os.Build
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -20,13 +17,13 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -37,28 +34,33 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.PageTransition
 import edu.cqwu.electricity.data.local.ReduceMotion
 import edu.cqwu.electricity.data.model.DetailType
-import edu.cqwu.electricity.data.network.QrCodeType
+import edu.cqwu.electricity.data.network.qrcode.QrCodeType
+import edu.cqwu.electricity.data.network.auth.SessionValidationResult
+import edu.cqwu.electricity.data.network.common.UserCookieStore
+import edu.cqwu.electricity.data.network.auth.SessionManager
 import edu.cqwu.electricity.ui.cardcenter.AccountInfoScreen
 import edu.cqwu.electricity.ui.cardcenter.BillScreen
 import edu.cqwu.electricity.ui.cardcenter.BillViewModel
 import edu.cqwu.electricity.ui.cardcenter.CardCenterScreen
 import edu.cqwu.electricity.ui.cardcenter.CardLostScreen
+import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.electricity.DetailScreen
 import edu.cqwu.electricity.ui.electricity.DetailViewModel
 import edu.cqwu.electricity.ui.electricity.ElectricityMainScreen
 import edu.cqwu.electricity.ui.electricity.ElectricityViewModel
 import edu.cqwu.electricity.ui.feedback.FeedbackScreen
 import edu.cqwu.electricity.ui.feeservicehall.FeeServiceHallScreen
-import edu.cqwu.electricity.ui.profile.MyInfoScreen
 import edu.cqwu.electricity.ui.login.LoginScreen
 import edu.cqwu.electricity.ui.login.QrLoginScreen
 import edu.cqwu.electricity.ui.myroom.MyRoomViewModel
 import edu.cqwu.electricity.ui.notice.NoticeDetailScreen
 import edu.cqwu.electricity.ui.notice.NoticeScreen
 import edu.cqwu.electricity.ui.notice.NoticeViewModel
+import edu.cqwu.electricity.ui.profile.MyInfoScreen
 import edu.cqwu.electricity.ui.qrcode.QrCodeDisplayScreen
 import edu.cqwu.electricity.ui.recharge.PaymentSelectionScreen
 import edu.cqwu.electricity.ui.recharge.RechargeRecordScreen
@@ -73,18 +75,14 @@ import edu.cqwu.electricity.ui.settings.SettingsScreen
 import edu.cqwu.electricity.ui.settings.StorageClearScreen
 import edu.cqwu.electricity.ui.settings.UserAgentEditScreen
 import edu.cqwu.electricity.ui.settings.UserAgentSettingsScreen
+import edu.cqwu.electricity.ui.shortcut.AddShortcutScreen
 import edu.cqwu.electricity.ui.theme.AnimationSettings
 import edu.cqwu.electricity.ui.theme.LocalAnimationSettings
-import edu.cqwu.electricity.data.network.SessionManager
-import edu.cqwu.electricity.data.network.SessionValidationResult
-import edu.cqwu.electricity.data.network.UserCookieStore
-import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.theme.LocalColorSourceState
 import edu.cqwu.electricity.ui.theme.LocalNightModeState
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
-import edu.cqwu.electricity.util.ToastUtils
-import edu.cqwu.electricity.ui.shortcut.AddShortcutScreen
 import edu.cqwu.electricity.ui.webview.UnifiedWebViewScreen
+import edu.cqwu.electricity.util.ToastUtils
 
 /**
  * 路由定义
@@ -107,6 +105,8 @@ object Routes {
 
     /** 本地登录页面 */
     const val LOGIN = "login"
+    /** 添加新账号（空白表单） */
+    const val NEW_ACCOUNT_LOGIN = "new_account_login"
 
     /** Cookie 过期自动跳转登录（带从下往上覆盖动画） */
     const val COOKIE_EXPIRED_LOGIN = "cookie_expired_login"
@@ -326,9 +326,9 @@ fun AppNavGraph(
             val openUrl = shortcutAppInfo.openUrl
             when (appId) {
                 edu.cqwu.electricity.data.model.HomeAppIds.PAY_QR ->
-                    navController.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.PAY))
+                    navController.navigate(Routes.qrCodeRoute(QrCodeType.PAY))
                 edu.cqwu.electricity.data.model.HomeAppIds.BUS_QR ->
-                    navController.navigate(Routes.qrCodeRoute(edu.cqwu.electricity.data.network.QrCodeType.BUS))
+                    navController.navigate(Routes.qrCodeRoute(QrCodeType.BUS))
                 edu.cqwu.electricity.data.model.HomeAppIds.DORM_ELECTRICITY ->
                     navController.navigate(Routes.ELECTRICITY_MAIN)
                 edu.cqwu.electricity.data.model.HomeAppIds.CARD_CENTER ->
@@ -492,7 +492,6 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.RECHARGE) {
             RechargeScreen(
                 viewModel = rechargeViewModel,
-                onBack = { navController.popBackStack() },
             )
         }
 
@@ -540,9 +539,17 @@ fun AppNavGraph(
             )
         }
 
-        // 本地登录页面（通用入口，跟随全局动画设置）
+        // 本地登录页面（通用入口，自动填充最近账号）
         animatedComposable(settings = animationSettings, route = Routes.LOGIN) {
             LoginScreen(
+                onBack = { skipNextCasRedirect = true; navController.popBackStack() },
+            )
+        }
+
+        // 添加新账号（空白表单）
+        animatedComposable(settings = animationSettings, route = Routes.NEW_ACCOUNT_LOGIN) {
+            LoginScreen(
+                clearForm = true,
                 onBack = { skipNextCasRedirect = true; navController.popBackStack() },
             )
         }

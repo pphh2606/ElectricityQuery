@@ -62,5 +62,4 @@
     <string name="card_lost_request_error">请求异常</string>
     <string name="card_lost_fetch_error">获取卡信息失败</string>
     <string name="card_lost_login_expired">登录已过期，请重新登录</string>
-    <string name="card_account_info_fetch_error">获取账户信息失败</string>
 </resources>
