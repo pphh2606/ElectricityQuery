@@ -24,19 +24,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.UploadFile
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.CloudDownload
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.outlined.UploadFile
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -126,6 +126,8 @@ fun LoginScreen(
     var showSecurityNotice by remember { mutableStateOf(false) }
     // 其他登录方式弹窗
     var showOtherLoginSheet by remember { mutableStateOf(false) }
+    // 找回密码弹窗
+    var showRecoverySheet by remember { mutableStateOf(false) }
     val snackbar = LocalSnackbarController.current
 
     // 锁屏验证启动器
@@ -184,7 +186,7 @@ fun LoginScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back)
                         )
                     }
@@ -197,7 +199,7 @@ fun LoginScreen(
                     // 安全说明问号按钮
                     IconButton(onClick = { showSecurityNotice = true }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                            imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                             contentDescription = stringResource(R.string.login_security_notice),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -207,7 +209,7 @@ fun LoginScreen(
                     Box {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
+                                imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -220,7 +222,7 @@ fun LoginScreen(
                             val authDesc = stringResource(R.string.login_device_auth_desc)
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.login_export_credential)) },
-                                leadingIcon = { Icon(Icons.Default.UploadFile, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.UploadFile, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     val km = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
@@ -238,7 +240,7 @@ fun LoginScreen(
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.login_import_credential)) },
-                                leadingIcon = { Icon(Icons.Default.CloudDownload, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.CloudDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     showImportDialog = true
@@ -293,7 +295,7 @@ fun LoginScreen(
                     enabled = !uiState.isLoading,
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Person,
+                            imageVector = Icons.Outlined.Person,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -325,7 +327,7 @@ fun LoginScreen(
                     enabled = !uiState.isLoading,
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Lock,
+                            imageVector = Icons.Outlined.Lock,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -351,9 +353,9 @@ fun LoginScreen(
                             IconButton(onClick = { loginViewModel.togglePasswordRevealed() }) {
                                 Icon(
                                     imageVector = if (uiState.passwordRevealed)
-                                        Icons.Default.VisibilityOff
+                                        Icons.Outlined.VisibilityOff
                                     else
-                                        Icons.Default.Visibility,
+                                        Icons.Outlined.Visibility,
                                     contentDescription = if (uiState.passwordRevealed) stringResource(R.string.login_hide_password) else stringResource(R.string.login_show_password),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -432,7 +434,7 @@ fun LoginScreen(
                 }
                 } // 关闭内层 weight Column
 
-                // ═══ 底部固定区：其他登录方式 ═══
+                // ═══ 底部固定区：其他登录 + 找回密码 ═══
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -446,6 +448,22 @@ fun LoginScreen(
                     ) {
                         Text(
                             stringResource(R.string.login_other_login),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Text(
+                        text = "|",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                    )
+
+                    TextButton(
+                        onClick = { showRecoverySheet = true },
+                        enabled = !uiState.isLoading
+                    ) {
+                        Text(
+                            stringResource(R.string.login_password_recovery),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -470,15 +488,13 @@ fun LoginScreen(
     )
 
     // ========== 其他登录方式弹窗 ==========
-    val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
-    val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
     BottomSheetDialog(
         visible = showOtherLoginSheet,
         onDismissRequest = { showOtherLoginSheet = false },
         title = stringResource(R.string.login_other_login),
     ) {
         BottomSheetItem(
-            icon = Icons.Default.QrCodeScanner,
+            icon = Icons.Outlined.QrCodeScanner,
             title = stringResource(R.string.login_method_qr_scan),
             onClick = {
                 showOtherLoginSheet = false
@@ -486,18 +502,28 @@ fun LoginScreen(
             }
         )
         BottomSheetItem(
-            icon = Icons.Default.Key,
+            icon = Icons.Outlined.Key,
             title = stringResource(R.string.login_method_credential),
             onClick = {
                 showOtherLoginSheet = false
                 showImportDialog = true
             }
         )
+    }
+
+    // ========== 找回密码弹窗 ==========
+    val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
+    val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
+    BottomSheetDialog(
+        visible = showRecoverySheet,
+        onDismissRequest = { showRecoverySheet = false },
+        title = stringResource(R.string.login_password_recovery),
+    ) {
         BottomSheetItem(
-            icon = Icons.Default.Phone,
+            icon = Icons.Outlined.Phone,
             title = phoneRecoveryTitle,
             onClick = {
-                showOtherLoginSheet = false
+                showRecoverySheet = false
                 nav.navigate(Routes.unifiedWebViewRoute(
                     "https://authserver.cqwu.edu.cn/authserver/mobileGetPasswordController.do",
                     phoneRecoveryTitle
@@ -505,10 +531,10 @@ fun LoginScreen(
             }
         )
         BottomSheetItem(
-            icon = Icons.Default.Email,
+            icon = Icons.Outlined.Email,
             title = emailRecoveryTitle,
             onClick = {
-                showOtherLoginSheet = false
+                showRecoverySheet = false
                 nav.navigate(Routes.unifiedWebViewRoute(
                     "https://authserver.cqwu.edu.cn/authserver/moblieFindPwdByMailPage.do",
                     emailRecoveryTitle

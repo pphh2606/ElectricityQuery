@@ -20,13 +20,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -52,16 +52,16 @@ private data class ProfileMenuItem(
 
 /** 第一组菜单：账户服务 */
 private val accountServiceItems = listOf(
-    ProfileMenuItem(Icons.Default.Lock, R.string.fee_profile_pwd_change, "https://pay.cqwu.edu.cn/mobile/#/password"),
-    ProfileMenuItem(Icons.Default.Description, R.string.fee_profile_invoice_mgmt, "https://pay.cqwu.edu.cn/mobile/#/invoiceTitleList"),
-    ProfileMenuItem(Icons.Default.BarChart, R.string.fee_profile_fun_bill, "https://pay.cqwu.edu.cn/mobile/#/more"),
+    ProfileMenuItem(Icons.Outlined.Lock, R.string.fee_profile_pwd_change, "https://pay.cqwu.edu.cn/mobile/#/password"),
+    ProfileMenuItem(Icons.Outlined.Description, R.string.fee_profile_invoice_mgmt, "https://pay.cqwu.edu.cn/mobile/#/invoiceTitleList"),
+    ProfileMenuItem(Icons.Outlined.BarChart, R.string.fee_profile_fun_bill, "https://pay.cqwu.edu.cn/mobile/#/more"),
 )
 
 /** 第二组菜单：查询服务 */
 private val queryServiceItems = listOf(
-    ProfileMenuItem(Icons.Default.Search, R.string.fee_profile_query_pay, "https://pay.cqwu.edu.cn/mobile/#/searchPay"),
-    ProfileMenuItem(Icons.Default.Receipt, R.string.fee_profile_view_invoice, "https://pay.cqwu.edu.cn/mobile/#/billShowList"),
-    ProfileMenuItem(Icons.AutoMirrored.Filled.Send, R.string.fee_profile_advance_invoice, "https://pay.cqwu.edu.cn/mobile/#/advanceBilling"),
+    ProfileMenuItem(Icons.Outlined.Search, R.string.fee_profile_query_pay, "https://pay.cqwu.edu.cn/mobile/#/searchPay"),
+    ProfileMenuItem(Icons.Outlined.Receipt, R.string.fee_profile_view_invoice, "https://pay.cqwu.edu.cn/mobile/#/billShowList"),
+    ProfileMenuItem(Icons.AutoMirrored.Outlined.Send, R.string.fee_profile_advance_invoice, "https://pay.cqwu.edu.cn/mobile/#/advanceBilling"),
 )
 
 /**
@@ -216,7 +216,7 @@ private fun ProfileOptionItem(
             modifier = Modifier.weight(1f),
         )
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )

@@ -17,13 +17,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.CreditCardOff
-import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.Payments
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.CreditCardOff
+import androidx.compose.material.icons.outlined.DirectionsBus
+import androidx.compose.material.icons.outlined.Payments
+import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -93,7 +93,7 @@ fun CardCenterScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -178,32 +178,32 @@ private data class CardGridItem(
 private val cardCenterItems = listOf(
     CardGridItem(
         labelRes = R.string.card_center_account_info,
-        icon = Icons.Filled.AccountBalance,
+        icon = Icons.Outlined.AccountBalance,
         action = CardAction.ACCOUNT_INFO
     ),
     CardGridItem(
         labelRes = R.string.card_center_payment_code,
-        icon = Icons.Filled.QrCodeScanner,
+        icon = Icons.Outlined.QrCodeScanner,
         action = CardAction.QR_CODE_PAY
     ),
     CardGridItem(
         labelRes = R.string.card_center_transit_code,
-        icon = Icons.Filled.DirectionsBus,
+        icon = Icons.Outlined.DirectionsBus,
         action = CardAction.QR_CODE_BUS
     ),
     CardGridItem(
         labelRes = R.string.card_center_bills,
-        icon = Icons.Filled.Receipt,
+        icon = Icons.Outlined.Receipt,
         action = CardAction.BILL
     ),
     CardGridItem(
         labelRes = R.string.card_center_report_lost,
-        icon = Icons.Filled.CreditCardOff,
+        icon = Icons.Outlined.CreditCardOff,
         action = CardAction.CARD_LOST
     ),
     CardGridItem(
         labelRes = R.string.card_center_recharge,
-        icon = Icons.Filled.Payments,
+        icon = Icons.Outlined.Payments,
         action = CardAction.WEB_VIEW("https://pay.cqwu.edu.cn/projectDetailEcard/")
     )
 )

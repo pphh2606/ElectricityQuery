@@ -27,11 +27,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -162,7 +162,7 @@ fun RechargeRecordScreen(
                         onBack()
                     }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -172,7 +172,7 @@ fun RechargeRecordScreen(
                     // 提示图标
                     IconButton(onClick = { showInfoDialog = true }) {
                         Icon(
-                            imageVector = Icons.Default.Info,
+                            imageVector = Icons.Outlined.Info,
                             contentDescription = stringResource(R.string.recharge_hint),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -180,7 +180,7 @@ fun RechargeRecordScreen(
                     Box {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
+                                imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -191,7 +191,7 @@ fun RechargeRecordScreen(
                         ) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.recharge_record_copy)) },
-                                leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     val text = getRechargeRecordTextContent(recordState)
@@ -200,7 +200,7 @@ fun RechargeRecordScreen(
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.recharge_record_export)) },
-                                leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     pendingExportText = getRechargeRecordTextContent(recordState)
@@ -440,11 +440,11 @@ private fun getRechargeRecordTextContent(recordState: RechargeRecordState): Stri
         val reversedList = recordState.list.reversed()
         val total = reversedList.sumOf { it.buyTotal }
         // 合计放到最前面
-        sb.appendLine("合计充值：${String.format("%.2f", total)} 元（共 ${reversedList.size} 笔）")
+        sb.appendLine("合计充值：${String.format("%.2f", total)} 元（共${reversedList.size} 笔）")
         sb.appendLine("-".repeat(40))
         // 记录倒序输出
         reversedList.forEach { record ->
-            sb.appendLine("充值人：${record.userName}")
+            sb.appendLine("充值人名：${record.userName}")
             sb.appendLine("充值时间：${record.buyTime}")
             sb.appendLine("充值金额：${String.format("%.2f", record.buyTotal)} 元")
             sb.appendLine("订单号：${record.orderNum}")

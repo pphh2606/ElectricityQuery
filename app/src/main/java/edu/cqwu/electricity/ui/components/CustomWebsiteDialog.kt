@@ -19,8 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -74,7 +74,7 @@ fun CustomWebsiteDialog(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.custom_website_title),
-        icon = Icons.Default.Language,
+        icon = Icons.Outlined.Language,
         leadingButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.common_cancel))
@@ -132,7 +132,7 @@ fun CustomWebsiteDialog(
                     modifier = Modifier.padding(4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = Icons.Outlined.Add,
                         contentDescription = stringResource(R.string.custom_website_choose_icon),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)

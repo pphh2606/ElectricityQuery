@@ -21,12 +21,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Public
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Store
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Store
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -114,7 +114,7 @@ fun RechargeScreen(
     // 优先取内存中的活跃用户，其次取本地持久化的最近登录学号
     val loggedInStudentId = remember {
         AccountManager.getActiveUser()
-            ?: AccountStore(context).getAllAccountNames().firstOrNull()
+            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
     }
     LaunchedEffect(Unit) {
         viewModel.autoFillFromLogin(loggedInStudentId)
@@ -278,7 +278,7 @@ fun RechargeScreen(
                             if (canSwitchAccount) {
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                     contentDescription = stringResource(R.string.recharge_switch_account),
                                     modifier = Modifier.size(20.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -321,7 +321,7 @@ fun RechargeScreen(
                             }
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(
-                                imageVector = Icons.Filled.Refresh,
+                                imageVector = Icons.Outlined.Refresh,
                                 contentDescription = stringResource(R.string.recharge_refresh_balance),
                                 modifier = Modifier
                                     .size(20.dp)
@@ -515,7 +515,7 @@ fun RechargeScreen(
         ) {
             // 今日校园充值
             BottomSheetItem(
-                icon = Icons.Default.Store,
+                icon = Icons.Outlined.Store,
                 title = stringResource(R.string.recharge_method_campus),
                 onClick = {
                     try {
@@ -530,7 +530,7 @@ fun RechargeScreen(
 
             // 应用内 H5 充值
             BottomSheetItem(
-                icon = Icons.Default.Public,
+                icon = Icons.Outlined.Public,
                 title = stringResource(R.string.recharge_method_inapp_h5),
                 onClick = {
                     showOtherRechargeDialog = false
@@ -540,7 +540,7 @@ fun RechargeScreen(
 
             // 浏览器 H5 充值
             BottomSheetItem(
-                icon = Icons.Default.OpenInBrowser,
+                icon = Icons.Outlined.OpenInBrowser,
                 title = stringResource(R.string.recharge_method_browser_h5),
                 onClick = {
                     try {
@@ -712,7 +712,7 @@ private fun RoomSelectionDialog(
         )
         rooms.forEach { room ->
             BottomSheetItem(
-                icon = Icons.Default.Home,
+                icon = Icons.Outlined.Home,
                 title = room.fullName.ifBlank { room.roomName },
                 onClick = {
                     onRoomSelected(room)

@@ -20,15 +20,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MonetizationOn
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.SyncAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -79,9 +79,9 @@ import kotlinx.coroutines.launch
 
 /** 底部导航栏的三个 Tab（标签在 Composable 内通过 stringResource 获取） */
 private val electricityTabIcons = listOf(
-    Icons.Default.Search,
-    Icons.Default.AccountBalance,
-    Icons.Default.Home,
+    Icons.Outlined.Search,
+    Icons.Outlined.MonetizationOn,
+    Icons.Outlined.Home,
 )
 
 private val electricityTabLabelKeys = listOf(
@@ -133,7 +133,7 @@ fun ElectricityMainScreen(
     // 获取当前登录学号
     val loggedInStudentId = remember {
         AccountManager.getActiveUser()
-            ?: AccountStore(context).getAllAccountNames().firstOrNull()
+            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
     }
 
     // 当前 Tab 标题：查询 Tab 选中房间后显示"电费查询结果"
@@ -199,7 +199,7 @@ fun ElectricityMainScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -214,7 +214,7 @@ fun ElectricityMainScreen(
                     if (pagerState.currentPage == 1) {
                         IconButton(onClick = { showRechargeInfoDialog = true }) {
                             Icon(
-                                imageVector = Icons.Default.Info,
+                                imageVector = Icons.Outlined.Info,
                                 contentDescription = stringResource(R.string.recharge_hint),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -226,7 +226,7 @@ fun ElectricityMainScreen(
                         if (myRoomState.myRoomList.size > 1) {
                             IconButton(onClick = { showRoomSwitchSheet = true }) {
                                 Icon(
-                                    imageVector = Icons.Default.SwapHoriz,
+                                    imageVector = Icons.Outlined.SyncAlt,
                                     contentDescription = stringResource(R.string.electricity_switch_dorm)
                                 )
                             }
@@ -234,7 +234,7 @@ fun ElectricityMainScreen(
                         Box {
                             IconButton(onClick = { showMyRoomMenu = true }) {
                                 Icon(
-                                    imageVector = Icons.Default.MoreVert,
+                                    imageVector = Icons.Outlined.MoreVert,
                                     contentDescription = stringResource(R.string.common_more_options),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -245,7 +245,7 @@ fun ElectricityMainScreen(
                             ) {
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.common_copy)) },
-                                    leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                                    leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                     onClick = {
                                         showMyRoomMenu = false
                                         val text = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
@@ -254,7 +254,7 @@ fun ElectricityMainScreen(
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.common_export)) },
-                                    leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
+                                    leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                     onClick = {
                                         showMyRoomMenu = false
                                         pendingExportText = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
@@ -426,7 +426,7 @@ fun ElectricityMainScreen(
             )
             myRoomState.myRoomList.forEach { room ->
                 BottomSheetItem(
-                    icon = Icons.Default.Home,
+                    icon = Icons.Outlined.Home,
                     title = room.fullName.ifBlank { room.roomName },
                     onClick = {
                         myRoomViewModel.switchToMyRoom(room)

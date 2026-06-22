@@ -8,11 +8,13 @@
     <string name="login_remember_password">パスワードを記憶</string>
     <string name="login_relogin">再ログイン</string>
     <string name="login_security_notice_title">ログイン説明</string>
-    <string name="login_security_notice_1">    パスワードはデバイス上でAES-CBC暗号化され、学校のCAS統合認証サーバーに直接送信されます。暗号化には学校のログインページから発行される動的saltが使用され、リクエストごとに異なります。本アプリはパスワードを第三者サーバーに送信しません。</string>
-    <string name="login_security_notice_2">    ログイン成功後、Cookieのみがデバイスローカルに保存され、AndroidシステムのWebKit CookieManagerを通じて永続化され、本アプリのみがアクセスできます。パスワード記憶機能は、ユーザーが明示的に有効にした場合のみ、暗号化してデバイスのプライベートストレージに保存します。</string>
-    <string name="login_security_notice_3">    各ユーザーのログインセッションは独立して保存され、相互に干渉しません。ログイン画面からいつでもユーザーのローカルログイン情報を削除できます。</string>
-    <string name="login_security_notice_4">    QRログインとアカウント追加は独立したCookie環境を使用し、既存ユーザーのセッション情報を一切引き継ぎません。</string>
-    <string name="login_security_notice_5">    ログイン資格情報のエクスポートにはデバイスパスワード検証が必要です。エクスポート時はAES暗号化とカスタムパスワード保護が適用され、インポート時には同じ復号パスワードが必要で、デバイス間の安全な資格情報移行を保証します。</string>
+    <string name="login_security_notice_1">アカウントとパスワードでログインする際、認証情報はデバイス上でAES-CBC暗号化され、学校のCAS統合認証サーバーに直接送信されます。暗号化には公式サーバーから発行される動的saltが使用され、リクエストごとに異なります。本アプリはアカウントやパスワードを第三者サーバーに送信しません。</string>
+    <string name="login_security_notice_2">QRコードログインでは、独立したCookie環境内で動作します。QRコードをローカルに保存して既にログイン済みのデバイスでスキャンするか、「他のアプリで開く」機能を使用してリンクをログイン済み環境で開くことで認証できます。</string>
+    <string name="login_security_notice_3">マルチアカウント機能では、各ユーザーのログインセッションが独立して保存され、相互に干渉しません。アカウント管理画面からいつでもローカルログイン情報をクリアできます。</string>
+    <string name="login_security_notice_4">ログイン資格情報のエクスポートにはデバイスパスワード検証が必要です。エクスポート時はAES暗号化とカスタムパスワード保護が適用され、インポート時には同じ復号パスワードが必要で、デバイス間の安全な資格情報移行を保証します。</string>
+    <string name="login_security_notice_5">パスワード復旧機能では、学校公式の復旧ページが開きます。ブラウザのサンドボックス特性により、本アプリは復旧情報（確認コードやパスワードを含む）を取得しません。</string>
+    <string name="login_security_notice_6">ログイン成功後、機能を正常使用するためにパスワードとCookieがデバイスローカルに保存されます。CookieはAndroidシステムのWebKit CookieManagerを通じて永続化され、本プロセスのみがアクセスできます。パスワード記憶機能では、パスワードが暗号化されてデバイスのプライベートストレージに保存され、他のアプリからはアクセスできません。本アプリはローカルログイン情報を収集したり第三者に送信したりすることはありません。</string>
+    <string name="login_security_notice_7">公式のオープンソースリポジトリまたは信頼できるチャンネルから本アプリをダウンロードしてください。</string>
     <string name="login_export_credential_title">資格情報をエクスポート</string>
     <string name="login_not_entered">（未入力）</string>
     <string name="login_security_notice">セキュリティ説明</string>
@@ -51,6 +53,7 @@
     <string name="login_method_credential">資格情報ログイン</string>
     <string name="login_method_phone_recovery">電話番号で復旧</string>
     <string name="login_method_email_recovery">メールで復旧</string>
+    <string name="login_password_recovery">パスワード復旧</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  QRログインモジュール                       -->

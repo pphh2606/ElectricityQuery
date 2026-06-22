@@ -20,14 +20,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.VideogameAsset
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Chat
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.VideogameAsset
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -61,7 +61,7 @@ import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 /**
  * 关于页面
  *
- * 显示应用图标、名称、版本号以及项目主页/开发者/联系方式等信息，
+ * 显示应用图标、名称、版本号以及项目主页/开发者联系方式等信息，
  * 与其他设置页面风格一致。
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,7 +87,7 @@ fun AboutScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                         )
                     }
@@ -145,7 +145,7 @@ fun AboutScreen(
                 Column {
                     // 项目主页
                     AboutEntry(
-                        icon = Icons.Default.Code,
+                        icon = Icons.Outlined.Code,
                         title = stringResource(R.string.about_project_home),
                         subtitle = "https://github.com/pphh2606/ElectricityQuery",
                         onClick = {
@@ -164,7 +164,7 @@ fun AboutScreen(
                     // 构建信息
                     val isCiBuild = false
                     AboutEntry(
-                        icon = Icons.Default.Info,
+                        icon = Icons.Outlined.Info,
                         title = stringResource(R.string.about_build_info),
                         subtitle = "Build Time: ${BuildConfig.BUILD_TIME}\n" +
                             "Commit Hash: ${BuildConfig.GIT_COMMIT_HASH}\n" +
@@ -186,7 +186,7 @@ fun AboutScreen(
 
                     // 开发者
                     AboutEntry(
-                        icon = Icons.Default.Person,
+                        icon = Icons.Outlined.Person,
                         title = stringResource(R.string.about_developer),
                         subtitle = "pphh2606",
                         onClick = {
@@ -196,7 +196,7 @@ fun AboutScreen(
 
                     // 联系方式（点击弹出底部选择弹窗）
                     AboutEntry(
-                        icon = Icons.AutoMirrored.Filled.Chat,
+                        icon = Icons.AutoMirrored.Outlined.Chat,
                         title = stringResource(R.string.about_contact),
                         subtitle = null,
                         onClick = { showContactSheet = true },
@@ -230,7 +230,7 @@ fun AboutScreen(
     ) {
             // QQ
             BottomSheetItem(
-                icon = Icons.AutoMirrored.Filled.Chat,
+                icon = Icons.AutoMirrored.Outlined.Chat,
                 title = stringResource(R.string.about_contact_qq),
                 onClick = {
                     showContactSheet = false
@@ -248,7 +248,7 @@ fun AboutScreen(
 
             // 哔哩哔哩（复制 UID）
             BottomSheetItem(
-                icon = Icons.Default.VideogameAsset,
+                icon = Icons.Outlined.VideogameAsset,
                 title = stringResource(R.string.about_contact_bilibili),
                 onClick = {
                     showContactSheet = false
@@ -260,7 +260,7 @@ fun AboutScreen(
 
             // 邮箱
             BottomSheetItem(
-                icon = Icons.Default.Email,
+                icon = Icons.Outlined.Email,
                 title = stringResource(R.string.about_contact_email),
                 onClick = {
                     showContactSheet = false
@@ -323,7 +323,7 @@ private fun AboutEntry(
         Spacer(modifier = Modifier.width(16.dp))
 
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.size(24.dp),

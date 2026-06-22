@@ -29,14 +29,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.SwapHoriz
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.SwapHoriz
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -212,7 +212,7 @@ fun UnifiedWebViewScreen(
                             }
                         }) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.common_back),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -220,7 +220,7 @@ fun UnifiedWebViewScreen(
                         // ✕ 关闭内置浏览器
                         IconButton(onClick = onClose) {
                             Icon(
-                                imageVector = Icons.Filled.Close,
+                                imageVector = Icons.Outlined.Close,
                                 contentDescription = stringResource(R.string.common_close),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -233,7 +233,7 @@ fun UnifiedWebViewScreen(
                         webViewRef.value?.reload()
                     }) {
                         Icon(
-                            imageVector = Icons.Filled.Refresh,
+                            imageVector = Icons.Outlined.Refresh,
                             contentDescription = stringResource(R.string.common_refresh),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -243,7 +243,7 @@ fun UnifiedWebViewScreen(
                     Box {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
+                                imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -254,7 +254,7 @@ fun UnifiedWebViewScreen(
                         ) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.webview_copy_link)) },
-                                leadingIcon = { Icon(Icons.Default.Link, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.Link, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     val url = webViewRef.value?.url ?: return@DropdownMenuItem
@@ -266,7 +266,7 @@ fun UnifiedWebViewScreen(
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.webview_share_link)) },
-                                leadingIcon = { Icon(Icons.Default.Share, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.Share, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     val url = webViewRef.value?.url ?: return@DropdownMenuItem
@@ -280,7 +280,7 @@ fun UnifiedWebViewScreen(
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.webview_open_in_browser)) },
-                                leadingIcon = { Icon(Icons.Default.OpenInBrowser, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     val url = webViewRef.value?.url ?: return@DropdownMenuItem
@@ -295,7 +295,7 @@ fun UnifiedWebViewScreen(
                                             stringResource(R.string.webview_switch_to_external) else stringResource(R.string.webview_switch_to_internal)
                                     )
                                 },
-                                leadingIcon = { Icon(Icons.Default.SwapHoriz, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.SwapHoriz, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     val currentUrl = webViewRef.value?.url ?: return@DropdownMenuItem

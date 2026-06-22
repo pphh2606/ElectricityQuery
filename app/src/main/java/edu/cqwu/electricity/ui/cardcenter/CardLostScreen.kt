@@ -18,9 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.CreditCardOff
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.CreditCardOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -170,7 +170,7 @@ fun CardLostScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -295,13 +295,13 @@ private fun CardLostContent(
                     CardInfoRow(
                         label = stringResource(R.string.card_lost_card_number),
                         value = cardInfo.cardNumber,
-                        icon = Icons.Filled.CreditCard
+                        icon = Icons.Outlined.CreditCard
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     CardInfoRow(
                         label = stringResource(R.string.card_lost_card_status),
                         value = cardInfo.cardStatus,
-                        icon = Icons.Filled.CreditCardOff,
+                        icon = Icons.Outlined.CreditCardOff,
                         valueColor = if (isCardNormal)
                             Color(0xFF4CAF50)  // 正常 → 绿色
                         else

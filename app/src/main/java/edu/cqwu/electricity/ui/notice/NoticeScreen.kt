@@ -23,12 +23,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -153,7 +153,7 @@ fun NoticeScreen(
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.common_back),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -198,7 +198,7 @@ fun NoticeScreen(
                                     doSearch("")
                                 }) {
                                     Icon(
-                                        imageVector = Icons.Filled.Close,
+                                        imageVector = Icons.Outlined.Close,
                                         contentDescription = stringResource(R.string.common_clear_search),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -215,7 +215,7 @@ fun NoticeScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     IconButton(onClick = { doSearch(searchText) }) {
                         Icon(
-                            imageVector = Icons.Filled.Search,
+                            imageVector = Icons.Outlined.Search,
                             contentDescription = stringResource(R.string.common_search),
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -382,10 +382,10 @@ private fun NoticeCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                NoticeInfoChip(icon = Icons.Filled.Person, text = notice.sendDepartment.ifBlank { stringResource(R.string.dashboard_unknown) })
-                NoticeInfoChip(icon = Icons.Filled.AccessTime, text = notice.sendTimeDesc)
+                NoticeInfoChip(icon = Icons.Outlined.Person, text = notice.sendDepartment.ifBlank { stringResource(R.string.dashboard_unknown) })
+                NoticeInfoChip(icon = Icons.Outlined.AccessTime, text = notice.sendTimeDesc)
                 Spacer(modifier = Modifier.weight(1f))
-                NoticeInfoChip(icon = Icons.Filled.Visibility, text = notice.clickNumber)
+                NoticeInfoChip(icon = Icons.Outlined.Visibility, text = notice.clickNumber)
             }
         }
     }

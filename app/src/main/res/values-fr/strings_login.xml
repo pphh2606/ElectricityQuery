@@ -8,11 +8,13 @@
     <string name="login_remember_password">Mémoriser le mot de passe</string>
     <string name="login_relogin">Reconnexion</string>
     <string name="login_security_notice_title">Note de sécurité</string>
-    <string name="login_security_notice_1">    Le mot de passe est chiffré directement sur l\'appareil via AES-CBC et envoyé au serveur CAS de l\'établissement. Le chiffrement utilise un salt dynamique fourni par la page de connexion, unique à chaque requête. Cette application n\'envoie jamais votre mot de passe à un serveur tiers.</string>
-    <string name="login_security_notice_2">    Après connexion, seuls les cookies sont conservés localement via le CookieManager WebKit du système Android, accessible uniquement par cette application. La fonction de mémorisation du mot de passe chiffre les identifiants dans le stockage privé de l\'appareil, activée uniquement sur choix de l\'utilisateur.</string>
-    <string name="login_security_notice_3">    Chaque session de connexion est stockée indépendamment. Vous pouvez supprimer à tout moment les données de connexion locales depuis l\'écran de connexion.</string>
-    <string name="login_security_notice_4">    La connexion par QR et l\'ajout de compte utilisent des environnements de cookies indépendants, sans transporter aucune session existante.</string>
-    <string name="login_security_notice_5">    L\'export des identifiants nécessite la vérification du mot de passe de l\'appareil. Les données exportées sont protégées par chiffrement AES avec mot de passe personnalisé. L\'import nécessite le même mot de passe de déchiffrement.</string>
+    <string name="login_security_notice_1">Lors de la connexion par identifiant et mot de passe, les informations sont chiffrées sur l\'appareil via AES-CBC et envoyées directement au serveur CAS de l\'établissement. Le chiffrement utilise un salt dynamique fourni par le serveur officiel, unique à chaque requête. Cette application n\'envoie jamais votre identifiant ou mot de passe à un serveur tiers.</string>
+    <string name="login_security_notice_2">Lors de la connexion par QR code, un environnement de cookies indépendant est utilisé. Vous pouvez enregistrer le QR code localement et le scanner avec un appareil déjà connecté, ou utiliser la fonctionnalité « Ouvrir dans une autre application » pour partager le lien vers un environnement connecté.</string>
+    <string name="login_security_notice_3">Avec la gestion multi-comptes, chaque session est stockée indépendamment. Vous pouvez effacer les données de connexion locales à tout moment depuis le gestionnaire de comptes.</string>
+    <string name="login_security_notice_4">L\'export des identifiants nécessite la vérification du mot de passe de l\'appareil. Les données exportées sont protégées par chiffrement AES avec mot de passe personnalisé. L\'import nécessite le même mot de passe de déchiffrement, garantissant une migration sécurisée entre appareils.</string>
+    <string name="login_security_notice_5">La récupération de mot de passe ouvre la page officielle de l\'établissement. En raison du bac à sable du navigateur, cette application ne capture aucune information de récupération (y compris les codes de vérification ou les mots de passe).</string>
+    <string name="login_security_notice_6">Après connexion, le mot de passe et les cookies sont stockés localement pour le bon fonctionnement. Les cookies sont persistés via le CookieManager WebKit d\'Android, accessibles uniquement par ce processus. Pour la fonction de mémorisation, le mot de passe est chiffré dans le stockage privé de l\'appareil, inaccessible aux autres applications. Cette application ne collecte ni ne transmet d\'informations de connexion à des tiers.</string>
+    <string name="login_security_notice_7">Veuillez télécharger cette application depuis les dépôts open-source officiels ou d\'autres sources fiables.</string>
     <string name="login_export_credential_title">Exporter les identifiants</string>
     <string name="login_not_entered">(non saisi)</string>
     <string name="login_security_notice">Sécurité</string>
@@ -51,6 +53,7 @@
     <string name="login_method_credential">Connexion par identifiant</string>
     <string name="login_method_phone_recovery">Récupération par téléphone</string>
     <string name="login_method_email_recovery">Récupération par e-mail</string>
+    <string name="login_password_recovery">Récupération du mot de passe</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Connexion QR                               -->

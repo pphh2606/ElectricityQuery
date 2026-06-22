@@ -8,11 +8,13 @@
     <string name="login_remember_password">Remember password</string>
     <string name="login_relogin">Re-login</string>
     <string name="login_security_notice_title">Security Notice</string>
-    <string name="login_security_notice_1">    The password is encrypted on-device via AES-CBC and sent directly to the school CAS unified authentication server. Encryption uses a dynamic salt issued by the school login page, unique for each request. This app never sends passwords to any third-party server.</string>
-    <string name="login_security_notice_2">    After successful login, only cookies are stored locally on the device, persisted via the Android system WebKit CookieManager, accessible only by this app. The remember password feature encrypts and stores credentials in the device private storage, enabled only when the user chooses.</string>
-    <string name="login_security_notice_3">    Each user login session is stored independently and does not interfere with others. Local login data can be deleted at any time from the login screen.</string>
-    <string name="login_security_notice_4">    QR login and adding accounts use independent cookie environments and do not carry any existing user session information.</string>
-    <string name="login_security_notice_5">    Exporting login credentials requires device password verification. Exported data is AES-encrypted with custom password protection, and importing requires the same decryption password, ensuring safe credential migration between devices.</string>
+    <string name="login_security_notice_1">When using the account and password login, credentials are encrypted on-device via AES-CBC and sent directly to the school CAS unified authentication server. Encryption uses a dynamic salt issued by the official server, unique for each request. This app never sends your account or password to any third-party server.</string>
+    <string name="login_security_notice_2">When using QR code login, an independent cookie environment is used. You can save the QR code locally and scan it with an already logged-in device, or use the \"Open in other app\" feature to share the link to a logged-in environment for authentication.</string>
+    <string name="login_security_notice_3">When using multi-account login, each user session is stored independently and does not interfere with others. You can clear local login data at any time from the account manager.</string>
+    <string name="login_security_notice_4">Exporting login credentials requires device password verification. Exported data is AES-encrypted with custom password protection, and importing requires the same decryption password, ensuring safe credential migration between devices.</string>
+    <string name="login_security_notice_5">The password recovery feature opens the school\'s official recovery page. Due to browser sandbox properties, this app does not capture any recovery information (including verification codes or passwords).</string>
+    <string name="login_security_notice_6">After successful login, the password and cookies are stored locally on the device for proper functionality. Cookies are persisted via the Android system WebKit CookieManager, accessible only by this process. For the remember password feature, the password is encrypted and stored in the device private storage, inaccessible to other apps. This app does not collect or transmit any local login information to third parties.</string>
+    <string name="login_security_notice_7">Please download this app from official open-source repositories or other trusted channels.</string>
     <string name="login_export_credential_title">Export Credentials</string>
     <string name="login_not_entered">(not entered)</string>
     <string name="login_security_notice">Security Notice</string>
@@ -51,6 +53,7 @@
     <string name="login_method_credential">Credential Login</string>
     <string name="login_method_phone_recovery">Phone Recovery</string>
     <string name="login_method_email_recovery">Email Recovery</string>
+    <string name="login_password_recovery">Password Recovery</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  QR Login                                   -->

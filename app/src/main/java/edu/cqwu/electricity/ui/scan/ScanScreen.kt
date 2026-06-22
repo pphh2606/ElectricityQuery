@@ -38,10 +38,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
-import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -439,53 +439,59 @@ fun ScanScreen(
     }
 
     // ── 相机生命周期（CameraX 绑定/解绑） ──
-    DisposableEffect(lifecycleOwner) {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-        val executor = ContextCompat.getMainExecutor(context)
+    // key 包含 permissionState：权限授予后重新触发绑定，避免首次授权后相机预览不出来
+    DisposableEffect(lifecycleOwner, permissionState) {
+        // 权限未授予时不绑定相机，等待权限授予后 key 变化重新触发
+        if (permissionState != CameraPermissionState.Granted) {
+            onDispose { }
+        } else {
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+            val executor = ContextCompat.getMainExecutor(context)
 
-        cameraProviderFuture.addListener({
-            val provider = cameraProviderFuture.get()
-            cameraProvider = provider // 保存实例，避免 dispose 时阻塞
+            cameraProviderFuture.addListener({
+                val provider = cameraProviderFuture.get()
+                cameraProvider = provider // 保存实例，避免 dispose 时阻塞
 
-            val preview = Preview.Builder().build()
-            preview.surfaceProvider = previewView.surfaceProvider
+                val preview = Preview.Builder().build()
+                preview.surfaceProvider = previewView.surfaceProvider
 
-            val analyzer = QrCodeAnalyzer(
-                previewView = previewView,
-                scanFrameFraction = SCAN_FRAME_RATIO,
-                isPaused = { isScanPaused },
-                onResult = { text ->
-                    isScanPaused = true
-                    handleScanResult(text, context, onOpenUrl, onBack, { resumeScan() }) { msg -> snackbar.show(msg) }
-                },
-            )
-            @Suppress("DEPRECATION")
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(android.util.Size(ANALYSIS_WIDTH, ANALYSIS_HEIGHT))
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-                .also { it.setAnalyzer(executor, analyzer) }
-
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            try {
-                provider.unbindAll()
-                val cam = provider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    preview,
-                    imageAnalysis,
+                val analyzer = QrCodeAnalyzer(
+                    previewView = previewView,
+                    scanFrameFraction = SCAN_FRAME_RATIO,
+                    isPaused = { isScanPaused },
+                    onResult = { text ->
+                        isScanPaused = true
+                        handleScanResult(text, context, onOpenUrl, onBack, { resumeScan() }) { msg -> snackbar.show(msg) }
+                    },
                 )
-                camera = cam
-            } catch (e: Exception) {
-                Log.e(TAG, "Camera bind failed", e)
-                snackbar.show(context.getString(R.string.qrcode_camera_failed))
-            }
-        }, executor)
+                @Suppress("DEPRECATION")
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setTargetResolution(android.util.Size(ANALYSIS_WIDTH, ANALYSIS_HEIGHT))
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+                    .also { it.setAnalyzer(executor, analyzer) }
 
-        onDispose {
-            // ★ P1 fix: 使用缓存的 provider 实例，不会阻塞主线程
-            cameraProvider?.unbindAll()
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+                try {
+                    provider.unbindAll()
+                    val cam = provider.bindToLifecycle(
+                        lifecycleOwner,
+                        cameraSelector,
+                        preview,
+                        imageAnalysis,
+                    )
+                    camera = cam
+                } catch (e: Exception) {
+                    Log.e(TAG, "Camera bind failed", e)
+                    snackbar.show(context.getString(R.string.qrcode_camera_failed))
+                }
+            }, executor)
+
+            onDispose {
+                // ★ P1 fix: 使用缓存的 provider 实例，不会阻塞主线程
+                cameraProvider?.unbindAll()
+            }
         }
     }
 
@@ -515,7 +521,7 @@ fun ScanScreen(
                         onBack()
                     }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = Color.White,
                         )
@@ -600,7 +606,7 @@ fun ScanScreen(
                             .windowInsetsPadding(WindowInsets.navigationBars),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.PhotoLibrary,
+                            imageVector = Icons.Outlined.PhotoLibrary,
                             contentDescription = stringResource(R.string.scan_album),
                             tint = Color.White,
                             modifier = Modifier.size(36.dp),

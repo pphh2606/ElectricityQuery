@@ -30,7 +30,26 @@ data class SavedAccountInfo(
  * - 导出凭据时按标志过滤
  */
 @Suppress("DEPRECATION")
-class AccountStore(context: Context) {
+class AccountStore private constructor(context: Context) {
+
+    companion object {
+        private const val PREF_NAME = "account_store_encrypted"
+        private const val KEY_ACCOUNTS = "saved_accounts"
+
+        @Volatile
+        private var instance: AccountStore? = null
+
+        /**
+         * 获取 AccountStore 单例。
+         * 首次调用时创建 EncryptedSharedPreferences（耗时 ~100ms），
+         * 后续调用直接返回缓存实例（~0ms）。
+         */
+        fun getInstance(context: Context): AccountStore {
+            return instance ?: synchronized(this) {
+                instance ?: AccountStore(context.applicationContext).also { instance = it }
+            }
+        }
+    }
 
     @Suppress("DEPRECATION")
     private val prefs: SharedPreferences = run {
@@ -199,8 +218,4 @@ class AccountStore(context: Context) {
         }
     }
 
-    companion object {
-        private const val PREF_NAME = "account_store_encrypted"
-        private const val KEY_ACCOUNTS = "saved_accounts"
-    }
 }

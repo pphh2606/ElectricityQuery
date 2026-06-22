@@ -18,14 +18,14 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Assignment
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -72,9 +72,9 @@ private const val ORIGINAL_WEB_URL = "https://pay.cqwu.edu.cn/casLogin/"
 private data class FeeServiceHallTab(val icon: ImageVector, @androidx.annotation.StringRes val labelRes: Int)
 
 private val tabs = listOf(
-    FeeServiceHallTab(Icons.Default.Home, R.string.fee_hall_tab_home),
-    FeeServiceHallTab(Icons.AutoMirrored.Filled.Assignment, R.string.fee_hall_tab_orders),
-    FeeServiceHallTab(Icons.Default.Person, R.string.fee_hall_tab_profile),
+    FeeServiceHallTab(Icons.Outlined.Home, R.string.fee_hall_tab_home),
+    FeeServiceHallTab(Icons.AutoMirrored.Outlined.Assignment, R.string.fee_hall_tab_orders),
+    FeeServiceHallTab(Icons.Outlined.Person, R.string.fee_hall_tab_profile),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -110,14 +110,14 @@ fun FeeServiceHallScreen(
                 title = { Text(stringResource(R.string.fee_hall_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 actions = {
                     if (pagerState.currentPage == 1) {
                         IconButton(onClick = { viewModel.toggleOrderFilter() }) {
                             Icon(
-                                imageVector = Icons.Default.FilterList,
+                                imageVector = Icons.Outlined.FilterList,
                                 contentDescription = stringResource(R.string.common_filter),
                                 tint = if (uiState.showOrderFilter) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -127,7 +127,7 @@ fun FeeServiceHallScreen(
                     IconButton(onClick = {
                         onNavigateToWebView(ORIGINAL_WEB_URL, context.getString(R.string.fee_hall_title))
                     }) {
-                        Icon(Icons.Default.OpenInBrowser, contentDescription = stringResource(R.string.common_open_original_page))
+                        Icon(Icons.Outlined.OpenInBrowser, contentDescription = stringResource(R.string.common_open_original_page))
                     }
                 },
                 colors = topBarColors,
@@ -270,7 +270,7 @@ private fun FeeProjectItem(item: FeeItem, onClick: () -> Unit) {
         Spacer(Modifier.width(12.dp))
         Text(item.name, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null,
+        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -288,7 +288,7 @@ private fun FeeProjectIcon(imgUrl: String?, contentDescription: String?, modifie
                 contentScale = ContentScale.Fit,
             )
         } else {
-            Icon(Icons.Default.Receipt, contentDescription = contentDescription,
+            Icon(Icons.Outlined.Receipt, contentDescription = contentDescription,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(28.dp))
         }
     }

@@ -20,18 +20,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Animation
-import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Animation
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Colorize
-import androidx.compose.material.icons.filled.Contrast
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.FormatPaint
-import androidx.compose.material.icons.filled.MotionPhotosAuto
-import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Colorize
+import androidx.compose.material.icons.outlined.Contrast
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.FormatPaint
+import androidx.compose.material.icons.outlined.MotionPhotosAuto
+import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -98,7 +98,7 @@ fun PersonalizationScreen(
                 title = { Text(text = stringResource(R.string.personalization_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
+                        Icon(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 colors = topBarColors,
@@ -121,7 +121,7 @@ fun PersonalizationScreen(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 SettingRow(
-                    icon = Icons.Default.Contrast, title = stringResource(R.string.personalization_night_mode),
+                    icon = Icons.Outlined.Contrast, title = stringResource(R.string.personalization_night_mode),
                     subtitle = currentNightMode.displayName,
                     onClick = { showNightModeDialog = true },
                 )
@@ -138,14 +138,14 @@ fun PersonalizationScreen(
             ) {
                 Column {
                     ThemeColorRow(
-                        icon = Icons.Default.AutoAwesome, title = stringResource(R.string.personalization_dynamic_color),
+                        icon = Icons.Outlined.AutoAwesome, title = stringResource(R.string.personalization_dynamic_color),
                         subtitle = if (isDynamicColorSupported) stringResource(R.string.personalization_dynamic_color_supported) else stringResource(R.string.personalization_dynamic_color_unsupported),
                         selected = currentColorSource is ThemeColorSource.SystemDynamic,
                         enabled = isDynamicColorSupported,
                         onClick = { onColorSourceChange(ThemeColorSource.SystemDynamic) },
                     )
                     ThemeColorRow(
-                        icon = Icons.Default.Colorize, title = stringResource(R.string.personalization_custom_color),
+                        icon = Icons.Outlined.Colorize, title = stringResource(R.string.personalization_custom_color),
                         subtitle = stringResource(R.string.personalization_custom_color_desc),
                         selected = currentColorSource is ThemeColorSource.Custom,
                         onClick = {
@@ -153,7 +153,7 @@ fun PersonalizationScreen(
                         },
                     )
                     SettingRow(
-                        icon = Icons.Default.FormatPaint, title = stringResource(R.string.personalization_topbar_color),
+                        icon = Icons.Outlined.FormatPaint, title = stringResource(R.string.personalization_topbar_color),
                         subtitle = currentTopBarStyle.displayName,
                         onClick = { showTopBarStyleDialog = true },
                     )
@@ -170,7 +170,7 @@ fun PersonalizationScreen(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 SettingRow(
-                    icon = Icons.Default.QrCode,
+                    icon = Icons.Outlined.QrCode,
                     title = stringResource(R.string.personalization_qrcode_settings),
                     subtitle = stringResource(R.string.personalization_qrcode_desc),
                     onClick = onNavigateToQrCodeSettings,
@@ -188,7 +188,7 @@ fun PersonalizationScreen(
             ) {
                 Column {
                     SettingRow(
-                        icon = Icons.Default.Animation, title = stringResource(R.string.personalization_page_transition),
+                        icon = Icons.Outlined.Animation, title = stringResource(R.string.personalization_page_transition),
                         subtitle = if (currentReduceMotion == ReduceMotion.ON) {
                             "${currentPageTransition.displayName}${stringResource(R.string.personalization_reduce_motion_override)}"
                         } else {
@@ -197,7 +197,7 @@ fun PersonalizationScreen(
                         onClick = { showPageTransitionDialog = true },
                     )
                     SettingRow(
-                        icon = Icons.Default.MotionPhotosAuto, title = stringResource(R.string.personalization_reduce_motion),
+                        icon = Icons.Outlined.MotionPhotosAuto, title = stringResource(R.string.personalization_reduce_motion),
                         subtitle = currentReduceMotion.displayName,
                         onClick = { showReduceMotionDialog = true },
                     )
@@ -272,7 +272,7 @@ private fun SettingRow(icon: ImageVector, title: String, subtitle: String, onCli
         }
         Spacer(modifier = Modifier.width(16.dp))
         Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null,
+            Icon(imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(24.dp))
         }
     }
@@ -332,9 +332,9 @@ private fun NightModeSelectionDialog(visible: Boolean = true, onSelect: (NightMo
         NightMode.entries.forEach { mode ->
             BottomSheetItem(
                 icon = when (mode) {
-                    NightMode.SYSTEM -> Icons.Default.AutoAwesome
-                    NightMode.LIGHT -> Icons.Default.Contrast
-                    NightMode.DARK -> Icons.Default.DarkMode
+                    NightMode.SYSTEM -> Icons.Outlined.AutoAwesome
+                    NightMode.LIGHT -> Icons.Outlined.Contrast
+                    NightMode.DARK -> Icons.Outlined.DarkMode
                 },
                 title = mode.displayName,
                 onClick = {
@@ -417,7 +417,7 @@ private fun <T> SelectionDialog(
     ) {
         entries.forEach { entry ->
             BottomSheetItem(
-                icon = if (entry == current) Icons.Default.CheckCircle else null,
+                icon = if (entry == current) Icons.Outlined.CheckCircle else null,
                 title = displayText(entry),
                 onClick = {
                     onSelect(entry)

@@ -39,7 +39,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         private const val SAVED_PASSWORD_PLACEHOLDER = "●●●●●●●●"
     }
 
-    private val accountStore = AccountStore(application)
+    private val accountStore = AccountStore.getInstance(application)
     private val authApi = CasAuthApi()
 
     private val _uiState = MutableStateFlow(LoginUiState())

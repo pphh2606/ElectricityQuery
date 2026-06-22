@@ -33,6 +33,8 @@ fun SecurityNoticeSheet(
             R.string.login_security_notice_3,
             R.string.login_security_notice_4,
             R.string.login_security_notice_5,
+            R.string.login_security_notice_6,
+            R.string.login_security_notice_7,
         )
         Column(
             modifier = Modifier.fillMaxWidth(),

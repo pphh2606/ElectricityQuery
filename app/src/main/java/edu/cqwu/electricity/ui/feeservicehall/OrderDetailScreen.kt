@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -85,7 +85,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
                     contentScale = ContentScale.Fit,
                 )
             } else {
-                Icon(Icons.Default.Receipt, contentDescription = null,
+                Icon(Icons.Outlined.Receipt, contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(32.dp))
             }
         }

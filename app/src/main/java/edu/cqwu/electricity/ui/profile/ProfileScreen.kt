@@ -20,14 +20,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.BrightnessAuto
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.AddToHomeScreen
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.BrightnessAuto
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.AddToHomeScreen
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -96,9 +96,9 @@ fun ProfileTopBar() {
                 val nextIndex = (nightModeState.nightMode.ordinal + 1) % modes.size
                 val nextMode = modes[nextIndex]
                 val icon = when (nextMode) {
-                    NightMode.SYSTEM -> Icons.Default.BrightnessAuto
-                    NightMode.LIGHT -> Icons.Default.LightMode
-                    NightMode.DARK -> Icons.Default.DarkMode
+                    NightMode.SYSTEM -> Icons.Outlined.BrightnessAuto
+                    NightMode.LIGHT -> Icons.Outlined.LightMode
+                    NightMode.DARK -> Icons.Outlined.DarkMode
                 }
                 Icon(
                     imageVector = icon,
@@ -110,7 +110,7 @@ fun ProfileTopBar() {
                 onClick = { nav.navigate(Routes.SETTINGS) },
             ) {
                 Icon(
-                    imageVector = Icons.Default.Settings,
+                    imageVector = Icons.Outlined.Settings,
                     contentDescription = stringResource(R.string.common_settings),
                 )
             }
@@ -125,6 +125,10 @@ fun ProfileTopBar() {
  */
 @Composable
 fun ProfilePageContent() {
+    val _profilePerfStart = System.currentTimeMillis()
+    androidx.compose.runtime.SideEffect {
+        android.util.Log.d("TabPerf", "ProfilePageContent composition done, elapsed=${System.currentTimeMillis() - _profilePerfStart}ms")
+    }
     val nav = LocalNavController.current
     val context = LocalContext.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
@@ -144,8 +148,11 @@ fun ProfilePageContent() {
     }
 
     val username = remember(usernameRefreshKey) {
-        AccountManager.getActiveUser()
-            ?: AccountStore(context).getAllAccountNames().firstOrNull()
+        val t0 = System.currentTimeMillis()
+        val result = AccountManager.getActiveUser()
+            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
+        android.util.Log.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
+        result
     }
 
     val isLoggedIn = username != null
@@ -227,7 +234,7 @@ fun ProfilePageContent() {
                         modifier = Modifier.size(36.dp),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Edit,
+                            imageVector = Icons.Outlined.Edit,
                             contentDescription = stringResource(R.string.profile_manage_accounts),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp),
@@ -246,7 +253,7 @@ fun ProfilePageContent() {
                     modifier = Modifier.size(36.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                         contentDescription = if (isLoggedIn) stringResource(R.string.profile_my_info_cd) else null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp),
@@ -264,7 +271,7 @@ fun ProfilePageContent() {
         ) {
             Column {
                 ProfileEntry(
-                    icon = Icons.Default.OpenInBrowser,
+                    icon = Icons.Outlined.OpenInBrowser,
                     title = stringResource(R.string.profile_open_url),
                     onClick = { showOpenUrlDialog = true },
                 )
@@ -274,7 +281,7 @@ fun ProfilePageContent() {
                     onClick = { nav.navigate(Routes.FEEDBACK) },
                 )
                 ProfileEntry(
-                    icon = Icons.Default.AddToHomeScreen,
+                    icon = Icons.Outlined.AddToHomeScreen,
                     title = stringResource(R.string.profile_add_shortcut),
                     onClick = { nav.navigate(Routes.ADD_SHORTCUT) },
                 )
@@ -369,7 +376,7 @@ private fun ProfileEntry(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 modifier = Modifier.size(24.dp),

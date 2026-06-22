@@ -123,7 +123,7 @@ class StorageManager(private val context: Context) {
 
     /** 清除账号数据 */
     fun clearAccountData() {
-        val store = AccountStore(context)
+        val store = AccountStore.getInstance(context)
         val accounts = store.getAllAccounts()
         for (account in accounts) {
             store.removeAccount(account.username)

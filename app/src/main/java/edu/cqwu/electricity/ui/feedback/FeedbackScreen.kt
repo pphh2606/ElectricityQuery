@@ -15,11 +15,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Send
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -266,7 +266,7 @@ fun FeedbackScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -284,7 +284,7 @@ fun FeedbackScreen(
                             enabled = canSend,
                         ) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Send,
+                                imageVector = Icons.AutoMirrored.Outlined.Send,
                                 contentDescription = stringResource(R.string.common_send_email),
                             )
                         }
@@ -340,7 +340,7 @@ fun FeedbackScreen(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Default.Visibility,
+                            imageVector = Icons.Outlined.Visibility,
                             contentDescription = null,
                             modifier = Modifier.padding(end = 4.dp),
                         )
@@ -353,7 +353,7 @@ fun FeedbackScreen(
                     enabled = !isSending,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Share,
+                        imageVector = Icons.Outlined.Share,
                         contentDescription = null,
                         modifier = Modifier.padding(end = 4.dp),
                     )
@@ -370,7 +370,7 @@ fun FeedbackScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = Icons.Outlined.Info,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(end = 4.dp),

@@ -2,6 +2,7 @@ package edu.cqwu.electricity.ui.cardcenter
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.ui.components.DatePickerField
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -26,19 +27,16 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -53,7 +51,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -185,7 +182,7 @@ fun BillScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -195,14 +192,14 @@ fun BillScreen(
                     val webTitle = stringResource(R.string.bill_web_title)
                     IconButton(onClick = { onNavigateToWebView(webBillUrl, webTitle) }) {
                         Icon(
-                            imageVector = Icons.Filled.OpenInBrowser,
+                            imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = { viewModel.toggleFilterPanel() }) {
                         Icon(
-                            imageVector = Icons.Filled.FilterList,
+                            imageVector = Icons.Outlined.FilterList,
                             contentDescription = stringResource(R.string.common_filter),
                             tint = if (uiState.showFilterPanel)
                                 MaterialTheme.colorScheme.primary
@@ -340,7 +337,7 @@ fun BillScreen(
                                }
                            }
 
-                           // ── 自动加载下一页（滑到最后 3 项时触发） ──
+                           // ── 自动加载下一页（滑到最后 3 项时触发）──
                            // 使用 derivedStateOf 检测滚动位置，所有相关状态都加入 key
                            // 避免因 key 不完整导致切换 Tab 后底部卡在"上滑加载更多"不再触发的问题
                            val autoLoadListState = listStates[pageIndex]
@@ -398,7 +395,7 @@ private fun FilterPanel(
             label = { Text(stringResource(R.string.bill_merchant_name)) },
             singleLine = true,
             leadingIcon = {
-                Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(20.dp))
+                Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp))
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp)
@@ -438,69 +435,6 @@ private fun FilterPanel(
             Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_apply)) }
         }
         HorizontalDivider(modifier = Modifier.padding(top = 12.dp))
-    }
-}
-
-// ====================================================================
-//  日期选择器
-// ====================================================================
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DatePickerField(
-    label: String,
-    value: String,
-    onValueChanged: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var showDialog by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
-
-    LaunchedEffect(showDialog, value) {
-        if (showDialog && value.isNotBlank()) {
-            try {
-                val millis = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                    .parse(value)?.time
-                datePickerState.selectedDateMillis = millis
-            } catch (_: Exception) {
-                datePickerState.selectedDateMillis = null
-            }
-        } else if (showDialog) {
-            datePickerState.selectedDateMillis = null
-        }
-    }
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = {},
-        readOnly = true,
-        label = { Text(label) },
-        singleLine = true,
-        trailingIcon = {
-            Icon(Icons.Filled.DateRange, contentDescription = null, modifier = Modifier.size(20.dp))
-        },
-        modifier = modifier.clickable { showDialog = true },
-        shape = RoundedCornerShape(8.dp)
-    )
-
-    if (showDialog) {
-        DatePickerDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let { millis ->
-                        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
-                            timeZone = java.util.TimeZone.getTimeZone("Asia/Shanghai")
-                        }
-                        onValueChanged(formatter.format(Date(millis)))
-                    }
-                    showDialog = false
-                }) { Text(stringResource(R.string.common_confirm)) }
-            },
-            dismissButton = { TextButton(onClick = { showDialog = false }) { Text(stringResource(R.string.common_cancel)) } }
-        ) {
-            DatePicker(state = datePickerState)
-        }
     }
 }
 
@@ -626,7 +560,7 @@ private fun BillTabErrorContent(errorMessage: String) {
 private fun BillEmptyListContent(tabNo: Int) {
     Box(modifier = Modifier.fillMaxWidth().padding(vertical = 64.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(imageVector = Icons.Filled.Receipt, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f))
+            Icon(imageVector = Icons.Outlined.Receipt, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f))
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = when (tabNo) { 2 -> stringResource(R.string.bill_no_unpaid); 4 -> stringResource(R.string.bill_no_success); 5 -> stringResource(R.string.bill_no_failed); else -> stringResource(R.string.bill_no_records) },

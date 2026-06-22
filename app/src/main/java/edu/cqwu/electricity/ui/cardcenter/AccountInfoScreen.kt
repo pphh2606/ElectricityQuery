@@ -18,13 +18,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.LibraryBooks
-import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.Groups
+import androidx.compose.material.icons.outlined.LibraryBooks
+import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -125,7 +125,7 @@ fun AccountInfoScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -204,19 +204,19 @@ private fun AccountInfoContent(
                     InfoRow(
                         label = stringResource(R.string.card_account_info_name),
                         value = info.name,
-                        icon = Icons.Filled.Person
+                        icon = Icons.Outlined.Person
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
                         label = stringResource(R.string.card_account_info_student_id),
                         value = info.studentId,
-                        icon = Icons.Filled.Badge
+                        icon = Icons.Outlined.Badge
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
                         label = stringResource(R.string.card_account_info_balance),
                         value = info.balance,
-                        icon = Icons.Filled.Payments,
+                        icon = Icons.Outlined.Payments,
                         isHighlight = true
                     )
                 }
@@ -234,19 +234,19 @@ private fun AccountInfoContent(
                     InfoRow(
                         label = stringResource(R.string.card_account_info_school),
                         value = info.school.ifBlank { "-" },
-                        icon = Icons.Filled.School
+                        icon = Icons.Outlined.School
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
                         label = stringResource(R.string.card_account_info_major),
                         value = info.major.ifBlank { "-" },
-                        icon = Icons.Filled.LibraryBooks
+                        icon = Icons.Outlined.LibraryBooks
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(
                         label = stringResource(R.string.card_account_info_class),
                         value = info.className.ifBlank { "-" },
-                        icon = Icons.Filled.Groups
+                        icon = Icons.Outlined.Groups
                     )
                 }
             }

@@ -3,7 +3,7 @@ package edu.cqwu.electricity.ui.components
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +32,7 @@ fun LanguageSwitchButton() {
 
     IconButton(onClick = { showSheet = true }) {
         Icon(
-            imageVector = Icons.Default.Translate,
+            imageVector = Icons.Outlined.Translate,
             contentDescription = stringResource(R.string.language_title),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )

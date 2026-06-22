@@ -15,14 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Cookie
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.Cookie
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -97,7 +97,7 @@ fun StorageClearScreen(
         listOf(
             StorageItem(
                 key = "image_cache",
-                icon = Icons.Default.Image,
+                icon = Icons.Outlined.Image,
                 titleRes = R.string.storage_clear_image_cache,
                 isSafe = true,
                 getSize = { getCacheImageSize() },
@@ -105,7 +105,7 @@ fun StorageClearScreen(
             ),
             StorageItem(
                 key = "crash_logs",
-                icon = Icons.Default.BugReport,
+                icon = Icons.Outlined.BugReport,
                 titleRes = R.string.storage_clear_crash_logs,
                 isSafe = true,
                 getSize = { getCrashLogSize() },
@@ -113,7 +113,7 @@ fun StorageClearScreen(
             ),
             StorageItem(
                 key = "temp_logs",
-                icon = Icons.Default.Description,
+                icon = Icons.Outlined.Description,
                 titleRes = R.string.storage_clear_temp_logs,
                 isSafe = true,
                 getSize = { getTempLogSize() },
@@ -121,7 +121,7 @@ fun StorageClearScreen(
             ),
             StorageItem(
                 key = "webview_data",
-                icon = Icons.Default.Language,
+                icon = Icons.Outlined.Language,
                 titleRes = R.string.storage_clear_webview_data,
                 isSafe = true,
                 getSize = { getWebViewDataSize() },
@@ -129,7 +129,7 @@ fun StorageClearScreen(
             ),
             StorageItem(
                 key = "cookie_data",
-                icon = Icons.Default.Cookie,
+                icon = Icons.Outlined.Cookie,
                 titleRes = R.string.storage_clear_cookie_data,
                 hintRes = R.string.storage_clear_cookie_hint,
                 isSafe = false,
@@ -138,7 +138,7 @@ fun StorageClearScreen(
             ),
             StorageItem(
                 key = "settings",
-                icon = Icons.Default.Settings,
+                icon = Icons.Outlined.Settings,
                 titleRes = R.string.storage_clear_settings,
                 hintRes = R.string.storage_clear_settings_hint,
                 isSafe = false,
@@ -147,7 +147,7 @@ fun StorageClearScreen(
             ),
             StorageItem(
                 key = "account_data",
-                icon = Icons.Default.AccountCircle,
+                icon = Icons.Outlined.AccountCircle,
                 titleRes = R.string.storage_clear_account_data,
                 hintRes = R.string.storage_clear_account_hint,
                 isSafe = false,
@@ -228,7 +228,7 @@ fun StorageClearScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                         )
                     }
@@ -347,7 +347,7 @@ fun StorageClearScreen(
                     },
                 ) {
                     Text(
-                        text = if (isClearing) "…" else stringResource(R.string.storage_clear_button),
+                        text = if (isClearing) "清除中…" else stringResource(R.string.storage_clear_button),
                         modifier = Modifier.padding(vertical = 4.dp),
                     )
                 }

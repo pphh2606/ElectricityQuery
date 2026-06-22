@@ -2,6 +2,7 @@ package edu.cqwu.electricity.ui.feeservicehall
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.ui.components.DatePickerField
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -24,8 +25,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -180,7 +181,7 @@ private fun OrderFilterPanel(
             onValueChange = onProjectNameChange,
             label = { Text(stringResource(R.string.fee_order_project_name)) },
             singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
+            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
         )
@@ -190,17 +191,19 @@ private fun OrderFilterPanel(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            OutlinedTextField(
-                value = startDate, onValueChange = onStartDateChange,
-                label = { Text(stringResource(R.string.bill_start_date)) }, singleLine = true,
-                modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp),
+            DatePickerField(
+                label = stringResource(R.string.bill_start_date),
+                value = startDate,
+                onValueChanged = onStartDateChange,
+                modifier = Modifier.weight(1f),
             )
             Text("~", style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
-            OutlinedTextField(
-                value = endDate, onValueChange = onEndDateChange,
-                label = { Text(stringResource(R.string.bill_end_date)) }, singleLine = true,
-                modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp),
+            DatePickerField(
+                label = stringResource(R.string.bill_end_date),
+                value = endDate,
+                onValueChanged = onEndDateChange,
+                modifier = Modifier.weight(1f),
             )
         }
         Spacer(Modifier.height(12.dp))
@@ -250,7 +253,7 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
                     contentScale = ContentScale.Fit,
                 )
             } else {
-                Icon(Icons.Default.Receipt, contentDescription = null,
+                Icon(Icons.Outlined.Receipt, contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(28.dp))
             }
         }

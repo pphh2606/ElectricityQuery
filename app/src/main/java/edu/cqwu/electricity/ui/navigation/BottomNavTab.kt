@@ -2,9 +2,9 @@ package edu.cqwu.electricity.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import edu.cqwu.electricity.R
 
@@ -20,7 +20,7 @@ data class BottomNavTab(
 
 /** 底栏 Tab 定义列表：新增 Tab 只需在此添加一项 */
 val bottomNavTabs = listOf(
-    BottomNavTab(labelRes = R.string.home_title, route = Routes.MAIN_TABS, icon = Icons.Default.Home),
-    BottomNavTab(labelRes = R.string.hall_title, route = Routes.MAIN_TABS, icon = Icons.Default.Apps),
-    BottomNavTab(labelRes = R.string.profile_title, route = Routes.MAIN_TABS, icon = Icons.Default.Person),
+    BottomNavTab(labelRes = R.string.home_title, route = Routes.MAIN_TABS, icon = Icons.Outlined.Home),
+    BottomNavTab(labelRes = R.string.hall_title, route = Routes.MAIN_TABS, icon = Icons.Outlined.Apps),
+    BottomNavTab(labelRes = R.string.profile_title, route = Routes.MAIN_TABS, icon = Icons.Outlined.Person),
 )

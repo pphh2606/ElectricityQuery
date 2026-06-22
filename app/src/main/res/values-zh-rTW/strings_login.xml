@@ -8,11 +8,13 @@
     <string name="login_remember_password">記住密碼</string>
     <string name="login_relogin">重新登入</string>
     <string name="login_security_notice_title">登入說明</string>
-    <string name="login_security_notice_1">    密碼直接在裝置端透過 AES-CBC 加密後直接傳送到學校 CAS 統一認證伺服器，加密使用學校登入頁面下發的動態 salt，每次請求獨立。本應用程式不會將密碼傳送到任何第三方伺服器。</string>
-    <string name="login_security_notice_2">    登入成功後僅儲存 Cookie 在裝置本地，透過 Android 系統 WebKit CookieManager 持久化，僅本應用程式可存取。記住密碼功能可將密碼加密儲存在裝置私有儲存空間中，僅在使用者主動選擇時啟用。</string>
-    <string name="login_security_notice_3">    每個使用者的登入工作階段獨立儲存，互不干擾。可在登入介面中隨時刪除使用者的本地登入資訊。</string>
-    <string name="login_security_notice_4">    掃碼登入和新增帳號使用獨立的 Cookie 環境，不攜帶任何已登入使用者的工作階段資訊。</string>
-    <string name="login_security_notice_5">    登入憑證匯出需要驗證裝置密碼，匯出時使用 AES 加密加自訂密碼保護，匯入時需要相同的解密密碼，確保憑證在裝置間安全遷移。</string>
+    <string name="login_security_notice_1">使用帳號和密碼登入時，認證資訊直接在裝置端透過 AES-CBC 加密後傳送到學校 CAS 統一認證伺服器，加密使用官方伺服器下發的動態 salt，每次請求獨立。本應用程式不會將帳號和密碼傳送到任何第三方伺服器。</string>
+    <string name="login_security_notice_2">使用掃碼登入功能時，將使用獨立的 Cookie 環境進行登入。使用者可將二維碼儲存到本機，然後使用已登入的裝置掃碼登入；亦可使用「其他應用程式開啟」功能，將連結分享到已登入的環境中開啟進行登入。</string>
+    <string name="login_security_notice_3">使用多帳號登入功能，每個使用者的登入工作階段獨立儲存，互不干擾。可在帳號管理視窗隨時清空使用者的本地登入資訊。</string>
+    <string name="login_security_notice_4">使用登入憑證匯出功能，需要驗證裝置密碼，使用 AES 加密加自訂密碼保護，匯入時需要相同的解密密碼，確保憑證在裝置間安全遷移。</string>
+    <string name="login_security_notice_5">使用找回密碼功能，將開啟學校官方的找回密碼頁面。根據瀏覽器沙盒特性，本軟體不會獲取找回資訊（包括驗證碼、密碼）。</string>
+    <string name="login_security_notice_6">帳號登入成功後，為了功能正常使用，會將密碼和 Cookie 儲存在裝置本地，Cookie 透過 Android 系統 WebKit CookieManager 持久化，僅本行程可存取。為實現記住密碼功能，會將密碼加密儲存在裝置私有儲存空間中，其他應用程式不可存取。本應用程式不會收集本地登入資訊或傳送登入資訊至第三方。</string>
+    <string name="login_security_notice_7">請在開源倉庫等可信賴管道下載本應用程式。</string>
     <string name="login_export_credential_title">匯出憑證</string>
     <string name="login_not_entered">（未輸入）</string>
     <string name="login_security_notice">安全說明</string>
@@ -51,6 +53,7 @@
     <string name="login_method_credential">憑證登入</string>
     <string name="login_method_phone_recovery">手機號找回</string>
     <string name="login_method_email_recovery">郵箱找回</string>
+    <string name="login_password_recovery">找回密碼</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  掃碼登入模組                               -->

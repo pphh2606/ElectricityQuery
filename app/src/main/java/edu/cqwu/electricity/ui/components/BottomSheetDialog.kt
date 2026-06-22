@@ -96,7 +96,7 @@ import coil.request.ImageRequest
  *     },
  *     trailingButton = {
  *         IconButton(onClick = { /* 设置 */ }) {
- *             Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.common_settings))
+ *             Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.common_settings))
  *         }
  *     }
  * ) {
@@ -256,7 +256,7 @@ fun BottomSheetDialog(
  * 使用示例：
  * ```kotlin
  * BottomSheetItem(
- *     icon = Icons.Default.Store,
+ *     icon = Icons.Outlined.Store,
  *     title = "今日校园充值",
  *     onClick = { /* ... */ }
  * )

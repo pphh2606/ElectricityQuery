@@ -18,18 +18,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -200,7 +200,7 @@ fun DashboardMenuButton(
     Box {
         IconButton(onClick = { showMenu = true }) {
             Icon(
-                imageVector = Icons.Default.MoreVert,
+                imageVector = Icons.Outlined.MoreVert,
                 contentDescription = stringResource(R.string.common_more_options),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -211,7 +211,7 @@ fun DashboardMenuButton(
         ) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.common_copy)) },
-                leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                 onClick = {
                     showMenu = false
                     val text = getDashboardTextContent(room, balance)
@@ -220,7 +220,7 @@ fun DashboardMenuButton(
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.common_export)) },
-                leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                 onClick = {
                     showMenu = false
                     pendingExportText = getDashboardTextContent(room, balance)
@@ -249,7 +249,7 @@ private fun RoomInfoCard(room: BuildingNode?) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.Home,
+                    imageVector = Icons.Outlined.Home,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
@@ -299,7 +299,7 @@ private fun ErrorStateCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = Icons.Default.Info,
+                imageVector = Icons.Outlined.Info,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(48.dp)
@@ -335,7 +335,7 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.Home,
+                    imageVector = Icons.Outlined.Home,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(20.dp)
@@ -402,7 +402,7 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.Star,
+                    imageVector = Icons.Outlined.Star,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
@@ -441,7 +441,7 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.CheckCircle,
+                        imageVector = Icons.Outlined.CheckCircle,
                         contentDescription = null,
                         tint = if (balance.payEnable == 1)
                             MaterialTheme.colorScheme.primary
@@ -481,7 +481,7 @@ private fun MoreFunctionsSection(
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.List,
+                    imageVector = Icons.AutoMirrored.Outlined.List,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
@@ -499,31 +499,31 @@ private fun MoreFunctionsSection(
 
             NavItem(
                 text = stringResource(R.string.dashboard_recent_6months),
-                leadingIcon = Icons.Default.DateRange,
+                leadingIcon = Icons.Outlined.DateRange,
                 onClick = { onNavigateToDetail(DetailType.SIX_MONTH_USAGE) }
             )
             HorizontalDivider()
             NavItem(
                 text = stringResource(R.string.dashboard_daily_this_month),
-                leadingIcon = Icons.Default.CalendarToday,
+                leadingIcon = Icons.Outlined.CalendarToday,
                 onClick = { onNavigateToDetail(DetailType.MONTH_DAILY_USAGE) }
             )
             HorizontalDivider()
             NavItem(
                 text = stringResource(R.string.dashboard_24h_detail),
-                leadingIcon = Icons.Default.Schedule,
+                leadingIcon = Icons.Outlined.Schedule,
                 onClick = { onNavigateToDetail(DetailType.HOURLY_USAGE) }
             )
             HorizontalDivider()
             NavItem(
                 text = stringResource(R.string.dashboard_meter_status),
-                leadingIcon = Icons.Default.Home,
+                leadingIcon = Icons.Outlined.Home,
                 onClick = { onNavigateToDetail(DetailType.METER_STATUS) }
             )
             HorizontalDivider()
             NavItem(
                 text = stringResource(R.string.dashboard_query_recharge_records),
-                leadingIcon = Icons.AutoMirrored.Filled.List,
+                leadingIcon = Icons.AutoMirrored.Outlined.List,
                 onClick = onNavigateToRechargeRecord
             )
         }
@@ -570,7 +570,7 @@ private fun NavItem(
             )
         }
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
             contentDescription = stringResource(R.string.common_view),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)

@@ -29,16 +29,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.CenterFocusWeak
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -154,7 +154,7 @@ fun HomeTopBar(
                         if (searchQuery.isNotEmpty()) {
                             IconButton(onClick = { onSearchQueryChange("") }) {
                                 Icon(
-                                    imageVector = Icons.Default.Clear,
+                                    imageVector = Icons.Outlined.Clear,
                                     contentDescription = stringResource(R.string.common_clear_search),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -169,7 +169,7 @@ fun HomeTopBar(
                     onCloseSearch()
                 }) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = stringResource(R.string.common_exit_search),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -189,14 +189,14 @@ fun HomeTopBar(
             actions = {
                 IconButton(onClick = onToggleSearch) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = Icons.Outlined.Search,
                         contentDescription = stringResource(R.string.common_search),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 IconButton(onClick = { nav.navigate(Routes.SCAN) }) {
                     Icon(
-                        imageVector = Icons.Default.PhotoCamera,
+                        imageVector = Icons.Outlined.CenterFocusWeak,
                         contentDescription = stringResource(R.string.common_scan),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -440,7 +440,7 @@ fun HomePageContent(
         visible = pendingExternalIntent != null,
         onDismissRequest = { pendingExternalIntent = null },
         title = stringResource(R.string.home_external_app_title),
-        icon = Icons.Default.OpenInBrowser,
+        icon = Icons.Outlined.OpenInBrowser,
         leadingButton = {
             TextButton(onClick = { pendingExternalIntent = null }) {
                 Text(stringResource(R.string.common_cancel))
@@ -577,7 +577,7 @@ private fun MyServicesSection(
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
-                    imageVector = if (isEditMode) Icons.Default.Check else Icons.Default.Edit,
+                    imageVector = if (isEditMode) Icons.Outlined.Check else Icons.Outlined.Edit,
                     contentDescription = if (isEditMode) stringResource(R.string.home_confirm_exit_edit) else stringResource(R.string.home_edit_my_services),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
@@ -614,7 +614,7 @@ private fun MyServicesSection(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
+                                    imageVector = Icons.Outlined.Close,
                                     contentDescription = stringResource(R.string.common_remove),
                                     tint = MaterialTheme.colorScheme.onError,
                                     modifier = Modifier.size(12.dp)
@@ -650,7 +650,7 @@ private fun MyServicesSection(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
+                                    imageVector = Icons.Outlined.Close,
                                     contentDescription = stringResource(R.string.common_remove),
                                     tint = MaterialTheme.colorScheme.onError,
                                     modifier = Modifier.size(12.dp)
@@ -696,7 +696,7 @@ private fun AddCustomServiceButton(onClick: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Default.Language,
+                imageVector = Icons.Outlined.Language,
                 contentDescription = stringResource(R.string.custom_website_title),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(24.dp)
@@ -776,7 +776,7 @@ private fun CustomServiceIconItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Language,
+                    imageVector = Icons.Outlined.Language,
                     contentDescription = entry.title,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
@@ -988,7 +988,7 @@ private fun AppIconItem(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = Icons.Outlined.Add,
                         contentDescription = stringResource(R.string.common_add_to_my_services),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(14.dp)

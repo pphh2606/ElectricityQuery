@@ -23,10 +23,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -144,7 +144,7 @@ fun DetailScreen(
                         onBack()
                     }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -154,7 +154,7 @@ fun DetailScreen(
                     Box {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
+                                imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -165,7 +165,7 @@ fun DetailScreen(
                         ) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.common_copy)) },
-                                leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     val text = getDetailTextContent(detailType, detailState)
@@ -174,7 +174,7 @@ fun DetailScreen(
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.common_export)) },
-                                leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     pendingExportText = getDetailTextContent(detailType, detailState)

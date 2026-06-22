@@ -14,14 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.SignalWifiOff
-import androidx.compose.material.icons.filled.SwapHoriz
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material.icons.outlined.CloudOff
+import androidx.compose.material.icons.outlined.Dns
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.SignalWifiOff
+import androidx.compose.material.icons.outlined.SwapHoriz
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -124,7 +124,7 @@ fun WebViewErrorOverlay(
                 if (onToggleVpn != null) {
                     TextButton(onClick = onToggleVpn) {
                         Icon(
-                            imageVector = Icons.Filled.SwapHoriz,
+                            imageVector = Icons.Outlined.SwapHoriz,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
@@ -137,7 +137,7 @@ fun WebViewErrorOverlay(
                 if (onNetworkSettings != null) {
                     TextButton(onClick = onNetworkSettings) {
                         Icon(
-                            imageVector = Icons.Filled.Settings,
+                            imageVector = Icons.Outlined.Settings,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
@@ -162,61 +162,72 @@ private fun resolveErrorInfo(
     if (isHttpError) {
         return when (errorCode) {
             404 -> ErrorDisplayInfo(
-                icon = Icons.Filled.ErrorOutline,
+                icon = Icons.Outlined.ErrorOutline,
                 title = stringResource(R.string.webview_error_page_not_found),
                 description = stringResource(R.string.webview_error_page_not_found_desc)
             )
             500 -> ErrorDisplayInfo(
-                icon = Icons.Filled.ErrorOutline,
+                icon = Icons.Outlined.ErrorOutline,
                 title = stringResource(R.string.webview_error_server_error),
                 description = stringResource(R.string.webview_error_server_error_desc)
             )
             502, 503, 504 -> ErrorDisplayInfo(
-                icon = Icons.Filled.CloudOff,
+                icon = Icons.Outlined.CloudOff,
                 title = stringResource(R.string.webview_error_service_unavailable),
                 description = stringResource(R.string.webview_error_service_unavailable_desc, errorCode)
             )
             else -> ErrorDisplayInfo(
-                icon = Icons.Filled.ErrorOutline,
+                icon = Icons.Outlined.ErrorOutline,
                 title = stringResource(R.string.webview_error_load_failed),
                 description = stringResource(R.string.webview_error_http_generic_desc, errorCode)
             )
         }
     }
 
-    return when (errorCode) {
-        -2 -> ErrorDisplayInfo(
-            icon = Icons.Filled.WifiOff,
+    // 根据错误描述字符串匹配（如 "net::ERR_EMPTY_RESPONSE"），比数字错误码更可靠
+    return when {
+        description.contains("ERR_INTERNET_DISCONNECTED") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.WifiOff,
             title = stringResource(R.string.webview_error_network_disconnected),
             description = stringResource(R.string.webview_error_network_disconnected_desc)
         )
-        -8 -> ErrorDisplayInfo(
-            icon = Icons.Filled.Timer,
+        description.contains("ERR_TIMED_OUT") || description.contains("ERR_CONNECTION_TIMED_OUT") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.Timer,
             title = stringResource(R.string.webview_error_timeout),
             description = stringResource(R.string.webview_error_timeout_desc)
         )
-        -15 -> ErrorDisplayInfo(
-            icon = Icons.Filled.Dns,
+        description.contains("ERR_NAME_NOT_RESOLVED") || description.contains("ERR_DNS") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.Dns,
             title = stringResource(R.string.webview_error_dns_failed),
             description = stringResource(R.string.webview_error_dns_failed_desc)
         )
-        -106 -> ErrorDisplayInfo(
-            icon = Icons.Filled.SignalWifiOff,
+        description.contains("ERR_CONNECTION_REFUSED") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.SignalWifiOff,
             title = stringResource(R.string.webview_error_connection_refused),
             description = stringResource(R.string.webview_error_connection_refused_desc)
         )
-        -324 -> ErrorDisplayInfo(
-            icon = Icons.Filled.CloudOff,
+        description.contains("ERR_EMPTY_RESPONSE") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.CloudOff,
             title = stringResource(R.string.webview_error_no_response),
             description = stringResource(R.string.webview_error_no_response_desc)
         )
-        -109 -> ErrorDisplayInfo(
-            icon = Icons.Filled.SignalWifiOff,
+        description.contains("ERR_ADDRESS_UNREACHABLE") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.SignalWifiOff,
             title = stringResource(R.string.webview_error_unreachable),
             description = stringResource(R.string.webview_error_unreachable_desc)
         )
+        description.contains("ERR_CONNECTION_RESET") || description.contains("ERR_CONNECTION_CLOSED") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.CloudOff,
+            title = stringResource(R.string.webview_error_no_response),
+            description = stringResource(R.string.webview_error_no_response_desc)
+        )
+        description.contains("ERR_SSL") || description.contains("ERR_CERT") -> ErrorDisplayInfo(
+            icon = Icons.Outlined.ErrorOutline,
+            title = stringResource(R.string.webview_error_load_failed),
+            description = stringResource(R.string.webview_error_connection_refused_desc)
+        )
         else -> ErrorDisplayInfo(
-            icon = Icons.Filled.ErrorOutline,
+            icon = Icons.Outlined.ErrorOutline,
             title = stringResource(R.string.webview_error_load_failed),
             description = description.ifBlank { stringResource(R.string.webview_error_generic_desc) }
         )

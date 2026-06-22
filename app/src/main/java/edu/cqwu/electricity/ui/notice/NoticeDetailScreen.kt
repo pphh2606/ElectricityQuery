@@ -27,12 +27,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -181,7 +181,7 @@ fun NoticeDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -191,7 +191,7 @@ fun NoticeDetailScreen(
                     if (detail != null) {
                         IconButton(onClick = { shareNotice() }) {
                             Icon(
-                                imageVector = Icons.Default.Share,
+                                imageVector = Icons.Outlined.Share,
                                 contentDescription = stringResource(R.string.common_share),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -204,7 +204,7 @@ fun NoticeDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.OpenInBrowser,
+                                imageVector = Icons.Outlined.OpenInBrowser,
                                 contentDescription = stringResource(R.string.common_open_in_browser),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -318,7 +318,7 @@ fun NoticeDetailScreen(
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        imageVector = Icons.Default.Person,
+                                        imageVector = Icons.Outlined.Person,
                                         contentDescription = stringResource(R.string.notice_publisher),
                                         modifier = Modifier.padding(end = 3.dp).size(14.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -331,7 +331,7 @@ fun NoticeDetailScreen(
                                 }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        imageVector = Icons.Default.AccessTime,
+                                        imageVector = Icons.Outlined.AccessTime,
                                         contentDescription = stringResource(R.string.notice_publish_time),
                                         modifier = Modifier.padding(end = 3.dp).size(14.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -344,7 +344,7 @@ fun NoticeDetailScreen(
                                 }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        imageVector = Icons.Default.Visibility,
+                                        imageVector = Icons.Outlined.Visibility,
                                         contentDescription = stringResource(R.string.notice_view_count),
                                         modifier = Modifier.padding(end = 3.dp).size(14.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant

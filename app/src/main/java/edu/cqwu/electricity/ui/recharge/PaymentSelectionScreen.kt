@@ -55,8 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -127,7 +127,7 @@ fun PaymentSelectionScreen(
                         onBack()
                     }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -322,8 +322,8 @@ private enum class OverlayPhase {
  * 管理隐藏 WebView → JS 注入 → gotToPay → mwebUrl → 微信支付 → 轮询 → returnUrl → CAS 的完整流程。
  *
  * 核心作用：在同一个 WebView 中完成 showselect 页面加载、gotToPay AJAX 调用、
- * mwebUrl 导航和 returnUrl/CAS 认证，保持完整的浏览器会话（Cookie）连续性，
- * 解决 OkHttp 与 WebView 之间会话断裂导致 CAS 认证失败的问题。
+ * mwebUrl 导航、returnUrl/CAS 认证，保持完整的浏览器会话（Cookie）连续性，
+ * 解决 OkHttp 和 WebView 之间会话断裂导致 CAS 认证失败的问题。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -365,7 +365,7 @@ private fun PaymentWebViewOverlay(
     // 模拟 showselect 页面的 JS setInterval(queryOrderStatus, 1500)
     LaunchedEffect(orderId) {
         if (orderId.isNotBlank()) {
-            Log.d(TAG_OVERLAY, "开始轮询订单状态: orderId=$orderId")
+            Log.d(TAG_OVERLAY, "开始轮询订单状态，orderId=$orderId")
             while (true) {
                 delay(1500)
 
@@ -376,7 +376,7 @@ private fun PaymentWebViewOverlay(
                 result.onSuccess { response ->
                     val status = response.data?.status
                     val returnUrl = response.data?.returnUrl
-                    Log.d(TAG_OVERLAY, "轮询订单状态: orderId=$orderId, status=$status")
+                    Log.d(TAG_OVERLAY, "轮询订单状态，orderId=$orderId, status=$status")
 
                     if (status == "COMPLETED") {
                         Log.d(TAG_OVERLAY, ">>> 订单已完成！准备处理 returnUrl")
@@ -384,7 +384,7 @@ private fun PaymentWebViewOverlay(
                         val targetUrl = if (!returnUrl.isNullOrBlank()) {
                             returnUrl
                         } else {
-                            // 无 returnUrl 时，认为支付已成功
+                            // 无 returnUrl 时，认为支付已完成
                             Log.d(TAG_OVERLAY, ">>> returnUrl 为空，支付已完成")
                             onPaymentComplete()
                             break
@@ -398,7 +398,7 @@ private fun PaymentWebViewOverlay(
                         // returnUrl 会触发 CAS 认证，完成后分配资金到账
                         webViewRef.value?.loadUrl(targetUrl)
 
-                        // 等待 CAS 认证流程完成（最长 15 秒）
+                        // 等待 CAS 认证流程完成（最多 15 秒）
                         var waited = 0
                         while (isNavigatingToReturnUrl && waited < 15) {
                             delay(1000)
@@ -438,7 +438,7 @@ private fun PaymentWebViewOverlay(
     }
 
     // 支付成功确认超时检测（30 秒兜底）
-    // 如果 WebView 页面跳转到成功确认 URL 后 onPaymentComplete() 没有关闭覆盖层，自动关闭
+    // 如果 WebView 页面跳转到成功确认 URL 且 onPaymentComplete() 没有关闭覆盖层，自动关闭
     LaunchedEffect(show) {
         if (show) {
             delay(30000)
@@ -460,7 +460,7 @@ private fun PaymentWebViewOverlay(
         }
     }
 
-    // 检测从外部应用返回 → 切换到 WebView 可见模式
+    // 检测从外部应用返回后 切换到 WebView 可见模式
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -616,7 +616,7 @@ private fun PaymentWebViewOverlay(
                         )
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = stringResource(R.string.payment_close),
                         tint = ComposeColor.White
                     )
@@ -696,7 +696,7 @@ private fun PaymentMethodCard(
             // 选中标记
             if (isSelected) {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle,
+                    imageVector = Icons.Outlined.CheckCircle,
                     contentDescription = stringResource(R.string.payment_selected),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)

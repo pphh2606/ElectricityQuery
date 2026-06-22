@@ -24,6 +24,9 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         CrashHandler.init(this)
         instance = this
         CookieStore.init()
+        // 预初始化 AccountStore 单例（EncryptedSharedPreferences 初始化耗时 ~100ms）
+        // 避免在 UI 组合线程中首次调用时阻塞滑动动画
+        edu.cqwu.electricity.data.local.AccountStore.getInstance(this)
     }
 
     companion object {

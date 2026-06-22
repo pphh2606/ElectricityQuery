@@ -23,7 +23,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
@@ -94,6 +94,10 @@ fun HallTopBar() {
 fun HallPageContent(
     hallViewModel: HallViewModel = viewModel(),
 ) {
+    val _hallPerfStart = System.currentTimeMillis()
+    androidx.compose.runtime.SideEffect {
+        android.util.Log.d("TabPerf", "HallPageContent composition done, elapsed=${System.currentTimeMillis() - _hallPerfStart}ms")
+    }
     val uiState by hallViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     val hallPagerState = rememberPagerState(pageCount = { 2 })
@@ -382,7 +386,7 @@ private fun HallListItem(
                     )
                     Spacer(modifier = Modifier.width(2.dp))
                     Icon(
-                        imageVector = if (item.favorite) Icons.Filled.Favorite
+                        imageVector = if (item.favorite) Icons.Default.Favorite
                         else Icons.Outlined.FavoriteBorder,
                         contentDescription = if (item.favorite) stringResource(R.string.hall_favorited) else stringResource(R.string.hall_unfavorited),
                         tint = if (item.favorite) MaterialTheme.colorScheme.error
@@ -395,7 +399,7 @@ private fun HallListItem(
         }
 
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )

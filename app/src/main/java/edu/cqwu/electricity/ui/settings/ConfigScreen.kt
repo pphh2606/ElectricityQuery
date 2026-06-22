@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.CleaningServices
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.CleaningServices
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,7 +67,7 @@ fun ConfigScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                         )
                     }
@@ -90,7 +90,7 @@ fun ConfigScreen(
                 Column {
                     // ── 浏览器标识 ──
                     ConfigEntry(
-                        icon = Icons.Default.Smartphone,
+                        icon = Icons.Outlined.Smartphone,
                         title = stringResource(R.string.config_user_agent),
                         subtitle = stringResource(R.string.config_user_agent_desc),
                         onClick = onNavigateToUserAgent,
@@ -98,7 +98,7 @@ fun ConfigScreen(
 
                     // ── 语言 ──
                     ConfigEntry(
-                        icon = Icons.Default.Language,
+                        icon = Icons.Outlined.Language,
                         title = stringResource(R.string.language_title),
                         subtitle = currentLanguage.displayName,
                         onClick = { showLanguageSheet = true },
@@ -106,7 +106,7 @@ fun ConfigScreen(
 
                     // ── 清除存储空间 ──
                     ConfigEntry(
-                        icon = Icons.Default.CleaningServices,
+                        icon = Icons.Outlined.CleaningServices,
                         title = stringResource(R.string.storage_clear_title),
                         subtitle = stringResource(R.string.storage_clear_desc),
                         onClick = onNavigateToStorageClear,
@@ -173,7 +173,7 @@ private fun ConfigEntry(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 modifier = Modifier.size(24.dp),

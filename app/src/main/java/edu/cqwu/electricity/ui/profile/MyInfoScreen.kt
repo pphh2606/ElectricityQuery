@@ -20,11 +20,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Extension
+import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Extension
@@ -85,7 +85,7 @@ fun MyInfoScreen(
                 title = { Text(stringResource(R.string.my_info_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 colors = topBarColors,
@@ -240,7 +240,7 @@ private fun categoryIcon(formCode: String): ImageVector = when {
     formCode.startsWith("reward2punish") -> Icons.Outlined.EmojiEvents
     formCode.startsWith("support") -> Icons.Outlined.AccountBalanceWallet
     formCode.startsWith("gradeInfo") -> Icons.Outlined.School
-    formCode.startsWith("FDMSJ") -> Icons.Filled.Extension
+    formCode.startsWith("FDMSJ") -> Icons.Outlined.Extension
     formCode.startsWith("XXSJ") -> Icons.Outlined.Inventory2
     else -> Icons.Outlined.Person
 }
@@ -305,8 +305,8 @@ private fun CollapsibleCategoryCard(
             )
             if (hasChildren) {
                 Icon(
-                    imageVector = if (expanded) Icons.Filled.ExpandLess
-                        else Icons.Filled.ExpandMore,
+                    imageVector = if (expanded) Icons.Default.ExpandLess
+                        else Icons.Default.ExpandMore,
                     contentDescription = if (expanded) stringResource(R.string.my_info_collapse) else stringResource(R.string.my_info_expand),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -344,7 +344,7 @@ private fun CollapsibleCategoryCard(
                             modifier = Modifier.weight(1f),
                         )
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                             modifier = Modifier.size(20.dp),

@@ -4,10 +4,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +41,7 @@ fun AccountManagerSheet(
     onSwitchSuccess: () -> Unit,
 ) {
     val context = LocalContext.current
-    val accountStore = remember { AccountStore(context) }
+    val accountStore = remember { AccountStore.getInstance(context) }
 
     // 账号列表刷新触发器
     var refreshTrigger by remember { mutableStateOf(0) }
@@ -73,7 +73,7 @@ fun AccountManagerSheet(
         accounts.forEach { account ->
             val isActive = account.username == activeUser
             BottomSheetItem(
-                icon = Icons.Default.Person,
+                icon = Icons.Outlined.Person,
                 title = if (isActive) {
                     "${account.username}（${stringResource(R.string.account_manager_current)}）"
                 } else {
@@ -86,7 +86,7 @@ fun AccountManagerSheet(
                             onClick = { accountToDelete = account.username }
                         ) {
                             androidx.compose.material3.Icon(
-                                imageVector = Icons.Default.Delete,
+                                imageVector = Icons.Outlined.Delete,
                                 contentDescription = null,
                                 tint = androidx.compose.material3.MaterialTheme.colorScheme.error,
                             )
@@ -106,7 +106,7 @@ fun AccountManagerSheet(
 
         // 添加账号入口
         BottomSheetItem(
-            icon = Icons.Default.PersonAdd,
+            icon = Icons.Outlined.PersonAdd,
             title = stringResource(R.string.account_manager_add),
             enabled = !isEditMode,
             onClick = {

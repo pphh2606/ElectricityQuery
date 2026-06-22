@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.ui.login
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,7 +28,7 @@ fun DeleteAccountSheet(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.login_delete_account_title),
-        icon = Icons.Default.Delete,
+        icon = Icons.Outlined.Delete,
         leadingButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.common_cancel))

@@ -26,8 +26,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -213,7 +213,7 @@ fun QrLoginScreen(
                             val loginResult = submitResult.getOrThrow()
                             if (loginResult.username.isNotBlank()) {
                                 try {
-                                    val accountStore = AccountStore(context)
+                                    val accountStore = AccountStore.getInstance(context)
                                     accountStore.saveAccount(
                                         username = loginResult.username,
                                         password = null,
@@ -262,7 +262,7 @@ fun QrLoginScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -271,7 +271,7 @@ fun QrLoginScreen(
                 actions = {
                     IconButton(onClick = onNavigateToQrCodeSettings) {
                         Icon(
-                            imageVector = Icons.Default.Settings,
+                            imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.qrcode_display_settings),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
