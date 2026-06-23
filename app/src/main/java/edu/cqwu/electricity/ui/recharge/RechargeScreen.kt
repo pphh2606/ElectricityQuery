@@ -78,7 +78,7 @@ import edu.cqwu.electricity.util.ToastUtils
 /**
  * 预设充值金额列表
  */
-private val PRESET_AMOUNTS = listOf(5.0, 10.0, 20.0, 50.0, 100.0, 200.0)
+private val PRESET_AMOUNTS = listOf(20.0, 50.0, 100.0, 200.0, 500.0, 1000.0)
 
 /**
  * 充值页面

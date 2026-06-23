@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 fun CardCenterScreen(
     onBack: () -> Unit,
     onNavigateToQrCode: (QrCodeType) -> Unit,
+    onNavigateToCardRecharge: () -> Unit = {},
 ) {
     var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -134,6 +135,7 @@ fun CardCenterScreen(
                                 CardAction.QR_CODE_BUS -> onNavigateToQrCode(QrCodeType.BUS)
                                 CardAction.CARD_LOST -> nav.navigate(Routes.CARD_LOST)
                                 CardAction.BILL -> nav.navigate(Routes.BILL)
+                                CardAction.CARD_RECHARGE -> onNavigateToCardRecharge()
                                 is CardAction.WEB_VIEW -> nav.navigate(Routes.unifiedWebViewRoute(item.action.url, ctx.getString(item.labelRes)))
                             }
                         }
@@ -161,6 +163,8 @@ private sealed class CardAction {
     data object CARD_LOST : CardAction()
     /** 原生账单页面（已本地化） */
     data object BILL : CardAction()
+    /** 原生校园卡充值页面（已本地化） */
+    data object CARD_RECHARGE : CardAction()
     /** WebView 打开 URL */
     data class WEB_VIEW(val url: String) : CardAction()
 }
@@ -204,7 +208,7 @@ private val cardCenterItems = listOf(
     CardGridItem(
         labelRes = R.string.card_center_recharge,
         icon = Icons.Outlined.Payments,
-        action = CardAction.WEB_VIEW("https://pay.cqwu.edu.cn/projectDetailEcard/")
+        action = CardAction.CARD_RECHARGE
     )
 )
 

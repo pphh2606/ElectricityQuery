@@ -61,9 +61,6 @@ class ElectricityApi {
         /** 默认请求头（User-Agent 由拦截器自动注入） */
         val HEADERS: Map<String, String> = mapOf(
             "Accept" to "*/*",
-            "sec-ch-ua" to "\"Android WebView\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
-            "sec-ch-ua-mobile" to "?1",
-            "sec-ch-ua-platform" to "\"Android\"",
             "Origin" to "https://electricitypay.cqwu.edu.cn",
             "Referer" to "https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add"
         )

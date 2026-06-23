@@ -47,6 +47,9 @@ import edu.cqwu.electricity.ui.cardcenter.BillScreen
 import edu.cqwu.electricity.ui.cardcenter.BillViewModel
 import edu.cqwu.electricity.ui.cardcenter.CardCenterScreen
 import edu.cqwu.electricity.ui.cardcenter.CardLostScreen
+import edu.cqwu.electricity.ui.cardcenter.CardPaymentScreen
+import edu.cqwu.electricity.ui.cardcenter.CardRechargeScreen
+import edu.cqwu.electricity.ui.cardcenter.CardRechargeViewModel
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.electricity.DetailScreen
 import edu.cqwu.electricity.ui.electricity.DetailViewModel
@@ -116,6 +119,12 @@ object Routes {
 
     /** 卡中心本地 UI 页面 */
     const val CARD_CENTER = "card_center"
+
+    /** 校园卡充值 — 学号输入+金额选择页面 */
+    const val CARD_RECHARGE = "card_recharge"
+
+    /** 校园卡充值 — 支付执行页面 */
+    const val CARD_PAYMENT = "card_payment"
 
     /** 账户信息本地 UI 页面 */
     const val ACCOUNT_INFO = "account_info"
@@ -291,6 +300,7 @@ fun AppNavGraph(
     val context = androidx.compose.ui.platform.LocalContext.current
     val viewModel: ElectricityViewModel = viewModel()
     val rechargeViewModel: RechargeViewModel = viewModel()
+    val cardRechargeViewModel: CardRechargeViewModel = viewModel()
     val myRoomViewModel: MyRoomViewModel = viewModel()
     val noticeViewModel: NoticeViewModel = viewModel()
     var skipNextCasRedirect by rememberSaveable { mutableStateOf(false) }
@@ -383,6 +393,24 @@ fun AppNavGraph(
             CardCenterScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToQrCode = { type -> navController.navigate(Routes.qrCodeRoute(type)) },
+                onNavigateToCardRecharge = { navController.navigate(Routes.CARD_RECHARGE) { launchSingleTop = true } },
+            )
+        }
+
+        // 校园卡充值 — 学号输入+金额选择
+        animatedComposable(settings = animationSettings, route = Routes.CARD_RECHARGE) {
+            CardRechargeScreen(
+                viewModel = cardRechargeViewModel,
+                onBack = { navController.popBackStack() },
+                onNavigateToPayment = { navController.navigate(Routes.CARD_PAYMENT) { launchSingleTop = true } },
+            )
+        }
+
+        // 校园卡充值 — 支付执行（使用 AppNavGraph 级别的共享 ViewModel）
+        animatedComposable(settings = animationSettings, route = Routes.CARD_PAYMENT) {
+            CardPaymentScreen(
+                viewModel = cardRechargeViewModel,
+                onBack = { navController.popBackStack() },
             )
         }
 
