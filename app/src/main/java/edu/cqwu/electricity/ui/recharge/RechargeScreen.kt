@@ -3,7 +3,6 @@ package edu.cqwu.electricity.ui.recharge
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -68,17 +66,13 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.network.auth.AccountManager
+import edu.cqwu.electricity.ui.paycommom.AmountGrid
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.navigation.Routes
 import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.util.ToastUtils
-
-/**
- * 预设充值金额列表
- */
-private val PRESET_AMOUNTS = listOf(20.0, 50.0, 100.0, 200.0, 500.0, 1000.0)
 
 /**
  * 充值页面
@@ -136,10 +130,10 @@ fun RechargeScreen(
     }
 
     // ── 显示充值错误 ──
-    LaunchedEffect(recharge.rechargeError) {
-        recharge.rechargeError?.let {
+    LaunchedEffect(recharge.createOrderError) {
+        recharge.createOrderError?.let {
             snackbar.show(it, ToastUtils.Type.ERROR)
-            viewModel.clearRechargeError()
+            viewModel.clearOrderError()
         }
     }
 
@@ -223,7 +217,7 @@ fun RechargeScreen(
         }
 
         // 错误提示
-        val errorMsg = recharge.error
+        val errorMsg = recharge.queryError
         if (errorMsg != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -556,60 +550,6 @@ fun RechargeScreen(
                 }
             )
         }
-}
-
-// ================================================================
-//  预设金额网格
-// ================================================================
-
-/**
- * 预设金额网格
- */
-@Composable
-private fun AmountGrid(
-    selectedAmount: Double?,
-    onAmountSelected: (Double) -> Unit
-) {
-    // 每行3个按钮
-    val rows = PRESET_AMOUNTS.chunked(3)
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        rows.forEach { row ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                row.forEach { amount ->
-                    val isSelected = selectedAmount == amount
-                    OutlinedButton(
-                        onClick = { onAmountSelected(amount) },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(
-                            width = if (isSelected) 2.dp else 1.dp,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.outline
-                        ),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                                            else MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.recharge_preset_amount, amount.toInt()),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
-                                    else MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-            }
-        }
-    }
 }
 
 // ================================================================

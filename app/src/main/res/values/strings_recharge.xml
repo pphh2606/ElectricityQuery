@@ -72,4 +72,6 @@
     <string name="payment_processing">正在处理支付…</string>
     <string name="payment_order_failed">订单创建失败</string>
     <string name="payment_close">关闭支付</string>
+    <string name="payment_success">支付成功！</string>
+    <string name="payment_done">完成</string>
 </resources>

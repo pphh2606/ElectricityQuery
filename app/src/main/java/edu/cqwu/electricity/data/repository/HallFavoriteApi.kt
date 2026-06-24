@@ -6,7 +6,7 @@ import edu.cqwu.electricity.data.model.FavoriteAppResponse
 import edu.cqwu.electricity.data.model.HallItem
 import edu.cqwu.electricity.data.model.UserFavoritesResponse
 import edu.cqwu.electricity.data.network.auth.SessionExpiredException
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import edu.cqwu.electricity.data.network.sso.ServiceLoginManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

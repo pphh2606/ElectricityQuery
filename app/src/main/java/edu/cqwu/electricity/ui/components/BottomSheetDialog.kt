@@ -144,23 +144,29 @@ fun BottomSheetDialog(
     previousVisible = visible
 
     // 当 isHiding 为 true 时，驱动 ModalBottomSheet 执行退出动画
+    // 使用 try-finally 确保即使 sheetState.hide() 被取消（如键盘弹出触发 expand()），
+    // isHiding 也会被正确重置，避免 ModalBottomSheet 的 scrim 永久阻挡屏幕
     LaunchedEffect(isHiding) {
         if (isHiding) {
             // 只有 sheet 当前确实可见时才执行 hide 动画
             // （scrim/返回键路径下 ModalBottomSheet 已自行动画完毕，此时 sheetState 已 Hidden）
-            if (sheetState.isVisible) {
-                sheetState.hide()
+            try {
+                if (sheetState.isVisible) {
+                    sheetState.hide()
+                }
+            } finally {
+                isHiding = false
+                onDismissRequest()
             }
-            isHiding = false
-            onDismissRequest()
         }
     }
 
     // 键盘弹出时自动将半展开的 sheet 展开到全屏状态，
     // 避免输入框被输入法遮挡
+    // 注意：当 isHiding 为 true 时跳过，防止 expand() 取消正在进行的 hide() 动画
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     LaunchedEffect(isKeyboardVisible) {
-        if (isKeyboardVisible && sheetState.currentValue == SheetValue.PartiallyExpanded) {
+        if (isKeyboardVisible && !isHiding && sheetState.currentValue == SheetValue.PartiallyExpanded) {
             sheetState.expand()
         }
     }

@@ -84,6 +84,7 @@ import edu.cqwu.electricity.ui.navigation.Routes
 import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
+import edu.cqwu.electricity.ui.webview.WebViewBottomSheet
 import edu.cqwu.electricity.util.ToastUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -128,6 +129,9 @@ fun LoginScreen(
     var showOtherLoginSheet by remember { mutableStateOf(false) }
     // 找回密码弹窗
     var showRecoverySheet by remember { mutableStateOf(false) }
+    // WebView 半屏弹窗（找回密码用）
+    var webViewUrl by remember { mutableStateOf<String?>(null) }
+    var webViewTitle by remember { mutableStateOf("") }
     val snackbar = LocalSnackbarController.current
 
     // 锁屏验证启动器
@@ -524,10 +528,8 @@ fun LoginScreen(
             title = phoneRecoveryTitle,
             onClick = {
                 showRecoverySheet = false
-                nav.navigate(Routes.unifiedWebViewRoute(
-                    "https://authserver.cqwu.edu.cn/authserver/mobileGetPasswordController.do",
-                    phoneRecoveryTitle
-                ))
+                webViewTitle = phoneRecoveryTitle
+                webViewUrl = "https://authserver.cqwu.edu.cn/authserver/mobileGetPasswordController.do"
             }
         )
         BottomSheetItem(
@@ -535,13 +537,19 @@ fun LoginScreen(
             title = emailRecoveryTitle,
             onClick = {
                 showRecoverySheet = false
-                nav.navigate(Routes.unifiedWebViewRoute(
-                    "https://authserver.cqwu.edu.cn/authserver/moblieFindPwdByMailPage.do",
-                    emailRecoveryTitle
-                ))
+                webViewTitle = emailRecoveryTitle
+                webViewUrl = "https://authserver.cqwu.edu.cn/authserver/moblieFindPwdByMailPage.do"
             }
         )
     }
+
+    // ========== 找回密码 WebView 半屏弹窗 ==========
+    WebViewBottomSheet(
+        visible = webViewUrl != null,
+        onDismissRequest = { webViewUrl = null },
+        url = webViewUrl ?: "",
+        title = webViewTitle
+    )
 
     // ========== 导入凭据对话框 ==========
     ImportCredentialDialog(

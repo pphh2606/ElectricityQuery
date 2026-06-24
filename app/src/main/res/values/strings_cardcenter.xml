@@ -62,4 +62,17 @@
     <string name="card_lost_request_error">请求异常</string>
     <string name="card_lost_fetch_error">获取卡信息失败</string>
     <string name="card_lost_login_expired">登录已过期，请重新登录</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  校园卡充值页面                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_recharge_student_id_label">学号</string>
+    <string name="card_recharge_student_id_placeholder">请输入学号</string>
+    <string name="card_recharge_custom_amount_label">自定义金额</string>
+    <string name="card_recharge_custom_amount_placeholder">输入其他金额</string>
+    <string name="card_recharge_creating_order">创建订单中…</string>
+    <string name="card_recharge_next_step">下一步</string>
+    <string name="card_recharge_info_name">姓名</string>
+    <string name="card_recharge_info_student_id">学号</string>
+    <string name="card_recharge_title_for_user">为 %1$s 充值</string>
 </resources>

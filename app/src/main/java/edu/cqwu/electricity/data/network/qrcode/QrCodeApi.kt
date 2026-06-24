@@ -3,7 +3,7 @@ package edu.cqwu.electricity.data.network.qrcode
 import android.util.Log
 import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import edu.cqwu.electricity.data.network.auth.SessionManager
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request

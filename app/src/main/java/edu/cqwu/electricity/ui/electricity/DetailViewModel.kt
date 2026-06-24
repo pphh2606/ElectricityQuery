@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.CurrentDataResponse
 import edu.cqwu.electricity.data.model.UsageResponse
-import edu.cqwu.electricity.data.repository.ElectricityRepository
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ElectricityApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +34,7 @@ data class DetailState(
  */
 class DetailViewModel(
     private val roomId: String,
-    private val repository: ElectricityRepository = ElectricityRepository()
+    private val api: ElectricityApi = ElectricityApi()
 ) : ViewModel() {
 
     /**
@@ -63,7 +63,7 @@ class DetailViewModel(
             _detailState.update {
                 it.copy(isLoading = true, isRefreshing = true, error = null, sixMonthUsage = null)
             }
-            repository.querySixMonthUsage(roomId)
+            api.querySixMonthUsage(roomId)
                 .onSuccess { data ->
                     _detailState.update {
                         it.copy(isLoading = false, isRefreshing = false, sixMonthUsage = data)
@@ -89,7 +89,7 @@ class DetailViewModel(
             _detailState.update {
                 it.copy(isLoading = true, isRefreshing = true, error = null, monthDailyUsage = null)
             }
-            repository.queryMonthDailyUsage(roomId)
+            api.queryMonthDailyUsage(roomId)
                 .onSuccess { data ->
                     _detailState.update {
                         it.copy(isLoading = false, isRefreshing = false, monthDailyUsage = data)
@@ -115,7 +115,7 @@ class DetailViewModel(
             _detailState.update {
                 it.copy(isLoading = true, isRefreshing = true, error = null, currentData = null)
             }
-            repository.queryCurrentData(roomId)
+            api.queryCurrentData(roomId)
                 .onSuccess { data ->
                     _detailState.update {
                         it.copy(isLoading = false, isRefreshing = false, currentData = data)

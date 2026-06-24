@@ -56,7 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.data.model.CardLostInfo
-import edu.cqwu.electricity.data.network.electricity.ElectricityApi
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ElectricityApi
 import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import edu.cqwu.electricity.ui.components.ReLoginContent
 import edu.cqwu.electricity.ui.components.LocalSnackbarController

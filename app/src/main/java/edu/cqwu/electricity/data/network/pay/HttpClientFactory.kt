@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.data.network
+package edu.cqwu.electricity.data.network.pay
 
 import edu.cqwu.electricity.data.network.auth.AccountManager
 import edu.cqwu.electricity.data.network.common.CookieStoreOkHttpJar
@@ -7,6 +7,8 @@ import edu.cqwu.electricity.data.network.common.UserAwareCookieJar
 import okhttp3.CookieJar
 import okhttp3.Dns
 import okhttp3.OkHttpClient
+import java.net.Inet4Address
+import java.net.Inet6Address
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
@@ -33,6 +35,17 @@ object HttpClientFactory {
      * 使用 CookieStoreOkHttpJar 将 OkHttp Cookie 读写桥接到
      * android.webkit.CookieManager，所有业务 API 共享同一 Cookie Session。
      */
+    /**
+     * 支付 API 共享的 OkHttpClient 实例（10 秒超时）。
+     *
+     * [PayApiBase] 及其子类
+     * （ElectricityPayApi、CardRechargeApi）共用同一实例，
+     * 避免每个 API 类各自创建完全相同的 OkHttpClient。
+     */
+    val payClient: OkHttpClient by lazy {
+        createWithTimeout(10, 10, 10)
+    }
+
     val shared: OkHttpClient by lazy {
         buildClient(
             cookieJar = CookieStoreOkHttpJar,
@@ -93,14 +106,14 @@ object HttpClientFactory {
      * 此解析器将 IPv4 地址排在 IPv6 前面，彻底避免 15 秒的 IPv6 连接超时。
      */
     private object PreferIPv4Dns : Dns {
-        private val fallbackDns = Dns.SYSTEM
+        private val fallbackDns = Dns.Companion.SYSTEM
         override fun lookup(hostname: String): List<InetAddress> {
             val allAddresses = fallbackDns.lookup(hostname)
             val ipv4 = mutableListOf<InetAddress>()
             val ipv6 = mutableListOf<InetAddress>()
             for (addr in allAddresses) {
-                if (addr is java.net.Inet4Address) ipv4.add(addr)
-                else if (addr is java.net.Inet6Address) ipv6.add(addr)
+                if (addr is Inet4Address) ipv4.add(addr)
+                else if (addr is Inet6Address) ipv6.add(addr)
             }
             return ipv4 + ipv6
         }

@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.data.network.auth
 
 import android.util.Log
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import edu.cqwu.electricity.data.network.common.UserAwareCookieJar
 import edu.cqwu.electricity.data.network.common.UserCookieStore
 import kotlinx.coroutines.CancellationException

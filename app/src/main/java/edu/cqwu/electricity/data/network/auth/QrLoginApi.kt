@@ -7,7 +7,7 @@ import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import edu.cqwu.electricity.data.network.common.CookieStore
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import edu.cqwu.electricity.data.network.common.UserAwareCookieJar
 import edu.cqwu.electricity.data.network.common.UserCookieStore
 import kotlinx.coroutines.Dispatchers

@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import edu.cqwu.electricity.data.network.common.CookieStore
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType

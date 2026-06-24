@@ -61,7 +61,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.QrCodeColorMode
 import edu.cqwu.electricity.data.network.auth.CasAuthApi
 import edu.cqwu.electricity.data.network.common.CookieStore
-import edu.cqwu.electricity.data.network.electricity.ElectricityApi
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ElectricityApi
 import edu.cqwu.electricity.data.network.qrcode.QrCodeApi
 import edu.cqwu.electricity.data.network.qrcode.QrCodeType
 import edu.cqwu.electricity.data.network.auth.SessionExpiredException

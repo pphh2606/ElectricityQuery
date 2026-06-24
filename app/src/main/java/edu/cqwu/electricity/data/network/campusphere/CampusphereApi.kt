@@ -6,7 +6,7 @@ import edu.cqwu.electricity.BuildConfig
 import edu.cqwu.electricity.data.model.StudentInfo
 import edu.cqwu.electricity.data.model.StudentInfoResponse
 import edu.cqwu.electricity.data.network.common.CookieStore
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import edu.cqwu.electricity.data.network.auth.AccountManager
 import edu.cqwu.electricity.data.network.auth.SessionManager

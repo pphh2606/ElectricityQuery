@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.data.network.electricity
+package edu.cqwu.electricity.data.network.pay.electricityrecharge
 
 import android.util.Log
 import com.google.gson.Gson
@@ -15,12 +15,11 @@ import edu.cqwu.electricity.data.model.CardLostInfo
 import edu.cqwu.electricity.data.model.CardLostResponse
 import edu.cqwu.electricity.data.model.CurrentDataResponse
 import edu.cqwu.electricity.data.model.H5BillResponse
-import edu.cqwu.electricity.data.model.OrderStatusResponse
 import edu.cqwu.electricity.data.model.RechargeResponse
 import edu.cqwu.electricity.data.model.UsageResponse
 import edu.cqwu.electricity.data.model.UserRoomInfo
 import edu.cqwu.electricity.data.model.WechatUserResponse
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import edu.cqwu.electricity.data.network.auth.SessionExpiredException
 import edu.cqwu.electricity.data.network.auth.SessionManager
 import kotlinx.coroutines.CancellationException
@@ -56,8 +55,6 @@ class ElectricityApi {
         const val ROOM_LIST_API = "$BASE_URL/wechat/wx/findUserRoomList"
         const val GET_USER_API = "$BASE_URL/wechat/wx/getWechatUserByOpenId"
         const val BUY_LIST_API = "$BASE_URL/wechat/wx/wechatData/getRoomBuyList"
-        const val PAY_CASHIER_API = "https://pay.cqwu.edu.cn/pay/cashier"
-
         /** 默认请求头（User-Agent 由拦截器自动注入） */
         val HEADERS: Map<String, String> = mapOf(
             "Accept" to "*/*",
@@ -320,39 +317,6 @@ class ElectricityApi {
                 extraHeaders = mapOf("Authorization" to authHeader)
             )
             gson.fromJson(json, BuyListResponse::class.java)
-        }
-    }
-
-    // ==================== 支付相关 API ====================
-
-    /**
-     * 查询订单状态（轮询用）
-     * GET /pay/cashier/getOrderById/{orderId}
-     * 对应 showselect 页面 JavaScript 中的 queryOrderStatus() 函数
-     */
-    suspend fun getOrderStatus(orderId: String): Result<OrderStatusResponse> {
-        return safeApiCall {
-            val url = "${PAY_CASHIER_API}/getOrderById/$orderId"
-            Log.d("ElectricityApi", "查询订单状态: $url")
-
-            val requestBuilder = Request.Builder()
-                .url(url)
-                .get()
-                .addHeader("Referer", "https://pay.cqwu.edu.cn/")
-                .addHeader("X-Requested-With", "XMLHttpRequest")
-
-            // 添加其他默认请求头（User-Agent 由拦截器自动注入）
-            HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
-
-            val request = requestBuilder.build()
-            val response = client.newCall(request).execute()
-            if (!response.isSuccessful) {
-                throw RuntimeException("查询订单状态 HTTP ${response.code}: ${response.message}")
-            }
-            val body = response.body.string()
-            Log.d("ElectricityApi", "订单状态响应: $body")
-
-            gson.fromJson(body, OrderStatusResponse::class.java)
         }
     }
 

@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import edu.cqwu.electricity.data.model.HallItem
 import edu.cqwu.electricity.data.model.ServiceCenterDataResponse
 import edu.cqwu.electricity.data.network.auth.SessionExpiredException
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request

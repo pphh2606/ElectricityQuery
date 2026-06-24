@@ -10,7 +10,7 @@ import android.util.Log
  * WebView URL 判断工具类
  *
  * 集中管理所有与 WebView 当前网页 URL 相关的判断逻辑，
- * 消除 UnifiedWebViewScreen、PaymentWebViewEngine、PaymentSelectionScreen、HomeScreen
+ * 消除 UnifiedWebViewScreen、PaymentSelectionScreen、HomeScreen
  * 之间散落的重复代码。
  *
  * 所有方法均为纯函数 / 静态调用，不持有任何状态。

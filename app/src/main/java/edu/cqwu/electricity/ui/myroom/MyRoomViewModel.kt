@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.BalanceResponse
 import edu.cqwu.electricity.data.model.BuildingNode
 import edu.cqwu.electricity.data.model.UserRoomInfo
-import edu.cqwu.electricity.data.repository.ElectricityRepository
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ElectricityApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +33,7 @@ data class MyRoomUiState(
  * 与 [ElectricityViewModel] 完全解耦，不共享任何状态。
  */
 class MyRoomViewModel(
-    private val repository: ElectricityRepository = ElectricityRepository()
+    private val api: ElectricityApi = ElectricityApi()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyRoomUiState())
@@ -62,7 +62,7 @@ class MyRoomViewModel(
             }
 
             // 学号 → userId
-            val userIdResult = repository.queryUseridByStudentId(loggedInStudentId)
+            val userIdResult = api.queryUseridByStudentId(loggedInStudentId)
             val wechatUser = userIdResult.getOrNull()
             if (wechatUser == null || wechatUser.id.isBlank()) {
                 _uiState.update { it.copy(isMyRoomQuerying = false) }
@@ -71,7 +71,7 @@ class MyRoomViewModel(
             }
 
             // userId → 房间列表
-            val roomsResult = repository.queryUserRoomList(wechatUser.id)
+            val roomsResult = api.queryUserRoomList(wechatUser.id)
             roomsResult
                 .onSuccess { rooms ->
                     if (rooms.isEmpty()) {
@@ -94,7 +94,7 @@ class MyRoomViewModel(
                             )
                         }
                         // 直接查询余额
-                        repository.queryBalance(rooms[0].roomId)
+                        api.queryBalance(rooms[0].roomId)
                             .onSuccess { balance ->
                                 _uiState.update { it.copy(isBalanceRefreshing = false, balance = balance) }
                             }
@@ -129,7 +129,7 @@ class MyRoomViewModel(
                     balance = null
                 )
             }
-            repository.queryBalance(room.roomId)
+            api.queryBalance(room.roomId)
                 .onSuccess { balance ->
                     _uiState.update { it.copy(isBalanceRefreshing = false, balance = balance) }
                 }
@@ -146,7 +146,7 @@ class MyRoomViewModel(
         val roomId = _uiState.value.selectedRoom?.id ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isBalanceRefreshing = true) }
-            repository.queryBalance(roomId)
+            api.queryBalance(roomId)
                 .onSuccess { balance ->
                     _uiState.update { it.copy(isBalanceRefreshing = false, balance = balance) }
                 }

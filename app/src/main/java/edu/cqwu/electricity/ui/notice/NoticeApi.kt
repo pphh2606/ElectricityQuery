@@ -6,7 +6,7 @@ import edu.cqwu.electricity.data.model.NoticeDetailQp
 import edu.cqwu.electricity.data.model.NoticeDetailResponse
 import edu.cqwu.electricity.data.model.NoticeItem
 import edu.cqwu.electricity.data.model.NoticeResponse
-import edu.cqwu.electricity.data.network.HttpClientFactory
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request

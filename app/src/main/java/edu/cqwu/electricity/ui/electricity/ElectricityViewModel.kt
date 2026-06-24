@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.BalanceResponse
 import edu.cqwu.electricity.data.model.BuildingNode
 import edu.cqwu.electricity.data.model.SelectionStep
-import edu.cqwu.electricity.data.repository.ElectricityRepository
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ElectricityApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -68,7 +68,7 @@ data class ElectricityUiState(
  * 充值记录 → [RechargeViewModel]
  */
 class ElectricityViewModel(
-    private val repository: ElectricityRepository = ElectricityRepository()
+    private val api: ElectricityApi = ElectricityApi()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ElectricityUiState())
@@ -128,7 +128,7 @@ class ElectricityViewModel(
             copy(isLoading = false, isRefreshing = false, areas = areas, currentStep = SelectionStep.AREA)
         },
         onError = { msg -> copy(isLoading = false, isRefreshing = false, error = "获取校区列表失败: $msg") },
-        request = { repository.getAreas() }
+        request = { api.getAreas() }
     )
 
     fun selectBuilding(building: BuildingNode, areaId: String) {
@@ -157,7 +157,7 @@ class ElectricityViewModel(
         }
         viewModelScope.launch {
             kotlinx.coroutines.withTimeout(15_000L) {
-                repository.getRooms(floor.id)
+                api.getRooms(floor.id)
             }.onSuccess { rooms ->
                 _uiState.update { it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Success(rooms))) }
             }.onFailure { e ->
@@ -184,7 +184,7 @@ class ElectricityViewModel(
             )
         }
         viewModelScope.launch {
-            repository.queryBalance(room.id)
+            api.queryBalance(room.id)
                 .onSuccess { balance ->
                     _uiState.update { it.copy(isLoading = false, isBalanceRefreshing = false, balance = balance) }
                 }
@@ -225,7 +225,7 @@ class ElectricityViewModel(
         onStart = { copy(isRefreshing = true) },
         onSuccess = { areas -> copy(isRefreshing = false, areas = areas) },
         onError = { msg -> copy(isRefreshing = false, error = "刷新失败: $msg") },
-        request = { repository.getAreas() }
+        request = { api.getAreas() }
     )
 
     fun refreshRoomGrid() {
@@ -245,7 +245,7 @@ class ElectricityViewModel(
             onStart = { copy(isBalanceRefreshing = true) },
             onSuccess = { balance -> copy(isBalanceRefreshing = false, balance = balance) },
             onError = { msg -> copy(isBalanceRefreshing = false, error = "刷新失败: $msg") },
-            request = { repository.queryBalance(roomId) }
+            request = { api.queryBalance(roomId) }
         )
     }
 

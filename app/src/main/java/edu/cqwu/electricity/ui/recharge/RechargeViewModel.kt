@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.data.model.BalanceResponse
 import edu.cqwu.electricity.data.model.BuyRecord
-import edu.cqwu.electricity.data.model.OrderStatusResponse
 import edu.cqwu.electricity.data.model.PaymentMethod
 import edu.cqwu.electricity.data.model.RechargeTimeRange
 import edu.cqwu.electricity.data.model.UserRoomInfo
-import edu.cqwu.electricity.data.repository.ElectricityRepository
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ElectricityApi
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ElectricityPayApi
+import edu.cqwu.electricity.data.network.pay.electricityrecharge.ShowselectPageData
+import edu.cqwu.electricity.ui.paycommom.PaymentFlowDelegate
+import edu.cqwu.electricity.ui.paycommom.PaymentState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +30,7 @@ data class RechargeUiState(
     val isQuerying: Boolean = false,
     val roomList: List<UserRoomInfo> = emptyList(),
     val selectedRoom: UserRoomInfo? = null,
-    val error: String? = null,
+    val queryError: String? = null,
     val fullName: String = "",
     val targetUserId: String = "",
     val targetRoomId: String = "",
@@ -42,14 +45,13 @@ data class RechargeUiState(
     val customAmount: String = "",
 
     // 订单创建
-    val isRecharging: Boolean = false,
-    val rechargeError: String? = null,
+    val isCreatingOrder: Boolean = false,
+    val createOrderError: String? = null,
     val payUrl: String? = null,
+    val showselectData: ShowselectPageData? = null,
 
-    // 支付方式
-    val selectedPaymentMethod: PaymentMethod? = null,
-    val isProcessingPayment: Boolean = false,
-    val paymentError: String? = null,
+    // 支付流程（共享 PaymentState）
+    val payment: PaymentState = PaymentState(),
 )
 
 /**
@@ -74,9 +76,10 @@ data class RechargeRecordState(
  *
  * 与 [ElectricityViewModel] 解耦，不共享任何状态。
  */
-class RechargeViewModel(
-    private val repository: ElectricityRepository = ElectricityRepository()
-) : ViewModel() {
+class RechargeViewModel : ViewModel() {
+
+    private val electricityApi = ElectricityApi()
+    private val payApi = ElectricityPayApi()
 
     private val _uiState = MutableStateFlow(RechargeUiState())
     val uiState: StateFlow<RechargeUiState> = _uiState.asStateFlow()
@@ -84,52 +87,53 @@ class RechargeViewModel(
     private val _recordState = MutableStateFlow(RechargeRecordState())
     val recordState: StateFlow<RechargeRecordState> = _recordState.asStateFlow()
 
+    /** 支付流程委托，封装与 CardRechargeViewModel 共有的支付/金额逻辑 */
+    private val paymentFlowDelegate = PaymentFlowDelegate(
+        scope = viewModelScope,
+        getPaymentState = { _uiState.value.payment },
+        updatePayment = { transform -> _uiState.update { it.copy(payment = it.payment.transform()) } },
+        getSelectedAmount = { _uiState.value.selectedAmount },
+        updateAmount = { selectedAmount, customAmount ->
+            _uiState.update { it.copy(selectedAmount = selectedAmount, customAmount = customAmount) }
+        },
+        getCustomAmount = { _uiState.value.customAmount },
+        clearOrderError = { _uiState.update { it.copy(createOrderError = null) } },
+    )
+
     // ================================================================
-    //  充值金额
+    //  充值金额（委托给 paymentFlowDelegate）
     // ================================================================
 
     /**
      * 选择预设充值金额
      */
-    fun selectRechargeAmount(amount: Double) {
-        _uiState.update {
-            it.copy(selectedAmount = amount, customAmount = "", rechargeError = null)
-        }
-    }
+    fun selectRechargeAmount(amount: Double) = paymentFlowDelegate.selectAmount(amount)
 
     /**
      * 设置自定义充值金额
      */
-    fun setCustomRechargeAmount(amount: String) {
-        _uiState.update {
-            it.copy(customAmount = amount, selectedAmount = null, rechargeError = null)
-        }
-    }
+    fun setCustomRechargeAmount(amount: String) = paymentFlowDelegate.setCustomAmount(amount)
 
     /**
      * 获取当前有效的充值金额
      */
-    private fun getEffectiveRechargeAmount(): Double? {
-        val state = _uiState.value
-        state.selectedAmount?.let { return it }
-        val custom = state.customAmount.trim()
-        if (custom.isNotBlank()) {
-            return custom.toDoubleOrNull()
-        }
-        return null
-    }
+    fun getEffectiveRechargeAmount(): Double? = paymentFlowDelegate.getEffectiveAmount()
 
     /**
      * 提交充值请求（仅支持账号充值模式）
+     *
+     * 改造后流程：
+     * 1. 创建订单 → 获取 payUrl
+     * 2. OkHttp 加载 showselect HTML → 解析 orderNo/orderId
      */
     fun submitRecharge() {
         val uiState = _uiState.value
         val roomId = uiState.targetRoomId.ifBlank {
-            _uiState.update { it.copy(rechargeError = "未选择房间") }
+            _uiState.update { it.copy(createOrderError = "未选择房间") }
             return
         }
         val roomName = uiState.fullName.ifBlank {
-            _uiState.update { it.copy(rechargeError = "未选择房间") }
+            _uiState.update { it.copy(createOrderError = "未选择房间") }
             return
         }
         val userId = uiState.targetUserId
@@ -137,34 +141,94 @@ class RechargeViewModel(
 
         val amount = getEffectiveRechargeAmount()
         if (amount == null || amount <= 0) {
-            _uiState.update { it.copy(rechargeError = "请输入有效金额") }
+            _uiState.update { it.copy(createOrderError = "请输入有效金额") }
             return
         }
         if (amount > 1000) {
-            _uiState.update { it.copy(rechargeError = "金额超出合理范围（0-1000元）") }
+            _uiState.update { it.copy(createOrderError = "金额超出合理范围（0-1000元）") }
             return
         }
 
         viewModelScope.launch {
             _uiState.update {
-                it.copy(isRecharging = true, rechargeError = null, payUrl = null)
+                it.copy(isCreatingOrder = true, createOrderError = null, payUrl = null, showselectData = null)
             }
 
-            repository.createRechargeOrder(roomId, roomName, amount, userId, openId)
+            electricityApi.createRechargeOrder(roomId, roomName, amount, userId, openId)
                 .onSuccess { payUrl ->
-                    _uiState.update {
-                        it.copy(isRecharging = false, payUrl = payUrl)
-                    }
+                    // OkHttp 加载 showselect 页面并解析隐藏字段
+                    payApi.fetchShowselectHtml(payUrl)
+                        .onSuccess { showselectData ->
+                            _uiState.update {
+                                it.copy(
+                                    isCreatingOrder = false,
+                                    payUrl = payUrl,
+                                    showselectData = showselectData,
+                                )
+                            }
+                        }
+                        .onFailure { e ->
+                            _uiState.update {
+                                it.copy(
+                                    isCreatingOrder = false,
+                                    createOrderError = "解析订单信息失败: ${e.localizedMessage}"
+                                )
+                            }
+                        }
                 }
                 .onFailure { e ->
                     _uiState.update {
                         it.copy(
-                            isRecharging = false,
-                            rechargeError = "创建订单失败: ${e.localizedMessage}"
+                            isCreatingOrder = false,
+                            createOrderError = "创建订单失败: ${e.localizedMessage}"
                         )
                     }
                 }
         }
+    }
+
+    // ================================================================
+    //  支付提交（委托给 paymentFlowDelegate）
+    // ================================================================
+
+    /**
+     * 提交支付请求
+     *
+     * 调用 gotToPay API 获取 sbHtml（支付宝）或 mwebUrl（微信）。
+     */
+    fun submitPayment() {
+        val showselect = _uiState.value.showselectData ?: return
+        paymentFlowDelegate.submitPayment(
+            getOrderNo = { showselect.orderNo },
+            executePayment = { orderNo ->
+                val method = _uiState.value.payment.selectedMethod!!
+                val result = payApi.gotToPay(orderNo, method.payType, showselect.publictype, showselect.openId)
+                    .getOrThrow()
+                Pair(result.sbHtml, result.mwebUrl)
+            },
+        )
+    }
+
+    // ================================================================
+    //  订单状态轮询（委托给 paymentFlowDelegate）
+    // ================================================================
+
+    /**
+     * 启动订单状态轮询
+     *
+     * 在用户从外部支付应用返回后调用。
+     */
+    fun startPollingOrderStatus(orderId: String) {
+        paymentFlowDelegate.startPollingOrderStatus(
+            orderId = orderId,
+            queryStatus = { id ->
+                val result = payApi.queryOrderStatus(id)
+                val data = result.getOrNull()
+                val status = data?.status
+                android.util.Log.d("RechargeVM", "轮询订单状态: orderId=$id, status=$status")
+                status
+            },
+        )
     }
 
     /**
@@ -175,12 +239,11 @@ class RechargeViewModel(
             it.copy(
                 selectedAmount = null,
                 customAmount = "",
-                isRecharging = false,
-                rechargeError = null,
+                isCreatingOrder = false,
+                createOrderError = null,
                 payUrl = null,
-                selectedPaymentMethod = null,
-                isProcessingPayment = false,
-                paymentError = null,
+                showselectData = null,
+                payment = PaymentState(),
             )
         }
     }
@@ -188,40 +251,23 @@ class RechargeViewModel(
     /**
      * 仅清除充值错误，保留用户输入（学号、房间、金额等）。
      */
-    fun clearRechargeError() {
-        _uiState.update { it.copy(rechargeError = null) }
+    fun clearOrderError() {
+        _uiState.update { it.copy(createOrderError = null) }
     }
 
     // ================================================================
-    //  支付方式选择
+    //  支付方式选择（委托给 paymentFlowDelegate）
     // ================================================================
 
     /**
      * 选择支付方式
      */
-    fun selectPaymentMethod(method: PaymentMethod) {
-        _uiState.update { it.copy(selectedPaymentMethod = method, paymentError = null) }
-    }
+    fun selectPaymentMethod(method: PaymentMethod) = paymentFlowDelegate.selectPaymentMethod(method)
 
     /**
      * 清除支付选择状态
      */
-    fun clearPaymentState() {
-        _uiState.update {
-            it.copy(
-                selectedPaymentMethod = null,
-                paymentError = null,
-                isProcessingPayment = false
-            )
-        }
-    }
-
-    /**
-     * 查询订单状态（轮询用）
-     */
-    suspend fun queryPaymentOrderStatus(orderId: String): Result<OrderStatusResponse> {
-        return repository.queryOrderStatus(orderId)
-    }
+    fun clearPaymentState() = paymentFlowDelegate.clearPaymentState()
 
     // ================================================================
     //  账号充值方法（学号 → userId → 房间列表 → 选择 → 充值）
@@ -231,14 +277,14 @@ class RechargeViewModel(
      * 设置账号充值的学号
      */
     fun setAccountStudentId(studentId: String) {
-        _uiState.update { it.copy(studentId = studentId, error = null) }
+        _uiState.update { it.copy(studentId = studentId, queryError = null) }
     }
 
     /**
      * 解析输入值：优先按学号查询 userId，查不到则降级直接使用输入值
      */
     private suspend fun resolveUserId(input: String): String {
-        val userResult = repository.queryUseridByStudentId(input)
+        val userResult = electricityApi.queryUseridByStudentId(input)
         val userData = userResult.getOrNull()
         return if (userData == null || userData.id.isBlank()) {
             android.util.Log.d("RechargeVM", "学号查询无结果，尝试将输入 [$input] 作为 userId 直接查询房间列表")
@@ -253,7 +299,7 @@ class RechargeViewModel(
      */
     private suspend fun queryRoomsByStudentId(input: String): Result<List<UserRoomInfo>> {
         val userId = resolveUserId(input)
-        return repository.queryUserRoomList(userId)
+        return electricityApi.queryUserRoomList(userId)
     }
 
     /**
@@ -268,7 +314,7 @@ class RechargeViewModel(
                 .onSuccess { rooms ->
                     if (rooms.isEmpty()) {
                         _uiState.update {
-                            it.copy(isQuerying = false, isRefreshing = false, error = "该账号下未绑定任何房间")
+                            it.copy(isQuerying = false, isRefreshing = false, queryError = "该账号下未绑定任何房间")
                         }
                     } else {
                         // 自动选择第一个房间：即使 roomList 内容与之前相同（LaunchedEffect key 不变），
@@ -281,7 +327,7 @@ class RechargeViewModel(
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(isQuerying = false, isRefreshing = false, error = "查询失败: ${e.localizedMessage}")
+                        it.copy(isQuerying = false, isRefreshing = false, queryError = "查询失败: ${e.localizedMessage}")
                     }
                 }
         }
@@ -294,7 +340,7 @@ class RechargeViewModel(
     fun queryAccountRoomList() {
         val studentId = _uiState.value.studentId.trim()
         if (studentId.isBlank()) {
-            _uiState.update { it.copy(error = "请输入学号") }
+            _uiState.update { it.copy(queryError = "请输入学号") }
             return
         }
         fetchRooms(studentId)
@@ -323,7 +369,7 @@ class RechargeViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(balanceLoading = true) }
-            repository.queryBalance(roomId)
+            electricityApi.queryBalance(roomId)
                 .onSuccess { balance ->
                     _uiState.update { it.copy(balanceLoading = false, balance = balance) }
                 }
@@ -400,7 +446,7 @@ class RechargeViewModel(
             val timeRange = RechargeTimeRange.fromIndex(_recordState.value.timeRange)
             calendar.add(Calendar.DAY_OF_YEAR, -timeRange.days.toInt())
             val beginTime = dateFormat.format(calendar.time)
-            val buyResult = repository.queryBuyList(roomId, "0", beginTime, endTime)
+            val buyResult = electricityApi.queryBuyList(roomId, "0", beginTime, endTime)
             val buyData = buyResult.getOrNull()
             if (buyData == null || buyData.ifSuccess != "Y") {
                 val errorMsg = buyData?.resultMsg ?: "查询充值记录失败"
