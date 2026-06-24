@@ -18,7 +18,8 @@
     <string name="qrcode_save_success">QR code enregistré dans l\'album</string>
     <string name="qrcode_save_failed">Échec d\'enregistrement</string>
     <string name="scan_save_to_album">Enregistrer dans l\'album</string>
-    <string name="scan_open_external">Ouvrir avec une autre app</string>
+    <string name="scan_open_external">Partager l\'URL</string>
+    <string name="qrcode_display_orders">Historique</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Scanner                                    -->

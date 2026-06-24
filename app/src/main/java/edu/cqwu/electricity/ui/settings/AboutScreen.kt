@@ -162,7 +162,7 @@ fun AboutScreen(
                     )
 
                     // 构建信息
-                    val isCiBuild = false
+                    val isCiBuild = BuildConfig.BUILD_SOURCE == "github-actions"
                     AboutEntry(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.about_build_info),

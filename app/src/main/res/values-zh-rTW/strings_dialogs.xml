@@ -17,6 +17,7 @@
     <!--  開啟網址                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="open_url_intranet">內網存取</string>
+    <string name="open_url_half_screen">半屏存取</string>
     <string name="open_url_title">開啟網址</string>
     <string name="open_url_label">請輸入網址</string>
     <string name="open_url_placeholder">example.com</string>

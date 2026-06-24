@@ -1,18 +1,18 @@
 package edu.cqwu.electricity.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -68,107 +68,131 @@ private fun normalizeUrl(url: String): String {
 }
 
 /**
- * 打开网址对话框，让用户输入 URL 并选择打开方式。
+ * 打开网址底部弹窗，让用户输入 URL 并选择打开方式。
  *
- * @param onDismiss 关闭对话框
- * @param onConfirm 确认时的回调 (url: String, isInternal: Boolean)
+ * 使用 [BottomSheetDialog]（MD3 ModalBottomSheet）实现，
+ * 带拖拽手柄，支持手势下滑关闭。
+ *
+ * @param visible 控制弹窗是否可见
+ * @param onDismiss 关闭弹窗
+ * @param onConfirm 确认时的回调 (url: String, isInternal: Boolean, useHalfScreen: Boolean)
  *                   isInternal=true 表示内网打开（通过 WebVPN 代理）
+ *                   useHalfScreen=true 表示使用半屏 WebView 打开
  */
 @Composable
 fun OpenUrlDialog(
+    visible: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (url: String, isInternal: Boolean) -> Unit,
+    onConfirm: (url: String, isInternal: Boolean, useHalfScreen: Boolean) -> Unit,
 ) {
     var urlInput by remember { mutableStateOf("") }
     var isInternal by remember { mutableStateOf(true) }
+    var useHalfScreen by remember { mutableStateOf(true) }
     var urlError by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
     val context = LocalContext.current
 
-    // 对话框弹出后自动聚焦输入框并弹出软键盘
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    // 弹窗弹出后自动聚焦输入框
+    LaunchedEffect(visible) {
+        if (visible) {
+            urlInput = ""
+            urlError = null
+            focusRequester.requestFocus()
+        }
     }
 
-    AlertDialog(
+    fun doConfirm() {
+        if (isValidUrl(urlInput)) {
+            onConfirm(normalizeUrl(urlInput), isInternal, useHalfScreen)
+        } else {
+            urlError = context.getString(R.string.open_url_invalid)
+        }
+    }
+
+    BottomSheetDialog(
+        visible = visible,
         onDismissRequest = onDismiss,
-        icon = {
-            Icon(
-                imageVector = Icons.Outlined.OpenInBrowser,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        },
-        title = { Text(stringResource(R.string.open_url_title)) },
-        text = {
-            Column {
-                TextField(
-                    value = urlInput,
-                    onValueChange = {
-                        urlInput = it
-                        urlError = null // 用户输入时清除错误
-                    },
-                    label = { Text(stringResource(R.string.open_url_label)) },
-                    placeholder = { Text(stringResource(R.string.open_url_placeholder)) },
-                    singleLine = true,
-                    isError = urlError != null,
-                    supportingText = urlError?.let {
-                        { Text(it, color = MaterialTheme.colorScheme.error) }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Uri,
-                        imeAction = ImeAction.Go
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onGo = {
-                            if (isValidUrl(urlInput)) {
-                                onConfirm(normalizeUrl(urlInput), isInternal)
-                            } else {
-                                urlError = context.getString(R.string.open_url_invalid)
-                            }
-                        }
-                    ),
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = isInternal,
-                        onCheckedChange = { isInternal = it }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(R.string.open_url_intranet),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-        },
-        confirmButton = {
+        title = stringResource(R.string.open_url_title),
+        icon = Icons.Outlined.OpenInBrowser,
+        fullscreen = false,
+        trailingButton = {
             TextButton(
-                onClick = {
-                    if (isValidUrl(urlInput)) {
-                        onConfirm(normalizeUrl(urlInput), isInternal)
-                    } else {
-                    }
-                },
+                onClick = { doConfirm() },
                 enabled = urlInput.isNotBlank() && isValidUrl(urlInput)
             ) {
                 Text(stringResource(R.string.common_confirm))
             }
         },
-        dismissButton = {
+        leadingButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.common_cancel))
             }
+        },
+    ) {
+        TextField(
+            value = urlInput,
+            onValueChange = {
+                urlInput = it
+                urlError = null
+            },
+            label = { Text(stringResource(R.string.open_url_label)) },
+            placeholder = { Text(stringResource(R.string.open_url_placeholder)) },
+            singleLine = true,
+            isError = urlError != null,
+            supportingText = urlError?.let {
+                { Text(it, color = MaterialTheme.colorScheme.error) }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Uri,
+                imeAction = ImeAction.Go
+            ),
+            keyboardActions = KeyboardActions(onGo = { doConfirm() }),
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { isInternal = !isInternal }
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.open_url_intranet),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Switch(
+                checked = isInternal,
+                onCheckedChange = { isInternal = it }
+            )
         }
-    )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { useHalfScreen = !useHalfScreen }
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.open_url_half_screen),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Switch(
+                checked = useHalfScreen,
+                onCheckedChange = { useHalfScreen = it }
+            )
+        }
+    }
 }

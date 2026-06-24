@@ -17,6 +17,7 @@
     <!--  Open URL Dialog                            -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="open_url_intranet">Intranet Access</string>
+    <string name="open_url_half_screen">Half-screen Access</string>
     <string name="open_url_title">Open URL</string>
     <string name="open_url_label">Enter URL</string>
     <string name="open_url_placeholder">example.com</string>

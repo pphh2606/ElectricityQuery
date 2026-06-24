@@ -17,6 +17,7 @@
     <!--  URLを開く                                  -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="open_url_intranet">学内ネットワークアクセス</string>
+    <string name="open_url_half_screen">ハーフスクリーンアクセス</string>
     <string name="open_url_title">URLを開く</string>
     <string name="open_url_label">URLを入力してください</string>
     <string name="open_url_placeholder">example.com</string>

@@ -17,6 +17,7 @@
     <!--  打开链接弹窗                               -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="open_url_intranet">内网访问</string>
+    <string name="open_url_half_screen">半屏访问</string>
     <string name="open_url_title">打开网址</string>
     <string name="open_url_label">请输入网址</string>
     <string name="open_url_placeholder">example.com</string>

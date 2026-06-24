@@ -18,7 +18,8 @@
     <string name="qrcode_save_success">二维码已保存到相册</string>
     <string name="qrcode_save_failed">保存失败</string>
     <string name="scan_save_to_album">保存到相册</string>
-    <string name="scan_open_external">其他应用打开</string>
+    <string name="scan_open_external">分享网址</string>
+    <string name="qrcode_display_orders">订单记录</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  扫码模块                                   -->

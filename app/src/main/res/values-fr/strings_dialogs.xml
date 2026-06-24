@@ -17,6 +17,7 @@
     <!--  Ouvrir URL                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="open_url_intranet">Accès intranet</string>
+    <string name="open_url_half_screen">Accès demi-écran</string>
     <string name="open_url_title">Ouvrir l\'URL</string>
     <string name="open_url_label">Saisir l\'URL</string>
     <string name="open_url_placeholder">exemple.com</string>

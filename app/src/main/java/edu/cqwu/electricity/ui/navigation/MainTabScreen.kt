@@ -13,7 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,6 +31,7 @@ import edu.cqwu.electricity.ui.profile.ProfilePageContent
 import edu.cqwu.electricity.ui.profile.ProfileTopBar
 import edu.cqwu.electricity.ui.theme.AnimationSettings
 import edu.cqwu.electricity.ui.theme.LocalNavController
+import edu.cqwu.electricity.ui.webview.WebViewBottomSheet
 import kotlinx.coroutines.launch
 
 /**
@@ -50,6 +54,10 @@ fun MainTabScreen(
     // 共享 HomeViewModel，让 TopAppBar 和 HomePageContent 访问同一搜索状态
     val homeViewModel: HomeViewModel = viewModel()
     LocalNavController.current
+
+    // ── 半屏 WebView 状态（提升到 MainTabScreen 层级，避免被 HorizontalPager 裁剪）──
+    var halfScreenUrl by remember { mutableStateOf<String?>(null) }
+    var halfScreenTitle by remember { mutableStateOf("") }
 
     val userScrollEnabled = animationSettings.reduceMotion != ReduceMotion.ON
 
@@ -111,8 +119,21 @@ fun MainTabScreen(
                         hallViewModel = hallViewModel,
                     )
                 }
-                2 -> ProfilePageContent()
+                2 -> ProfilePageContent(
+                    onOpenHalfScreen = { url, title ->
+                        halfScreenUrl = url
+                        halfScreenTitle = title
+                    },
+                )
             }
         }
     }
+
+    // ── 半屏 WebView 弹窗（在 Scaffold 外层，不受 HorizontalPager 裁剪）──
+    WebViewBottomSheet(
+        visible = halfScreenUrl != null,
+        onDismissRequest = { halfScreenUrl = null },
+        url = halfScreenUrl ?: "",
+        title = halfScreenTitle,
+    )
 }

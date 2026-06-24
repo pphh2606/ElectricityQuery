@@ -4,6 +4,7 @@ import android.app.Activity
 import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import edu.cqwu.electricity.ui.theme.LocalQrCodeSettings
@@ -55,6 +57,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
@@ -422,49 +425,22 @@ fun QrCodeDisplayScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
-                                .padding(24.dp),
+                                .padding(horizontal = 32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
                         ) {
                             Spacer(modifier = Modifier.height(48.dp))
 
-                            // 余额显示
-                            Box(
-                                modifier = Modifier.height(48.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (balance != null) {
-                                    Text(
-                                        text = stringResource(R.string.qrcode_display_balance, balance ?: "0.00"),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-
-                            // 二维码（深色模式下使用白底黑块确保扫码设备可读）
-                            qrCodeContent?.let { content ->
-                                QrCodeView(
-                                    content = content,
-                                    modifier = Modifier.size(320.dp),
-                                    squareCornerFraction = qrCornerFraction,
-                                    primaryColor = qrEffectivePrimaryColor,
-                                    backgroundColor = qrBackgroundColor,
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
+                            // 扫描提示（顶部大字）
                             Text(
                                 text = stringResource(R.string.qrcode_display_scan_hint),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
                             )
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // 自动刷新倒计时
+                            // 自动刷新倒计时（小字，顶部）
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
@@ -485,22 +461,79 @@ fun QrCodeDisplayScreen(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // 二维码字符串
-                            qrCodeContent?.let { displayContent ->
-                                Text(
-                                    text = displayContent,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                        .padding(12.dp)
+                            // 二维码（深色模式下使用白底黑块确保扫码设备可读）
+                            qrCodeContent?.let { content ->
+                                QrCodeView(
+                                    content = content,
+                                    modifier = Modifier.size(320.dp),
+                                    squareCornerFraction = qrCornerFraction,
+                                    primaryColor = qrEffectivePrimaryColor,
+                                    backgroundColor = qrBackgroundColor,
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(48.dp))
+                            // 余额（二维码下方，始终占位避免加载前后 UI 移位）
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Box(
+                                modifier = Modifier.height(24.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (balance != null) {
+                                    Text(
+                                        text = stringResource(R.string.qrcode_display_balance, balance ?: "0.00"),
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // 二维码内容（灰色小字，长按可复制）
+                            SelectionContainer {
+                                Text(
+                                    text = qrCodeContent ?: "",
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        lineBreak = LineBreak.Simple
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(32.dp))
+
+                            // 底部按钮区：充值 | 订单记录
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                TextButton(onClick = { nav.navigate(Routes.CARD_RECHARGE) }) {
+                                    Text(
+                                        stringResource(R.string.recharge_pay_now),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
+
+                                Text(
+                                    text = "|",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                )
+
+                                TextButton(onClick = { nav.navigate(Routes.BILL) }) {
+                                    Text(
+                                        stringResource(R.string.qrcode_display_orders),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
                 }

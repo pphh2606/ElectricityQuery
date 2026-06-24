@@ -152,15 +152,16 @@ fun WebViewBottomSheet(
         isHiding = true
     }
 
-    // ── isHiding → 关闭动画（不调用 onDismissRequest，避免循环触发）──
+    // ── isHiding → 关闭动画 ──
     LaunchedEffect(isHiding) {
         if (isHiding) {
             webViewRef.value?.stopLoading()
             heightAnimatable.snapTo(sheetHeight.value)
             heightAnimatable.animateTo(0f, tween(250)) { sheetHeight = value.dp }
-            // 重置状态，确保 if (visible || isHiding) 为 false → 整个组件从组合树移除
+            // 动画结束后通知父组件关闭，确保 visible=false → 整个组件从组合树移除（含 Scrim）
             isHiding = false
             hasAppeared = false
+            onDismissRequest()
         }
     }
 

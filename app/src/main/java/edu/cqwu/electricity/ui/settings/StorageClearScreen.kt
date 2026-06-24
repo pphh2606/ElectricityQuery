@@ -35,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -166,19 +167,27 @@ fun StorageClearScreen(
             items.forEach { put(it.key, it.isSafe) }
         }
     }
-    // 是否正在计算大小
+    // 是否正在计算大小（首次加载）
     var isLoading by remember { mutableStateOf(true) }
+    // 下拉刷新中
+    var isRefreshing by remember { mutableStateOf(false) }
     // 是否正在清除
     var isClearing by remember { mutableStateOf(false) }
     // 确认弹窗
     var showConfirmDialog by remember { mutableStateOf(false) }
 
-    // 异步计算大小
-    LaunchedEffect(Unit) {
+    // 重新计算所有存储项大小（首次加载和下拉刷新共用）
+    suspend fun reloadSizes() {
         val result = withContext(Dispatchers.IO) {
             items.associate { it.key to StorageManager.formatSize(it.getSize(storageManager)) }
         }
+        sizes.clear()
         sizes.putAll(result)
+    }
+
+    // 首次加载
+    LaunchedEffect(Unit) {
+        reloadSizes()
         isLoading = false
     }
 
@@ -237,10 +246,25 @@ fun StorageClearScreen(
             )
         },
     ) { paddingValues ->
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                scope.launch {
+                    try {
+                        reloadSizes()
+                    } finally {
+                        isRefreshing = false
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
@@ -355,6 +379,7 @@ fun StorageClearScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+        } // PullToRefreshBox
     }
 
     // ── 确认弹窗（Android 2.x 旧式风格，更醒目） ──

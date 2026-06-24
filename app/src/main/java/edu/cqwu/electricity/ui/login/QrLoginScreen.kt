@@ -53,6 +53,8 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.ui.unit.dp
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
@@ -319,6 +321,25 @@ fun QrLoginScreen(
                                 .padding(horizontal = 32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
+                            // 提示文字（二维码上方）
+                            Text(
+                                text = stringResource(R.string.qr_login_scan_hint),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
+                                textAlign = TextAlign.Center,
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = stringResource(R.string.qr_login_expiry),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                            )
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
                             // 使用本地 QrCodeView 渲染二维码（与支付码页面一致）
                             // 支持用户自定义的颜色模式、圆角等主题设置
                             Box(
@@ -337,23 +358,17 @@ fun QrLoginScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            Text(
-                                text = stringResource(R.string.qr_login_scan_hint),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center,
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = stringResource(R.string.qr_login_expiry),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center,
-                            )
+                            // 二维码网址内容（灰色小字，居中，长按可复制）
+                            SelectionContainer {
+                                Text(
+                                    text = qrCodeDecodedContent ?: "",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
 
                             Spacer(modifier = Modifier.height(32.dp))
 
@@ -394,16 +409,19 @@ fun QrLoginScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                                 )
 
-                                // 其他应用打开
+                                // 分享网址
                                 TextButton(
                                     onClick = {
                                         val url = qrCodeDecodedContent?.trim()
                                         if (!url.isNullOrBlank()) {
                                             try {
-                                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                                context.startActivity(intent)
+                                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                                    type = "text/plain"
+                                                    putExtra(Intent.EXTRA_TEXT, url)
+                                                }
+                                                context.startActivity(Intent.createChooser(intent, null))
                                             } catch (e: Exception) {
-                                                android.util.Log.w("QrLoginScreen", "打开URL失败", e)
+                                                android.util.Log.w("QrLoginScreen", "分享URL失败", e)
                                             }
                                         }
                                     },

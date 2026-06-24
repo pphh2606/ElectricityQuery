@@ -126,7 +126,9 @@ fun ProfileTopBar() {
  * 由 [MainTabScreen] 的 HorizontalPager 在 page 1 中调用。
  */
 @Composable
-fun ProfilePageContent() {
+fun ProfilePageContent(
+    onOpenHalfScreen: (url: String, title: String) -> Unit = { _, _ -> },
+) {
     val _profilePerfStart = System.currentTimeMillis()
     androidx.compose.runtime.SideEffect {
         Log.d("TabPerf", "ProfilePageContent composition done, elapsed=${System.currentTimeMillis() - _profilePerfStart}ms")
@@ -313,26 +315,30 @@ fun ProfilePageContent() {
         },
     )
 
-    // ── 打开网址对话框 ──
-    if (showOpenUrlDialog) {
-        OpenUrlDialog(
-            onDismiss = { showOpenUrlDialog = false },
-            onConfirm = { url, isInternal ->
-                showOpenUrlDialog = false
-                val finalUrl = if (isInternal) {
-                    try {
-                        WebVpnEncoder.transform(url)
-                    } catch (e: Exception) {
-                        Log.w("ProfileScreen", "WebVpnEncoder.transform failed for: $url", e)
-                        url
-                    }
-                } else {
+    // ── 打开网址底部弹窗 ──
+    OpenUrlDialog(
+        visible = showOpenUrlDialog,
+        onDismiss = { showOpenUrlDialog = false },
+        onConfirm = { url, isInternal, useHalfScreen ->
+            showOpenUrlDialog = false
+            val finalUrl = if (isInternal) {
+                try {
+                    WebVpnEncoder.transform(url)
+                } catch (e: Exception) {
+                    Log.w("ProfileScreen", "WebVpnEncoder.transform failed for: $url", e)
                     url
                 }
-                nav.navigate(Routes.unifiedWebViewRoute(finalUrl, context.getString(R.string.profile_open_url)))
+            } else {
+                url
             }
-        )
-    }
+            val title = context.getString(R.string.profile_open_url)
+            if (useHalfScreen) {
+                onOpenHalfScreen(finalUrl, title)
+            } else {
+                nav.navigate(Routes.unifiedWebViewRoute(finalUrl, title))
+            }
+        }
+    )
 }
 
 /**

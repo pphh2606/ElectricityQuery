@@ -17,6 +17,7 @@
     <!--  فتح رابط                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="open_url_intranet">وصول داخلي</string>
+    <string name="open_url_half_screen">وصول نصف الشاشة</string>
     <string name="open_url_title">فتح الرابط</string>
     <string name="open_url_label">أدخل الرابط</string>
     <string name="open_url_placeholder">example.com</string>
