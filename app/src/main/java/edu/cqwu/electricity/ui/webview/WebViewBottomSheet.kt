@@ -17,7 +17,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,9 +29,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -67,7 +66,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.R
@@ -77,7 +75,6 @@ import edu.cqwu.electricity.ui.components.WebViewErrorOverlay
 import edu.cqwu.electricity.util.ToastUtils
 import edu.cqwu.electricity.util.WebViewUrlUtil
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 private const val TAG = "WebViewBottomSheet"
 
@@ -107,15 +104,15 @@ fun WebViewBottomSheet(
 ) {
     val context = LocalContext.current
     val snackbar = LocalSnackbarController.current
-    val scope = rememberCoroutineScope()
     val density = LocalDensity.current
+    val scope = rememberCoroutineScope()
 
     // ── 尺寸计算（统一 Dp）──
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    val minHeight = screenHeight * 0.5f
-    val maxHeight = screenHeight
-    val handleBarHeight = 60.dp
+    val halfHeight = screenHeight * 0.5f
+    val dismissThreshold = screenHeight * 0.4f  // 低于此高度松手 → 关闭
+    val handleBarHeight = 44.dp
 
     // ── 高度状态（初始为 0，由打开动画从 0 到 minHeight）──
     val heightAnimatable = remember { Animatable(0f) }
@@ -145,7 +142,7 @@ fun WebViewBottomSheet(
             hasAppeared = true
             isHiding = false
             heightAnimatable.snapTo(0f)
-            heightAnimatable.animateTo(minHeight.value, tween(300)) { sheetHeight = value.dp }
+            heightAnimatable.animateTo(halfHeight.value, tween(300)) { sheetHeight = value.dp }
         }
     }
 
@@ -168,7 +165,7 @@ fun WebViewBottomSheet(
     }
 
     // ── BackHandler（合并为单一）──
-    BackHandler(enabled = visible || isHiding) {
+    BackHandler(enabled = visible && !isHiding) {
         if (canGoBack) {
             webViewRef.value?.goBack()
         } else {
@@ -177,7 +174,7 @@ fun WebViewBottomSheet(
     }
 
     // ── Scrim 透明度 ──
-    val fraction = ((sheetHeight - minHeight) / (maxHeight - minHeight)).coerceIn(0f, 1f)
+    val fraction = ((sheetHeight - halfHeight) / (screenHeight - halfHeight)).coerceIn(0f, 1f)
     val scrimAlpha = lerp(0.32f, 0.5f, fraction)
 
     // ── 渲染 ──
@@ -198,10 +195,10 @@ fun WebViewBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .heightIn(min = 0.dp, max = maxHeight)
+                    .heightIn(min = 0.dp, max = screenHeight)
                     .height(sheetHeight)
                     .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
             ) {
                 Column(Modifier.fillMaxSize()) {
                     // ── 手柄区域 ──
@@ -227,15 +224,40 @@ fun WebViewBottomSheet(
                                             change.consume()
                                             with(density) {
                                                 sheetHeight = (sheetHeight - dragAmount.y.toDp())
-                                                    .coerceIn(minHeight, maxHeight)
+                                                    .coerceIn(screenHeight * 0.2f, screenHeight)
+                                            }
+                                        },
+                                        onDragEnd = {
+                                            when {
+                                                // 低于关闭阈值 → 统一走 isHiding 关闭流程
+                                                sheetHeight < dismissThreshold -> {
+                                                    isHiding = true
+                                                }
+                                                // 低于半屏 → 回弹到半屏
+                                                sheetHeight < halfHeight -> {
+                                                    scope.launch {
+                                                        heightAnimatable.snapTo(sheetHeight.value)
+                                                        heightAnimatable.animateTo(halfHeight.value, tween(250)) {
+                                                            sheetHeight = value.dp
+                                                        }
+                                                    }
+                                                }
+                                                // ≥50% → 停在当前位置（自由移动，无吸附）
                                             }
                                         }
                                     )
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-                            BottomSheetDefaults.DragHandle()
+                            // 自定义 DragHandle（无内部 padding，适配 44dp 容器）
+                            Box(
+                                modifier = Modifier
+                                    .size(width = 32.dp, height = 4.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                        shape = RoundedCornerShape(percent = 50)
+                                    )
+                            )
                         }
                         // 上层：按钮 Row（叠在可拖拽层上方，Compose 事件分发中上层优先接收点击）
                         Row(
@@ -364,14 +386,7 @@ fun WebViewBottomSheet(
                                     loadUrl(url, headers)
                                 }
                             },
-                            update = { webView ->
-                                // 保险起见同步 layoutParams 高度
-                                val targetHeightPx = with(density) { sheetHeight.roundToPx() }
-                                if (webView.layoutParams.height != targetHeightPx) {
-                                    webView.layoutParams.height = targetHeightPx
-                                    webView.requestLayout()
-                                }
-                            },
+                            update = {},
                             onRelease = { webView ->
                                 webView.stopLoading(); webView.loadUrl("about:blank")
                                 webView.clearHistory(); webView.removeAllViews(); webView.destroy()

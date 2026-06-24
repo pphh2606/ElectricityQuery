@@ -70,40 +70,6 @@ object WebViewUrlUtil {
     fun isHttpScheme(url: String): Boolean =
         url.startsWith("http://") || url.startsWith("https://")
 
-    /**
-     * 判断是否为微信 H5 支付页面（mwebUrl）。
-     *
-     * 微信支付回调的 mwebUrl 格式：
-     * - https://wx.tenpay.com/...
-     * - https://mch.tenpay.com/...
-     */
-    fun isWechatPayUrl(url: String): Boolean =
-        url.startsWith("https://$DOMAIN_WX_TENPAY/") || url.startsWith("https://$DOMAIN_MCH_TENPAY/")
-
-    /**
-     * 判断是否为支付宝支付页面。
-     *
-     * 仅对 http/https 链接检测，避免 alipays:// 自定义协议被误匹配。
-     * 支付宝支付页域名：
-     * - mclient.alipay.com
-     * - render.alipay.com
-     * - 含 "alipay"  兜底
-     */
-    fun isAlipayUrl(url: String): Boolean =
-        url.startsWith("http") && (url.contains(DOMAIN_ALIPAY_MCLIENT) ||
-            url.contains(DOMAIN_ALIPAY_RENDER) || url.contains(DOMAIN_ALIPAY))
-
-    /**
-     * 判断是否为 showselect 支付选择页面。
-     *
-     * showselect 页面特征：
-     * - URL 包含 "PayPreService"（支付预处理接口）
-     * - URL 包含 "showselect"（支付选择页路径）
-     * - URL 包含 "pay.cqwu.edu.cn"（支付主域）
-     */
-    fun isShowselectUrl(url: String): Boolean =
-        url.contains(PATH_PAY_PRE_SERVICE) || url.contains(PATH_SHOWSELECT) || url.contains(DOMAIN_PAY_CQWU)
-
     // ──────────── 外部 Intent 打开 ────────────
 
     /**

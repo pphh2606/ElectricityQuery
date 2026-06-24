@@ -74,7 +74,6 @@ import edu.cqwu.electricity.data.model.PaymentMethod
 import edu.cqwu.electricity.data.network.common.UserAgentProvider
 import edu.cqwu.electricity.util.WebViewUrlUtil
 import kotlinx.coroutines.delay
-import kotlin.math.roundToInt
 
 private const val TAG = "PaymentOverlay"
 
@@ -214,7 +213,6 @@ fun PaymentOverlay(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val minHeight = screenHeight * 0.5f
-    val maxHeight = screenHeight
     val handleBarHeight = 60.dp
 
     // ── 高度状态（初始为 0，由打开动画从 0 到 minHeight）──
@@ -314,7 +312,7 @@ fun PaymentOverlay(
     }
 
     // ── Scrim 透明度 ──
-    val fraction = ((sheetHeight - minHeight) / (maxHeight - minHeight)).coerceIn(0f, 1f)
+    val fraction = ((sheetHeight - minHeight) / (screenHeight - minHeight)).coerceIn(0f, 1f)
     val scrimAlpha = lerp(0.32f, 0.5f, fraction)
 
     // ── 渲染 ──
@@ -334,7 +332,7 @@ fun PaymentOverlay(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .heightIn(min = 0.dp, max = maxHeight)
+                .heightIn(min = 0.dp, max = screenHeight)
                 .height(sheetHeight)
                 .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
                 .background(MaterialTheme.colorScheme.surface)
@@ -361,7 +359,7 @@ fun PaymentOverlay(
                                         change.consume()
                                         with(density) {
                                             sheetHeight = (sheetHeight - dragAmount.y.toDp())
-                                                .coerceIn(minHeight, maxHeight)
+                                                .coerceIn(minHeight, screenHeight)
                                         }
                                     }
                                 )

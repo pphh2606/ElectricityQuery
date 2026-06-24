@@ -28,7 +28,7 @@ data class FeeItem(
 /**
  * API 业务异常：服务端返回 [messageCode] != "0"
  */
-class ApiBusinessException(val code: String, message: String) : Exception(message)
+class ApiBusinessException(message: String) : Exception(message)
 
 // ═══════════════════════════════════════════
 //  数据模型 - 订单

@@ -33,7 +33,7 @@ private inline fun <reified T> Gson.parseApiResponse(json: String): Result<T> {
     return if (base.messageCode == "0") {
         Result.success(fromJson(json, T::class.java))
     } else {
-        Result.failure(ApiBusinessException(base.messageCode, base.message))
+        Result.failure(ApiBusinessException(base.message))
     }
 }
 

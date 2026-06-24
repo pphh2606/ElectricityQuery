@@ -5,8 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,10 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Home
@@ -79,6 +80,10 @@ import edu.cqwu.electricity.util.ToastUtils
  *
  * 将学号输入/查询与充值金额选择合为一页。
  * 顶部显示学号输入框 + 查询按钮，查询成功后在下方显示充值 UI（账户信息 + 金额选择 + 立即充值）。
+ *
+ * 布局结构与 BuildingSelectionScreen / DashboardScreen 保持一致：
+ * Column → Box(weight=1f) → PullToRefreshBox → LazyColumn，
+ * 确保内容可滚动、无白边。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,253 +153,263 @@ fun RechargeScreen(
     // 是否可以切换账户（仅账号模式有多房间时允许切换）
     val canSwitchAccount = recharge.roomList.size > 1
 
-    PullToRefreshBox(
-        isRefreshing = recharge.isRefreshing,
-        onRefresh = { viewModel.refreshRechargeData() },
-        modifier = Modifier.fillMaxSize()
+    // ── 主体布局：Column + Box(weight=1f) + PullToRefreshBox + LazyColumn ──
+    // 与 BuildingSelectionScreen 保持一致的结构模式
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-        // ============================================================
-        //  学号输入区域（始终可见，紧贴标题栏）
-        // ============================================================
-        Spacer(modifier = Modifier.height(4.dp))
-
-        // 学号输入框 + 查询按钮
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = recharge.studentId,
-                onValueChange = { viewModel.setAccountStudentId(it) },
-                label = { Text(stringResource(R.string.recharge_student_id_label)) },
-                placeholder = { Text(stringResource(R.string.recharge_student_id_placeholder)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                modifier = Modifier.weight(1f),
-                enabled = !recharge.isQuerying,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                )
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Button(
-                onClick = { viewModel.queryAccountRoomList() },
-                modifier = Modifier.height(56.dp),
-                enabled = recharge.studentId.trim().isNotBlank()
-                        && !recharge.isQuerying,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+        Box(modifier = Modifier.weight(1f)) {
+            PullToRefreshBox(
+                isRefreshing = recharge.isRefreshing,
+                onRefresh = { viewModel.refreshRechargeData() },
+                modifier = Modifier.fillMaxSize()
             ) {
-                if (recharge.isQuerying) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.recharge_query),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // ============================================================
+                    //  学号输入区域（始终可见）
+                    // ============================================================
 
-        // 错误提示
-        val errorMsg = recharge.queryError
-        if (errorMsg != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = errorMsg,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // ============================================================
-        //  查询成功后：显示充值内容
-        // ============================================================
-        if (showRechargeContent) {
-            // ── 账户信息卡片 ──
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    // 第一行：我的账户
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .then(
-                                if (canSwitchAccount) {
-                                    Modifier.clickable { showRoomSwitchDialog = true }
-                                } else {
-                                    Modifier
-                                }
-                            ),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.recharge_my_account),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = accountName,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            if (canSwitchAccount) {
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                    contentDescription = stringResource(R.string.recharge_switch_account),
-                                    modifier = Modifier.size(20.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // 第二行：余额 + 刷新按钮
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.recharge_balance),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    // 学号输入框 + 查询按钮
+                    item(key = "student_id_input") {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.height(IntrinsicSize.Min)
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (recharge.balanceLoading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    strokeWidth = 2.dp
+                            TextField(
+                                value = recharge.studentId,
+                                onValueChange = { viewModel.setAccountStudentId(it) },
+                                label = { Text(stringResource(R.string.recharge_student_id_label)) },
+                                placeholder = { Text(stringResource(R.string.recharge_student_id_placeholder)) },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Done
+                                ),
+                                modifier = Modifier.weight(1f),
+                                enabled = !recharge.isQuerying,
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
                                 )
-                            } else {
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Button(
+                                onClick = { viewModel.queryAccountRoomList() },
+                                modifier = Modifier.height(56.dp),
+                                enabled = recharge.studentId.trim().isNotBlank()
+                                        && !recharge.isQuerying,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                if (recharge.isQuerying) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Text(
+                                        text = stringResource(R.string.recharge_query),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // 错误提示
+                    val errorMsg = recharge.queryError
+                    if (errorMsg != null) {
+                        item(key = "query_error") {
+                            Text(
+                                text = errorMsg,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+
+                    // ============================================================
+                    //  查询成功后：显示充值内容
+                    // ============================================================
+                    if (showRechargeContent) {
+                        // ── 账户信息卡片 ──
+                        item(key = "account_card") {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    // 第一行：我的账户
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .then(
+                                                if (canSwitchAccount) {
+                                                    Modifier.clickable { showRoomSwitchDialog = true }
+                                                } else {
+                                                    Modifier
+                                                }
+                                            ),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.recharge_my_account),
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = accountName,
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            if (canSwitchAccount) {
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                                    contentDescription = stringResource(R.string.recharge_switch_account),
+                                                    modifier = Modifier.size(20.dp),
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    // 第二行：余额 + 刷新按钮
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.recharge_balance),
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.height(IntrinsicSize.Min)
+                                        ) {
+                                            if (recharge.balanceLoading) {
+                                                CircularProgressIndicator(
+                                                    modifier = Modifier.size(20.dp),
+                                                    strokeWidth = 2.dp
+                                                )
+                                            } else {
+                                                Text(
+                                                    text = recharge.balance?.let {
+                                                        String.format("%.2f", it.userBalance)
+                                                    } ?: stringResource(R.string.common_loading),
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Icon(
+                                                imageVector = Icons.Outlined.Refresh,
+                                                contentDescription = stringResource(R.string.recharge_refresh_balance),
+                                                modifier = Modifier
+                                                    .size(20.dp)
+                                                    .clickable(enabled = !recharge.balanceLoading) {
+                                                        viewModel.loadRechargeBalance()
+                                                    },
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // ── 预设金额网格 ──
+                        item(key = "amount_grid") {
+                            AmountGrid(
+                                selectedAmount = recharge.selectedAmount,
+                                onAmountSelected = { viewModel.selectRechargeAmount(it) }
+                            )
+                        }
+
+                        // ── 自定义金额输入 ──
+                        item(key = "custom_amount") {
+                            TextField(
+                                value = recharge.customAmount,
+                                onValueChange = { viewModel.setCustomRechargeAmount(it) },
+                                label = { Text(stringResource(R.string.recharge_custom_amount_label)) },
+                                placeholder = { Text(stringResource(R.string.recharge_custom_amount_placeholder)) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                singleLine = true,
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // ── "立即充值"按钮 ──
+                        item(key = "pay_button") {
+                            Button(
+                                onClick = { nav.navigate(Routes.PAYMENT_SELECTION) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                enabled = hasValidAmount,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
                                 Text(
-                                    text = recharge.balance?.let {
-                                        String.format("%.2f", it.userBalance)
-                                    } ?: stringResource(R.string.common_loading),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    text = stringResource(R.string.recharge_pay_now),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Outlined.Refresh,
-                                contentDescription = stringResource(R.string.recharge_refresh_balance),
+                        }
+
+                        // ── 其他充值方式 ──
+                        item(key = "other_methods") {
+                            Text(
+                                text = stringResource(R.string.recharge_other_methods),
                                 modifier = Modifier
-                                    .size(20.dp)
-                                    .clickable(enabled = !recharge.balanceLoading) {
-                                        viewModel.loadRechargeBalance()
-                                    },
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    .fillMaxWidth()
+                                    .clickable { showOtherRechargeDialog = true }
+                                    .padding(vertical = 10.dp),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                        }
+
+                        // ── 重要提示 ──
+                        item(key = "important_notes") {
+                            ImportantNotesCard()
                         }
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // ── 预设金额网格 ──
-            AmountGrid(
-                selectedAmount = recharge.selectedAmount,
-                onAmountSelected = { viewModel.selectRechargeAmount(it) }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // ── 自定义金额输入 ──
-            TextField(
-                value = recharge.customAmount,
-                onValueChange = { viewModel.setCustomRechargeAmount(it) },
-                label = { Text(stringResource(R.string.recharge_custom_amount_label)) },
-                placeholder = { Text(stringResource(R.string.recharge_custom_amount_placeholder)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // ── "立即充值"按钮 ──
-            Button(
-                onClick = { nav.navigate(Routes.PAYMENT_SELECTION) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                enabled = hasValidAmount,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text(
-                    text = stringResource(R.string.recharge_pay_now),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // ── 其他充值方式 ──
-            Text(
-                text = stringResource(R.string.recharge_other_methods),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showOtherRechargeDialog = true }
-                    .padding(vertical = 10.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // ── 重要提示 ──
-            ImportantNotesCard()
         }
     }
-    } // PullToRefreshBox
 
     // ================================================================
     //  房间切换弹窗（仅账号模式有多房间时显示）
@@ -662,4 +677,3 @@ private fun RoomSelectionDialog(
         }
     }
 }
-

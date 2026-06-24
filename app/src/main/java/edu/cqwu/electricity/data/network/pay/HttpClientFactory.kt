@@ -106,7 +106,7 @@ object HttpClientFactory {
      * 此解析器将 IPv4 地址排在 IPv6 前面，彻底避免 15 秒的 IPv6 连接超时。
      */
     private object PreferIPv4Dns : Dns {
-        private val fallbackDns = Dns.Companion.SYSTEM
+        private val fallbackDns = Dns.SYSTEM
         override fun lookup(hostname: String): List<InetAddress> {
             val allAddresses = fallbackDns.lookup(hostname)
             val ipv4 = mutableListOf<InetAddress>()

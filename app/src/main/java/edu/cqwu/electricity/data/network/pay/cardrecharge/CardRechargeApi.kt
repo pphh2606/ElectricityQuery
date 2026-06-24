@@ -53,7 +53,7 @@ class CardRechargeApi : PayApiBase() {
                 if (parsed.messageCode == "0" && parsed.data != null) {
                     Result.success(parsed.data)
                 } else {
-                    Result.failure(ApiBusinessException(parsed.messageCode, parsed.message))
+                    Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "queryBasicInfo 失败", e)
@@ -79,7 +79,7 @@ class CardRechargeApi : PayApiBase() {
                 if (parsed.messageCode == "0") {
                     Result.success(parsed.data ?: emptyList())
                 } else {
-                    Result.failure(ApiBusinessException(parsed.messageCode, parsed.message))
+                    Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "queryTradeChannels 失败", e)
@@ -121,7 +121,7 @@ class CardRechargeApi : PayApiBase() {
                         Result.failure(Exception("订单创建响应缺少 PayOrderTrade"))
                     }
                 } else {
-                    Result.failure(ApiBusinessException(parsed.messageCode, parsed.message))
+                    Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "createOrder 失败", e)
@@ -162,7 +162,7 @@ class CardRechargeApi : PayApiBase() {
                 if (parsed.messageCode == "0" && parsed.data != null) {
                     Result.success(parsed.data)
                 } else {
-                    Result.failure(ApiBusinessException(parsed.messageCode, parsed.message))
+                    Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "toPayOrderTrade 失败", e)
@@ -185,7 +185,7 @@ class CardRechargeApi : PayApiBase() {
                 if (parsed.messageCode == "0" && parsed.data != null) {
                     Result.success(parsed.data)
                 } else {
-                    Result.failure(ApiBusinessException(parsed.messageCode, parsed.message))
+                    Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "queryOrderStatus 失败", e)
@@ -263,14 +263,7 @@ data class CardOrderStatus(
     @SerializedName("productDesc") val productDesc: String?,
     @SerializedName("schdualCloseTime") val schdualCloseTime: String?,
 ) {
-    val amountYuan: Double get() = amount / 100.0
 
-    val statusDisplay: String get() = when (status) {
-        "COMPLETED" -> "已支付"
-        "PENDING_PAYMENT" -> "待支付"
-        "CLOSED" -> "已关闭"
-        else -> status
-    }
 }
 
 // ═══════════════════════════════════════════

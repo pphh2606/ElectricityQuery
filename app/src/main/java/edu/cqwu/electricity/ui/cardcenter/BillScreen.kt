@@ -1,9 +1,5 @@
 package edu.cqwu.electricity.ui.cardcenter
 
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-import edu.cqwu.electricity.ui.components.DatePickerField
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -48,7 +44,6 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -58,27 +53,28 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.BillPageInfo
+import edu.cqwu.electricity.ui.components.DatePickerField
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.ReLoginContent
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
+import edu.cqwu.electricity.ui.webview.WebViewBottomSheet
 import edu.cqwu.electricity.util.ToastUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  * 账单页面 — 本地化 UI
@@ -100,6 +96,9 @@ fun BillScreen(
     onReLogin: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // ── 半屏 WebView 弹窗状态（账单详情用）──
+    var billDetailUrl by remember { mutableStateOf<String?>(null) }
 
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
@@ -127,10 +126,7 @@ fun BillScreen(
     val onRecordClick = remember<(edu.cqwu.electricity.data.model.BillRecord) -> Unit> {
         { record ->
             if (record.detailUrl.isNotBlank()) {
-                stableOnNavigateToWebView(
-                    viewModel.getBillDetailUrl(record.detailUrl),
-                    detailTitleStr
-                )
+                billDetailUrl = viewModel.getBillDetailUrl(record.detailUrl)
             }
         }
     }
@@ -364,6 +360,14 @@ fun BillScreen(
             }
         }
     }
+
+    // ── 半屏 WebView 弹窗（账单详情）──
+    WebViewBottomSheet(
+        visible = billDetailUrl != null,
+        onDismissRequest = { billDetailUrl = null },
+        url = billDetailUrl ?: "",
+        title = detailTitleStr
+    )
 }
 
 // ====================================================================

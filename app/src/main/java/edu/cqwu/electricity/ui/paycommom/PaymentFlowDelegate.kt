@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.ui.paycommom
 
-import androidx.annotation.StringRes
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.PaymentMethod
 import kotlinx.coroutines.CoroutineScope
@@ -67,7 +66,6 @@ class PaymentFlowDelegate(
         onComplete: () -> Unit = {},
     ) {
         val orderNo = getOrderNo() ?: return
-        val payType = getPaymentState().selectedMethod?.payType ?: return
 
         updatePayment { copy(isProcessing = true, error = null, sbHtml = null, mwebUrl = null) }
         scope.launch {

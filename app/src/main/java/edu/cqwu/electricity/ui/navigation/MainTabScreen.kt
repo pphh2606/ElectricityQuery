@@ -49,7 +49,7 @@ fun MainTabScreen(
     val scope = rememberCoroutineScope()
     // 共享 HomeViewModel，让 TopAppBar 和 HomePageContent 访问同一搜索状态
     val homeViewModel: HomeViewModel = viewModel()
-    val nav = LocalNavController.current
+    LocalNavController.current
 
     val userScrollEnabled = animationSettings.reduceMotion != ReduceMotion.ON
 

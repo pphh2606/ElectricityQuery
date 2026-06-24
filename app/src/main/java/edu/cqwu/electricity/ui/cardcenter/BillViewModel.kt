@@ -48,8 +48,6 @@ data class BillUiState(
 
     // ── 各标签页数据缓存（HorizontalPager 各 page 独立读取，避免预加载时显示错误数据） ──
     val tabCache: Map<Int, BillPageInfo> = emptyMap(),
-    /** 标记当前哪些 Tab 的数据来自 H5（快速预览，等待 HTML 覆盖的标记，现已不再覆盖） */
-    val h5PreviewTabs: Set<Int> = emptySet(),
 
     // ── 逐 Tab 加载状态（预加载 / 后台加载用） ──
     /** 各 Tab 是否正在加载中，key=tabNo */
@@ -115,6 +113,8 @@ class BillViewModel : ViewModel() {
     companion object {
         /** 全部 4 个 Tab 的 tabNo 列表 */
         private val ALL_TABS = listOf(1, 2, 4, 5)
+        /** 仅 HTML 服务的 Tab（无筛选时，Tab 1 由 H5 服务） */
+        private val HTML_ONLY_TABS = listOf(2, 4, 5)
         /** 单个 Tab 最大记录数（防 OOM） */
         private const val MAX_RECORDS = 500
     }
@@ -172,22 +172,25 @@ class BillViewModel : ViewModel() {
     // ==================== 并发加载（核心改动） ====================
 
     /**
-     * 并发预加载全部 4 个 Tab：
-     * - H5 API（快 ~3s）→ 仅 Tab 1 精简数据
-     * - HTML API（慢 ~15-20s 但一次返回 tabNo 2/4/5 完整数据）
+     * 并发预加载：H5 和 HTML 各服务自己的 Tab，互不重叠。
+     * - 无筛选：H5 API（快 ~3s）→ Tab 1；HTML API（慢 ~15-20s）→ Tab 2/4/5
+     * - 有筛选：HTML API → 所有 Tab（H5 不支持筛选）
      *
      * @param force 跳过缓存命中检查强制请求（下拉刷新时使用）
      */
     private fun startConcurrentLoad(force: Boolean = false) {
-        // H5 快速路径：仅 Tab 1（无筛选时）
-        if (!hasActiveFilter() && (force || !tabCache.containsKey(1))) {
-            launchH5Load()
-        }
-
-        // HTML 全量路径：排除 Tab 1（由 H5 提供），只加载其他 3 个 Tab
-        val uncachedTabs = ALL_TABS.filter { it != 1 && (force || !tabCache.containsKey(it)) }
-        if (uncachedTabs.isNotEmpty()) {
-            launchHtmlLoad()
+        if (hasActiveFilter()) {
+            // 有筛选：HTML 服务所有 Tab
+            launchHtmlLoad(force = force, tabsToLoad = ALL_TABS)
+        } else {
+            // 无筛选：H5 服务 Tab 1，HTML 服务 Tab 2/4/5
+            if (force || !tabCache.containsKey(1)) {
+                launchH5Load()
+            }
+            val htmlTabs = HTML_ONLY_TABS.filter { force || !tabCache.containsKey(it) }
+            if (htmlTabs.isNotEmpty()) {
+                launchHtmlLoad(force = force, tabsToLoad = htmlTabs)
+            }
         }
     }
 
@@ -211,7 +214,6 @@ class BillViewModel : ViewModel() {
                 _uiState.update {
                     it.copy(
                         tabCache = it.tabCache + (1 to pageInfo),
-                        h5PreviewTabs = it.h5PreviewTabs + 1,
                         billPageInfo = if (isActiveTab) pageInfo else it.billPageInfo,
                         isLoading = if (isActiveTab) false else it.isLoading
                     )
@@ -232,13 +234,16 @@ class BillViewModel : ViewModel() {
     }
 
     /**
-     * 通过 HTML API 一次加载全部 4 个 zone。
-     * 服务器始终返回全部 zone，因此一次请求即可填充所有 Tab 缓存。
+     * 通过 HTML API 加载指定 Tab 的数据。
+     * 服务器始终返回全部 zone，但仅将 [tabsToLoad] 中的 Tab 保存到缓存。
+     *
+     * @param force 跳过缓存检查强制请求（下拉刷新时使用）
+     * @param tabsToLoad 需要加载的 Tab 列表（无筛选时 = [HTML_ONLY_TABS]，有筛选时 = [ALL_TABS]）
      */
-    private fun launchHtmlLoad() {
+    private fun launchHtmlLoad(force: Boolean = false, tabsToLoad: List<Int> = ALL_TABS) {
         htmlJob?.cancel()
         htmlJob = viewModelScope.launch {
-            val uncachedTabs = ALL_TABS.filter { !tabCache.containsKey(it) }
+            val uncachedTabs = if (force) tabsToLoad else tabsToLoad.filter { !tabCache.containsKey(it) }
             uncachedTabs.forEach { markTabLoading(it) }
 
             try {
@@ -257,35 +262,21 @@ class BillViewModel : ViewModel() {
                 )
                 val result = api.fetchBillsAllZones(currentFilter)
                 result.onSuccess { zoneMap ->
-                    // 缓存其他 Tab（不覆盖 Tab 1 的 H5 数据，除非 H5 无缓存）
-                    zoneMap.forEach { (tabNo, pageInfo) ->
-                        // 不覆盖 H5 已有数据（无筛选时 tabCache[1] 已有 H5 数据）
-                        // 但如果没有 H5 数据（有筛选时 tabCache[1] 无数据），允许 HTML 写入
-                        if (tabNo != 1 || !tabCache.containsKey(1)) {
-                            tabCache[tabNo] = pageInfo
-                        }
+                    // 仅保存 tabsToLoad 范围内的 Tab 数据，H5 和 HTML 互不干扰
+                    val filteredZoneMap = zoneMap.filterKeys { it in uncachedTabs }
+                    filteredZoneMap.forEach { (tabNo, pageInfo) ->
+                        tabCache[tabNo] = pageInfo
                     }
-                    // 不清除 h5PreviewTabs，保留 Tab 1 的 H5 标记
                     // 清除逐 Tab 错误状态
                     _uiState.update { it.copy(perTabError = emptyMap()) }
 
                     val activeTab = _uiState.value.activeTab
-                    val currentBillInfo = _uiState.value.billPageInfo
+                    val pageInfo = filteredZoneMap[activeTab] ?: filteredZoneMap.values.firstOrNull()
+                        ?: _uiState.value.billPageInfo
 
-                    // 优先使用 H5 缓存的 Tab 1 数据，其他 Tab 从 zoneMap 取
-                    val pageInfo = if (activeTab == 1 && tabCache.containsKey(1)) {
-                        tabCache[1]!!
-                    } else {
-                        zoneMap[activeTab] ?: zoneMap.values.first()
-                    }
-
-                    // 更新 UI：过滤 zoneMap 中已被 H5 保护的 tabNo=1，避免覆盖
                     _uiState.update {
-                        val h5ProtectedZoneMap = zoneMap.filterKeys { tabNo ->
-                            tabNo != 1 || !it.h5PreviewTabs.contains(1)
-                        }
                         it.copy(
-                            tabCache = it.tabCache + h5ProtectedZoneMap,
+                            tabCache = it.tabCache + filteredZoneMap,
                             billPageInfo = pageInfo,
                             isLoading = false,
                             isRefreshing = false
@@ -526,7 +517,13 @@ class BillViewModel : ViewModel() {
             )
         }
 
-        // 如果 HTML 请求正在运行
+        // Tab 1 无筛选时走 H5 快速路径
+        if (!hasActiveFilter() && tabNo == 1) {
+            launchH5Load()
+            return
+        }
+
+        // Tab 2/4/5 或有筛选时走 HTML
         if (htmlJob?.isActive == true) {
             val alreadyLoading = _uiState.value.perTabLoading[tabNo] == true
             if (!alreadyLoading) {
@@ -535,8 +532,9 @@ class BillViewModel : ViewModel() {
             return
         }
 
-        // 没有 HTML 请求在运行 → 启动新的 HTML 全量请求
-        launchHtmlLoad()
+        // 没有 HTML 请求在运行 → 启动新的 HTML 请求
+        val tabsToLoad = if (hasActiveFilter()) ALL_TABS else HTML_ONLY_TABS
+        launchHtmlLoad(tabsToLoad = tabsToLoad)
     }
 
     // ==================== 缓存管理 ====================
@@ -544,7 +542,7 @@ class BillViewModel : ViewModel() {
     /** 清空所有标签页的缓存（筛选条件变更时调用） */
     private fun clearAllCache() {
         tabCache.clear()
-        _uiState.update { it.copy(tabCache = emptyMap(), h5PreviewTabs = emptySet()) }
+        _uiState.update { it.copy(tabCache = emptyMap()) }
     }
 
     // ==================== 逐 Tab 加载状态管理 ====================

@@ -125,7 +125,7 @@ class ElectricityPayApi : PayApiBase() {
                         )
                     )
                 } else {
-                    Result.failure(ApiBusinessException(parsed.messageCode, parsed.message))
+                    Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "gotToPay 失败", e)

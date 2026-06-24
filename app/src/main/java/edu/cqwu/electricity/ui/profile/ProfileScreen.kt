@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -127,7 +129,7 @@ fun ProfileTopBar() {
 fun ProfilePageContent() {
     val _profilePerfStart = System.currentTimeMillis()
     androidx.compose.runtime.SideEffect {
-        android.util.Log.d("TabPerf", "ProfilePageContent composition done, elapsed=${System.currentTimeMillis() - _profilePerfStart}ms")
+        Log.d("TabPerf", "ProfilePageContent composition done, elapsed=${System.currentTimeMillis() - _profilePerfStart}ms")
     }
     val nav = LocalNavController.current
     val context = LocalContext.current
@@ -151,7 +153,7 @@ fun ProfilePageContent() {
         val t0 = System.currentTimeMillis()
         val result = AccountManager.getActiveUser()
             ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
-        android.util.Log.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
+        Log.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
         result
     }
 
@@ -163,133 +165,133 @@ fun ProfilePageContent() {
     }
     val displayStudentId = username ?: stringResource(R.string.profile_not_logged_in)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // ── 用户信息卡片 ──
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    if (isLoggedIn) {
-                        nav.navigate(Routes.MY_INFO)
-                    } else {
-                        nav.navigate(Routes.LOGIN)
-                    }
-                },
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        ) {
-            Row(
+        item(key = "user_card") {
+            ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                // ── 左侧：圆形头像 ──
-                Box(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = avatarText,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // ── 中间：姓名（可选）+ 学号 ──
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Text(
-                        text = displayStudentId,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isLoggedIn)
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        else
-                            MaterialTheme.colorScheme.error,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // ── 右侧：编辑按钮（仅登录后显示）+ > 箭头 ──
-                if (isLoggedIn) {
-                    IconButton(
-                        onClick = { showAccountManagerSheet = true },
-                        modifier = Modifier.size(36.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Edit,
-                            contentDescription = stringResource(R.string.profile_manage_accounts),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                }
-
-                IconButton(
-                    onClick = {
+                    .clickable {
                         if (isLoggedIn) {
                             nav.navigate(Routes.MY_INFO)
                         } else {
                             nav.navigate(Routes.LOGIN)
                         }
                     },
-                    modifier = Modifier.size(36.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                        contentDescription = if (isLoggedIn) stringResource(R.string.profile_my_info_cd) else null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp),
-                    )
+                    // ── 左侧：圆形头像 ──
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = avatarText,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // ── 中间：姓名（可选）+ 学号 ──
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            text = displayStudentId,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isLoggedIn)
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            else
+                                MaterialTheme.colorScheme.error,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // ── 右侧：编辑按钮（仅登录后显示）+ > 箭头 ──
+                    if (isLoggedIn) {
+                        IconButton(
+                            onClick = { showAccountManagerSheet = true },
+                            modifier = Modifier.size(36.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = stringResource(R.string.profile_manage_accounts),
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = {
+                            if (isLoggedIn) {
+                                nav.navigate(Routes.MY_INFO)
+                            } else {
+                                nav.navigate(Routes.LOGIN)
+                            }
+                        },
+                        modifier = Modifier.size(36.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                            contentDescription = if (isLoggedIn) stringResource(R.string.profile_my_info_cd) else null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
                 }
             }
         }
 
         // ── 功能入口 ──
-        Spacer(modifier = Modifier.height(16.dp))
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-        ) {
-            Column {
-                ProfileEntry(
-                    icon = Icons.Outlined.OpenInBrowser,
-                    title = stringResource(R.string.profile_open_url),
-                    onClick = { showOpenUrlDialog = true },
-                )
-                ProfileEntry(
-                    icon = Icons.Outlined.Feedback,
-                    title = stringResource(R.string.profile_feedback),
-                    onClick = { nav.navigate(Routes.FEEDBACK) },
-                )
-                ProfileEntry(
-                    icon = Icons.Outlined.AddToHomeScreen,
-                    title = stringResource(R.string.profile_add_shortcut),
-                    onClick = { nav.navigate(Routes.ADD_SHORTCUT) },
-                )
+        item(key = "menu") {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                Column {
+                    ProfileEntry(
+                        icon = Icons.Outlined.OpenInBrowser,
+                        title = stringResource(R.string.profile_open_url),
+                        onClick = { showOpenUrlDialog = true },
+                    )
+                    ProfileEntry(
+                        icon = Icons.Outlined.Feedback,
+                        title = stringResource(R.string.profile_feedback),
+                        onClick = { nav.navigate(Routes.FEEDBACK) },
+                    )
+                    ProfileEntry(
+                        icon = Icons.Outlined.AddToHomeScreen,
+                        title = stringResource(R.string.profile_add_shortcut),
+                        onClick = { nav.navigate(Routes.ADD_SHORTCUT) },
+                    )
+                }
             }
         }
-
-        // ── 底部区域（占位） ──
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
     // ── 账号管理弹窗 ──

@@ -68,6 +68,8 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     Log.d("HallViewModel", "ehall session 初始化失败（未登录），保持本地 JSON")
                 } catch (e: java.net.UnknownHostException) {
                     Log.w("HallViewModel", "ehall 服务器不可达（无校园网？），保持本地 JSON")
+                } catch (e: java.net.SocketTimeoutException) {
+                    Log.w("HallViewModel", "ehall 连接超时，保持本地 JSON")
                 }
             }
 
