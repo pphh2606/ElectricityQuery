@@ -10,4 +10,6 @@
     <string name="shortcut_success">ショートカットがホーム画面に追加されました</string>
     <string name="shortcut_name_hint">名前を入力してください</string>
     <string name="shortcut_no_function_selected">まず機能を選択してください</string>
+    <string name="shortcut_not_supported">現在のシステムではデスクトップショートカットの作成に対応していません</string>
+    <string name="shortcut_permission_hint">作成に失敗しました。システム設定で本アプリのデスクトップショートカット作成が許可されているかご確認ください</string>
 </resources>

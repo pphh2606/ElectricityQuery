@@ -10,4 +10,6 @@
     <string name="shortcut_success">Raccourci ajouté à l\'écran d\'accueil</string>
     <string name="shortcut_name_hint">Veuillez saisir un nom</string>
     <string name="shortcut_no_function_selected">Veuillez d\'abord sélectionner une fonction</string>
+    <string name="shortcut_not_supported">Le système actuel ne prend pas en charge la création de raccourcis bureau</string>
+    <string name="shortcut_permission_hint">Échec de la création, veuillez vérifier dans les paramètres système si cette application est autorisée à créer des raccourcis bureau</string>
 </resources>

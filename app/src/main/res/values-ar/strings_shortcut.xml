@@ -10,4 +10,6 @@
     <string name="shortcut_success">تمت إضافة الاختصار إلى الشاشة الرئيسية</string>
     <string name="shortcut_name_hint">يرجى إدخال اسم</string>
     <string name="shortcut_no_function_selected">يرجى اختيار وظيفة أولاً</string>
+    <string name="shortcut_not_supported">النظام الحالي لا يدعم إنشاء اختصارات سطح المكتب</string>
+    <string name="shortcut_permission_hint">فشل الإنشاء، يرجى التحقق في إعدادات النظام من السماح لهذا التطبيق بإنشاء اختصارات سطح المكتب</string>
 </resources>

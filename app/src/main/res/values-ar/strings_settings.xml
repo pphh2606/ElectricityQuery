@@ -92,4 +92,30 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">اللغة</string>
     <string name="language_select">اختيار اللغة</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  مسح مساحة التخزين                          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="storage_clear_title">مسح مساحة التخزين</string>
+    <string name="storage_clear_desc">مسح بيانات التطبيق حسب النوع</string>
+    <string name="storage_clear_safe_group">مسح آمن</string>
+    <string name="storage_clear_caution_group">يتطلب الحذر</string>
+    <string name="storage_clear_image_cache">ذاكرة التخزين المؤقت للصور</string>
+    <string name="storage_clear_crash_logs">سجلات الأعطال</string>
+    <string name="storage_clear_temp_logs">ملفات السجلات المؤقتة</string>
+    <string name="storage_clear_webview_data">بيانات تصفح WebView</string>
+    <string name="storage_clear_cookie_data">ملفات تعريف الارتباط / بيانات الجلسة</string>
+    <string name="storage_clear_cookie_hint">مسح ملفات تعريف الارتباط لجميع المواقع، يتطلب إعادة تسجيل الدخول</string>
+    <string name="storage_clear_settings">إعدادات التطبيق</string>
+    <string name="storage_clear_settings_hint">ستعود الإعدادات إلى الوضع الافتراضي بعد المسح</string>
+    <string name="storage_clear_account_data">بيانات الحساب</string>
+    <string name="storage_clear_account_hint">مسح جميع معلومات حسابات المستخدمين</string>
+    <string name="storage_clear_button">مسح العناصر المحددة</string>
+    <string name="storage_clear_confirm_title">تأكيد المسح</string>
+    <string name="storage_clear_confirm_message">سيتم مسح البيانات التالية نهائيًا:\n%1$s\n\nلا يمكن التراجع عن هذا الإجراء، هل تريد المتابعة؟</string>
+    <string name="storage_clear_confirm_button">مسح</string>
+    <string name="storage_clear_cancel_button">إلغاء</string>
+    <string name="storage_clear_success">اكتمل المسح</string>
+    <string name="storage_clear_nothing_selected">يرجى تحديد عنصر واحد على الأقل</string>
+    <string name="storage_clear_zero_size">0 B</string>
 </resources>

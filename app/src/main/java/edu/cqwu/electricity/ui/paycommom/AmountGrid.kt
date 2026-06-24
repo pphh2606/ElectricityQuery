@@ -3,6 +3,7 @@ package edu.cqwu.electricity.ui.paycommom
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,6 +54,7 @@ fun AmountGrid(
                         onClick = { onAmountSelected(amount) },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp),
                         border = BorderStroke(
                             width = if (isSelected) 2.dp else 1.dp,
                             color = if (isSelected) MaterialTheme.colorScheme.primary

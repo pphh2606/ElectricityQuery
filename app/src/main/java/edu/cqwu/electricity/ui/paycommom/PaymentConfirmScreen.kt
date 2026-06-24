@@ -44,11 +44,24 @@ import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 
 /**
+ * 支付确认页面的三个阶段
+ *
+ * 选择支付方式 → 等待支付完成 → 支付成功
+ */
+private enum class PaymentPhase {
+    /** 选择支付方式，点击确认支付 */
+    SELECT_METHOD,
+    /** 已提交支付，等待用户在半屏弹窗中完成支付 */
+    WAITING_PAYMENT,
+    /** 支付成功，显示成功卡片 */
+    PAYMENT_SUCCESS,
+}
+
+/**
  * 统一支付确认页面
  *
  * 电费充值和校园卡充值共用的支付流程 UI。
- * 包含 Scaffold + TopAppBar、订单创建中/就绪/失败三种状态、
- * 支付方式选择、支付成功卡片、PaymentOverlay。
+ * 三个连续阶段：选择支付方式 → 等待支付完成 → 支付成功。
  *
  * @param title 页面标题
  * @param amount 充值金额（null 时不显示）
@@ -63,7 +76,7 @@ import edu.cqwu.electricity.ui.theme.toTopAppBarColors
  * @param onSubmitPayment 提交支付回调
  * @param onRetry 订单创建失败后重试回调
  * @param onBack 返回回调
- * @param onClearState 清除状态回调（成功卡片"完成"按钮 / PaymentOverlay 关闭时调用）
+ * @param onClearState 清除状态回调
  * @param onPaymentComplete 支付完成导航回调
  * @param startPolling 启动订单轮询回调
  */
@@ -89,13 +102,25 @@ fun PaymentConfirmScreen(
 ) {
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
-    // 支付覆盖层可见性
-    var showPaymentOverlay by remember { mutableStateOf(false) }
+    // 当前阶段：选择 → 等待 → 成功
+    var phase by remember { mutableStateOf(PaymentPhase.SELECT_METHOD) }
 
-    // sbHtml 或 mwebUrl 获取成功后自动显示覆盖层
+    // 半屏弹窗可见性（阶段2 内部控制）
+    var showOverlay by remember { mutableStateOf(false) }
+
+    // sbHtml 或 mwebUrl 获取成功 → 自动进入等待阶段并显示弹窗
     LaunchedEffect(payment.sbHtml, payment.mwebUrl) {
         if (!payment.sbHtml.isNullOrBlank() || !payment.mwebUrl.isNullOrBlank()) {
-            showPaymentOverlay = true
+            phase = PaymentPhase.WAITING_PAYMENT
+            showOverlay = true
+        }
+    }
+
+    // 轮询检测到支付完成 → 进入成功阶段
+    LaunchedEffect(payment.orderStatus) {
+        if (payment.orderStatus == "COMPLETED") {
+            phase = PaymentPhase.PAYMENT_SUCCESS
+            showOverlay = false
         }
     }
 
@@ -129,7 +154,7 @@ fun PaymentConfirmScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (isLoading) {
-                        // 订单创建中
+                        // ── 订单创建中 ──
                         Spacer(modifier = Modifier.height(48.dp))
                         CircularProgressIndicator(
                             modifier = Modifier.size(48.dp),
@@ -143,10 +168,8 @@ fun PaymentConfirmScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     } else if (isOrderReady) {
-                        // 订单创建成功，显示支付方式选择
+                        // ── 金额（始终显示）──
                         Spacer(modifier = Modifier.height(8.dp))
-
-                        // 金额显示
                         if (amount != null) {
                             Text(
                                 text = stringResource(R.string.payment_amount_label),
@@ -163,110 +186,148 @@ fun PaymentConfirmScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-
                         Spacer(modifier = Modifier.height(24.dp))
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = stringResource(R.string.payment_select_method),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // 微信支付卡片
-                        PaymentMethodCard(
-                            method = PaymentMethod.WECHAT,
-                            isSelected = payment.selectedMethod == PaymentMethod.WECHAT,
-                            onClick = { onSelectMethod(PaymentMethod.WECHAT) }
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 支付宝卡片
-                        PaymentMethodCard(
-                            method = PaymentMethod.ALIPAY,
-                            isSelected = payment.selectedMethod == PaymentMethod.ALIPAY,
-                            onClick = { onSelectMethod(PaymentMethod.ALIPAY) }
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // 支付成功提示 + 完成按钮
-                        if (payment.orderStatus == "COMPLETED") {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                            ) {
-                                Column(
+                        when (phase) {
+                            // ── 阶段1：选择支付方式 ──
+                            PaymentPhase.SELECT_METHOD -> {
+                                Text(
+                                    text = stringResource(R.string.payment_select_method),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                PaymentMethodCard(
+                                    method = PaymentMethod.WECHAT,
+                                    isSelected = payment.selectedMethod == PaymentMethod.WECHAT,
+                                    onClick = { onSelectMethod(PaymentMethod.WECHAT) }
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                PaymentMethodCard(
+                                    method = PaymentMethod.ALIPAY,
+                                    isSelected = payment.selectedMethod == PaymentMethod.ALIPAY,
+                                    onClick = { onSelectMethod(PaymentMethod.ALIPAY) }
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = { onSubmitPayment() },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(24.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                        .height(50.dp),
+                                    enabled = payment.selectedMethod != null && !payment.isProcessing,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
+                                    )
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.CheckCircle,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(48.dp)
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        stringResource(R.string.payment_success),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
+                                    if (payment.isProcessing) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            strokeWidth = 2.dp
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(stringResource(R.string.payment_processing))
+                                    } else {
+                                        Text(
+                                            text = stringResource(R.string.payment_confirm),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                 }
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(
-                                onClick = {
-                                    onClearState()
-                                    onPaymentComplete()
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
+
+                            // ── 阶段2：等待支付完成 ──
+                            PaymentPhase.WAITING_PAYMENT -> {
+                                PaymentMethodCard(
+                                    method = payment.selectedMethod ?: PaymentMethod.ALIPAY,
+                                    isSelected = true,
+                                    onClick = {},
+                                    enabled = false
                                 )
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.payment_done),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        } else {
-                            // "确认支付"按钮
-                            Button(
-                                onClick = onSubmitPayment,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                enabled = payment.selectedMethod != null
-                                        && !payment.isProcessing
-                                        && !showPaymentOverlay,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                if (payment.isProcessing) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        strokeWidth = 2.dp
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = {
+                                        if (!payment.sbHtml.isNullOrBlank() || !payment.mwebUrl.isNullOrBlank()) {
+                                            showOverlay = true
+                                        } else {
+                                            onSubmitPayment()
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
+                                    enabled = !payment.isProcessing,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(stringResource(R.string.payment_processing))
-                                } else {
+                                ) {
+                                    if (payment.isProcessing) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            strokeWidth = 2.dp
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(stringResource(R.string.payment_processing))
+                                    } else {
+                                        Text(
+                                            text = stringResource(R.string.payment_continue),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+
+                            // ── 阶段3：支付成功 ──
+                            PaymentPhase.PAYMENT_SUCCESS -> {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(24.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.CheckCircle,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(48.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            stringResource(R.string.payment_success),
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = {
+                                        onClearState()
+                                        onBack()
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
                                     Text(
-                                        text = stringResource(R.string.payment_confirm),
+                                        text = stringResource(R.string.payment_done),
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -274,7 +335,7 @@ fun PaymentConfirmScreen(
                             }
                         }
                     } else if (errorMessage != null) {
-                        // 订单创建失败
+                        // ── 订单创建失败 ──
                         Spacer(modifier = Modifier.height(48.dp))
                         Text(
                             text = stringResource(R.string.payment_order_failed),
@@ -297,9 +358,13 @@ fun PaymentConfirmScreen(
                     }
                 }
 
-                // 支付 WebView 覆盖层（共享组件）
-                if (showPaymentOverlay && (payment.sbHtml != null || payment.mwebUrl != null)) {
+                // ── 支付 WebView 半屏弹窗（阶段2 显示）──
+                if (showOverlay
+                    && phase == PaymentPhase.WAITING_PAYMENT
+                    && (payment.sbHtml != null || payment.mwebUrl != null)
+                ) {
                     PaymentOverlay(
+                        visible = showOverlay,
                         sbHtml = payment.sbHtml,
                         mwebUrl = payment.mwebUrl,
                         orderId = orderId,
@@ -307,13 +372,8 @@ fun PaymentConfirmScreen(
                         startPolling = startPolling,
                         isSuccessUrl = successUrlPattern,
                         hasTimeout = hasTimeout,
-                        onClose = {
-                            showPaymentOverlay = false
-                            onClearState()
-                        },
-                        onPaymentComplete = {
-                            showPaymentOverlay = false
-                        },
+                        onClose = { showOverlay = false },
+                        onPaymentComplete = { showOverlay = false },
                     )
                 }
             }

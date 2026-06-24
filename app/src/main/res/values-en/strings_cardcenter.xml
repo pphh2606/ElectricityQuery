@@ -62,4 +62,17 @@
     <string name="card_lost_request_error">Request error</string>
     <string name="card_lost_fetch_error">Failed to fetch card info</string>
     <string name="card_lost_login_expired">Session expired, please login again</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Campus Card Recharge                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_recharge_student_id_label">Student ID</string>
+    <string name="card_recharge_student_id_placeholder">Enter Student ID</string>
+    <string name="card_recharge_custom_amount_label">Custom Amount</string>
+    <string name="card_recharge_custom_amount_placeholder">Enter other amount</string>
+    <string name="card_recharge_creating_order">Creating order…</string>
+    <string name="card_recharge_next_step">Next</string>
+    <string name="card_recharge_info_name">Name</string>
+    <string name="card_recharge_info_student_id">Student ID</string>
+    <string name="card_recharge_title_for_user">Recharge for %1$s</string>
 </resources>

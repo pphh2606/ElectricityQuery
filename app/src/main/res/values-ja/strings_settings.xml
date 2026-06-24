@@ -92,4 +92,30 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">言語</string>
     <string name="language_select">言語を選択</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  ストレージクリア                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="storage_clear_title">ストレージクリア</string>
+    <string name="storage_clear_desc">カテゴリ別にアプリデータを削除</string>
+    <string name="storage_clear_safe_group">安全なクリア</string>
+    <string name="storage_clear_caution_group">注意が必要なクリア</string>
+    <string name="storage_clear_image_cache">画像キャッシュ</string>
+    <string name="storage_clear_crash_logs">クラッシュログ</string>
+    <string name="storage_clear_temp_logs">一時ログファイル</string>
+    <string name="storage_clear_webview_data">WebView ブラウジングデータ</string>
+    <string name="storage_clear_cookie_data">Cookie / セッションデータ</string>
+    <string name="storage_clear_cookie_hint">すべてのサイトの Cookie を削除します。再ログインが必要です</string>
+    <string name="storage_clear_settings">アプリ設定</string>
+    <string name="storage_clear_settings_hint">クリア後に設定がデフォルトに戻ります</string>
+    <string name="storage_clear_account_data">アカウントデータ</string>
+    <string name="storage_clear_account_hint">すべてのユーザーアカウント情報を削除</string>
+    <string name="storage_clear_button">選択した項目をクリア</string>
+    <string name="storage_clear_confirm_title">クリアの確認</string>
+    <string name="storage_clear_confirm_message">以下のデータが完全に削除されます：\n%1$s\n\nこの操作は取り消せません。続行しますか？</string>
+    <string name="storage_clear_confirm_button">クリア</string>
+    <string name="storage_clear_cancel_button">キャンセル</string>
+    <string name="storage_clear_success">クリア完了</string>
+    <string name="storage_clear_nothing_selected">少なくとも1つ選択してください</string>
+    <string name="storage_clear_zero_size">0 B</string>
 </resources>

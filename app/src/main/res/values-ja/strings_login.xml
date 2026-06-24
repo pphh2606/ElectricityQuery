@@ -71,4 +71,10 @@
     <string name="login_get_page_failed">ログインページの取得に失敗</string>
     <string name="login_verifying">ログイン中、お待ちください…</string>
     <string name="login_credential_copied">資格情報をクリップボードにコピーしました</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  アカウント管理                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="account_manager_title">アカウント管理</string>
+    <string name="account_manager_current">現在</string>
+    <string name="account_manager_add">アカウントを追加</string>
 </resources>

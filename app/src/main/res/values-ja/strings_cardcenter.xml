@@ -62,4 +62,17 @@
     <string name="card_lost_request_error">リクエスト異常</string>
     <string name="card_lost_fetch_error">カード情報の取得に失敗</string>
     <string name="card_lost_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  カードチャージ                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_recharge_student_id_label">学籍番号</string>
+    <string name="card_recharge_student_id_placeholder">学籍番号を入力</string>
+    <string name="card_recharge_custom_amount_label">カスタム金額</string>
+    <string name="card_recharge_custom_amount_placeholder">他の金額を入力</string>
+    <string name="card_recharge_creating_order">注文を作成中…</string>
+    <string name="card_recharge_next_step">次へ</string>
+    <string name="card_recharge_info_name">氏名</string>
+    <string name="card_recharge_info_student_id">学籍番号</string>
+    <string name="card_recharge_title_for_user">%1$s のチャージ</string>
 </resources>

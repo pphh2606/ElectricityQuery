@@ -1,7 +1,9 @@
 package edu.cqwu.electricity.ui.recharge
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.BalanceResponse
 import edu.cqwu.electricity.data.model.BuyRecord
 import edu.cqwu.electricity.data.model.PaymentMethod
@@ -76,7 +78,7 @@ data class RechargeRecordState(
  *
  * 与 [ElectricityViewModel] 解耦，不共享任何状态。
  */
-class RechargeViewModel : ViewModel() {
+class RechargeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val electricityApi = ElectricityApi()
     private val payApi = ElectricityPayApi()
@@ -98,6 +100,7 @@ class RechargeViewModel : ViewModel() {
         },
         getCustomAmount = { _uiState.value.customAmount },
         clearOrderError = { _uiState.update { it.copy(createOrderError = null) } },
+        getString = { getApplication<Application>().getString(it) },
     )
 
     // ================================================================
@@ -129,11 +132,11 @@ class RechargeViewModel : ViewModel() {
     fun submitRecharge() {
         val uiState = _uiState.value
         val roomId = uiState.targetRoomId.ifBlank {
-            _uiState.update { it.copy(createOrderError = "未选择房间") }
+            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_no_room)) }
             return
         }
         val roomName = uiState.fullName.ifBlank {
-            _uiState.update { it.copy(createOrderError = "未选择房间") }
+            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_no_room)) }
             return
         }
         val userId = uiState.targetUserId
@@ -141,11 +144,11 @@ class RechargeViewModel : ViewModel() {
 
         val amount = getEffectiveRechargeAmount()
         if (amount == null || amount <= 0) {
-            _uiState.update { it.copy(createOrderError = "请输入有效金额") }
+            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_invalid_amount)) }
             return
         }
         if (amount > 1000) {
-            _uiState.update { it.copy(createOrderError = "金额超出合理范围（0-1000元）") }
+            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_amount_exceeded_recharge)) }
             return
         }
 
@@ -171,7 +174,7 @@ class RechargeViewModel : ViewModel() {
                             _uiState.update {
                                 it.copy(
                                     isCreatingOrder = false,
-                                    createOrderError = "解析订单信息失败: ${e.localizedMessage}"
+                                    createOrderError = getApplication<Application>().getString(R.string.error_parse_order_failed, e.localizedMessage ?: "")
                                 )
                             }
                         }
@@ -180,7 +183,7 @@ class RechargeViewModel : ViewModel() {
                     _uiState.update {
                         it.copy(
                             isCreatingOrder = false,
-                            createOrderError = "创建订单失败: ${e.localizedMessage}"
+                            createOrderError = getApplication<Application>().getString(R.string.error_create_order_failed, e.localizedMessage ?: "")
                         )
                     }
                 }
@@ -314,7 +317,7 @@ class RechargeViewModel : ViewModel() {
                 .onSuccess { rooms ->
                     if (rooms.isEmpty()) {
                         _uiState.update {
-                            it.copy(isQuerying = false, isRefreshing = false, queryError = "该账号下未绑定任何房间")
+                            it.copy(isQuerying = false, isRefreshing = false, queryError = getApplication<Application>().getString(R.string.error_no_rooms_bound))
                         }
                     } else {
                         // 自动选择第一个房间：即使 roomList 内容与之前相同（LaunchedEffect key 不变），
@@ -327,7 +330,7 @@ class RechargeViewModel : ViewModel() {
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(isQuerying = false, isRefreshing = false, queryError = "查询失败: ${e.localizedMessage}")
+                        it.copy(isQuerying = false, isRefreshing = false, queryError = getApplication<Application>().getString(R.string.error_query_failed_detail, e.localizedMessage ?: ""))
                     }
                 }
         }
@@ -340,7 +343,7 @@ class RechargeViewModel : ViewModel() {
     fun queryAccountRoomList() {
         val studentId = _uiState.value.studentId.trim()
         if (studentId.isBlank()) {
-            _uiState.update { it.copy(queryError = "请输入学号") }
+            _uiState.update { it.copy(queryError = getApplication<Application>().getString(R.string.error_enter_student_id)) }
             return
         }
         fetchRooms(studentId)
@@ -433,7 +436,7 @@ class RechargeViewModel : ViewModel() {
      */
     fun queryRechargeRecords(roomId: String) {
         if (roomId.isBlank()) {
-            _recordState.update { it.copy(error = "未选择房间") }
+            _recordState.update { it.copy(error = getApplication<Application>().getString(R.string.error_no_room)) }
             return
         }
         viewModelScope.launch {
@@ -449,7 +452,7 @@ class RechargeViewModel : ViewModel() {
             val buyResult = electricityApi.queryBuyList(roomId, "0", beginTime, endTime)
             val buyData = buyResult.getOrNull()
             if (buyData == null || buyData.ifSuccess != "Y") {
-                val errorMsg = buyData?.resultMsg ?: "查询充值记录失败"
+                val errorMsg = buyData?.resultMsg ?: getApplication<Application>().getString(R.string.error_query_record_failed)
                 _recordState.update { it.copy(isQuerying = false, isRefreshing = false, hasQueried = true, error = errorMsg) }
                 return@launch
             }

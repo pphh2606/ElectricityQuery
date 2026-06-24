@@ -1,7 +1,9 @@
 package edu.cqwu.electricity.ui.cardcenter
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.PaymentMethod
 import edu.cqwu.electricity.data.network.pay.cardrecharge.CardBasicInfo
 import edu.cqwu.electricity.data.network.pay.cardrecharge.CardRechargeApi
@@ -48,7 +50,7 @@ data class CardRechargeUiState(
  *
  * 管理充值全流程：查询卡信息 → 选择金额 → 创建订单 → 选择支付方式 → 提交支付 → 轮询状态
  */
-class CardRechargeViewModel : ViewModel() {
+class CardRechargeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val api = CardRechargeApi()
 
@@ -66,6 +68,7 @@ class CardRechargeViewModel : ViewModel() {
         },
         getCustomAmount = { _uiState.value.customAmount },
         clearOrderError = { _uiState.update { it.copy(createOrderError = null) } },
+        getString = { getApplication<Application>().getString(it) },
     )
 
     companion object {
@@ -83,7 +86,7 @@ class CardRechargeViewModel : ViewModel() {
     fun queryCardInfo() {
         val studentId = _uiState.value.studentId.trim()
         if (studentId.isBlank()) {
-            _uiState.update { it.copy(queryError = "请输入学号") }
+            _uiState.update { it.copy(queryError = getApplication<Application>().getString(R.string.error_enter_student_id)) }
             return
         }
         viewModelScope.launch {
@@ -94,7 +97,7 @@ class CardRechargeViewModel : ViewModel() {
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(isQuerying = false, isRefreshing = false, queryError = e.message ?: "查询失败")
+                        it.copy(isQuerying = false, isRefreshing = false, queryError = e.message ?: getApplication<Application>().getString(R.string.error_query_failed))
                     }
                 }
         }
@@ -117,7 +120,7 @@ class CardRechargeViewModel : ViewModel() {
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(isRefreshing = false, queryError = e.message ?: "查询失败")
+                        it.copy(isRefreshing = false, queryError = e.message ?: getApplication<Application>().getString(R.string.error_query_failed))
                     }
                 }
         }
@@ -152,12 +155,12 @@ class CardRechargeViewModel : ViewModel() {
     fun createOrder() {
         val amount = getEffectiveAmount()
         if (amount == null || amount <= 0) {
-            _uiState.update { it.copy(createOrderError = "请输入有效金额") }
+            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_invalid_amount)) }
             return
         }
         val cardInfo = _uiState.value.cardInfo
         if (cardInfo != null && amount > cardInfo.maxBalanceYuan) {
-            _uiState.update { it.copy(createOrderError = "金额超出最大余额限制（${cardInfo.maxBalanceYuan}元）") }
+            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_amount_exceeded_card, cardInfo.maxBalanceYuan)) }
             return
         }
 
@@ -179,7 +182,7 @@ class CardRechargeViewModel : ViewModel() {
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(isCreatingOrder = false, createOrderError = "创建订单失败: ${e.message}")
+                        it.copy(isCreatingOrder = false, createOrderError = getApplication<Application>().getString(R.string.error_create_order_failed, e.message ?: ""))
                     }
                 }
         }

@@ -71,4 +71,10 @@
     <string name="login_get_page_failed">فشل الحصول على صفحة تسجيل الدخول</string>
     <string name="login_verifying">جارٍ تسجيل الدخول، يرجى الانتظار…</string>
     <string name="login_credential_copied">تم نسخ بيانات الاعتماد إلى الحافظة</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  إدارة الحسابات                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="account_manager_title">إدارة الحسابات</string>
+    <string name="account_manager_current">الحالي</string>
+    <string name="account_manager_add">إضافة حساب</string>
 </resources>

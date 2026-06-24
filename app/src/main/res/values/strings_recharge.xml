@@ -19,7 +19,7 @@
     <string name="recharge_note_time">1. 充值时间为 00:05~23:55，其他时间无法充值</string>
     <string name="recharge_note_delay">2. 如果支付成功但未及时到账，请等待5分钟</string>
     <string name="recharge_note_power">3. 如果充值完成有余额但未通电，请联系管理员处理</string>
-    <string name="recharge_preset_amount">%1$d元</string>
+    <string name="recharge_preset_amount">￥%1$d</string>
     <string name="recharge_hint_item1">1.如果获取用户失败，请先</string>
     <string name="recharge_hint_item1_link">点击此处</string>
     <string name="recharge_hint_item1_suffix">在平台注册。</string>
@@ -69,9 +69,43 @@
     <string name="payment_alipay_desc">支持储蓄卡和信用卡</string>
     <string name="payment_selected">已选择</string>
     <string name="payment_confirm">确认支付</string>
+    <string name="payment_continue">继续支付</string>
     <string name="payment_processing">正在处理支付…</string>
     <string name="payment_order_failed">订单创建失败</string>
     <string name="payment_close">关闭支付</string>
     <string name="payment_success">支付成功！</string>
     <string name="payment_done">完成</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  充值错误提示                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="error_enter_student_id">请输入学号</string>
+    <string name="error_no_room">未选择房间</string>
+    <string name="error_invalid_amount">请输入有效金额</string>
+    <string name="error_amount_exceeded_recharge">金额超出合理范围（0-1000元）</string>
+    <string name="error_amount_exceeded_card">金额超出最大余额限制（%1$.0f元）</string>
+    <string name="error_parse_order_failed">解析订单信息失败：%1$s</string>
+    <string name="error_create_order_failed">创建订单失败：%1$s</string>
+    <string name="error_no_rooms_bound">该账号下未绑定任何房间</string>
+    <string name="error_query_failed">查询失败</string>
+    <string name="error_query_failed_detail">查询失败：%1$s</string>
+    <string name="error_query_record_failed">查询充值记录失败</string>
+    <string name="error_login_expired">登录已过期，请重新登录</string>
+    <string name="error_fetch_bill_failed">获取账单失败</string>
+    <string name="error_fetch_account_failed">获取账户信息失败</string>
+    <string name="error_load_failed">加载失败</string>
+    <string name="error_submit_payment_failed">提交支付失败：%1$s</string>
+    <string name="error_order_closed">订单已关闭</string>
+    <string name="error_query_timeout">查询超时，请稍后查看订单状态</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  充值记录导出                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="record_export_title">查询充值记录</string>
+    <string name="record_export_empty">未查询到充值记录</string>
+    <string name="record_export_total">合计充值：%1$s 元（共%2$d 笔）</string>
+    <string name="record_export_name">充值人名：%1$s</string>
+    <string name="record_export_time">充值时间：%1$s</string>
+    <string name="record_export_amount">充值金额：%1$s 元</string>
+    <string name="record_export_order_no">订单号：%1$s</string>
 </resources>

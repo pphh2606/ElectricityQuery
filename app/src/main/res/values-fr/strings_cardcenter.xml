@@ -62,4 +62,17 @@
     <string name="card_lost_request_error">Erreur de requête</string>
     <string name="card_lost_fetch_error">Échec de récupération des infos de la carte</string>
     <string name="card_lost_login_expired">Session expirée, veuillez vous reconnecter</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Recharge carte campus                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_recharge_student_id_label">N° étudiant</string>
+    <string name="card_recharge_student_id_placeholder">Saisir le numéro étudiant</string>
+    <string name="card_recharge_custom_amount_label">Montant personnalisé</string>
+    <string name="card_recharge_custom_amount_placeholder">Saisir un autre montant</string>
+    <string name="card_recharge_creating_order">Création de la commande…</string>
+    <string name="card_recharge_next_step">Suivant</string>
+    <string name="card_recharge_info_name">Nom</string>
+    <string name="card_recharge_info_student_id">N° étudiant</string>
+    <string name="card_recharge_title_for_user">Recharger pour %1$s</string>
 </resources>

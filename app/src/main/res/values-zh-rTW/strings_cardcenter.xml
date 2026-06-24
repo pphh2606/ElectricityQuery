@@ -62,4 +62,17 @@
     <string name="card_lost_request_error">請求異常</string>
     <string name="card_lost_fetch_error">取得卡片資訊失敗</string>
     <string name="card_lost_login_expired">登入已過期，請重新登入</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  校園卡加值                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_recharge_student_id_label">學號</string>
+    <string name="card_recharge_student_id_placeholder">請輸入學號</string>
+    <string name="card_recharge_custom_amount_label">自訂金額</string>
+    <string name="card_recharge_custom_amount_placeholder">輸入其他金額</string>
+    <string name="card_recharge_creating_order">建立訂單中…</string>
+    <string name="card_recharge_next_step">下一步</string>
+    <string name="card_recharge_info_name">姓名</string>
+    <string name="card_recharge_info_student_id">學號</string>
+    <string name="card_recharge_title_for_user">為 %1$s 加值</string>
 </resources>

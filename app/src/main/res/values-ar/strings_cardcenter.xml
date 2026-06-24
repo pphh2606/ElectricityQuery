@@ -62,4 +62,17 @@
     <string name="card_lost_request_error">خطأ في الطلب</string>
     <string name="card_lost_fetch_error">فشل جلب معلومات البطاقة</string>
     <string name="card_lost_login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  شحن بطاقة الحرم الجامعي                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="card_recharge_student_id_label">الرقم الجامعي</string>
+    <string name="card_recharge_student_id_placeholder">أدخل الرقم الجامعي</string>
+    <string name="card_recharge_custom_amount_label">مبلغ مخصص</string>
+    <string name="card_recharge_custom_amount_placeholder">أدخل مبلغًا آخر</string>
+    <string name="card_recharge_creating_order">جارٍ إنشاء الطلب…</string>
+    <string name="card_recharge_next_step">التالي</string>
+    <string name="card_recharge_info_name">الاسم</string>
+    <string name="card_recharge_info_student_id">الرقم الجامعي</string>
+    <string name="card_recharge_title_for_user">شحن لـ %1$s</string>
 </resources>

@@ -71,4 +71,10 @@
     <string name="login_get_page_failed">Échec de récupération de la page de connexion</string>
     <string name="login_verifying">Connexion en cours, veuillez patienter…</string>
     <string name="login_credential_copied">Identifiants copiés</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Gestion des comptes                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="account_manager_title">Gestion des comptes</string>
+    <string name="account_manager_current">Actuel</string>
+    <string name="account_manager_add">Ajouter un compte</string>
 </resources>

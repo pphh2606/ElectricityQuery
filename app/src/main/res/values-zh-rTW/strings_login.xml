@@ -71,4 +71,10 @@
     <string name="login_get_page_failed">取得登入頁面失敗</string>
     <string name="login_verifying">正在登入，請稍候…</string>
     <string name="login_credential_copied">憑證已複製到剪貼簿</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  帳號管理                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="account_manager_title">帳號管理</string>
+    <string name="account_manager_current">目前</string>
+    <string name="account_manager_add">新增帳號</string>
 </resources>

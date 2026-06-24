@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.ui.paycommom
 
+import androidx.annotation.StringRes
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.PaymentMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -34,6 +36,7 @@ class PaymentFlowDelegate(
     private val updateAmount: (selectedAmount: Double?, customAmount: String) -> Unit,
     private val getCustomAmount: () -> String,
     private val clearOrderError: () -> Unit,
+    private val getString: (Int) -> String,
 ) {
 
     // ================================================================
@@ -78,7 +81,7 @@ class PaymentFlowDelegate(
                 throw e
             } catch (e: Exception) {
                 updatePayment {
-                    copy(isProcessing = false, error = "提交支付失败: ${e.message}")
+                    copy(isProcessing = false, error = getString(R.string.error_submit_payment_failed).format(e.message ?: ""))
                 }
             }
         }
@@ -131,7 +134,7 @@ class PaymentFlowDelegate(
                     return
                 }
                 "CLOSED" -> {
-                    updatePayment { copy(orderStatus = "CLOSED", error = "订单已关闭") }
+                    updatePayment { copy(orderStatus = "CLOSED", error = getString(R.string.error_order_closed)) }
                     return
                 }
             }
@@ -140,7 +143,7 @@ class PaymentFlowDelegate(
             interval = minOf(interval + 1000L, 5000L)
         }
 
-        updatePayment { copy(error = "查询超时，请稍后查看订单状态") }
+        updatePayment { copy(error = getString(R.string.error_query_timeout)) }
     }
 
     // ================================================================

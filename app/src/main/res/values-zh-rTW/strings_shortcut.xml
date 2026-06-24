@@ -10,4 +10,6 @@
     <string name="shortcut_success">捷徑已新增到桌面</string>
     <string name="shortcut_name_hint">請輸入名稱</string>
     <string name="shortcut_no_function_selected">請先選擇一個功能</string>
+    <string name="shortcut_not_supported">目前系統不支援建立桌面捷徑</string>
+    <string name="shortcut_permission_hint">建立失敗，請在系統設定中檢查是否允許本應用程式建立桌面捷徑</string>
 </resources>
