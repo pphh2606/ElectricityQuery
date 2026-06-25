@@ -19,7 +19,7 @@
     <string name="qrcode_save_failed">儲存失敗</string>
     <string name="scan_save_to_album">儲存到相簿</string>
     <string name="scan_open_external">分享網址</string>
-    <string name="qrcode_display_orders">訂單記錄</string>
+    <string name="qrcode_display_orders">消費記錄</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  掃碼                                       -->

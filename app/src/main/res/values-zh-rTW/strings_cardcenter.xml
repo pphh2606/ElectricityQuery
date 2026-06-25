@@ -75,4 +75,6 @@
     <string name="card_recharge_info_name">姓名</string>
     <string name="card_recharge_info_student_id">學號</string>
     <string name="card_recharge_title_for_user">為 %1$s 加值</string>
+    <string name="card_recharge_record">充值記錄</string>
+    <string name="card_recharge_consume_record">消費記錄</string>
 </resources>

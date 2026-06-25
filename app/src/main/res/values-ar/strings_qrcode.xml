@@ -19,7 +19,7 @@
     <string name="qrcode_save_failed">فشل الحفظ</string>
     <string name="scan_save_to_album">حفظ في الألبوم</string>
     <string name="scan_open_external">مشاركة الرابط</string>
-    <string name="qrcode_display_orders">سجل الطلبات</string>
+    <string name="qrcode_display_orders">سجلات الإنفاق</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  الماسح                                     -->

@@ -19,7 +19,7 @@
     <string name="qrcode_save_failed">保存失敗</string>
     <string name="scan_save_to_album">アルバムに保存</string>
     <string name="scan_open_external">URLを共有</string>
-    <string name="qrcode_display_orders">注文履歴</string>
+    <string name="qrcode_display_orders">利用記録</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  スキャン                                   -->

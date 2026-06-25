@@ -75,4 +75,6 @@
     <string name="card_recharge_info_name">الاسم</string>
     <string name="card_recharge_info_student_id">الرقم الجامعي</string>
     <string name="card_recharge_title_for_user">شحن لـ %1$s</string>
+    <string name="card_recharge_record">سجلات الشحن</string>
+    <string name="card_recharge_consume_record">سجلات الإنفاق</string>
 </resources>

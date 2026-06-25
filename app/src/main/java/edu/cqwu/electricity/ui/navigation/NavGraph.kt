@@ -196,6 +196,9 @@ object Routes {
     /** 缴费服务大厅 */
     const val FEE_SERVICE_HALL = "fee_service_hall"
 
+    /** 缴费服务大厅 — 直接跳转到订单 tab */
+    const val FEE_SERVICE_HALL_ORDERS = "fee_service_hall_orders"
+
     /** 我的信息（原生页面） */
     const val MY_INFO = "my_info"
 
@@ -379,7 +382,16 @@ fun AppNavGraph(
             )
         }
 
-        // 我的信息（原生页面）
+        // 缴费服务大厅 — 订单 tab
+        animatedComposable(settings = animationSettings, route = Routes.FEE_SERVICE_HALL_ORDERS) {
+            FeeServiceHallScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
+                initialTab = 1,
+            )
+        }
+
+        // 我的信息（原生页面） */
         animatedComposable(settings = animationSettings, route = Routes.MY_INFO) {
             MyInfoScreen(
                 onBack = { navController.popBackStack() },

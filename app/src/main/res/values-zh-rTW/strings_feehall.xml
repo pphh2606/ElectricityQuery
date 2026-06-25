@@ -40,4 +40,9 @@
     <string name="fee_order_page_info">第 %1$d/%2$d 頁</string>
     <string name="fee_order_no_label">訂單號: %1$s</string>
     <string name="fee_hall_order_all_loaded">— 已載入全部 %1$d 筆 —</string>
+    <string name="fee_order_continue_pay">繼續支付</string>
+    <string name="fee_order_close">關閉訂單</string>
+    <string name="fee_order_closing">正在關閉訂單…</string>
+    <string name="fee_order_close_success">訂單已關閉</string>
+    <string name="fee_order_close_failed">關閉失敗: %1$s</string>
 </resources>

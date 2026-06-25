@@ -40,4 +40,9 @@
     <string name="fee_order_page_info">%1$d/%2$d ページ</string>
     <string name="fee_order_no_label">注文番号: %1$s</string>
     <string name="fee_hall_order_all_loaded">— 全 %1$d 件読み込み完了 —</string>
+    <string name="fee_order_continue_pay">支払いを続ける</string>
+    <string name="fee_order_close">注文を閉じる</string>
+    <string name="fee_order_closing">注文を閉じています…</string>
+    <string name="fee_order_close_success">注文を閉じました</string>
+    <string name="fee_order_close_failed">閉じ失敗: %1$s</string>
 </resources>

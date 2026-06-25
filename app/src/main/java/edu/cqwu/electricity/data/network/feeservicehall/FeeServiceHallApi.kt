@@ -72,12 +72,18 @@ class FeeServiceHallApi {
         private const val ORDER_LIST_URL =
             "https://pay.cqwu.edu.cn/api/pay/web/order/pageOrderlist"
         private const val PAY_DOMAIN = "https://pay.cqwu.edu.cn"
+        private const val CLOSE_ORDER_URL = "$PAY_DOMAIN/api/pay/web/order/closeOrderById"
         private const val CAS_LOGIN_URL = "$PAY_DOMAIN/casLogin/"
         private const val XTOKEN_COOKIE_NAME = "datalook_reimbursement_token"
 
         fun buildPaymentUrl(proModelUrl: String?, projectId: String): String {
             val handler = proModelUrl?.let { "${it}Pay" } ?: "commonPay"
             return "https://pay.cqwu.edu.cn/mobile/#/$handler?projectId=$projectId"
+        }
+
+        /** 构建待支付订单的继续支付链接 */
+        fun buildContinuePaymentUrl(orderId: String, projectId: String): String {
+            return "https://pay.cqwu.edu.cn/mobile/#/person?orderId=$orderId&projectId=$projectId"
         }
 
         /** 个人信息 API */
@@ -291,6 +297,33 @@ class FeeServiceHallApi {
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
                 gson.parseApiResponse<UserProfileResponse>(body).map { it.data ?: UserProfile(null, null, null) }
+            } catch (e: ApiBusinessException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    /**
+     * 关闭待支付订单。
+     *
+     * @param orderId 订单 ID（即 OrderRecord.id）
+     */
+    suspend fun closeOrder(orderId: String): Result<Unit> = autoRetry {
+        withContext(Dispatchers.IO) {
+            try {
+                val request = buildBaseRequest("$CLOSE_ORDER_URL/$orderId")
+                    .post("".toRequestBody(jsonMediaType))
+                    .build()
+                val response = client.newCall(request).execute()
+                val body = response.body.string()
+                val base = gson.fromJson(body, ApiBaseResponse::class.java)
+                if (base.messageCode == "0") {
+                    Result.success(Unit)
+                } else {
+                    Result.failure(ApiBusinessException(base.message))
+                }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {

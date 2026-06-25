@@ -232,7 +232,7 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
     val amountText = String.format("%.2f", order.amountYuan)
     val statusColor = when (order.status) {
         "COMPLETED" -> Color(0xFF4CAF50)
-        "PENDING" -> Color(0xFFFF9800)
+        "PENDING", "PENDING_PAYMENT" -> Color(0xFFFF9800)
         "REFUND" -> Color(0xFF2196F3)
         "CLOSED" -> Color(0xFF9E9E9E)
         else -> Color(0xFF9E9E9E)

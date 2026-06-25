@@ -142,9 +142,11 @@ fun RechargeScreen(
         }
     }
 
-    // 是否有有效金额
-    val hasValidAmount = recharge.selectedAmount != null
-            || recharge.customAmount.trim().toDoubleOrNull()?.let { it > 0 } == true
+    // 是否有有效金额且未超出单次充值上限
+    val effectiveRechargeAmount = recharge.selectedAmount
+        ?: recharge.customAmount.trim().toDoubleOrNull()
+    val hasValidAmount = effectiveRechargeAmount != null && effectiveRechargeAmount > 0
+            && effectiveRechargeAmount <= 1000
 
     // 账户名称显示
     val accountName: String = recharge.fullName.takeIf { it.isNotBlank() }

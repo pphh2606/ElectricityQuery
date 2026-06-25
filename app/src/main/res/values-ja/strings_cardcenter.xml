@@ -75,4 +75,6 @@
     <string name="card_recharge_info_name">氏名</string>
     <string name="card_recharge_info_student_id">学籍番号</string>
     <string name="card_recharge_title_for_user">%1$s のチャージ</string>
+    <string name="card_recharge_record">チャージ記録</string>
+    <string name="card_recharge_consume_record">利用記録</string>
 </resources>

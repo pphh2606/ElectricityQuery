@@ -19,7 +19,7 @@
     <string name="qrcode_save_failed">Échec d\'enregistrement</string>
     <string name="scan_save_to_album">Enregistrer dans l\'album</string>
     <string name="scan_open_external">Partager l\'URL</string>
-    <string name="qrcode_display_orders">Historique</string>
+    <string name="qrcode_display_orders">Dépenses</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Scanner                                    -->

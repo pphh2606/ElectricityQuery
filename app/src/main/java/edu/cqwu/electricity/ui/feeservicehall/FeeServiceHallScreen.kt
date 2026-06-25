@@ -63,6 +63,9 @@ import edu.cqwu.electricity.data.network.feeservicehall.FeeItem
 import edu.cqwu.electricity.data.network.feeservicehall.FeeServiceHallApi
 import edu.cqwu.electricity.data.network.feeservicehall.OrderRecord
 import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.LoadingDialog
+import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.util.ToastUtils
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import kotlinx.coroutines.launch
@@ -83,15 +86,38 @@ fun FeeServiceHallScreen(
     onBack: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
     viewModel: FeeServiceHallViewModel = viewModel(),
+    initialTab: Int = 0,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
-    val pagerState = rememberPagerState(pageCount = { tabs.size })
+    val pagerState = rememberPagerState(initialPage = initialTab, pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     var selectedOrder by remember { mutableStateOf<OrderRecord?>(null) }
+    val snackbar = LocalSnackbarController.current
 
     LaunchedEffect(Unit) { viewModel.loadIfNeeded() }
+
+    // 监听关闭订单结果
+    LaunchedEffect(uiState.closeOrderResult) {
+        when (val result = uiState.closeOrderResult) {
+            is CloseOrderResult.Success -> {
+                snackbar.show(context.getString(R.string.fee_order_close_success), ToastUtils.Type.SUCCESS)
+                selectedOrder = null
+                viewModel.consumeCloseOrderResult()
+            }
+            is CloseOrderResult.Error -> {
+                snackbar.show(context.getString(R.string.fee_order_close_failed, result.message), ToastUtils.Type.ERROR)
+                viewModel.consumeCloseOrderResult()
+            }
+            null -> {}
+        }
+    }
+
+    // 关闭订单 LoadingDialog
+    if (uiState.isClosingOrder) {
+        LoadingDialog(message = stringResource(R.string.fee_order_closing))
+    }
 
     // 订单详情底部弹窗
     BottomSheetDialog(
@@ -100,7 +126,17 @@ fun FeeServiceHallScreen(
         fullscreen = true,
     ) {
         selectedOrder?.let { order ->
-            OrderDetailContent(order = order)
+            OrderDetailContent(
+                order = order,
+                onContinuePayment = if (order.isPendingPayment && order.projectId != null) ({
+                    val url = FeeServiceHallApi.buildContinuePaymentUrl(order.id, order.projectId!!)
+                    onNavigateToWebView(url, context.getString(R.string.fee_order_continue_pay))
+                    selectedOrder = null
+                }) else null,
+                onCloseOrder = if (order.isPendingPayment) ({
+                    viewModel.closeOrder(order.id)
+                }) else null,
+            )
         }
     }
 

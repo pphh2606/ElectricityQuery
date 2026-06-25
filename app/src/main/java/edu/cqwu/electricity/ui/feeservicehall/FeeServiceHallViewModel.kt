@@ -36,11 +36,21 @@ data class FeeServiceHallUiState(
     val filterStartDate: String = "",
     val filterEndDate: String = "",
 
+    // 关闭订单
+    val isClosingOrder: Boolean = false,
+    val closeOrderResult: CloseOrderResult? = null,
+
     // 个人资料 Tab
     val profile: UserProfile? = null,
     val isProfileLoading: Boolean = false,
     val profileError: String? = null,
 )
+
+/** 关闭订单结果，消费后重置为 null */
+sealed class CloseOrderResult {
+    data object Success : CloseOrderResult()
+    data class Error(val message: String) : CloseOrderResult()
+}
 
 class FeeServiceHallViewModel : ViewModel() {
 
@@ -146,6 +156,26 @@ class FeeServiceHallViewModel : ViewModel() {
     }
 
     fun refreshOrders() { loadOrders(isRefresh = true) }
+
+    /** 关闭订单 */
+    fun closeOrder(orderId: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isClosingOrder = true) }
+            api.closeOrder(orderId)
+                .onSuccess {
+                    _uiState.update { it.copy(isClosingOrder = false, closeOrderResult = CloseOrderResult.Success) }
+                    refreshOrders()
+                }
+                .onFailure { e ->
+                    _uiState.update { it.copy(isClosingOrder = false, closeOrderResult = CloseOrderResult.Error(e.message ?: "未知错误")) }
+                }
+        }
+    }
+
+    /** 消费关闭订单结果 */
+    fun consumeCloseOrderResult() {
+        _uiState.update { it.copy(closeOrderResult = null) }
+    }
     fun toggleOrderFilter() { _uiState.update { it.copy(showOrderFilter = !it.showOrderFilter) } }
     fun setOrderFilterProjectName(n: String) { _uiState.update { it.copy(filterProjectName = n) } }
     fun setOrderFilterStartDate(d: String) { _uiState.update { it.copy(filterStartDate = d) } }

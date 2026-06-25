@@ -52,6 +52,7 @@ data class OrderRecord(
     @SerializedName("balanceOrderTradeOrderNo") val balanceOrderTradeOrderNo: String?,
     @SerializedName("partnerId") val partnerId: String?,
     @SerializedName("engName") val engName: String?,
+    @SerializedName("projectId") val projectId: String?,
 ) {
     /** 金额（单位：元），从分的转换 */
     val amountYuan: Double get() = amount / 100.0
@@ -59,11 +60,14 @@ data class OrderRecord(
     /** 状态显示文本 */
     val statusDisplay: String get() = when (status) {
         "COMPLETED" -> "已支付"
-        "PENDING" -> "待支付"
+        "PENDING", "PENDING_PAYMENT" -> "待支付"
         "REFUND" -> "已退款"
         "CLOSED" -> "已关闭"
         else -> status
     }
+
+    /** 是否为待支付状态 */
+    val isPendingPayment: Boolean get() = status == "PENDING_PAYMENT"
 
     /** 支付渠道显示文本 */
     val tradeChannelDisplay: String get() = when (tradeChannel) {

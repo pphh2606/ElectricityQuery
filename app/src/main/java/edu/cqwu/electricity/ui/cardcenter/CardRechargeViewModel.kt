@@ -38,9 +38,6 @@ data class CardRechargeUiState(
     val orderResult: CardRechargeOrderResult? = null,
     val createOrderError: String? = null,
 
-    // 导航状态（防止预测性返回手势取消时重复导航）
-    val hasNavigatedToPayment: Boolean = false,
-
     // 支付流程（共享 PaymentState）
     val payment: PaymentState = PaymentState(),
 )
@@ -153,16 +150,7 @@ class CardRechargeViewModel(application: Application) : AndroidViewModel(applica
     // ================================================================
 
     fun createOrder() {
-        val amount = getEffectiveAmount()
-        if (amount == null || amount <= 0) {
-            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_invalid_amount)) }
-            return
-        }
-        val cardInfo = _uiState.value.cardInfo
-        if (cardInfo != null && amount > cardInfo.maxBalanceYuan) {
-            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_amount_exceeded_card, cardInfo.maxBalanceYuan)) }
-            return
-        }
+        val amount = getEffectiveAmount()!!
 
         viewModelScope.launch {
             _uiState.update {
@@ -170,14 +158,13 @@ class CardRechargeViewModel(application: Application) : AndroidViewModel(applica
                     isCreatingOrder = true,
                     createOrderError = null,
                     orderResult = null,
-                    hasNavigatedToPayment = false,
                     payment = PaymentState(),
                 )
             }
             api.createOrder(PROJECT_ID, String.format("%.2f", amount))
                 .onSuccess { order ->
                     _uiState.update {
-                        it.copy(isCreatingOrder = false, orderResult = order, hasNavigatedToPayment = false)
+                        it.copy(isCreatingOrder = false, orderResult = order)
                     }
                 }
                 .onFailure { e ->
@@ -227,11 +214,6 @@ class CardRechargeViewModel(application: Application) : AndroidViewModel(applica
     //  状态清理
     // ================================================================
 
-    /** 标记已导航到支付页面（防止预测性返回手势取消时重复导航） */
-    fun markNavigatedToPayment() {
-        _uiState.update { it.copy(hasNavigatedToPayment = true) }
-    }
-
     fun clearQueryError() {
         _uiState.update { it.copy(queryError = null) }
     }
@@ -253,7 +235,6 @@ class CardRechargeViewModel(application: Application) : AndroidViewModel(applica
                 isCreatingOrder = false,
                 orderResult = null,
                 createOrderError = null,
-                hasNavigatedToPayment = false,
                 payment = PaymentState(),
             )
         }

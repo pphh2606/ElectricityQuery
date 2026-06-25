@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +48,8 @@ import edu.cqwu.electricity.data.network.feeservicehall.OrderRecord
 @Composable
 fun OrderDetailContent(
     order: OrderRecord,
+    onContinuePayment: (() -> Unit)? = null,
+    onCloseOrder: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -56,6 +60,26 @@ fun OrderDetailContent(
 
         // ── 订单详细信息 ──
         OrderInfoSection(order)
+
+        // ── 待支付订单操作按钮 ──
+        if (onContinuePayment != null || onCloseOrder != null) {
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            ) {
+                if (onCloseOrder != null) {
+                    TextButton(onClick = onCloseOrder) {
+                        Text(stringResource(R.string.fee_order_close))
+                    }
+                }
+                if (onContinuePayment != null) {
+                    Button(onClick = onContinuePayment) {
+                        Text(stringResource(R.string.fee_order_continue_pay))
+                    }
+                }
+            }
+        }
     }
 }
 

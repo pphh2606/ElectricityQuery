@@ -20,10 +20,22 @@ fun CardPaymentScreen(
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
 
+    // 进入页面时立即创建订单（与 PaymentSelectionScreen 一致）
+    LaunchedEffect(Unit) { viewModel.createOrder() }
+
+    // 显示支付错误
     LaunchedEffect(uiState.payment.error) {
         uiState.payment.error?.let {
             snackbar.show(it, ToastUtils.Type.ERROR)
             viewModel.clearPaymentError()
+        }
+    }
+
+    // 显示订单创建错误
+    LaunchedEffect(uiState.createOrderError) {
+        uiState.createOrderError?.let {
+            snackbar.show(it, ToastUtils.Type.ERROR)
+            viewModel.clearCreateOrderError()
         }
     }
 

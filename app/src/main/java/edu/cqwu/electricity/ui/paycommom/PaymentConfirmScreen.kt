@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.PaymentMethod
+import edu.cqwu.electricity.ui.components.LoadingDialog
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 
@@ -153,21 +154,7 @@ fun PaymentConfirmScreen(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (isLoading) {
-                        // ── 订单创建中 ──
-                        Spacer(modifier = Modifier.height(48.dp))
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp),
-                            color = MaterialTheme.colorScheme.primary,
-                            strokeWidth = 4.dp
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Text(
-                            text = stringResource(R.string.payment_creating_order),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    } else if (isOrderReady) {
+                    if (isOrderReady) {
                         // ── 金额（始终显示）──
                         Spacer(modifier = Modifier.height(8.dp))
                         if (amount != null) {
@@ -378,5 +365,10 @@ fun PaymentConfirmScreen(
                 }
             }
         }
+    }
+
+    // ── 订单创建中：LoadingDialog 阻断式加载（与登录页一致）──
+    if (isLoading) {
+        LoadingDialog(message = stringResource(R.string.payment_creating_order))
     }
 }

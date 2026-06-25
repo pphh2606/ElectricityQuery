@@ -20,7 +20,7 @@
     <string name="qrcode_save_failed">Save failed</string>
     <string name="scan_save_to_album">Save to Gallery</string>
     <string name="scan_open_external">Share URL</string>
-    <string name="qrcode_display_orders">Order History</string>
+    <string name="qrcode_display_orders">Spending Records</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Scan                                       -->

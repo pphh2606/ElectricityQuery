@@ -1,5 +1,9 @@
 package edu.cqwu.electricity.ui.cardcenter
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +20,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Store
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -27,6 +34,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -35,7 +43,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,12 +54,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.local.AccountStore
 import edu.cqwu.electricity.data.network.auth.AccountManager
 import edu.cqwu.electricity.ui.paycommom.AmountGrid
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
+import edu.cqwu.electricity.ui.components.BottomSheetItem
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
+import edu.cqwu.electricity.ui.navigation.Routes
+import edu.cqwu.electricity.ui.theme.LocalNavController
 import edu.cqwu.electricity.ui.theme.LocalTopBarState
 import edu.cqwu.electricity.ui.theme.toTopAppBarColors
 import edu.cqwu.electricity.util.ToastUtils
@@ -73,6 +88,10 @@ fun CardRechargeScreen(
     val snackbar = LocalSnackbarController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val context = LocalContext.current
+    val nav = LocalNavController.current
+
+    // ── 其他充值方式弹窗状态 ──
+    var showOtherRechargeDialog by remember { mutableStateOf(false) }
 
     // ── 自动填充已登录用户的学号并查询 ──
     val loggedInStudentId = remember {
@@ -83,14 +102,6 @@ fun CardRechargeScreen(
         viewModel.autoFillFromLogin(loggedInStudentId)
     }
 
-    // 订单创建成功后导航到支付页面（使用 ViewModel 中的状态防止预测性返回手势取消时重复导航）
-    LaunchedEffect(uiState.orderResult, uiState.hasNavigatedToPayment) {
-        if (uiState.orderResult != null && !uiState.hasNavigatedToPayment) {
-            viewModel.markNavigatedToPayment()
-            onNavigateToPayment()
-        }
-    }
-
     // 显示查询错误
     LaunchedEffect(uiState.queryError) {
         uiState.queryError?.let {
@@ -99,15 +110,14 @@ fun CardRechargeScreen(
         }
     }
 
-    // 显示创建订单错误
-    LaunchedEffect(uiState.createOrderError) {
-        uiState.createOrderError?.let {
-            snackbar.show(it, ToastUtils.Type.ERROR)
-            viewModel.clearCreateOrderError()
-        }
-    }
-
     val hasQueriedSuccess = uiState.cardInfo != null
+
+    // 是否有有效金额且未超出校园卡最大余额限制
+    val effectiveAmount = uiState.selectedAmount
+        ?: uiState.customAmount.trim().toDoubleOrNull()
+    val maxBalance = uiState.cardInfo?.maxBalanceYuan
+    val hasValidAmount = effectiveAmount != null && effectiveAmount > 0
+            && (maxBalance == null || effectiveAmount <= maxBalance)
 
     Scaffold(
         topBar = {
@@ -225,31 +235,119 @@ fun CardRechargeScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // 下一步按钮
+                    // 下一步按钮（直接导航到支付页面，订单创建在 CardPaymentScreen 中完成）
                     Button(
-                        onClick = { viewModel.createOrder() },
+                        onClick = { onNavigateToPayment() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
-                        enabled = !uiState.isCreatingOrder && uiState.cardInfo?.isNormal == true,
+                        enabled = hasValidAmount && uiState.cardInfo?.isNormal == true,
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        if (uiState.isCreatingOrder) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                        }
                         Text(
-                            text = if (uiState.isCreatingOrder) stringResource(R.string.card_recharge_creating_order) else stringResource(R.string.card_recharge_next_step),
+                            text = stringResource(R.string.card_recharge_next_step),
                             style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+                }
+
+                // ============================================================
+                //  其他充值方式（始终可见，无论是否查询成功）
+                // ============================================================
+                Text(
+                    text = stringResource(R.string.recharge_other_methods),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showOtherRechargeDialog = true }
+                        .padding(vertical = 10.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // ── 充值记录 | 消费记录 ──
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TextButton(onClick = { nav.navigate(Routes.FEE_SERVICE_HALL_ORDERS) }) {
+                        Text(
+                            stringResource(R.string.card_recharge_record),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
+                    Text(
+                        text = "|",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                    )
+
+                    TextButton(onClick = { nav.navigate(Routes.BILL) }) {
+                        Text(
+                            stringResource(R.string.card_recharge_consume_record),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
                 }
             }
         }
+    }
+
+    // ================================================================
+    //  其他充值方式 - Bottom Sheet（与电费充值 UI 一致）
+    // ================================================================
+    val cardRechargeH5Url = "https://pay.cqwu.edu.cn/mobile/#/eCardRechargePay?projectId=80bb5ee2189e4ca2bd5dff4513a0dae2"
+
+    BottomSheetDialog(
+        visible = showOtherRechargeDialog,
+        onDismissRequest = { showOtherRechargeDialog = false },
+        title = stringResource(R.string.recharge_other_method_title)
+    ) {
+        // 今日校园充值
+        BottomSheetItem(
+            icon = Icons.Outlined.Store,
+            title = stringResource(R.string.recharge_method_campus),
+            onClick = {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
+                    context.startActivity(intent)
+                } catch (_: ActivityNotFoundException) {
+                    snackbar.show(context.getString(R.string.recharge_install_campus_app))
+                }
+                showOtherRechargeDialog = false
+            }
+        )
+
+        // 应用内 H5 充值
+        BottomSheetItem(
+            icon = Icons.Outlined.Public,
+            title = stringResource(R.string.recharge_method_inapp_h5),
+            onClick = {
+                showOtherRechargeDialog = false
+                nav.navigate(Routes.unifiedWebViewRoute(cardRechargeH5Url, context.getString(R.string.card_center_recharge)))
+            }
+        )
+
+        // 浏览器 H5 充值
+        BottomSheetItem(
+            icon = Icons.Outlined.OpenInBrowser,
+            title = stringResource(R.string.recharge_method_browser_h5),
+            onClick = {
+                try {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(cardRechargeH5Url)
+                    )
+                    context.startActivity(intent)
+                } catch (_: ActivityNotFoundException) {
+                    snackbar.show(context.getString(R.string.common_no_browser))
+                }
+                showOtherRechargeDialog = false
+            }
+        )
     }
 }
 

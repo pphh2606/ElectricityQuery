@@ -1,28 +1,30 @@
 # 更改日志
 
 ## 新增功能
-- 打开网址弹窗新增「半屏访问」选项，用户可选择在半屏 `WebViewBottomSheet` 中浏览网页，无需跳转全屏页面
-- 二维码页面底部新增「充值」和「订单记录」快捷按钮，扫码后可快速跳转操作
-- 二维码页面和扫码页面支持长按复制二维码内容（`SelectionContainer`），方便用户提取链接
-- 二维码页面布局优化：扫描提示移至顶部，余额移至二维码下方并使用固定占位避免加载前后 UI 移位
-- 扫码页面二维码上方新增扫描提示和过期时间文字，下方展示可复制的链接内容
-- 存储清理页面新增下拉刷新功能（`PullToRefreshBox`），用户可随时重新计算各项存储占用大小
+- 订单详情新增「继续支付」和「关闭订单」按钮，待支付订单可直接在应用内继续支付或一键关闭
+- 校园卡充值页面新增「其他充值方式」底部弹窗，支持今日校园 App 充值、应用内 H5 充值、浏览器 H5 充值三种渠道
+- 校园卡充值页面底部新增「充值记录」和「消费记录」快捷入口，方便用户快速查看历史
+- 缴费服务大厅支持通过 `initialTab` 参数直接跳转到订单 Tab，导航更精准
+- 新增关闭订单 API（`FeeServiceHallApi.closeOrder`）和继续支付链接构建方法（`buildContinuePaymentUrl`）
+- 订单模型 `OrderRecord` 新增 `projectId` 字段和 `isPendingPayment` 属性，用于识别待支付订单并构建继续支付链接
 
 ## Bug 修复
-- `WebViewBottomSheet` 关闭动画结束后不再遗漏调用 `onDismissRequest()`，修复了关闭后遮罩层（Scrim）残留不消失的问题
-- `OpenUrlDialog` 从 `AlertDialog` 改为始终组合的 `BottomSheetDialog`，配合 `visible` 参数控制显隐，避免条件组合导致的状态丢失
-- 关于页面的 CI 构建标识从硬编码 `false` 改为读取 `BuildConfig.BUILD_SOURCE`，CI 构建的 APK 能正确显示构建来源
+- 后端返回的 `PENDING_PAYMENT` 状态码之前无法正确显示为「待支付」，现已兼容该状态码并正确展示橙色标签
+- 校园卡充值缺少金额上限校验，用户输入金额超出校园卡最大余额时无法提前拦截，现已在按钮层增加 `maxBalance` 校验
+- 电费充值缺少单次充值 1000 元上限校验，自定义金额超限时无法及时提示，现已在 UI 层限制最大金额
+- 校园卡充值页面订单创建错误弹两次 snackbar，移除了充值页面重复的错误监听 `LaunchedEffect`，统一由支付页面处理
 
 ## 架构改进
-- `OpenUrlDialog` 从 `AlertDialog` 迁移为 `BottomSheetDialog`（MD3 ModalBottomSheet），`Checkbox` 替换为 `Switch`，交互更符合 Material 3 规范
-- 半屏 WebView 状态提升到 `MainTabScreen` 层级，避免被 `HorizontalPager` 裁剪，`ProfilePageContent` 通过 `onOpenHalfScreen` 回调通知父组件
-- 扫码页面「其他应用打开」改为「分享网址」（`Intent.ACTION_SEND`），语义更准确且支持系统分享面板
-- 存储清理页面将计算大小逻辑抽取为 `reloadSizes()` 挂起函数，首次加载和下拉刷新复用同一方法
+- 校园卡充值页面将订单创建逻辑后移到支付确认页面（`CardPaymentScreen`），充值页面只负责金额选择，职责更清晰
+- 支付确认页面的内联加载指示器（`CircularProgressIndicator`）统一替换为 `LoadingDialog` 阻断式弹窗，交互体验与登录页一致
+- `CardRechargeViewModel` 移除了 `hasNavigatedToPayment` 状态和 `markNavigatedToPayment()` 方法，消除了预测性返回手势导致的重复导航状态管理
+- `RechargeViewModel` 和 `CardRechargeViewModel` 的 `createOrder()` 将金额校验逻辑前移至 UI 层（按钮禁用），ViewModel 不再做输入校验
+- 订单详情组件 `OrderDetailContent` 新增 `onContinuePayment` / `onCloseOrder` 回调参数，支持条件渲染操作按钮
 
 ## 国际化
-- 全部 6 种语言新增 `open_url_half_screen`（半屏访问）字符串
-- 全部 6 种语言新增 `qrcode_display_orders`（订单记录）字符串
-- 全部 6 种语言将 `scan_open_external` 从「其他应用打开」更新为「分享网址」
+- 全部 6 种语言新增「充值记录」「消费记录」字符串（`strings_cardcenter.xml`）
+- 全部 6 种语言新增「继续支付」「关闭订单」「正在关闭订单…」「订单已关闭」「关闭失败」共 5 个订单操作字符串（`strings_feehall.xml`）
+- 全部 6 种语言将二维码页面「订单记录」更新为「消费记录」（`strings_qrcode.xml`）
 
 ## 依赖变更
-- VERSION_CODE 从 1369 升至 1398
+- VERSION_CODE 从 1398 升至 1410

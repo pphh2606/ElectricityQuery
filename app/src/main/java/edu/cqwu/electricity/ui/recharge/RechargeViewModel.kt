@@ -142,15 +142,7 @@ class RechargeViewModel(application: Application) : AndroidViewModel(application
         val userId = uiState.targetUserId
         val openId = uiState.studentId
 
-        val amount = getEffectiveRechargeAmount()
-        if (amount == null || amount <= 0) {
-            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_invalid_amount)) }
-            return
-        }
-        if (amount > 1000) {
-            _uiState.update { it.copy(createOrderError = getApplication<Application>().getString(R.string.error_amount_exceeded_recharge)) }
-            return
-        }
+        val amount = getEffectiveRechargeAmount()!!
 
         viewModelScope.launch {
             _uiState.update {

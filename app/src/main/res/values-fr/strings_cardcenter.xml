@@ -75,4 +75,6 @@
     <string name="card_recharge_info_name">Nom</string>
     <string name="card_recharge_info_student_id">N° étudiant</string>
     <string name="card_recharge_title_for_user">Recharger pour %1$s</string>
+    <string name="card_recharge_record">Enregistrements</string>
+    <string name="card_recharge_consume_record">Dépenses</string>
 </resources>
