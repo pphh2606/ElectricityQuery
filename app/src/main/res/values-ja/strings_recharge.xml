@@ -5,7 +5,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="recharge_hint">ヒント</string>
     <string name="recharge_query">照会</string>
-    <string name="recharge_student_id_label">学籍番号またはユーザーIDを入力</string>
+    <string name="recharge_student_id_label">チャージ対象の学籍番号または番号</string>
     <string name="recharge_student_id_placeholder">例：2022010101 または 12345</string>
     <string name="recharge_my_account">マイアカウント</string>
     <string name="recharge_switch_account">アカウント切替</string>
@@ -20,12 +20,12 @@
     <string name="recharge_note_delay">2. 支払い成功後すぐに反映されない場合は、5分ほどお待ちください</string>
     <string name="recharge_note_power">3. チャージ完了後、残高があっても通電しない場合は管理者にお問い合わせください</string>
     <string name="recharge_preset_amount">￥%1$d</string>
-    <string name="recharge_hint_item1">1.ユーザー取得に失敗した場合、まず</string>
-    <string name="recharge_hint_item1_link">こちらをクリック</string>
-    <string name="recharge_hint_item1_suffix">してプラットフォームに登録してください。</string>
-    <string name="recharge_hint_item2">2.登録後もユーザー情報取得に失敗する場合は、寮室管理者の学籍番号または寮室で最初にプラットフォームに登録した学籍番号を入力してみてください。</string>
-    <string name="recharge_hint_item3_prefix">3.チャージ記録は学籍番号に対応するユーザーに記録されます。気になる場合は</string>
-    <string name="recharge_hint_item3_suffix">他のチャージ方法を選択してください。</string>
+    <string name="recharge_hint_item1">1.学籍番号：本アプリのログインに使用する学籍番号です。ログイン済みの場合、入力欄に自動入力されます。\n番号：電気料金システムの内部番号で、H5ウェブサイトの「マイページ」で確認できます。</string>
+    <string name="recharge_hint_item2">2.ユーザー取得に失敗した場合、まず</string>
+    <string name="recharge_hint_item2_link">こちらをクリック</string>
+    <string name="recharge_hint_item2_suffix">してプラットフォームに登録してください。</string>
+    <string name="recharge_hint_item3_prefix">3.チャージ状況は学籍番号または番号に対応するユーザーに記録されます。気になる場合は</string>
+    <string name="recharge_hint_item3_suffix">をご利用ください。</string>
     <string name="recharge_select_room_title">チャージ先のルームを選択</string>
     <string name="recharge_select_room_hint">この学籍番号には複数のルームが紐付いています。チャージ先のルームを選択してください：</string>
     <string name="recharge_other_method_title">チャージ方法を選択</string>

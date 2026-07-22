@@ -1,30 +1,30 @@
 # 更改日志
 
 ## 新增功能
-- 订单详情新增「继续支付」和「关闭订单」按钮，待支付订单可直接在应用内继续支付或一键关闭
-- 校园卡充值页面新增「其他充值方式」底部弹窗，支持今日校园 App 充值、应用内 H5 充值、浏览器 H5 充值三种渠道
-- 校园卡充值页面底部新增「充值记录」和「消费记录」快捷入口，方便用户快速查看历史
-- 缴费服务大厅支持通过 `initialTab` 参数直接跳转到订单 Tab，导航更精准
-- 新增关闭订单 API（`FeeServiceHallApi.closeOrder`）和继续支付链接构建方法（`buildContinuePaymentUrl`）
-- 订单模型 `OrderRecord` 新增 `projectId` 字段和 `isPendingPayment` 属性，用于识别待支付订单并构建继续支付链接
+- 账单页面顶栏新增帮助图标（`HelpOutline`），点击弹出 `BottomSheetDialog` 说明账单加载耗时原因、数据来源及网页版入口，降低用户等待焦虑
+- 电费充值提示弹窗新增「学号/编号」详细说明，帮助用户理解两种查询方式的区别及适用场景
+- 充值提示弹窗第3条新增可点击的「其他充值方式」内部链接（`LinkAnnotation.Clickable`），点击后自动关闭提示并联动打开其他充值方式弹窗，无需手动操作
+- 全部 6 种语言新增账单提示字符串 `bill_hint_title`、`bill_hint_item1`、`bill_hint_item2`、`bill_hint_item3`
 
 ## Bug 修复
-- 后端返回的 `PENDING_PAYMENT` 状态码之前无法正确显示为「待支付」，现已兼容该状态码并正确展示橙色标签
-- 校园卡充值缺少金额上限校验，用户输入金额超出校园卡最大余额时无法提前拦截，现已在按钮层增加 `maxBalance` 校验
-- 电费充值缺少单次充值 1000 元上限校验，自定义金额超限时无法及时提示，现已在 UI 层限制最大金额
-- 校园卡充值页面订单创建错误弹两次 snackbar，移除了充值页面重复的错误监听 `LaunchedEffect`，统一由支付页面处理
+- 首页服务图标（`CustomServiceIconItem`）远程图片加载失败时 `AsyncImage.onError` 回调为空，导致不显示任何内容，现已设置 `useFallbackIcon = true` 自动降级显示本地默认图标
 
 ## 架构改进
-- 校园卡充值页面将订单创建逻辑后移到支付确认页面（`CardPaymentScreen`），充值页面只负责金额选择，职责更清晰
-- 支付确认页面的内联加载指示器（`CircularProgressIndicator`）统一替换为 `LoadingDialog` 阻断式弹窗，交互体验与登录页一致
-- `CardRechargeViewModel` 移除了 `hasNavigatedToPayment` 状态和 `markNavigatedToPayment()` 方法，消除了预测性返回手势导致的重复导航状态管理
-- `RechargeViewModel` 和 `CardRechargeViewModel` 的 `createOrder()` 将金额校验逻辑前移至 UI 层（按钮禁用），ViewModel 不再做输入校验
-- 订单详情组件 `OrderDetailContent` 新增 `onContinuePayment` / `onCloseOrder` 回调参数，支持条件渲染操作按钮
+- 充值提示弹窗从 `RechargeScreen` 提升到 `ElectricityMainScreen` 统一管理，删除 `RechargeScreen` 中约 87 行重复的 `showInfoDialog` 弹窗代码，消除双源维护；通过新增 `triggerOtherRecharge` / `onOtherRechargeTriggered` 参数实现父组件向子组件的跨组件弹窗触发
+- `NavGraph` 移除独立的 `Routes.RECHARGE` 路由及其 `animatedComposable` 注册，`RechargeScreen` 已作为 `ElectricityMainScreen` 的 Tab 子组件内嵌渲染，不再需要独立路由
+- `ElectricityUiState` 移除冗余的 `selectedArea` 字段及 `selectBuilding()` 中的赋值逻辑，该状态从未被 UI 消费，属于死代码
+- Models.kt 移除未使用的 `OrderStatusResponse` 包装类，直接使用 `OrderStatusData`；`RechargeTimeRange` 枚举注释从引用魔法数字改为描述用途
+- `CardRechargeScreen` 调整 `PullToRefreshBox` 与 `Column` 的嵌套顺序，将「充值记录 | 消费记录」入口从可滚动区域移出并固定在页面底部，确保键盘弹出时始终可见
+- `ElectricityMainScreen` 充值提示弹窗缩进格式修正，`BottomSheetDialog` 内容区域添加 `padding(horizontal = 16.dp)` 统一间距
 
 ## 国际化
-- 全部 6 种语言新增「充值记录」「消费记录」字符串（`strings_cardcenter.xml`）
-- 全部 6 种语言新增「继续支付」「关闭订单」「正在关闭订单…」「订单已关闭」「关闭失败」共 5 个订单操作字符串（`strings_feehall.xml`）
-- 全部 6 种语言将二维码页面「订单记录」更新为「消费记录」（`strings_qrcode.xml`）
+- 全部 6 种语言重写充值提示文案：`recharge_hint_item1` 改为学号/编号说明，`recharge_hint_item2`~`item3` 重新编号，新增 `recharge_hint_item2_link` / `recharge_hint_item2_suffix` 替代原 `item1_link` / `item1_suffix`
+- 全部 6 种语言优化充值输入框标签 `recharge_student_id_label`，从「请输入学号或 userId」改为「充值人学号或编号」，表述更直观
+- 全部 6 种语言删除冗余的 `electricity_recharge_hint_item2` 和 `electricity_recharge_hint_item3`，内容已合并至 `strings_recharge.xml`
+
+## 删除的文件
+- `DeferredContent.kt` — 延迟内容加载组件，已无引用
+- `TabScaffold.kt` — Tab 脚手架组件，已无引用
 
 ## 依赖变更
-- VERSION_CODE 从 1398 升至 1410
+- VERSION_CODE 从 1410 升至 1417

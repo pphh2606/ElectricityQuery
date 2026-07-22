@@ -53,6 +53,10 @@
     <string name="bill_no_records">暂无交易记录</string>
     <string name="bill_capped_hint">— 仅展示最近 100 条，更多请前往网页版 —</string>
     <string name="bill_all_loaded">— 已加载全部 %1$d 条 —</string>
+    <string name="bill_hint_title">提示</string>
+    <string name="bill_hint_item1">因为系统原因，加载全部账单需要3秒左右时间，加载后面3项需要15秒左右时间。使用筛选功能也需要较长时间。</string>
+    <string name="bill_hint_item2">数据来源于学校H5和桌面版网站，内容以"现状"提供。</string>
+    <string name="bill_hint_item3">您可以通过标题栏右侧的网页打开查看原有账单内容。</string>
     <string name="card_lost_confirm_title">确认挂失</string>
     <string name="card_lost_confirm_text">确定要挂失该卡片吗？挂失后卡片将立即无法使用。</string>
     <string name="card_lost_confirm_btn">确定挂失</string>

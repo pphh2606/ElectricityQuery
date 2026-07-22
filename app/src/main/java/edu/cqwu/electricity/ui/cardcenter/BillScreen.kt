@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Search
@@ -66,6 +67,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.data.model.BillPageInfo
+import edu.cqwu.electricity.ui.components.BottomSheetDialog
 import edu.cqwu.electricity.ui.components.DatePickerField
 import edu.cqwu.electricity.ui.components.LocalSnackbarController
 import edu.cqwu.electricity.ui.components.ReLoginContent
@@ -99,6 +101,9 @@ fun BillScreen(
 
     // ── 半屏 WebView 弹窗状态（账单详情用）──
     var billDetailUrl by remember { mutableStateOf<String?>(null) }
+
+    // ── 提示弹窗状态 ──
+    var showHintDialog by remember { mutableStateOf(false) }
 
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
@@ -185,6 +190,13 @@ fun BillScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showHintDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.HelpOutline,
+                            contentDescription = stringResource(R.string.bill_hint_title),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     val webTitle = stringResource(R.string.bill_web_title)
                     IconButton(onClick = { onNavigateToWebView(webBillUrl, webTitle) }) {
                         Icon(
@@ -368,6 +380,21 @@ fun BillScreen(
         url = billDetailUrl ?: "",
         title = detailTitleStr
     )
+
+    // ── 提示弹窗 ──
+    BottomSheetDialog(
+        visible = showHintDialog,
+        onDismissRequest = { showHintDialog = false },
+        title = stringResource(R.string.bill_hint_title)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Text(text = stringResource(R.string.bill_hint_item1), style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = stringResource(R.string.bill_hint_item2), style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = stringResource(R.string.bill_hint_item3), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
 }
 
 // ====================================================================

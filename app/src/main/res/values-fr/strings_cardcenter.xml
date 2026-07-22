@@ -53,6 +53,10 @@
     <string name="bill_no_records">Aucune transaction</string>
     <string name="bill_capped_hint">— Affichage limité aux 100 dernières, voir la version Web pour plus —</string>
     <string name="bill_all_loaded">— %1$d transactions chargées —</string>
+    <string name="bill_hint_title">Info</string>
+    <string name="bill_hint_item1">Pour des raisons techniques, le chargement de toutes les factures prend environ 3 secondes, et le chargement des 3 dernières prend environ 15 secondes. L\'utilisation du filtre prend également du temps.</string>
+    <string name="bill_hint_item2">Les données proviennent du site H5 et du site de bureau de l\'école, fournies « en l\'état ».</string>
+    <string name="bill_hint_item3">Vous pouvez consulter le contenu original des factures en ouvrant la page Web via l\'icône à droite de la barre de titre.</string>
     <string name="card_lost_confirm_title">Confirmer la perte</string>
     <string name="card_lost_confirm_text">Déclarer cette carte comme perdue ? Elle sera immédiatement désactivée.</string>
     <string name="card_lost_confirm_btn">Confirmer la perte</string>

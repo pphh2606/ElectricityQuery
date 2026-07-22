@@ -89,6 +89,8 @@ import edu.cqwu.electricity.util.ToastUtils
 @Composable
 fun RechargeScreen(
     viewModel: RechargeViewModel,
+    triggerOtherRecharge: Boolean = false,
+    onOtherRechargeTriggered: () -> Unit = {},
 ) {
     val recharge by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -98,11 +100,16 @@ fun RechargeScreen(
     // 房间切换弹窗状态
     var showRoomSwitchDialog by remember { mutableStateOf(false) }
 
-    // 提示信息弹窗
-    var showInfoDialog by remember { mutableStateOf(false) }
-
     // 其他充值方式弹窗
     var showOtherRechargeDialog by remember { mutableStateOf(false) }
+
+    // 外部触发打开其他充值方式弹窗
+    LaunchedEffect(triggerOtherRecharge) {
+        if (triggerOtherRecharge) {
+            showOtherRechargeDialog = true
+            onOtherRechargeTriggered()
+        }
+    }
 
     // 是否已查询成功（fullName 有值）
     val hasQueriedSuccess = recharge.fullName.isNotBlank()
@@ -428,93 +435,6 @@ fun RechargeScreen(
             showRoomSwitchDialog = false
         }
     )
-
-    // ================================================================
-    //  提示信息弹窗 - Bottom Sheet
-    // ================================================================
-    BottomSheetDialog(
-        visible = showInfoDialog,
-        onDismissRequest = { showInfoDialog = false },
-            title = stringResource(R.string.recharge_hint)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // 第1条：外部链接
-                val link1Text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.recharge_hint_item1))
-                    }
-                    pushLink(
-                        LinkAnnotation.Clickable(
-                            tag = "url",
-                            styles = TextLinkStyles(
-                                SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textDecoration = TextDecoration.Underline
-                                )
-                            )
-                        ) {
-                            try {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login")
-                                )
-                                context.startActivity(intent)
-                            } catch (_: ActivityNotFoundException) {
-                                snackbar.show(context.getString(R.string.common_no_browser))
-                            }
-                        }
-                    )
-                    append(stringResource(R.string.recharge_hint_item1_link))
-                    pop()
-                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.recharge_hint_item1_suffix))
-                    }
-                }
-                Text(
-                    text = link1Text,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                // 第2条：纯文本
-                Text(
-                    text = stringResource(R.string.recharge_hint_item2),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                // 第3条：点击触发其他充值弹窗
-                val link2Text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.recharge_hint_item3_prefix))
-                    }
-                    pushLink(
-                        LinkAnnotation.Clickable(
-                            tag = "action",
-                            styles = TextLinkStyles(
-                                SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textDecoration = TextDecoration.Underline
-                                )
-                            )
-                        ) {
-                            showInfoDialog = false
-                            showOtherRechargeDialog = true
-                        }
-                    )
-                    append(stringResource(R.string.recharge_hint_item1_link))
-                    pop()
-                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.recharge_hint_item3_suffix))
-                    }
-                }
-                Text(
-                    text = link2Text,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
 
     // ================================================================
     //  其他充值方式 - Bottom Sheet

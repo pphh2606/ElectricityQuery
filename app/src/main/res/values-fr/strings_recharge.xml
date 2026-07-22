@@ -5,7 +5,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="recharge_hint">Astuce</string>
     <string name="recharge_query">Consulter</string>
-    <string name="recharge_student_id_label">Saisir le numéro étudiant ou userId</string>
+    <string name="recharge_student_id_label">Numéro étudiant ou numéro de recharge</string>
     <string name="recharge_student_id_placeholder">Ex. 2022010101 ou 12345</string>
     <string name="recharge_my_account">Mon compte</string>
     <string name="recharge_switch_account">Changer de compte</string>
@@ -20,12 +20,12 @@
     <string name="recharge_note_delay">2. Si le paiement a réussi mais n\'est pas encore crédité, veuillez patienter 5 minutes.</string>
     <string name="recharge_note_power">3. Si le solde est suffisant mais que l\'électricité n\'est pas rétablie, contactez l\'administrateur.</string>
     <string name="recharge_preset_amount">￥%1$d</string>
-    <string name="recharge_hint_item1">1. Si la récupération de l\'utilisateur échoue, veuillez d\'abord</string>
-    <string name="recharge_hint_item1_link">cliquer ici</string>
-    <string name="recharge_hint_item1_suffix">pour vous inscrire sur la plateforme.</string>
-    <string name="recharge_hint_item2">2. Si après inscription l\'erreur persiste, essayez le numéro de l\'administrateur du dortoir ou du premier inscrit.</string>
-    <string name="recharge_hint_item3_prefix">3. L\'historique est enregistré sous le numéro étudiant. Si cela vous dérange,</string>
-    <string name="recharge_hint_item3_suffix">choisissez une autre méthode de recharge.</string>
+    <string name="recharge_hint_item1">1. Numéro étudiant : l\'identifiant utilisé pour vous connecter à cette application. Si vous êtes déjà connecté, il sera rempli automatiquement.\nNuméro : identifiant interne du système d\'électricité, disponible sur le site H5 sous « Mon compte ».</string>
+    <string name="recharge_hint_item2">2. Si la récupération de l\'utilisateur échoue, veuillez d\'abord</string>
+    <string name="recharge_hint_item2_link">cliquer ici</string>
+    <string name="recharge_hint_item2_suffix">pour vous inscrire sur la plateforme.</string>
+    <string name="recharge_hint_item3_prefix">3. L\'historique est enregistré sous le numéro étudiant ou le numéro. Si cela vous dérange, utilisez </string>
+    <string name="recharge_hint_item3_suffix">.</string>
     <string name="recharge_select_room_title">Choisir la chambre à recharger</string>
     <string name="recharge_select_room_hint">Ce numéro étudiant est lié à plusieurs chambres. Choisissez celle à recharger :</string>
     <string name="recharge_other_method_title">Choisir la méthode de recharge</string>

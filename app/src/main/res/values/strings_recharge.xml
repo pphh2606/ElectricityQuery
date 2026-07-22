@@ -5,7 +5,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="recharge_hint">提示</string>
     <string name="recharge_query">查询</string>
-    <string name="recharge_student_id_label">请输入学号 或 userId</string>
+    <string name="recharge_student_id_label">充值人学号或编号</string>
     <string name="recharge_student_id_placeholder">例如 2022010101 或 12345</string>
     <string name="recharge_my_account">我的账号</string>
     <string name="recharge_switch_account">切换账户</string>
@@ -20,12 +20,12 @@
     <string name="recharge_note_delay">2. 如果支付成功但未及时到账，请等待5分钟</string>
     <string name="recharge_note_power">3. 如果充值完成有余额但未通电，请联系管理员处理</string>
     <string name="recharge_preset_amount">￥%1$d</string>
-    <string name="recharge_hint_item1">1.如果获取用户失败，请先</string>
-    <string name="recharge_hint_item1_link">点击此处</string>
-    <string name="recharge_hint_item1_suffix">在平台注册。</string>
-    <string name="recharge_hint_item2">2.若注册后还是提示获取用户信息失败，请尝试填写寝室管理员学号/寝室内第一个注册了平台的学号。</string>
-    <string name="recharge_hint_item3_prefix">3.充值记录会记录在学号所对应的用户头上。如介意请</string>
-    <string name="recharge_hint_item3_suffix">选择其他充值方式。</string>
+    <string name="recharge_hint_item1">1.学号：即登录本软件的学号。已登录情况下会自动填充到输入框。\n编号：电费系统内部编号，可在h5网页-我的获取。</string>
+    <string name="recharge_hint_item2">2.如果获取用户失败，请先</string>
+    <string name="recharge_hint_item2_link">点击此处</string>
+    <string name="recharge_hint_item2_suffix">在平台注册。</string>
+    <string name="recharge_hint_item3_prefix">3.充值情况会记录在学号或编号对应的用户上。如介意请用</string>
+    <string name="recharge_hint_item3_suffix">。</string>
     <string name="recharge_select_room_title">选择充值房间</string>
     <string name="recharge_select_room_hint">该学号下绑定多个房间，请选择要充值的房间：</string>
     <string name="recharge_other_method_title">选择充值方式</string>

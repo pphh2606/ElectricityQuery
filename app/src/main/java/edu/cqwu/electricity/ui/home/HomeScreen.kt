@@ -763,7 +763,7 @@ private fun CustomServiceIconItem(
                         .padding(6.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Fit,
-                    onError = { }
+                    onError = { useFallbackIcon = true }
                 )
             }
         } else {

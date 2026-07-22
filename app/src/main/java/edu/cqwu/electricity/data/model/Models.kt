@@ -203,16 +203,6 @@ enum class PaymentMethod(val payType: String, val displayName: String) {
     ALIPAY("01", "支付宝")
 }
 
-/**
- * 订单状态查询响应（getOrderById）
- * GET /pay/cashier/getOrderById/{orderId}
- */
-data class OrderStatusResponse(
-    val messageCode: String?,
-    val message: String?,
-    val data: OrderStatusData?
-)
-
 data class OrderStatusData(
     val status: String?,
     val returnUrl: String?,
@@ -284,7 +274,7 @@ data class NoticeDetailResponse(
 
 /**
  * 充值记录查询的时间范围枚举。
- * 替代 [ElectricityUiState.rechargeRecordTimeRange] 中的魔法数字。
+ * 用于统一管理充值记录查询的时间范围选项。
  */
 enum class RechargeTimeRange(val days: Long) {
     ONE_MONTH(30L),

@@ -68,8 +68,6 @@
     <string name="electricity_query_title">Electricity Query</string>
     <string name="electricity_switch_dorm">Switch Dorm</string>
     <string name="electricity_myroom_querying">Fetching dorm info…</string>
-    <string name="electricity_recharge_hint_item2">2. If you still get user info errors after registration, try entering the dorm admin\'s student ID or the first student who registered on the platform.</string>
-    <string name="electricity_recharge_hint_item3">3. Recharge records are tied to the student ID used. Please use other methods if this concerns you.</string>
     <string name="electricity_bind_account">Bind Account</string>
     <string name="electricity_unbind_account">Unbind Account</string>
 </resources>

@@ -68,8 +68,6 @@
     <string name="electricity_query_title">استعلام الكهرباء</string>
     <string name="electricity_switch_dorm">تغيير السكن</string>
     <string name="electricity_myroom_querying">جارٍ جلب معلومات السكن…</string>
-    <string name="electricity_recharge_hint_item2">2. إذا استمر فشل الحصول على معلومات المستخدم بعد التسجيل، جرب إدخال الرقم الجامعي لمسؤول السكن أو أول مسجل في الغرفة.</string>
-    <string name="electricity_recharge_hint_item3">3. يُسجل سجل الشحن تحت الرقم الجامعي المقابل. إذا كان هذا يزعجك، يرجى استخدام طرق شحن أخرى.</string>
     <string name="electricity_bind_account">ربط الحساب</string>
     <string name="electricity_unbind_account">إلغاء ربط الحساب</string>
 </resources>

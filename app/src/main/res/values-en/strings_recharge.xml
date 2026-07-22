@@ -5,7 +5,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="recharge_hint">Tips</string>
     <string name="recharge_query">Query</string>
-    <string name="recharge_student_id_label">Enter Student ID or userId</string>
+    <string name="recharge_student_id_label">Recharge student ID or number</string>
     <string name="recharge_student_id_placeholder">e.g. 2022010101 or 12345</string>
     <string name="recharge_my_account">My Account</string>
     <string name="recharge_switch_account">Switch Account</string>
@@ -20,12 +20,12 @@
     <string name="recharge_note_delay">2. If payment succeeded but not credited, please wait 5 minutes.</string>
     <string name="recharge_note_power">3. If you have balance but no power, please contact the administrator.</string>
     <string name="recharge_preset_amount">￥%1$d</string>
-    <string name="recharge_hint_item1">1. If user lookup fails, please </string>
-    <string name="recharge_hint_item1_link">click here</string>
-    <string name="recharge_hint_item1_suffix"> to register on the platform.</string>
-    <string name="recharge_hint_item2">2. If registration still fails, try using the dorm administrator student ID or the first registered student ID in the dorm.</string>
-    <string name="recharge_hint_item3_prefix">3. Recharge records are tied to the student ID. If you prefer not, please </string>
-    <string name="recharge_hint_item3_suffix">choose another payment method.</string>
+    <string name="recharge_hint_item1">1. Student ID: the ID used to log in to this app. If already logged in, it will be auto-filled.\nNumber: an internal ID from the electricity system, available on the H5 website under "My".</string>
+    <string name="recharge_hint_item2">2. If user lookup fails, please </string>
+    <string name="recharge_hint_item2_link">click here</string>
+    <string name="recharge_hint_item2_suffix"> to register on the platform.</string>
+    <string name="recharge_hint_item3_prefix">3. Recharge records are tied to the student ID or number. If you prefer not, please use </string>
+    <string name="recharge_hint_item3_suffix">.</string>
     <string name="recharge_select_room_title">Select Room</string>
     <string name="recharge_select_room_hint">Multiple rooms are linked to this ID. Please select the room to recharge:</string>
     <string name="recharge_other_method_title">Select Payment Method</string>

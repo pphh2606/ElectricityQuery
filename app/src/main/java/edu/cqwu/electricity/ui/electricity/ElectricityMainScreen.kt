@@ -128,6 +128,9 @@ fun ElectricityMainScreen(
     // ── 充值 Tab 提示弹窗状态 ──
     var showRechargeInfoDialog by remember { mutableStateOf(false) }
 
+    // ── 外部触发其他充值方式弹窗 ──
+    var triggerOtherRecharge by remember { mutableStateOf(false) }
+
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
 
     // 获取当前登录学号
@@ -317,6 +320,8 @@ fun ElectricityMainScreen(
                     // ── 充值 Tab ──
                     RechargeScreen(
                         viewModel = rechargeViewModel,
+                        triggerOtherRecharge = triggerOtherRecharge,
+                        onOtherRechargeTriggered = { triggerOtherRecharge = false },
                     )
                 }
                 2 -> {
@@ -337,62 +342,86 @@ fun ElectricityMainScreen(
     BottomSheetDialog(
         visible = showRechargeInfoDialog,
         onDismissRequest = { showRechargeInfoDialog = false },
-            title = stringResource(R.string.recharge_hint)
+        title = stringResource(R.string.recharge_hint)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // 第1条：外部链接
-                val link1Text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.recharge_hint_item1))
-                    }
-                    pushLink(
-                        LinkAnnotation.Clickable(
-                            tag = "url",
-                            styles = TextLinkStyles(
-                                SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textDecoration = TextDecoration.Underline
-                                )
-                            )
-                        ) {
-                            try {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login")
-                                )
-                                context.startActivity(intent)
-                            } catch (_: ActivityNotFoundException) {
-                                snackbar.show(context.getString(R.string.common_no_browser))
-                            }
-                        }
-                    )
-                    append(stringResource(R.string.recharge_hint_item1_link))
-                    pop()
-                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.recharge_hint_item1_suffix))
-                    }
+            // 第1条：纯文本（学号/编号说明）
+            Text(
+                text = stringResource(R.string.recharge_hint_item1),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            // 第2条：带"点击此处"外部链接（注册）
+            val link2Text = buildAnnotatedString {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                    append(stringResource(R.string.recharge_hint_item2))
                 }
-                Text(
-                    text = link1Text,
-                    style = MaterialTheme.typography.bodyMedium
+                pushLink(
+                    LinkAnnotation.Clickable(
+                        tag = "url",
+                        styles = TextLinkStyles(
+                            SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        )
+                    ) {
+                        try {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login")
+                            )
+                            context.startActivity(intent)
+                        } catch (_: ActivityNotFoundException) {
+                            snackbar.show(context.getString(R.string.common_no_browser))
+                        }
+                    }
                 )
-
-                // 第2条：纯文本
-                Text(
-                    text = stringResource(R.string.electricity_recharge_hint_item2),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                // 第3条：纯文本
-                Text(
-                    text = stringResource(R.string.electricity_recharge_hint_item3),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                append(stringResource(R.string.recharge_hint_item2_link))
+                pop()
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                    append(stringResource(R.string.recharge_hint_item2_suffix))
+                }
             }
+            Text(
+                text = link2Text,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            // 第3条：带"其他充值方式"内部链接
+            val link3Text = buildAnnotatedString {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                    append(stringResource(R.string.recharge_hint_item3_prefix))
+                }
+                pushLink(
+                    LinkAnnotation.Clickable(
+                        tag = "action",
+                        styles = TextLinkStyles(
+                            SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        )
+                    ) {
+                        showRechargeInfoDialog = false
+                        triggerOtherRecharge = true
+                    }
+                )
+                append(stringResource(R.string.recharge_other_methods))
+                pop()
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                    append(stringResource(R.string.recharge_hint_item3_suffix))
+                }
+            }
+            Text(
+                text = link3Text,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
+    }
 
     // ── 我的寝室房间切换 BottomSheet ──
     BottomSheetDialog(

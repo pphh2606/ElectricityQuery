@@ -50,7 +50,6 @@ data class ElectricityUiState(
     val floorRoomRefreshVersion: Int = 0,
 
     // 已选择项
-    val selectedArea: BuildingNode? = null,
     val selectedBuilding: BuildingNode? = null,
     val selectedRoom: BuildingNode? = null,
 
@@ -135,9 +134,7 @@ class ElectricityViewModel(
         val floors = building.children ?: emptyList()
         _uiState.update {
             Log.d("DEBUG_expand", "selectBuilding BEFORE: expandedAreaIds=${it.expandedAreaIds}")
-            val area = it.areas.firstOrNull { a -> a.id == areaId }
             it.copy(
-                selectedArea = area,
                 selectedBuilding = building,
                 floors = floors,
                 selectedRoom = null,

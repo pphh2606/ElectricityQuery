@@ -53,6 +53,10 @@
     <string name="bill_no_records">No transaction records</string>
     <string name="bill_capped_hint">— Only showing last 100 records, more on web —</string>
     <string name="bill_all_loaded">— All %1$d records loaded —</string>
+    <string name="bill_hint_title">Tips</string>
+    <string name="bill_hint_item1">Due to system limitations, loading all bills takes about 3 seconds, and loading the last 3 items takes about 15 seconds. Using the filter function also takes considerable time.</string>
+    <string name="bill_hint_item2">Data sourced from the school\'s H5 and desktop websites, provided as-is.</string>
+    <string name="bill_hint_item3">You can view the original bill content by opening the web page via the icon on the right side of the title bar.</string>
     <string name="card_lost_confirm_title">Confirm Report Lost</string>
     <string name="card_lost_confirm_text">Are you sure you want to report this card as lost? It will become immediately unusable.</string>
     <string name="card_lost_confirm_btn">Report Lost</string>

@@ -99,7 +99,6 @@ object Routes {
     const val QR_LOGIN = "qr_login"
     const val ELECTRICITY_MAIN = "electricity_main"
     const val DETAIL = "detail/{detailType}/{roomId}"
-    const val RECHARGE = "recharge"
     const val PAYMENT_SELECTION = "payment_selection"
     const val RECHARGE_RECORD = "recharge_record/{roomId}"
 
@@ -529,11 +528,6 @@ fun AppNavGraph(
             DetailScreen(viewModel = detailViewModel, detailType = detailType, onBack = { navController.popBackStack() })
         }
 
-        animatedComposable(settings = animationSettings, route = Routes.RECHARGE) {
-            RechargeScreen(
-                viewModel = rechargeViewModel,
-            )
-        }
 
         animatedComposable(settings = animationSettings, route = Routes.PAYMENT_SELECTION) {
             PaymentSelectionScreen(

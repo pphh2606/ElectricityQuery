@@ -53,6 +53,10 @@
     <string name="bill_no_records">取引記録がありません</string>
     <string name="bill_capped_hint">— 最新100件のみ表示。詳細はWeb版をご利用ください —</string>
     <string name="bill_all_loaded">— 全 %1$d 件読み込み完了 —</string>
+    <string name="bill_hint_title">ヒント</string>
+    <string name="bill_hint_item1">システムの都合により、全明細の読み込みに約3秒、末尾3件の読み込みに約15秒かかります。フィルター機能の使用にも時間がかかります。</string>
+    <string name="bill_hint_item2">データは学校のH5およびデスクトップ版サイトから取得しており、「現状のまま」提供されています。</string>
+    <string name="bill_hint_item3">タイトルバー右側のWebアイコンから、元の明細内容をご確認いただけます。</string>
     <string name="card_lost_confirm_title">紛失届を確認</string>
     <string name="card_lost_confirm_text">このカードの紛失届を提出しますか？提出後、カードは直ちに使用できなくなります。</string>
     <string name="card_lost_confirm_btn">紛失届を提出</string>

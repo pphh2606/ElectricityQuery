@@ -68,8 +68,6 @@
     <string name="electricity_query_title">電費查詢</string>
     <string name="electricity_switch_dorm">切換寢室</string>
     <string name="electricity_myroom_querying">正在取得我的寢室資訊…</string>
-    <string name="electricity_recharge_hint_item2">2.若註冊後還是提示取得使用者資訊失敗，請嘗試填寫寢室管理員學號/寢室內第一個註冊了平台的學號。</string>
-    <string name="electricity_recharge_hint_item3">3.加值記錄會記錄在學號所對應的使用者上。如介意請檢視其他加值方式。</string>
     <string name="electricity_bind_account">戶號綁定</string>
     <string name="electricity_unbind_account">戶號解綁</string>
 </resources>

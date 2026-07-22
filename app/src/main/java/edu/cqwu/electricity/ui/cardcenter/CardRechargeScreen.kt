@@ -141,156 +141,164 @@ fun CardRechargeScreen(
             )
         }
     ) { paddingValues ->
-        PullToRefreshBox(
-            isRefreshing = uiState.isRefreshing,
-            onRefresh = { viewModel.refreshCardInfo() },
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Column(
+            PullToRefreshBox(
+                isRefreshing = uiState.isRefreshing,
+                onRefresh = { viewModel.refreshCardInfo() },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .weight(1f)
+                    .fillMaxWidth()
             ) {
-                // ============================================================
-                //  学号输入区域
-                // ============================================================
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    TextField(
-                        value = uiState.studentId,
-                        onValueChange = { viewModel.setStudentId(it) },
-                        label = { Text(stringResource(R.string.card_recharge_student_id_label)) },
-                        placeholder = { Text(stringResource(R.string.card_recharge_student_id_placeholder)) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Done
-                        ),
-                        modifier = Modifier.weight(1f),
-                        enabled = !uiState.isQuerying,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Button(
-                        onClick = { viewModel.queryCardInfo() },
-                        modifier = Modifier.height(56.dp),
-                        enabled = uiState.studentId.trim().isNotBlank() && !uiState.isQuerying,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                    // ============================================================
+                    //  学号输入区域
+                    // ============================================================
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (uiState.isQuerying) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
+                        TextField(
+                            value = uiState.studentId,
+                            onValueChange = { viewModel.setStudentId(it) },
+                            label = { Text(stringResource(R.string.card_recharge_student_id_label)) },
+                            placeholder = { Text(stringResource(R.string.card_recharge_student_id_placeholder)) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            ),
+                            modifier = Modifier.weight(1f),
+                            enabled = !uiState.isQuerying,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
                             )
-                        } else {
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(
+                            onClick = { viewModel.queryCardInfo() },
+                            modifier = Modifier.height(56.dp),
+                            enabled = uiState.studentId.trim().isNotBlank() && !uiState.isQuerying,
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            if (uiState.isQuerying) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(R.string.recharge_query),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+
+                    // ============================================================
+                    //  查询成功后显示卡信息 + 充值金额选择
+                    // ============================================================
+                    if (hasQueriedSuccess) {
+                        // 校园卡信息卡片
+                        CardInfoCard(uiState = uiState)
+
+                        // 预设金额网格
+                        AmountGrid(
+                            selectedAmount = uiState.selectedAmount,
+                            onAmountSelected = { viewModel.selectAmount(it) }
+                        )
+
+                        // 自定义金额输入
+                        TextField(
+                            value = uiState.customAmount,
+                            onValueChange = { viewModel.setCustomAmount(it) },
+                            label = { Text(stringResource(R.string.card_recharge_custom_amount_label)) },
+                            placeholder = { Text(stringResource(R.string.card_recharge_custom_amount_placeholder)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // 下一步按钮
+                        Button(
+                            onClick = { onNavigateToPayment() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            enabled = hasValidAmount && uiState.cardInfo?.isNormal == true,
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
                             Text(
-                                text = stringResource(R.string.recharge_query),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                text = stringResource(R.string.card_recharge_next_step),
+                                style = MaterialTheme.typography.titleSmall
                             )
                         }
                     }
-                }
 
-                // ============================================================
-                //  查询成功后显示卡信息 + 充值金额选择
-                // ============================================================
-                if (hasQueriedSuccess) {
-                    // 校园卡信息卡片
-                    CardInfoCard(uiState = uiState)
-
-                    // 预设金额网格
-                    AmountGrid(
-                        selectedAmount = uiState.selectedAmount,
-                        onAmountSelected = { viewModel.selectAmount(it) }
-                    )
-
-                    // 自定义金额输入
-                    TextField(
-                        value = uiState.customAmount,
-                        onValueChange = { viewModel.setCustomAmount(it) },
-                        label = { Text(stringResource(R.string.card_recharge_custom_amount_label)) },
-                        placeholder = { Text(stringResource(R.string.card_recharge_custom_amount_placeholder)) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // 下一步按钮（直接导航到支付页面，订单创建在 CardPaymentScreen 中完成）
-                    Button(
-                        onClick = { onNavigateToPayment() },
+                    // ============================================================
+                    //  其他充值方式（始终可见，无论是否查询成功）
+                    // ============================================================
+                    Text(
+                        text = stringResource(R.string.recharge_other_methods),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        enabled = hasValidAmount && uiState.cardInfo?.isNormal == true,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.card_recharge_next_step),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                    }
+                            .clickable { showOtherRechargeDialog = true }
+                            .padding(vertical = 10.dp),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // ── 充值记录 | 消费记录（固定在页面底部）──
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextButton(onClick = { nav.navigate(Routes.FEE_SERVICE_HALL_ORDERS) }) {
+                    Text(
+                        stringResource(R.string.card_recharge_record),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
 
-                // ============================================================
-                //  其他充值方式（始终可见，无论是否查询成功）
-                // ============================================================
                 Text(
-                    text = stringResource(R.string.recharge_other_methods),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showOtherRechargeDialog = true }
-                        .padding(vertical = 10.dp),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = "|",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                 )
 
-                // ── 充值记录 | 消费记录 ──
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    TextButton(onClick = { nav.navigate(Routes.FEE_SERVICE_HALL_ORDERS) }) {
-                        Text(
-                            stringResource(R.string.card_recharge_record),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-
+                TextButton(onClick = { nav.navigate(Routes.BILL) }) {
                     Text(
-                        text = "|",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                        stringResource(R.string.card_recharge_consume_record),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
                     )
-
-                    TextButton(onClick = { nav.navigate(Routes.BILL) }) {
-                        Text(
-                            stringResource(R.string.card_recharge_consume_record),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
                 }
             }
         }

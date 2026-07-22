@@ -5,7 +5,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="recharge_hint">提示</string>
     <string name="recharge_query">查詢</string>
-    <string name="recharge_student_id_label">請輸入學號 或 userId</string>
+    <string name="recharge_student_id_label">充值人學號或編號</string>
     <string name="recharge_student_id_placeholder">例如 2022010101 或 12345</string>
     <string name="recharge_my_account">我的帳號</string>
     <string name="recharge_switch_account">切換帳號</string>
@@ -20,12 +20,12 @@
     <string name="recharge_note_delay">2. 如果支付成功但未及時到帳，請等待5分鐘</string>
     <string name="recharge_note_power">3. 如果加值完成有餘額但未通電，請聯絡管理員處理</string>
     <string name="recharge_preset_amount">￥%1$d</string>
-    <string name="recharge_hint_item1">1.如果取得使用者失敗，請先</string>
-    <string name="recharge_hint_item1_link">點選此處</string>
-    <string name="recharge_hint_item1_suffix">在平台註冊。</string>
-    <string name="recharge_hint_item2">2.若註冊後還是提示取得使用者資訊失敗，請嘗試填寫寢室管理員學號/寢室內第一個註冊了平台的學號。</string>
-    <string name="recharge_hint_item3_prefix">3.加值記錄會記錄在學號所對應的使用者上。如介意請</string>
-    <string name="recharge_hint_item3_suffix">選取其他加值方式。</string>
+    <string name="recharge_hint_item1">1.學號：即登入本軟體的學號。已登入情況下會自動填充到輸入框。\n編號：電費系統內部編號，可在h5網頁-我的取得。</string>
+    <string name="recharge_hint_item2">2.如果取得使用者失敗，請先</string>
+    <string name="recharge_hint_item2_link">點選此處</string>
+    <string name="recharge_hint_item2_suffix">在平台註冊。</string>
+    <string name="recharge_hint_item3_prefix">3.充值情況會記錄在學號或編號對應的使用者上。如介意請用</string>
+    <string name="recharge_hint_item3_suffix">。</string>
     <string name="recharge_select_room_title">選取加值房間</string>
     <string name="recharge_select_room_hint">該學號下繫結多個房間，請選取要加值的房間：</string>
     <string name="recharge_other_method_title">選取加值方式</string>

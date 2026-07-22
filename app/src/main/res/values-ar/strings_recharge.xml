@@ -5,7 +5,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="recharge_hint">تلميح</string>
     <string name="recharge_query">استعلام</string>
-    <string name="recharge_student_id_label">أدخل الرقم الجامعي أو userId</string>
+    <string name="recharge_student_id_label">الرقم الجامعي أو رقم الشحن</string>
     <string name="recharge_student_id_placeholder">مثال: 2022010101 أو 12345</string>
     <string name="recharge_my_account">حسابي</string>
     <string name="recharge_switch_account">تغيير الحساب</string>
@@ -20,12 +20,12 @@
     <string name="recharge_note_delay">2. إذا نجح الدفع ولم يصل الرصيد بعد، انتظر 5 دقائق.</string>
     <string name="recharge_note_power">3. إذا اكتمل الشحن ويوجد رصيد ولكن لم تصل الكهرباء، اتصل بالمسؤول.</string>
     <string name="recharge_preset_amount">￥%1$d</string>
-    <string name="recharge_hint_item1">1. إذا فشل الحصول على المستخدم، يرجى أولاً</string>
-    <string name="recharge_hint_item1_link">النقر هنا</string>
-    <string name="recharge_hint_item1_suffix">للتسجيل في المنصة.</string>
-    <string name="recharge_hint_item2">2. إذا استمر الفشل بعد التسجيل، جرب الرقم الجامعي لمسؤول السكن أو أول مسجل.</string>
-    <string name="recharge_hint_item3_prefix">3. يُسجل السجل تحت الرقم الجامعي. إذا كان هذا يزعجك،</string>
-    <string name="recharge_hint_item3_suffix">اختر طريقة شحن أخرى.</string>
+    <string name="recharge_hint_item1">1. الرقم الجامعي: هو الرقم المستخدم لتسجيل الدخول إلى هذا التطبيق. إذا كنت مسجلاً بالفعل، سيتم ملؤه تلقائيًا.\nالرقم: رقم داخلي لنظام الكهرباء، متاح على موقع H5 تحت \"حسابي\".</string>
+    <string name="recharge_hint_item2">2. إذا فشل الحصول على المستخدم، يرجى أولاً</string>
+    <string name="recharge_hint_item2_link">النقر هنا</string>
+    <string name="recharge_hint_item2_suffix">للتسجيل في المنصة.</string>
+    <string name="recharge_hint_item3_prefix">3. تُسجل حالة الشحن على المستخدم المقابل للرقم الجامعي أو الرقم. إذا كان هذا يزعجك، استخدم </string>
+    <string name="recharge_hint_item3_suffix">.</string>
     <string name="recharge_select_room_title">اختيار غرفة الشحن</string>
     <string name="recharge_select_room_hint">هذا الرقم مرتبط بعدة غرف. اختر الغرفة المراد شحنها:</string>
     <string name="recharge_other_method_title">اختيار طريقة الشحن</string>

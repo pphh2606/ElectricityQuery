@@ -53,6 +53,10 @@
     <string name="bill_no_records">لا توجد معاملات</string>
     <string name="bill_capped_hint">— عرض آخر 100 فقط، للمزيد زر النسخة الويب —</string>
     <string name="bill_all_loaded">— تم تحميل %1$d —</string>
+    <string name="bill_hint_title">نصائح</string>
+    <string name="bill_hint_item1">بسبب قيود النظام، يستغرق تحميل جميع الفواتير حوالي 3 ثوانٍ، وتحميل آخر 3 عناصر يستغرق حوالي 15 ثانية. كما يستغرق استخدام وظيفة التصفية وقتًا طويلًا.</string>
+    <string name="bill_hint_item2">البيانات مستخرجة من موقع المدرسة H5 وموقع سطح المكتب، ومقدمة «كما هي».</string>
+    <string name="bill_hint_item3">يمكنك عرض محتوى الفواتير الأصلي من خلال فتح صفحة الويب عبر الأيقونة على الجانب الأيمن من شريط العنوان.</string>
     <string name="card_lost_confirm_title">تأكيد الفقدان</string>
     <string name="card_lost_confirm_text">هل تريد الإبلاغ عن فقدان هذه البطاقة؟ سيتم تعطيلها فورًا.</string>
     <string name="card_lost_confirm_btn">تأكيد الفقدان</string>
