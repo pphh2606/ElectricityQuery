@@ -27,4 +27,7 @@ object HomeAppIds {
 
     /** 我的信息 → 打开原生页面 */
     const val MY_INFO = "6204672076294065"
+
+    /** 我有话说 → 打开原生咨询区列表页 */
+    const val SPEAK_UP = "6251198080206918"
 }

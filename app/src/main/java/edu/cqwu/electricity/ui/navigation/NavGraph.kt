@@ -79,6 +79,9 @@ import edu.cqwu.electricity.ui.settings.StorageClearScreen
 import edu.cqwu.electricity.ui.settings.UserAgentEditScreen
 import edu.cqwu.electricity.ui.settings.UserAgentSettingsScreen
 import edu.cqwu.electricity.ui.shortcut.AddShortcutScreen
+import edu.cqwu.electricity.ui.speakup.MessageDetailScreen
+import edu.cqwu.electricity.ui.speakup.MessageListScreen
+import edu.cqwu.electricity.ui.speakup.SpeakUpScreen
 import edu.cqwu.electricity.ui.theme.AnimationSettings
 import edu.cqwu.electricity.ui.theme.LocalAnimationSettings
 import edu.cqwu.electricity.ui.theme.LocalColorSourceState
@@ -206,6 +209,25 @@ object Routes {
 
     /** 清除存储空间 */
     const val STORAGE_CLEAR = "storage_clear"
+
+    /** 有话要说 — 咨询区列表 */
+    const val SPEAK_UP = "speak_up"
+
+    /** 有话要说 — 留言列表 */
+    const val SPEAK_UP_MESSAGES = "speak_up_messages/{areaCode}/{areaName}"
+
+    /** 有话要说 — 留言详情 */
+    const val SPEAK_UP_DETAIL = "speak_up_detail/{wid}"
+
+    /** 构建留言列表路由 */
+    fun speakUpMessagesRoute(areaCode: String, areaName: String): String {
+        return "speak_up_messages/$areaCode/${java.net.URLEncoder.encode(areaName, "UTF-8")}"
+    }
+
+    /** 构建留言详情路由 */
+    fun speakUpDetailRoute(wid: String): String {
+        return "speak_up_detail/$wid"
+    }
 }
 
 /** 从动画设置生成过渡 EnterTransition */
@@ -351,6 +373,8 @@ fun AppNavGraph(
                     navController.navigate(Routes.FEE_SERVICE_HALL)
                 edu.cqwu.electricity.data.model.HomeAppIds.MY_INFO ->
                     navController.navigate(Routes.MY_INFO)
+                edu.cqwu.electricity.data.model.HomeAppIds.SPEAK_UP ->
+                    navController.navigate(Routes.SPEAK_UP)
                 else -> {
                     // 网页类功能 → 在内置浏览器中打开
                     if (openUrl.isNotBlank()) {
@@ -712,6 +736,55 @@ fun AppNavGraph(
         // 添加快捷方式页面
         animatedComposable(settings = animationSettings, route = Routes.ADD_SHORTCUT) {
             AddShortcutScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 有话要说 — 咨询区列表
+        animatedComposable(settings = animationSettings, route = Routes.SPEAK_UP) {
+            SpeakUpScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToWebView = { url, title ->
+                    navController.navigate(Routes.unifiedWebViewRoute(url, title))
+                },
+                onNavigateToMessages = { areaCode, areaName ->
+                    navController.navigate(Routes.speakUpMessagesRoute(areaCode, areaName))
+                },
+            )
+        }
+
+        // 有话要说 — 留言列表
+        animatedComposable(
+            settings = animationSettings,
+            route = Routes.SPEAK_UP_MESSAGES,
+            arguments = listOf(
+                navArgument("areaCode") { type = NavType.StringType },
+                navArgument("areaName") { type = NavType.StringType },
+            ),
+        ) { backStackEntry ->
+            val areaCode = backStackEntry.arguments?.getString("areaCode") ?: ""
+            val areaName = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("areaName") ?: "", "UTF-8")
+            MessageListScreen(
+                areaCode = areaCode,
+                areaName = areaName,
+                onBack = { navController.popBackStack() },
+                onMessageClick = { wid ->
+                    navController.navigate(Routes.speakUpDetailRoute(wid))
+                },
+            )
+        }
+
+        // 有话要说 — 留言详情
+        animatedComposable(
+            settings = animationSettings,
+            route = Routes.SPEAK_UP_DETAIL,
+            arguments = listOf(
+                navArgument("wid") { type = NavType.StringType },
+            ),
+        ) { backStackEntry ->
+            val wid = backStackEntry.arguments?.getString("wid") ?: ""
+            MessageDetailScreen(
+                wid = wid,
                 onBack = { navController.popBackStack() },
             )
         }

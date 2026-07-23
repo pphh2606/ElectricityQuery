@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speakup_title">Speak Up</string>
+    <string name="speakup_publish">Post Message</string>
+    <string name="speakup_browse">View Messages</string>
+    <string name="speakup_browse_not_ready">Message viewing is under development</string>
+    <string name="speakup_messages_title">Messages</string>
+    <string name="speakup_detail_title">Message Detail</string>
+    <string name="speakup_no_messages">No messages yet</string>
+    <string name="speakup_no_more">No more messages</string>
+    <string name="speakup_loading_more">Loading…</string>
+    <string name="speakup_link_copied">Link copied to clipboard</string>
+    <string name="speakup_evaluation">Evaluation</string>
+    <string name="speakup_problem_solved">Problem resolved:</string>
+    <string name="speakup_score">Rating:</string>
+    <string name="speakup_score_unit">pts</string>
+    <string name="speakup_unknown_error">Unknown error</string>
+    <string name="speakup_message_label">message</string>
+    <string name="speakup_reply_label">reply</string>
+</resources>

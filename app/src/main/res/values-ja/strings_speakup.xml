@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speakup_title">申し出</string>
+    <string name="speakup_publish">メッセージ投稿</string>
+    <string name="speakup_browse">メッセージ閲覧</string>
+    <string name="speakup_browse_not_ready">メッセージ閲覧機能は開発中です</string>
+    <string name="speakup_messages_title">メッセージ一覧</string>
+    <string name="speakup_detail_title">メッセージ詳細</string>
+    <string name="speakup_no_messages">メッセージはありません</string>
+    <string name="speakup_no_more">これ以上はありません</string>
+    <string name="speakup_loading_more">読み込み中…</string>
+    <string name="speakup_link_copied">リンクをクリップボードにコピーしました</string>
+    <string name="speakup_evaluation">評価内容</string>
+    <string name="speakup_problem_solved">問題解決済み：</string>
+    <string name="speakup_score">評価：</string>
+    <string name="speakup_score_unit">点</string>
+    <string name="speakup_unknown_error">不明なエラー</string>
+    <string name="speakup_message_label">投稿</string>
+    <string name="speakup_reply_label">返信</string>
+</resources>

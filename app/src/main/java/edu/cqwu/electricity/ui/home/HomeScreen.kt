@@ -526,6 +526,11 @@ private fun handleAppClick(
         nav.navigate(Routes.MY_INFO)
         return
     }
+    // 我有话说 → 打开原生咨询区列表页
+    if (app.appId == HomeAppIds.SPEAK_UP) {
+        nav.navigate(Routes.SPEAK_UP)
+        return
+    }
 
     val url = app.openUrl
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  有话要说模块                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="speakup_title">我有话说</string>
+    <string name="speakup_publish">发布留言</string>
+    <string name="speakup_browse">留言浏览</string>
+    <string name="speakup_browse_not_ready">留言浏览功能开发中</string>
+    <string name="speakup_messages_title">留言浏览</string>
+    <string name="speakup_detail_title">留言详情</string>
+    <string name="speakup_no_messages">暂无留言</string>
+    <string name="speakup_no_more">没有更多了</string>
+    <string name="speakup_loading_more">加载中…</string>
+    <string name="speakup_link_copied">链接已复制到剪切板</string>
+    <string name="speakup_evaluation">评价内容</string>
+    <string name="speakup_problem_solved">是否已解决您所提的问题：</string>
+    <string name="speakup_score">评分：</string>
+    <string name="speakup_score_unit">分</string>
+    <string name="speakup_unknown_error">未知错误</string>
+    <string name="speakup_message_label">留言</string>
+    <string name="speakup_reply_label">答复</string>
+</resources>

@@ -6,8 +6,8 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import edu.cqwu.electricity.data.network.common.CookieStore
+import edu.cqwu.electricity.data.network.pay.HttpClientFactory
 import edu.cqwu.electricity.util.CrashHandler
-import okhttp3.OkHttpClient
 
 /**
  * 自定义 Application，配置 Coil ImageLoader
@@ -49,8 +49,9 @@ class ElectricityApp : Application(), ImageLoaderFactory {
             }
             .crossfade(true)
             .okHttpClient {
-                OkHttpClient.Builder()
-                    .build()
+                // 使用共享的 OkHttpClient，自动携带 ehall 认证 Cookie
+                // 解决 Coil 加载 ehall 图片时无 Cookie 导致返回 HTML 而非图片的问题
+                HttpClientFactory.shared
             }
             .build()
     }

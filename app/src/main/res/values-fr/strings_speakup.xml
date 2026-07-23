@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speakup_title">Parler</string>
+    <string name="speakup_publish">Publier</string>
+    <string name="speakup_browse">Voir les messages</string>
+    <string name="speakup_browse_not_ready">La consultation des messages est en cours de développement</string>
+    <string name="speakup_messages_title">Messages</string>
+    <string name="speakup_detail_title">Détail du message</string>
+    <string name="speakup_no_messages">Aucun message</string>
+    <string name="speakup_no_more">Plus de messages</string>
+    <string name="speakup_loading_more">Chargement…</string>
+    <string name="speakup_link_copied">Lien copié dans le presse-papiers</string>
+    <string name="speakup_evaluation">Évaluation</string>
+    <string name="speakup_problem_solved">Problème résolu :</string>
+    <string name="speakup_score">Note :</string>
+    <string name="speakup_score_unit">pts</string>
+    <string name="speakup_unknown_error">Erreur inconnue</string>
+    <string name="speakup_message_label">message</string>
+    <string name="speakup_reply_label">réponse</string>
+</resources>
