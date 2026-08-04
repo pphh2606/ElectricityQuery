@@ -46,59 +46,25 @@ graph TB
 ## 项目目录结构
 
 ```
-.
-├── .github/                          # CI/CD 配置
-│   └── workflows/build.yml          # GitHub Actions 自动构建
-├── .kotlin/                          # Kotlin 编译缓存
-├── gradle/                           # Gradle Wrapper 与版本目录
-│   ├── libs.versions.toml           # Version Catalog（依赖版本集中管理）
-│   ├── gradle-daemon-jvm.properties # Gradle Daemon JVM 配置
-│   └── wrapper/                     # Gradle Wrapper
-└── app/                              # Android 应用模块
-    ├── build.gradle.kts              # 模块构建脚本
-    ├── version.properties            # 版本号自动递增记录
-    ├── proguard-rules.pro            # 混淆规则
-    └── src/main/
-        ├── AndroidManifest.xml       # 应用清单
-        ├── assets/                   # 静态资源（JSON 配置）
-        ├── res/                      # Android 资源文件（含 6 语言国际化）
-        └── java/edu/cqwu/electricity/
-            ├── ElectricityApp.kt     # Application 入口
-            ├── MainActivity.kt       # 唯一 Activity
-            ├── data/                 # 数据层
-            │   ├── local/            # 本地存储
-            │   ├── model/            # 数据模型
-            │   ├── network/          # 网络 API 与加密（按子系统分包）
-            │   │   ├── auth/         #   认证子系统（CAS 登录、会话管理）
-            │   │   ├── campusphere/  #   校园网 API
-            │   │   ├── common/       #   通用网络组件（Cookie、UA、WebVPN）
-            │   │   ├── feeservicehall/ # 缴费服务大厅
-            │   │   ├── pay/          #   支付子系统（公共基类 + 电费/校园卡充值）
-            │   │   ├── qrcode/       #   二维码 API
-            │   │   └── sso/          #   SSO 服务授权（IAP 重定向链）
-            │   └── repository/       # 数据仓库
-            ├── ui/                   # UI 层
-            │   ├── cardcenter/       # 校园卡中心（含充值与支付）
-            │   ├── components/       # 可复用通用组件
-            │   ├── electricity/      # 电费查询与监控
-            │   ├── feedback/         # 意见反馈
-            │   ├── feeservicehall/   # 缴费服务大厅
-            │   ├── hall/             # 办事大厅
-            │   ├── home/             # 首页
-            │   ├── login/            # 登录（账号 + 扫码 + 多账号管理）
-            │   ├── myroom/           # 我的宿舍
-            │   ├── navigation/       # 路由与导航壳
-            │   ├── notice/           # 通知公告
-            │   ├── paycommom/        # 支付公共组件（电费充值与校园卡充值共用）
-            │   ├── profile/          # 个人中心与我的信息
-            │   ├── qrcode/           # 二维码显示
-            │   ├── recharge/         # 电费充值
-            │   ├── scan/             # 扫码页面
-            │   ├── settings/         # 设置（主题、UA、语言、关于等）
-            │   ├── shortcut/         # 桌面快捷方式
-            │   ├── theme/            # Material 3 主题系统
-            │   └── webview/          # 内置浏览器
-            └── util/                 # 工具类
+app/src/main/java/edu/cqwu/electricity/
+  app/                     # app entry + navigation
+  login/                   # data/ + ui/
+  electricity/             # data/ + ui/
+  cardcenter/              # data/ + ui/
+  feeservicehall/          # data/ + ui/
+  payment/                 # data/ + ui/
+  settings/                # data/ + ui/ + util/
+  theme/                   # ui/ + util/
+  home/                    # data/ + ui/
+  hall/                    # data/ + ui/
+  profile/                 # data/ + ui/
+  notice/                  # data/ + ui/
+  speakup/                 # data/ + ui/
+  feedback/                # ui/ + util/
+  qrcode/                  # data/ + ui/
+  scan/                    # ui/
+  shortcut/                # ui/ + util/
+  webview/                 # ui/ + util/
 ```
 
 ---

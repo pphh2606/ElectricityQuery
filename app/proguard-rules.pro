@@ -42,8 +42,7 @@
 
 # Keep ALL Gson data model classes (prevent R8 from renaming class names)
 # Gson uses reflection to instantiate classes by name - renaming breaks it
--keep class edu.cqwu.electricity.data.model.** { *; }
--keep class edu.cqwu.electricity.data.network.** { *; }
+-keep class edu.cqwu.electricity.*.data.** { *; }
 
 # ============================================================
 # Coil
