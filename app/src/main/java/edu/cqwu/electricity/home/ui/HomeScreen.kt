@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +42,8 @@ import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,6 +61,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,6 +94,7 @@ import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
+import kotlinx.coroutines.launch
 
 /**
  * 首页 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
@@ -221,6 +226,20 @@ fun HomePageContent(
     val context = LocalContext.current
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+    // LazyColumn item 顺序与索引一致：0 = 我的服务，1..n = 分类
+    val activeSectionIndex by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex.coerceIn(0, uiState.categories.size)
+        }
+    }
+    val showIndexDivider by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
 
     // 外部 Intent 确认弹窗状态：（appName, url）
     var pendingExternalIntent by remember { mutableStateOf<Pair<String, String>?>(null) }
@@ -289,39 +308,39 @@ fun HomePageContent(
         }
     }
 
-    PullToRefreshBox(
-        isRefreshing = uiState.isRefreshing,
-        onRefresh = { homeViewModel.refresh() },
-        modifier = Modifier.fillMaxSize()
-    ) {
-        when {
-            uiState.isLoading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+    Column(modifier = Modifier.fillMaxSize()) {
+        if (!uiState.isLoading && uiState.error == null && !uiState.isSearching) {
+            HomeSectionIndex(
+                categoryNames = uiState.categories.map { it.categoryName },
+                activeIndex = activeSectionIndex,
+                showDivider = showIndexDivider,
+                onSectionClick = { index ->
+                    scope.launch {
+                        listState.animateScrollToItem(index)
+                    }
+                },
+            )
+        }
+
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = { homeViewModel.refresh() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            when {
+                uiState.isLoading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-            }
-            uiState.error != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = uiState.error ?: stringResource(R.string.home_load_failed),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-            isSearching -> {
-                // ── 搜索模式：平铺搜索结果（懒加载） ──
-                if (filteredApps.isEmpty()) {
+                uiState.error != null -> {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -329,106 +348,124 @@ fun HomePageContent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = stringResource(R.string.home_no_match),
+                            text = uiState.error ?: stringResource(R.string.home_load_failed),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        // 搜索结果标题
-                        item(key = "search_header") {
+                }
+                isSearching -> {
+                    // ── 搜索模式：平铺搜索结果（懒加载） ──
+                    if (filteredApps.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text(
-                                text = stringResource(R.string.home_search_result, filteredApps.size),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                text = stringResource(R.string.home_no_match),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        // ✅ 每行作为独立 LazyColumn item，支持真正懒加载
-                        items(
-                            count = searchRows.size,
-                            key = { index -> searchRows[index].joinToString("-") { it.appId } }
-                        ) { index ->
-                            val rowApps = searchRows[index]
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                rowApps.forEach { app ->
-                                    AppIconItem(
-                                        app = app,
-                                        modifier = Modifier.weight(1f),
-                                        onClick = { handleAppClickInternal(app) },
-                                        showAddBadge = uiState.isEditMode,
-                                        isMyService = app.appId in uiState.myServiceIds,
-                                        onAddClick = {
-                                            homeViewModel.addToMyServices(app.appId)
-                                        }
-                                    )
-                                }
-                                // 补齐空位
-                                repeat(4 - rowApps.size) {
-                                    Spacer(modifier = Modifier.weight(1f))
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            // 搜索结果标题
+                            item(key = "search_header") {
+                                Text(
+                                    text = stringResource(R.string.home_search_result, filteredApps.size),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                            // ✅ 每行作为独立 LazyColumn item，支持真正懒加载
+                            items(
+                                count = searchRows.size,
+                                key = { index -> searchRows[index].joinToString("-") { it.appId } }
+                            ) { index ->
+                                val rowApps = searchRows[index]
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    rowApps.forEach { app ->
+                                        AppIconItem(
+                                            app = app,
+                                            modifier = Modifier.weight(1f),
+                                            onClick = { handleAppClickInternal(app) },
+                                            showAddBadge = uiState.isEditMode,
+                                            isMyService = app.appId in uiState.myServiceIds,
+                                            onAddClick = {
+                                                homeViewModel.addToMyServices(app.appId)
+                                            }
+                                        )
+                                    }
+                                    // 补齐空位
+                                    repeat(4 - rowApps.size) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            else -> {
-                // ── 普通模式：按分类展示，顶部插入「我的服务」区域 ──
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 8.dp)
-                ) {
-                    // ── 我的服务区域（始终在分类列表顶部） ──
-                    item(key = "my_services") {
-                        MyServicesSection(
-                            myServiceApps = myServiceApps,
-                            customServices = uiState.customServices,
-                            isEditMode = uiState.isEditMode,
-                            onToggleEditMode = {
-                                if (uiState.isEditMode) {
-                                    homeViewModel.exitEditMode()
-                                } else {
-                                    homeViewModel.enterEditMode()
+                else -> {
+                    // ── 普通模式：按分类展示，顶部插入「我的服务」区域 ──
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        // ── 我的服务区域（始终在分类列表顶部） ──
+                        item(key = "my_services") {
+                            MyServicesSection(
+                                myServiceApps = myServiceApps,
+                                customServices = uiState.customServices,
+                                isEditMode = uiState.isEditMode,
+                                onToggleEditMode = {
+                                    if (uiState.isEditMode) {
+                                        homeViewModel.exitEditMode()
+                                    } else {
+                                        homeViewModel.enterEditMode()
+                                    }
+                                },
+                                onRemoveService = { app ->
+                                    homeViewModel.removeFromMyServices(app.appId)
+                                },
+                                onRemoveCustomService = { id ->
+                                    homeViewModel.removeCustomService(id)
+                                },
+                                onServiceClick = { app -> handleAppClickInternal(app) },
+                                onCustomServiceClick = { entry ->
+                                    nav.navigate(Routes.unifiedWebViewRoute(entry.url, entry.title))
+                                },
+                                onAddCustomService = {
+                                    showCustomWebsiteDialog = true
                                 }
-                            },
-                            onRemoveService = { app ->
-                                homeViewModel.removeFromMyServices(app.appId)
-                            },
-                            onRemoveCustomService = { id ->
-                                homeViewModel.removeCustomService(id)
-                            },
-                            onServiceClick = { app -> handleAppClickInternal(app) },
-                            onCustomServiceClick = { entry ->
-                                nav.navigate(Routes.unifiedWebViewRoute(entry.url, entry.title))
-                            },
-                            onAddCustomService = {
-                                showCustomWebsiteDialog = true
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    items(
-                        items = uiState.categories,
-                        key = { it.categoryId }
-                    ) { category ->
-                        CategorySection(
-                            categoryName = category.categoryName,
-                            apps = category.apps,
-                            isEditMode = uiState.isEditMode,
-                            myServiceIds = uiState.myServiceIds,
-                            onAddToService = { appId ->
-                                homeViewModel.addToMyServices(appId)
-                            },
-                            onAppClick = { app -> handleAppClickInternal(app) }
-                        )
+                        items(
+                            items = uiState.categories,
+                            key = { it.categoryId }
+                        ) { category ->
+                            CategorySection(
+                                categoryName = category.categoryName,
+                                apps = category.apps,
+                                isEditMode = uiState.isEditMode,
+                                myServiceIds = uiState.myServiceIds,
+                                onAddToService = { appId ->
+                                    homeViewModel.addToMyServices(appId)
+                                },
+                                onAppClick = { app -> handleAppClickInternal(app) }
+                            )
+                        }
                     }
                 }
             }
@@ -476,6 +513,74 @@ fun HomePageContent(
         }
     )
 
+}
+
+/**
+ * 首页分区索引栏：固定显示在 TopAppBar 下方。
+ * 索引项顺序与 LazyColumn item 顺序一致，点击后平滑滚动到对应区块。
+ */
+@Composable
+private fun HomeSectionIndex(
+    categoryNames: List<String>,
+    activeIndex: Int,
+    showDivider: Boolean,
+    onSectionClick: (Int) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 2.dp, bottom = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item(key = "my_services") {
+                SectionIndexChip(
+                    text = stringResource(R.string.home_my_services),
+                    selected = activeIndex == 0,
+                    onClick = { onSectionClick(0) },
+                )
+            }
+            items(
+                count = categoryNames.size,
+                key = { index -> "category_$index" },
+            ) { index ->
+                SectionIndexChip(
+                    text = categoryNames[index],
+                    selected = activeIndex == index + 1,
+                    onClick = { onSectionClick(index + 1) },
+                )
+            }
+        }
+        if (showDivider) {
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant,
+                thickness = 0.5.dp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SectionIndexChip(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        shape = CircleShape,
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+        border = null,
+        label = {
+            Text(
+                text = text,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+    )
 }
 
 /**
@@ -671,13 +776,6 @@ private fun MyServicesSection(
                 AddCustomServiceButton(onClick = onAddCustomService)
             }
         }
-
-        // 分割线
-        HorizontalDivider(
-            modifier = Modifier.padding(top = 8.dp),
-            color = MaterialTheme.colorScheme.outlineVariant,
-            thickness = 0.5.dp
-        )
     }
 }
 
