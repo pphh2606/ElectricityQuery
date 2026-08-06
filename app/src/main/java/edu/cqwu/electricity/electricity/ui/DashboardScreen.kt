@@ -81,7 +81,6 @@ import edu.cqwu.electricity.theme.util.ToastUtils
  * @param isLoading 当前是否正在加载
  * @param error 错误信息
  * @param onRefresh 下拉刷新回调
- * @param onBackToSelection 返回选择页面回调
  * @param onSwitchRoom 切换房间回调（我的 Tab 使用）
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +93,6 @@ fun DashboardScreen(
     isLoading: Boolean,
     error: String?,
     onRefresh: () -> Unit,
-    onBackToSelection: () -> Unit,
     onSwitchRoom: (UserRoomInfo) -> Unit = {},
 ) {
     val nav = LocalNavController.current
@@ -148,11 +146,6 @@ fun DashboardScreen(
                         onNavigateToRechargeRecord = { nav.navigate(Routes.rechargeRecordRoute(room?.id ?: "")) }
                     )
                 }
-            }
-
-            // ── 返回按钮 ──
-            item(key = "back_button") {
-                BackButton(onClick = onBackToSelection)
             }
 
             // 底部留白
@@ -574,26 +567,6 @@ private fun NavItem(
             contentDescription = stringResource(R.string.common_view),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
-        )
-    }
-}
-
-/**
- * 重新选择房间按钮
- */
-@Composable
-private fun BackButton(onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.dashboard_reselect_room),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
         )
     }
 }

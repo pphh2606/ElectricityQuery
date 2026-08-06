@@ -16,7 +16,6 @@
     <string name="dashboard_24h_detail">近24h用電明細</string>
     <string name="dashboard_meter_status">電表即時狀態</string>
     <string name="dashboard_query_recharge_records">查詢加值記錄</string>
-    <string name="dashboard_reselect_room">重新選取房間</string>
     <string name="dashboard_title">電費查詢結果</string>
     <string name="dashboard_select_dorm">選取寢室</string>
     <string name="dashboard_cash_balance">現金餘額</string>
@@ -55,7 +54,6 @@
     <string name="electricity_tab_my_dorm">我的寢室</string>
     <string name="building_no_campus">暫無校區資料</string>
     <string name="building_no_floors">該建築物下無樓層資料</string>
-    <string name="building_back_to_building">返回建築物選取</string>
     <string name="building_click_to_expand">點選展開</string>
     <string name="building_no_rooms">暫無房間</string>
     <string name="building_reload">重新載入</string>

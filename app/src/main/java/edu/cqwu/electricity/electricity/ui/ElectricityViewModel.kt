@@ -210,7 +210,11 @@ class ElectricityViewModel(
     fun onReturnedFromDashboard() {
         _uiState.update {
             Log.d("DEBUG_expand", "onReturnedFromDashboard: expandedAreaIds=${it.expandedAreaIds}, selectedBuilding=${it.selectedBuilding?.name}")
-            it.copy(currentStep = if (it.selectedBuilding != null) SelectionStep.ROOM_GRID else SelectionStep.AREA)
+            it.copy(
+                currentStep = if (it.selectedBuilding != null) SelectionStep.ROOM_GRID else SelectionStep.AREA,
+                selectedRoom = null,
+                balance = null,
+            )
         }
     }
 

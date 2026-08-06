@@ -16,7 +16,6 @@
     <string name="dashboard_24h_detail">Last 24h Detail</string>
     <string name="dashboard_meter_status">Meter Status</string>
     <string name="dashboard_query_recharge_records">Recharge Records</string>
-    <string name="dashboard_reselect_room">Change Room</string>
     <string name="dashboard_title">Electricity Query Result</string>
     <string name="dashboard_select_dorm">Select Dorm</string>
     <string name="dashboard_cash_balance">Cash Balance</string>
@@ -55,7 +54,6 @@
     <string name="electricity_tab_my_dorm">My Dorm</string>
     <string name="building_no_campus">No campus data</string>
     <string name="building_no_floors">No floors in this building</string>
-    <string name="building_back_to_building">Back to Buildings</string>
     <string name="building_click_to_expand">Tap to expand</string>
     <string name="building_no_rooms">No rooms</string>
     <string name="building_reload">Reload</string>

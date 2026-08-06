@@ -16,7 +16,6 @@
     <string name="dashboard_24h_detail">近24h用电明细</string>
     <string name="dashboard_meter_status">电表实时状态</string>
     <string name="dashboard_query_recharge_records">查询充值记录</string>
-    <string name="dashboard_reselect_room">重新选择房间</string>
     <string name="dashboard_title">电费查询结果</string>
     <string name="dashboard_select_dorm">选择寝室</string>
     <string name="dashboard_cash_balance">现金余额</string>
@@ -55,7 +54,6 @@
     <string name="electricity_tab_my_dorm">我的寝室</string>
     <string name="building_no_campus">暂无校区数据</string>
     <string name="building_no_floors">该楼栋下无楼层数据</string>
-    <string name="building_back_to_building">返回楼栋选择</string>
     <string name="building_click_to_expand">点击展开</string>
     <string name="building_no_rooms">暂无房间</string>
     <string name="building_reload">重新加载</string>

@@ -18,11 +18,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * 大厅数据来源。
+ * [SERVER] 表示正在展示服务端实时数据（点赞/收藏状态可信）；
+ * [LOCAL_FALLBACK] 表示正在展示本地 JSON 兜底数据（点赞信息已清除，UI 不应展示收藏状态）。
+ */
+enum class HallDataSource {
+    SERVER,
+    LOCAL_FALLBACK,
+}
+
 data class HallUiState(
     /** 当前选中的 Tab：0=全部，1=收藏 */
     val selectedTab: Int = 0,
     /** 「全部」Tab 数据（优先使用服务端数据，回退到本地 JSON） */
     val allItems: List<HallItem> = emptyList(),
+    /** 当前数据来源：服务端实时数据或本地 JSON 兜底 */
+    val dataSource: HallDataSource = HallDataSource.LOCAL_FALLBACK,
     /** 「收藏」Tab 数据（来自网络请求） */
     val favoriteItems: List<HallItem> = emptyList(),
     /** 下拉刷新中 */
@@ -57,7 +69,13 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                 jsonLoader.loadItems()
             }
             localResult.onSuccess { items ->
-                _uiState.update { it.copy(allItems = items) }
+                _uiState.update {
+                    it.copy(
+                        allItems = items,
+                        dataSource = HallDataSource.LOCAL_FALLBACK,
+                        isLoggedIn = false,
+                    )
+                }
             }
 
             // 2. 提前初始化 ehall session（CAS ticket 交换）
@@ -90,7 +108,13 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
             serviceCenterApi.fetchServiceData()
         }
         result.onSuccess { items ->
-            _uiState.update { it.copy(allItems = items, isLoggedIn = true) }
+            _uiState.update {
+                it.copy(
+                    allItems = items,
+                    isLoggedIn = true,
+                    dataSource = HallDataSource.SERVER,
+                )
+            }
             Log.d("HallViewModel", "服务端数据加载成功，应用数: ${items.size}, isLoggedIn=true")
         }.onFailure { error ->
             Log.w("HallViewModel", "服务端数据加载失败: ${error.message}，使用本地 JSON 兜底")
@@ -178,11 +202,24 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.update { state ->
                     state.copy(
                         allItems = state.allItems.map { app ->
-                            if (app.appId == item.appId) app.copy(favorite = newFavorite)
+                            if (app.appId == item.appId) {
+                                app.copy(
+                                    favorite = newFavorite,
+                                    // 本地乐观更新点赞数，刷新后以服务端数据为准
+                                    favoriteCount = (app.favoriteCount + if (newFavorite) 1 else -1)
+                                        .coerceAtLeast(0),
+                                )
+                            }
                             else app
                         },
                         favoriteItems = state.favoriteItems.map { app ->
-                            if (app.appId == item.appId) app.copy(favorite = newFavorite)
+                            if (app.appId == item.appId) {
+                                app.copy(
+                                    favorite = newFavorite,
+                                    favoriteCount = (app.favoriteCount + if (newFavorite) 1 else -1)
+                                        .coerceAtLeast(0),
+                                )
+                            }
                             else app
                         },
                         togglingFavoriteAppId = null,
@@ -223,16 +260,30 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.update { it.copy(isRefreshing = true, togglingFavoriteAppId = null) }
                 jsonLoader.invalidateCache()
 
-                // 1. 加载本地 JSON 兜底
-                val allResult = withContext(Dispatchers.IO) { jsonLoader.loadItems() }
-                allResult.onSuccess { items ->
-                    _uiState.update { it.copy(allItems = items) }
+                // 1. 仅在尚未展示服务端数据时，才用本地 JSON 作为兜底
+                if (_uiState.value.dataSource != HallDataSource.SERVER) {
+                    val allResult = withContext(Dispatchers.IO) { jsonLoader.loadItems() }
+                    allResult.onSuccess { items ->
+                        _uiState.update {
+                            it.copy(
+                                allItems = items,
+                                dataSource = HallDataSource.LOCAL_FALLBACK,
+                                isLoggedIn = false,
+                            )
+                        }
+                    }
                 }
 
-                // 2. 尝试加载服务端数据
+                // 2. 尝试加载服务端数据；成功时替换，失败时保留当前数据
                 val serverResult = withContext(Dispatchers.IO) { serviceCenterApi.fetchServiceData() }
                 serverResult.onSuccess { items ->
-                    _uiState.update { it.copy(allItems = items, isLoggedIn = true) }
+                    _uiState.update {
+                        it.copy(
+                            allItems = items,
+                            isLoggedIn = true,
+                            dataSource = HallDataSource.SERVER,
+                        )
+                    }
                 }
 
                 // 3. 如果当前在收藏 Tab 或已加载过收藏数据，同步刷新

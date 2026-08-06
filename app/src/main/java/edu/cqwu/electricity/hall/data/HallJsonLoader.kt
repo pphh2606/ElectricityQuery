@@ -33,7 +33,10 @@ class HallJsonLoader(private val context: Context) {
                 .bufferedReader()
                 .use { it.readText() }
             val response = gson.fromJson(jsonString, HallSearchResponse::class.java)
-            val items = response.searchResult
+            // 本地快照中的点赞/收藏信息是过时的，加载时统一清空，避免误导用户
+            val items = response.searchResult.map {
+                it.copy(favorite = false, favoriteCount = 0)
+            }
             cachedItems = items
             Result.success(items)
         } catch (e: IOException) {

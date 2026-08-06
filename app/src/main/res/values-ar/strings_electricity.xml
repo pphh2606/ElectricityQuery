@@ -16,7 +16,6 @@
     <string name="dashboard_24h_detail">تفاصيل آخر 24 ساعة</string>
     <string name="dashboard_meter_status">حالة العداد الفورية</string>
     <string name="dashboard_query_recharge_records">سجل الشحن</string>
-    <string name="dashboard_reselect_room">إعادة اختيار الغرفة</string>
     <string name="dashboard_title">نتيجة استعلام الكهرباء</string>
     <string name="dashboard_select_dorm">اختيار السكن</string>
     <string name="dashboard_cash_balance">الرصيد النقدي</string>
@@ -55,7 +54,6 @@
     <string name="electricity_tab_my_dorm">سكني</string>
     <string name="building_no_campus">لا توجد بيانات الحرم</string>
     <string name="building_no_floors">لا توجد طوابق في هذا المبنى</string>
-    <string name="building_back_to_building">العودة لاختيار المبنى</string>
     <string name="building_click_to_expand">اضغط للتوسيع</string>
     <string name="building_no_rooms">لا توجد غرف</string>
     <string name="building_reload">إعادة تحميل</string>

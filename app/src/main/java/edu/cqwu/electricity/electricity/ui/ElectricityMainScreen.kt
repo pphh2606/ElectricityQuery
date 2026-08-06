@@ -139,9 +139,9 @@ fun ElectricityMainScreen(
             ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
     }
 
-    // 当前 Tab 标题：查询 Tab 选中房间后显示"电费查询结果"
+    // 当前 Tab 标题：查询 Tab 进入余额结果页后显示"电费查询结果"
     val currentTitle = when {
-        pagerState.currentPage == 0 && uiState.selectedRoom != null -> stringResource(R.string.dashboard_title)
+        pagerState.currentPage == 0 && uiState.currentStep == SelectionStep.DONE -> stringResource(R.string.dashboard_title)
         else -> stringResource(electricityTitleKeys[pagerState.currentPage])
     }
 
@@ -168,11 +168,20 @@ fun ElectricityMainScreen(
         }
     }
 
-    // 系统返回键：查询 Tab 内从余额结果回到建筑选择
+    // 查询 Tab 的统一返回处理：房间选择 → 校区/楼栋列表 → 退出
+    val handleQueryTabBack = {
+        when (uiState.currentStep) {
+            SelectionStep.AREA -> onBack()
+            SelectionStep.ROOM_GRID -> viewModel.goBack()
+            SelectionStep.DONE -> viewModel.onReturnedFromDashboard()
+        }
+    }
+
+    // 系统返回键：查询 Tab 内仅在校区/楼栋列表页放行退出
     BackHandler(
-        enabled = pagerState.currentPage == 0 && uiState.currentStep == SelectionStep.DONE
+        enabled = pagerState.currentPage == 0 && uiState.currentStep != SelectionStep.AREA
     ) {
-        viewModel.onReturnedFromDashboard()
+        handleQueryTabBack()
     }
 
     // 查询 Tab 显示余额结果：必须是通过 selectRoom() 标记的 DONE 状态
@@ -194,8 +203,8 @@ fun ElectricityMainScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if (showQueryResult) {
-                                viewModel.onReturnedFromDashboard()
+                            if (pagerState.currentPage == 0) {
+                                handleQueryTabBack()
                             } else {
                                 onBack()
                             }
@@ -306,9 +315,6 @@ fun ElectricityMainScreen(
                             isLoading = uiState.isLoading,
                             error = uiState.error,
                             onRefresh = { viewModel.refreshBalance() },
-                            onBackToSelection = {
-                                viewModel.onReturnedFromDashboard()
-                            },
                         )
                     } else {
                         BuildingSelectionScreen(
@@ -329,9 +335,6 @@ fun ElectricityMainScreen(
                     MyRoomDashboardTab(
                         viewModel = myRoomViewModel,
                         loggedInStudentId = loggedInStudentId,
-                        onSwitchToQuery = {
-                            scope.launch { pagerState.animateScrollToPage(0) }
-                        },
                     )
                 }
             }
@@ -476,7 +479,6 @@ fun ElectricityMainScreen(
 private fun MyRoomDashboardTab(
     viewModel: MyRoomViewModel,
     loggedInStudentId: String?,
-    onSwitchToQuery: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -532,7 +534,6 @@ private fun MyRoomDashboardTab(
             isLoading = false,
             error = uiState.error,
             onRefresh = { viewModel.refreshBalance() },
-            onBackToSelection = onSwitchToQuery,
             onSwitchRoom = { viewModel.switchToMyRoom(it) },
         )
     }

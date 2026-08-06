@@ -20,14 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -105,105 +103,80 @@ private fun ContentArea(
     // 仅在校区列表步骤启用下拉刷新（ROOM_GRID 无网络请求，禁用以免用户困惑）
     val pullToRefreshEnabled = uiState.currentStep == SelectionStep.AREA
 
-    // ═══ 返回楼栋选择 FAB 是否显示 ═══
-    val showBackFab = uiState.currentStep == SelectionStep.ROOM_GRID
-
-    // 使用 Box 包裹内容区域 + FAB 叠加层
-    // 避免 FAB 被 Column 的 horizontal padding 裁剪
-    Box(modifier = Modifier.fillMaxSize()) {
-        // ── 主要内容区域 ──
-        // Column + weight(1f) 确保内容区域收到有限约束，
-        // 避免 HorizontalPager 传递无限高度导致 LazyColumn 崩溃
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            // 可滚动的列表区域 + 下拉刷新
-            Box(modifier = Modifier.weight(1f)) {
-                PullToRefreshBox(
-                    isRefreshing = uiState.isRefreshing && pullToRefreshEnabled,
-                    onRefresh = {
-                        when (uiState.currentStep) {
-                            SelectionStep.AREA -> viewModel.refreshAreas()
-                            SelectionStep.ROOM_GRID -> viewModel.refreshRoomGrid()
-                            else -> {}
-                        }
-                    },
-                    modifier = Modifier.fillMaxSize()
+    // Column + weight(1f) 确保内容区域收到有限约束，
+    // 避免 HorizontalPager 传递无限高度导致 LazyColumn 崩溃
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        // 可滚动的列表区域 + 下拉刷新
+        Box(modifier = Modifier.weight(1f)) {
+            PullToRefreshBox(
+                isRefreshing = uiState.isRefreshing && pullToRefreshEnabled,
+                onRefresh = {
+                    when (uiState.currentStep) {
+                        SelectionStep.AREA -> viewModel.refreshAreas()
+                        SelectionStep.ROOM_GRID -> viewModel.refreshRoomGrid()
+                        else -> {}
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                // ── 列表内容（按步骤分发）──
-                when (uiState.currentStep) {
-                    SelectionStep.AREA -> {
-                        if (uiState.areas.isEmpty()) {
+                    // ── 列表内容（按步骤分发）──
+                    when (uiState.currentStep) {
+                        SelectionStep.AREA -> {
+                            if (uiState.areas.isEmpty()) {
+                                item(key = "empty") {
+                                    EmptyStateText(stringResource(R.string.building_no_campus))
+                                }
+                            } else {
+                                android.util.Log.d("DEBUG_expand", "Rendering AREA step: areas=${uiState.areas.size}, expandedAreaIds=${uiState.expandedAreaIds}")
+                                items(uiState.areas, key = { it.id }) { area ->
+                                    AreaBuildingGroup(
+                                        area = area,
+                                        isExpanded = uiState.expandedAreaIds.contains(area.id),
+                                        onToggle = { viewModel.toggleArea(area.id) },
+                                        onBuildingClick = { building, areaId ->
+                                            viewModel.selectBuilding(building, areaId)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        SelectionStep.ROOM_GRID -> {
+                            if (uiState.floors.isEmpty()) {
+                                item(key = "empty") {
+                                    EmptyStateText(stringResource(R.string.building_no_floors))
+                                }
+                            } else {
+                                // 直接在外层 LazyColumn 中 items
+                                items(uiState.floors, key = { it.id }) { floor ->
+                                    FloorRoomGroup(
+                                        floor = floor,
+                                        loadState = uiState.floorRoomsMap[floor.id],
+                                        isExpanded = uiState.expandedFloorIds.contains(floor.id),
+                                        onToggle = { viewModel.toggleFloorExpanded(floor.id) },
+                                        onRoomClick = { room -> viewModel.selectRoom(room) },
+                                        onLoadFloor = { floor -> viewModel.loadRoomsForFloor(floor) },
+                                        refreshVersion = uiState.floorRoomRefreshVersion
+                                    )
+                                }
+                            }
+                        }
+                        SelectionStep.DONE -> {
                             item(key = "empty") {
-                                EmptyStateText(stringResource(R.string.building_no_campus))
+                                EmptyStateText("")
                             }
-                        } else {
-                            android.util.Log.d("DEBUG_expand", "Rendering AREA step: areas=${uiState.areas.size}, expandedAreaIds=${uiState.expandedAreaIds}")
-                            items(uiState.areas, key = { it.id }) { area ->
-                                AreaBuildingGroup(
-                                    area = area,
-                                    isExpanded = uiState.expandedAreaIds.contains(area.id),
-                                    onToggle = { viewModel.toggleArea(area.id) },
-                                    onBuildingClick = { building, areaId ->
-                                        viewModel.selectBuilding(building, areaId)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    SelectionStep.ROOM_GRID -> {
-                        if (uiState.floors.isEmpty()) {
-                            item(key = "empty") {
-                                EmptyStateText(stringResource(R.string.building_no_floors))
-                            }
-                        } else {
-                            // 直接在外层 LazyColumn 中 items
-                            items(uiState.floors, key = { it.id }) { floor ->
-                                FloorRoomGroup(
-                                    floor = floor,
-                                    loadState = uiState.floorRoomsMap[floor.id],
-                                    isExpanded = uiState.expandedFloorIds.contains(floor.id),
-                                    onToggle = { viewModel.toggleFloorExpanded(floor.id) },
-                                    onRoomClick = { room -> viewModel.selectRoom(room) },
-                                    onLoadFloor = { floor -> viewModel.loadRoomsForFloor(floor) },
-                                    refreshVersion = uiState.floorRoomRefreshVersion
-                                )
-                            }
-                        }
-                    }
-                    SelectionStep.DONE -> {
-                        item(key = "empty") {
-                            EmptyStateText("")
-                        }
-                    }
                         }
                     }
                 }
             }
-        }
-
-        // ── 返回楼栋选择 FAB（叠加层，不受 Column padding 影响）──
-        if (showBackFab) {
-            ExtendedFloatingActionButton(
-                onClick = { viewModel.goBack() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                icon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = null
-                    )
-                },
-                text = { Text(stringResource(R.string.building_back_to_building)) },
-            )
         }
     }
 }
