@@ -2,8 +2,9 @@ package edu.cqwu.electricity.hall.data
 
 import android.util.Log
 import com.google.gson.Gson
-import edu.cqwu.electricity.hall.data.HallItem
-import edu.cqwu.electricity.hall.data.ServiceCenterDataResponse
+import edu.cqwu.electricity.hall.data.HallCategory
+import edu.cqwu.electricity.hall.data.UserCategoryAppListResponse
+import edu.cqwu.electricity.hall.data.extractCategories
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
@@ -11,24 +12,24 @@ import kotlinx.coroutines.withContext
 import okhttp3.Request
 
 /**
- * 办事大厅服务数据中心 API 请求封装。
+ * 办事大厅用户分类应用 API 请求封装。
  *
- * 请求 [SERVICE_CENTER_DATA_URL] 获取全部应用列表，
+ * 请求 [GET_USER_CATEGORY_APP_LIST_URL] 获取全部分类应用列表，
  * 包含 [HallItem.favorite] 和 [HallItem.favoriteCount] 等信息。
  *
  * 依赖于 [HallFavoriteApi.initEhallSession] 先完成 CAS ticket 交换，
  * 否则请求会因无已认证 JSESSIONID 而失败。
  *
- * 返回所有应用列表（含收藏信息），若未登录则抛出 [SessionExpiredException]。
+ * 返回所有分类（含应用及收藏信息），若未登录则抛出 [SessionExpiredException]。
  *
- * **注意：** 服务器对未登录用户也会返回应用列表数据，但 [ServiceCenterDataResponse.hasLogin] 为 false。
+ * **注意：** 服务器对未登录用户也会返回应用列表数据，但 [UserCategoryAppListResponse.hasLogin] 为 false。
  * 调用方必须通过此字段判断是否使用服务端数据，避免未登录时错误覆盖本地数据。
  */
 class HallServiceCenterApi {
 
     companion object {
-        /** 服务大厅数据中心 API（全部应用列表，含 favorite/favoriteCount 信息） */
-        const val SERVICE_CENTER_DATA_URL = "https://ehall.cqwu.edu.cn/jsonp/serviceCenterData.json"
+        /** 办事大厅用户分类应用 API（全部应用列表，含 favorite/favoriteCount 信息） */
+        const val GET_USER_CATEGORY_APP_LIST_URL = "https://ehall.cqwu.edu.cn/jsonp/getUserCategoryAppList.json"
     }
 
     private val gson = Gson()
@@ -41,9 +42,9 @@ class HallServiceCenterApi {
      * - Session 过期 → `Result.failure(SessionExpiredException)`
      * - 网络/解析错误 → `Result.failure(Exception)`
      */
-    suspend fun fetchServiceData(): Result<List<HallItem>> = withContext(Dispatchers.IO) {
+    suspend fun fetchServiceData(): Result<List<HallCategory>> = withContext(Dispatchers.IO) {
         try {
-            val url = "${SERVICE_CENTER_DATA_URL}?_=${System.currentTimeMillis()}"
+            val url = "${GET_USER_CATEGORY_APP_LIST_URL}?_=${System.currentTimeMillis()}"
             val request = Request.Builder()
                 .url(url)
                 .get()
@@ -56,7 +57,7 @@ class HallServiceCenterApi {
             val body = response.body.string()
 
             // JSON API 响应直接反序列化，通过 hasLogin 字段判断登录态
-            val result = gson.fromJson(body, ServiceCenterDataResponse::class.java)
+            val result = gson.fromJson(body, UserCategoryAppListResponse::class.java)
 
             // ═══ 修复：检查 hasLogin 字段，未登录时不使用服务端数据 ═══
             if (!result.hasLogin) {
@@ -64,8 +65,9 @@ class HallServiceCenterApi {
                 throw SessionExpiredException("用户未登录")
             }
 
-            Log.d("HallServiceCenterApi", "服务数据获取成功，应用数: ${result.searchResult.size}")
-            Result.success(result.searchResult)
+            val items = result.extractCategories()
+            Log.d("HallServiceCenterApi", "服务数据获取成功，分类数: ${items.size}")
+            Result.success(items)
         } catch (e: SessionExpiredException) {
             Log.w("HallServiceCenterApi", "Session 过期: ${e.message}")
             Result.failure(e)

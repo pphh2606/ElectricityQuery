@@ -1,10 +1,21 @@
 package edu.cqwu.electricity.hall.data
 
 /**
- * 办事大厅 JSON 响应结构（本地 assets/hall_apps.json）
+ * 办事大厅用户分类应用 API（getUserCategoryAppList.json）响应结构。
+ * 同时用于本地 assets/hall_apps.json 快照解析。
  */
-data class HallSearchResponse(
-    val searchResult: List<HallItem> = emptyList()
+data class UserCategoryAppListResponse(
+    val result: String = "",
+    val pcAppCategory: List<HallCategory> = emptyList(),
+    /** 用户登录状态：true=已登录，false=未登录/Session 过期 */
+    val hasLogin: Boolean = false,
+)
+
+/** 办事大厅应用分类 */
+data class HallCategory(
+    val categoryId: String = "",
+    val categoryName: String = "",
+    val appList: List<HallItem> = emptyList(),
 )
 
 /**
@@ -18,16 +29,28 @@ data class UserFavoritesResponse(
 )
 
 /**
- * 服务大厅数据中心 API (serviceCenterData.json) 响应结构
- * 与服务端返回的应用列表完全一致，包含 favorite / favoriteCount 等信息。
- *
- * 服务器即使未登录也会返回数据，但 hasLogin=false。
- * 调用方需检查 [hasLogin] 字段决定是否使用服务端数据。
+ * 大厅搜索接口（serviceCenterData.json）响应结构。
+ * 携带应用列表与两行索引标签（服务角色 / 服务类别）。
  */
-data class ServiceCenterDataResponse(
+data class ServiceCenterSearchResponse(
     val searchResult: List<HallItem> = emptyList(),
+    val serviceLabels: List<HallServiceLabelGroup> = emptyList(),
     /** 用户登录状态：true=已登录，false=未登录/Session 过期 */
     val hasLogin: Boolean = false,
+)
+
+/** 一行索引标签组，例如「服务角色」「服务类别」 */
+data class HallServiceLabelGroup(
+    val serviceId: Int = 0,
+    val serviceName: String = "",
+    val labels: List<HallServiceLabel> = emptyList(),
+)
+
+/** 单个索引标签 */
+data class HallServiceLabel(
+    val labelId: String = "",
+    val lableName: String = "",
+    val subLabelList: List<HallServiceLabel>? = null,
 )
 
 /**
@@ -41,6 +64,12 @@ data class HallItem(
     val favorite: Boolean = false,
     val favoriteCount: Int = 0,
 )
+
+/**
+ * 提取真实业务分类：排除 `categoryId == "all"` 的伪分类，并过滤空分类，保持服务端返回顺序。
+ */
+fun UserCategoryAppListResponse.extractCategories(): List<HallCategory> =
+    pcAppCategory.filter { it.categoryId != "all" && it.appList.isNotEmpty() }
 
 /**
  * 收藏/取消收藏 API 的响应结构

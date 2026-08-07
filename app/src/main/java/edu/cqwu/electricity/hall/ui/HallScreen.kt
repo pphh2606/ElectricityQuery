@@ -5,9 +5,12 @@ import edu.cqwu.electricity.R
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,75 +20,70 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.background
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import edu.cqwu.electricity.hall.data.HallCategory
 import edu.cqwu.electricity.hall.data.HallItem
+import edu.cqwu.electricity.hall.data.HallServiceLabel
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import kotlinx.coroutines.launch
 
 /**
- * 大厅页面 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中调用。
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HallTopBar() {
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(R.string.hall_title),
-                fontWeight = FontWeight.Bold,
-            )
-        },
-        colors = topBarColors,
-    )
-}
-/**
  * 大厅页面内容（不含 Scaffold / TopAppBar / BottomBar）。
  *
- * 内部使用 2 页 [HorizontalPager] 实现「全部」「收藏」滑动切换。
+ * 内部使用 3 页 [HorizontalPager] 实现「全部」「收藏」「搜索」滑动切换。
  * 通过 [snapshotFlow] 监听 [PagerState.currentPage] 稳定页码，
  * 在滑动稳定后同步到 ViewModel 的 [selectTab]，触发收藏数据加载等逻辑。
  */
@@ -100,7 +98,7 @@ fun HallPageContent(
     }
     val uiState by hallViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
-    val hallPagerState = rememberPagerState(pageCount = { 2 })
+    val hallPagerState = rememberPagerState(pageCount = { 3 })
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
 
@@ -138,7 +136,11 @@ fun HallPageContent(
                 contentColor = MaterialTheme.colorScheme.primary,
                 divider = {},
             ) {
-                val tabs = listOf(stringResource(R.string.hall_tab_all), stringResource(R.string.hall_tab_favorites))
+                val tabs = listOf(
+                    stringResource(R.string.hall_tab_all),
+                    stringResource(R.string.hall_tab_favorites),
+                    stringResource(R.string.common_search),
+                )
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = hallPagerState.currentPage == index,
@@ -165,7 +167,7 @@ fun HallPageContent(
                     0 -> {
                         // 「全部」Tab
                         AllAppsList(
-                            items = uiState.allItems,
+                            categories = uiState.categories,
                             isLoggedIn = uiState.isLoggedIn,
                             togglingAppId = uiState.togglingFavoriteAppId,
                             onItemClick = { item ->
@@ -190,8 +192,170 @@ fun HallPageContent(
                             onRetry = { hallViewModel.loadFavorites() },
                         )
                     }
+                    2 -> {
+                        // 「搜索」Tab
+                        HallSearchTab(
+                            uiState = uiState,
+                            onQueryChange = { hallViewModel.setSearchQuery(it) },
+                            onSearch = { hallViewModel.performSearch() },
+                            onRoleSelect = { hallViewModel.selectRoleLabel(it) },
+                            onCategorySelect = { hallViewModel.selectCategoryLabel(it) },
+                            onItemClick = { item ->
+                                val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
+                                nav.navigate(Routes.unifiedWebViewRoute(url, item.appName))
+                            },
+                        )
+                    }
                 }
             }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════
+// 「搜索」Tab 内容
+// ═══════════════════════════════════════════
+
+@Composable
+private fun HallSearchTab(
+    uiState: HallUiState,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    onRoleSelect: (String?) -> Unit,
+    onCategorySelect: (String?) -> Unit,
+    onItemClick: (HallItem) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        HallSearchInputRow(
+            query = uiState.searchQuery,
+            onQueryChange = onQueryChange,
+            onSearch = onSearch,
+        )
+
+        HallSearchLabelRow(
+            labels = uiState.roleLabels,
+            selectedLabelId = uiState.selectedRoleLabelId,
+            onSelect = onRoleSelect,
+        )
+
+        HallSearchLabelRow(
+            labels = uiState.categoryLabels,
+            selectedLabelId = uiState.selectedCategoryLabelId,
+            onSelect = onCategorySelect,
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            when {
+                uiState.isSearchLoading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+                uiState.searchError != null -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = uiState.searchError,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+                else -> {
+                    FlatAppsList(
+                        items = uiState.searchResults,
+                        isLoggedIn = false,
+                        togglingAppId = null,
+                        onItemClick = onItemClick,
+                        onFavoriteClick = null,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HallSearchInputRow(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier.weight(1f),
+            placeholder = { Text(stringResource(R.string.common_search)) },
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+            ),
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = stringResource(R.string.common_clear_search),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+        )
+        IconButton(onClick = onSearch) {
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = stringResource(R.string.common_search),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+@Composable
+private fun HallSearchLabelRow(
+    labels: List<HallServiceLabel>,
+    selectedLabelId: String?,
+    onSelect: (String?) -> Unit,
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        item(key = "all") {
+            HallSectionChip(
+                text = stringResource(R.string.hall_tab_all),
+                selected = selectedLabelId == null,
+                onClick = { onSelect(null) },
+            )
+        }
+        items(labels, key = { it.labelId }) { label ->
+            HallSectionChip(
+                text = label.lableName,
+                selected = selectedLabelId == label.labelId,
+                onClick = { onSelect(label.labelId) },
+            )
         }
     }
 }
@@ -202,6 +366,157 @@ fun HallPageContent(
 
 @Composable
 private fun AllAppsList(
+    categories: List<HallCategory>,
+    isLoggedIn: Boolean,
+    togglingAppId: String?,
+    onItemClick: (HallItem) -> Unit,
+    onFavoriteClick: ((HallItem) -> Unit)? = null,
+) {
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+    val sectionStartIndices = remember(categories) {
+        var index = 0
+        categories.map { category ->
+            val start = index
+            index += 1 + category.appList.size
+            start
+        }
+    }
+    val activeSectionIndex by remember(categories, sectionStartIndices) {
+        derivedStateOf {
+            val firstVisible = listState.firstVisibleItemIndex
+            var active = 0
+            sectionStartIndices.forEachIndexed { sectionIndex, start ->
+                if (start <= firstVisible) active = sectionIndex
+            }
+            active
+        }
+    }
+    val showIndexDivider by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        if (categories.isNotEmpty()) {
+            HallSectionIndex(
+                categories = categories,
+                activeIndex = activeSectionIndex,
+                showDivider = showIndexDivider,
+                onSectionClick = { index ->
+                    scope.launch {
+                        listState.animateScrollToItem(sectionStartIndices[index])
+                    }
+                },
+            )
+        }
+
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
+            contentPadding = PaddingValues(vertical = 4.dp),
+        ) {
+            categories.forEach { category ->
+                item(key = "header_${category.categoryId}") {
+                    HallCategoryHeader(category.categoryName)
+                }
+                items(category.appList, key = { it.appId }) { item ->
+                    HallListItem(
+                        item = item,
+                        isLoggedIn = isLoggedIn,
+                        isTogglingFavorite = togglingAppId == item.appId,
+                        onClick = { onItemClick(item) },
+                        onFavoriteClick = onFavoriteClick,
+                    )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        thickness = 0.5.dp,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 「全部」Tab 分类索引栏：固定显示在 Tab 栏下方，点击后平滑滚动到对应分类。
+ */
+@Composable
+private fun HallSectionIndex(
+    categories: List<HallCategory>,
+    activeIndex: Int,
+    showDivider: Boolean,
+    onSectionClick: (Int) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 2.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            itemsIndexed(categories, key = { _, category -> category.categoryId }) { index, category ->
+                HallSectionChip(
+                    text = category.categoryName,
+                    selected = activeIndex == index,
+                    onClick = { onSectionClick(index) },
+                )
+            }
+        }
+        if (showDivider) {
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant,
+                thickness = 0.5.dp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun HallSectionChip(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        shape = CircleShape,
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+        border = null,
+        label = {
+            Text(
+                text = text,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+    )
+}
+
+@Composable
+private fun HallCategoryHeader(name: String) {
+    Text(
+        text = name,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 2.dp),
+    )
+}
+
+/**
+ * 收藏 Tab 的扁平应用列表。
+ */
+@Composable
+private fun FlatAppsList(
     items: List<HallItem>,
     isLoggedIn: Boolean,
     togglingAppId: String?,
@@ -209,10 +524,7 @@ private fun AllAppsList(
     onFavoriteClick: ((HallItem) -> Unit)? = null,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(
-            items = items,
-            key = { it.appId },
-        ) { item ->
+        items(items = items, key = { it.appId }) { item ->
             HallListItem(
                 item = item,
                 isLoggedIn = isLoggedIn,
@@ -292,7 +604,7 @@ private fun FavoriteAppsContent(
             }
         }
         else -> {
-            AllAppsList(
+            FlatAppsList(
                 items = items,
                 isLoggedIn = false,
                 togglingAppId = null,

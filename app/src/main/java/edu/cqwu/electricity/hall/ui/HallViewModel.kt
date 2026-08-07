@@ -4,7 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.hall.data.HallCategory
 import edu.cqwu.electricity.hall.data.HallItem
+import edu.cqwu.electricity.hall.data.HallSearchApi
+import edu.cqwu.electricity.hall.data.HallServiceLabel
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.hall.data.HallFavoriteApi
 import edu.cqwu.electricity.hall.data.HallJsonLoader
@@ -31,12 +34,21 @@ enum class HallDataSource {
 data class HallUiState(
     /** 当前选中的 Tab：0=全部，1=收藏 */
     val selectedTab: Int = 0,
-    /** 「全部」Tab 数据（优先使用服务端数据，回退到本地 JSON） */
-    val allItems: List<HallItem> = emptyList(),
+    /** 「全部」Tab 分类数据（优先使用服务端数据，回退到本地 JSON） */
+    val categories: List<HallCategory> = emptyList(),
     /** 当前数据来源：服务端实时数据或本地 JSON 兜底 */
     val dataSource: HallDataSource = HallDataSource.LOCAL_FALLBACK,
     /** 「收藏」Tab 数据（来自网络请求） */
     val favoriteItems: List<HallItem> = emptyList(),
+    // ── 搜索 Tab ──
+    val searchQuery: String = "",
+    val searchResults: List<HallItem> = emptyList(),
+    val roleLabels: List<HallServiceLabel> = emptyList(),
+    val categoryLabels: List<HallServiceLabel> = emptyList(),
+    val selectedRoleLabelId: String? = null,
+    val selectedCategoryLabelId: String? = null,
+    val isSearchLoading: Boolean = false,
+    val searchError: String? = null,
     /** 下拉刷新中 */
     val isRefreshing: Boolean = false,
     /** 收藏数据加载中 */
@@ -58,6 +70,8 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
     private val jsonLoader = HallJsonLoader(application)
     private val favoriteApi = HallFavoriteApi()
     private val serviceCenterApi = HallServiceCenterApi()
+    private val searchApi = HallSearchApi()
+    private var hasLoadedSearch = false
 
     private val _uiState = MutableStateFlow(HallUiState())
     val uiState: StateFlow<HallUiState> = _uiState.asStateFlow()
@@ -71,7 +85,7 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
             localResult.onSuccess { items ->
                 _uiState.update {
                     it.copy(
-                        allItems = items,
+                        categories = items,
                         dataSource = HallDataSource.LOCAL_FALLBACK,
                         isLoggedIn = false,
                     )
@@ -99,8 +113,8 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
     // ═══════════════ 服务端数据加载 ═══════════════
 
     /**
-     * 从 [HallServiceCenterApi] 加载全部应用列表（含 favorite/favoriteCount）。
-     * 成功时替换 [allItems] 并标记 [isLoggedIn=true]；
+     * 从 [HallServiceCenterApi] 加载全部分类（含 favorite/favoriteCount）。
+     * 成功时替换 [categories] 并标记 [isLoggedIn=true]；
      * 失败时保持本地 JSON 数据，[isLoggedIn=false]。
      */
     private suspend fun loadServiceData() {
@@ -110,12 +124,12 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
         result.onSuccess { items ->
             _uiState.update {
                 it.copy(
-                    allItems = items,
+                    categories = items,
                     isLoggedIn = true,
                     dataSource = HallDataSource.SERVER,
                 )
             }
-            Log.d("HallViewModel", "服务端数据加载成功，应用数: ${items.size}, isLoggedIn=true")
+            Log.d("HallViewModel", "服务端数据加载成功，分类数: ${items.size}, isLoggedIn=true")
         }.onFailure { error ->
             Log.w("HallViewModel", "服务端数据加载失败: ${error.message}，使用本地 JSON 兜底")
         }
@@ -129,10 +143,18 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun selectTab(index: Int) {
         _uiState.update { it.copy(selectedTab = index) }
-        if (index == 1) {
-            val state = _uiState.value
-            if (state.favoriteItems.isEmpty() && !state.isFavoriteLoading) {
-                loadFavorites()
+        when (index) {
+            1 -> {
+                val state = _uiState.value
+                if (state.favoriteItems.isEmpty() && !state.isFavoriteLoading) {
+                    loadFavorites()
+                }
+            }
+            2 -> {
+                if (!hasLoadedSearch) {
+                    hasLoadedSearch = true
+                    loadSearchData()
+                }
             }
         }
     }
@@ -174,6 +196,69 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // ═══════════════ 搜索 Tab ═══════════════
+
+    private fun selectedLabelIds(): List<String> {
+        val state = _uiState.value
+        return listOfNotNull(state.selectedRoleLabelId, state.selectedCategoryLabelId)
+    }
+
+    /**
+     * 加载搜索 Tab 数据：应用列表 + 服务角色/服务类别索引标签。
+     */
+    fun loadSearchData() {
+        val state = _uiState.value
+        _uiState.update { it.copy(isSearchLoading = true, searchError = null) }
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                searchApi.fetch(
+                    searchKey = state.searchQuery,
+                    labels = selectedLabelIds(),
+                )
+            }
+            result.onSuccess { response ->
+                val roleGroup = response.serviceLabels.firstOrNull { it.serviceId == 1 }
+                val categoryGroup = response.serviceLabels.firstOrNull { it.serviceId == 2 }
+                _uiState.update {
+                    it.copy(
+                        searchResults = response.searchResult,
+                        roleLabels = roleGroup?.labels ?: emptyList(),
+                        categoryLabels = categoryGroup?.labels ?: emptyList(),
+                        isSearchLoading = false,
+                        searchError = null,
+                    )
+                }
+            }.onFailure { error ->
+                val requiresReLogin = error is SessionExpiredException
+                _uiState.update {
+                    it.copy(
+                        isSearchLoading = false,
+                        requiresReLogin = requiresReLogin,
+                        searchError = error.message ?: "加载失败",
+                    )
+                }
+            }
+        }
+    }
+
+    fun setSearchQuery(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+    }
+
+    fun selectRoleLabel(labelId: String?) {
+        _uiState.update { it.copy(selectedRoleLabelId = labelId) }
+        loadSearchData()
+    }
+
+    fun selectCategoryLabel(labelId: String?) {
+        _uiState.update { it.copy(selectedCategoryLabelId = labelId) }
+        loadSearchData()
+    }
+
+    fun performSearch() {
+        loadSearchData()
+    }
+
     // ═══════════════ 下拉刷新 ═══════════════
 
     // ═══════════════ 收藏切换 ═══════════════
@@ -182,7 +267,7 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
      * 切换指定应用的收藏状态。
      *
      * 通过网络 API 执行收藏/取消收藏操作，成功后：
-     * 1. 在 [allItems] 中更新该应用的 [favorite] 状态
+     * 1. 在 [categories] 中更新该应用的 [favorite] 状态
      * 2. 如果该应用在 [favoriteItems] 中，同步更新
      * 3. 使用 [togglingFavoriteAppId] 控制 UI loading 指示器
      *
@@ -201,16 +286,20 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
             result.onSuccess {
                 _uiState.update { state ->
                     state.copy(
-                        allItems = state.allItems.map { app ->
-                            if (app.appId == item.appId) {
-                                app.copy(
-                                    favorite = newFavorite,
-                                    // 本地乐观更新点赞数，刷新后以服务端数据为准
-                                    favoriteCount = (app.favoriteCount + if (newFavorite) 1 else -1)
-                                        .coerceAtLeast(0),
-                                )
-                            }
-                            else app
+                        categories = state.categories.map { category ->
+                            category.copy(
+                                appList = category.appList.map { app ->
+                                    if (app.appId == item.appId) {
+                                        app.copy(
+                                            favorite = newFavorite,
+                                            // 本地乐观更新点赞数，刷新后以服务端数据为准
+                                            favoriteCount = (app.favoriteCount + if (newFavorite) 1 else -1)
+                                                .coerceAtLeast(0),
+                                        )
+                                    }
+                                    else app
+                                }
+                            )
                         },
                         favoriteItems = state.favoriteItems.map { app ->
                             if (app.appId == item.appId) {
@@ -266,7 +355,7 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     allResult.onSuccess { items ->
                         _uiState.update {
                             it.copy(
-                                allItems = items,
+                                categories = items,
                                 dataSource = HallDataSource.LOCAL_FALLBACK,
                                 isLoggedIn = false,
                             )
@@ -279,7 +368,7 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                 serverResult.onSuccess { items ->
                     _uiState.update {
                         it.copy(
-                            allItems = items,
+                            categories = items,
                             isLoggedIn = true,
                             dataSource = HallDataSource.SERVER,
                         )
@@ -301,6 +390,11 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                             )
                         }
                     }
+                }
+
+                // 4. 如果搜索 Tab 已加载过，同步刷新
+                if (hasLoadedSearch) {
+                    loadSearchData()
                 }
             } finally {
                 _uiState.update { it.copy(isRefreshing = false) }

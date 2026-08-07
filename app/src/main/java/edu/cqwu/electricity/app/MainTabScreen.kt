@@ -1,7 +1,12 @@
 package edu.cqwu.electricity.app
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.settings.data.ReduceMotion
 import edu.cqwu.electricity.hall.ui.HallPageContent
-import edu.cqwu.electricity.hall.ui.HallTopBar
 import edu.cqwu.electricity.hall.ui.HallViewModel
 import edu.cqwu.electricity.home.ui.HomePageContent
 import edu.cqwu.electricity.home.ui.HomeTopBar
@@ -62,24 +66,7 @@ fun MainTabScreen(
     val userScrollEnabled = animationSettings.reduceMotion != ReduceMotion.ON
 
     Scaffold(
-        topBar = {
-            when (pagerState.currentPage) {
-                0 -> {
-                    val uiState by homeViewModel.uiState.collectAsState()
-                    val searchQuery = uiState.searchQuery
-                    val isSearching = uiState.isSearching
-                    HomeTopBar(
-                        searchQuery = searchQuery,
-                        isSearching = isSearching,
-                        onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
-                        onToggleSearch = { homeViewModel.enterSearchMode() },
-                        onCloseSearch = { homeViewModel.clearSearch() },
-                    )
-                }
-                1 -> HallTopBar()
-                2 -> ProfileTopBar()
-            }
-        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             NavigationBar {
                 bottomNavTabs.forEachIndexed { index, tab ->
@@ -110,21 +97,48 @@ fun MainTabScreen(
             modifier = Modifier.padding(innerPadding),
         ) { page ->
             when (page) {
-                0 -> HomePageContent(
-                    homeViewModel = homeViewModel,
-                )
+                0 -> {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        val uiState by homeViewModel.uiState.collectAsState()
+                        HomeTopBar(
+                            searchQuery = uiState.searchQuery,
+                            isSearching = uiState.isSearching,
+                            onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
+                            onToggleSearch = { homeViewModel.enterSearchMode() },
+                            onCloseSearch = { homeViewModel.clearSearch() },
+                        )
+                        Box(modifier = Modifier.weight(1f)) {
+                            HomePageContent(
+                                homeViewModel = homeViewModel,
+                            )
+                        }
+                    }
+                }
                 1 -> {
                     val hallViewModel: HallViewModel = viewModel()
-                    HallPageContent(
-                        hallViewModel = hallViewModel,
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding(),
+                    ) {
+                        HallPageContent(
+                            hallViewModel = hallViewModel,
+                        )
+                    }
                 }
-                2 -> ProfilePageContent(
-                    onOpenHalfScreen = { url, title ->
-                        halfScreenUrl = url
-                        halfScreenTitle = title
-                    },
-                )
+                2 -> {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        ProfileTopBar()
+                        Box(modifier = Modifier.weight(1f)) {
+                            ProfilePageContent(
+                                onOpenHalfScreen = { url, title ->
+                                    halfScreenUrl = url
+                                    halfScreenTitle = title
+                                },
+                            )
+                        }
+                    }
+                }
             }
         }
     }

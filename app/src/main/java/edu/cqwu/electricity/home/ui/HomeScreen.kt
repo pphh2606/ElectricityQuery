@@ -420,7 +420,7 @@ fun HomePageContent(
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 8.dp)
+                        contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
                         // ── 我的服务区域（始终在分类列表顶部） ──
                         item(key = "my_services") {
@@ -529,7 +529,7 @@ private fun HomeSectionIndex(
     Column(modifier = Modifier.fillMaxWidth()) {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 2.dp, bottom = 6.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 2.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item(key = "my_services") {
@@ -668,7 +668,7 @@ private fun MyServicesSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         // ── 标题行：「我的服务」+ 编辑/确认图标 ──
         Row(

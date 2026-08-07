@@ -3,7 +3,9 @@ package edu.cqwu.electricity.feeservicehall.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,9 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -28,6 +34,8 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +49,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,6 +87,13 @@ private val tabs = listOf(
     FeeServiceHallTab(Icons.Outlined.Home, R.string.fee_hall_tab_home),
     FeeServiceHallTab(Icons.AutoMirrored.Outlined.Assignment, R.string.fee_hall_tab_orders),
     FeeServiceHallTab(Icons.Outlined.Person, R.string.fee_hall_tab_profile),
+)
+
+/** 首页分类区块，itemCount 用于计算 LazyColumn 中分类头的起始索引 */
+private data class FeeHallSection(
+    val id: String,
+    val name: String,
+    val itemCount: Int,
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -235,49 +251,101 @@ private fun FeeServiceHallHomeTab(
     onNavigateToWebView: (url: String, title: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    PullToRefreshBox(
-        isRefreshing = uiState.isRefreshing,
-        onRefresh = onRefresh,
-        modifier = modifier.fillMaxSize(),
-    ) {
-        when {
-            uiState.isLoading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+    val sections = remember(uiState.categories) {
+        uiState.categories.mapNotNull { category ->
+            val items = category.children?.filter { it.type == "2" } ?: emptyList()
+            if (items.isEmpty()) null
+            else FeeHallSection(id = category.id, name = category.name, itemCount = items.size)
+        }
+    }
+    val sectionStartIndices = remember(sections) {
+        var index = 0
+        sections.map { section ->
+            val start = index
+            index += 1 + section.itemCount
+            start
+        }
+    }
+    val activeSectionIndex by remember(sections, sectionStartIndices) {
+        derivedStateOf {
+            val firstVisible = listState.firstVisibleItemIndex
+            var active = 0
+            sectionStartIndices.forEachIndexed { sectionIndex, start ->
+                if (start <= firstVisible) active = sectionIndex
             }
-            uiState.errorMessage != null && uiState.categories.isEmpty() -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""), style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error)
+            active
+        }
+    }
+    val showIndexDivider by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
+
+    Column(modifier = modifier.fillMaxSize()) {
+        if (!uiState.isLoading && uiState.errorMessage == null && sections.isNotEmpty()) {
+            FeeServiceHallSectionIndex(
+                sections = sections,
+                activeIndex = activeSectionIndex,
+                showDivider = showIndexDivider,
+                onSectionClick = { index ->
+                    scope.launch {
+                        listState.animateScrollToItem(sectionStartIndices[index])
+                    }
+                },
+            )
+        }
+
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            when {
+                uiState.isLoading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
-            }
-            uiState.categories.isEmpty() -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.fee_hall_no_projects), style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                uiState.errorMessage != null && uiState.categories.isEmpty() -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""), style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error)
+                    }
                 }
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                ) {
-                    uiState.categories.forEach { category ->
-                        val items = category.children?.filter { it.type == "2" } ?: emptyList()
-                        if (items.isNotEmpty()) {
-                            item(key = "header_${category.id}") {
-                                CategoryHeader(category.name)
-                            }
-                            items(items = items, key = { it.id }) { item ->
-                                FeeProjectItem(
-                                    item = item,
-                                    onClick = {
-                                        val url = FeeServiceHallApi.buildPaymentUrl(item.proModelUrl, item.id)
-                                        onNavigateToWebView(url, item.name)
-                                    },
-                                )
-                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
+                uiState.categories.isEmpty() -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(stringResource(R.string.fee_hall_no_projects), style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                    ) {
+                        uiState.categories.forEach { category ->
+                            val items = category.children?.filter { it.type == "2" } ?: emptyList()
+                            if (items.isNotEmpty()) {
+                                item(key = "header_${category.id}") {
+                                    CategoryHeader(category.name)
+                                }
+                                items(items = items, key = { it.id }) { item ->
+                                    FeeProjectItem(
+                                        item = item,
+                                        onClick = {
+                                            val url = FeeServiceHallApi.buildPaymentUrl(item.proModelUrl, item.id)
+                                            onNavigateToWebView(url, item.name)
+                                        },
+                                    )
+                                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
+                                }
                             }
                         }
                     }
@@ -287,12 +355,69 @@ private fun FeeServiceHallHomeTab(
     }
 }
 
+/**
+ * 缴费服务大厅首页分类索引栏：固定显示在标题栏下方，点击后平滑滚动到对应分类。
+ */
+@Composable
+private fun FeeServiceHallSectionIndex(
+    sections: List<FeeHallSection>,
+    activeIndex: Int,
+    showDivider: Boolean,
+    onSectionClick: (Int) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 2.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            itemsIndexed(sections, key = { _, section -> section.id }) { index, section ->
+                FeeServiceHallSectionChip(
+                    text = section.name,
+                    selected = activeIndex == index,
+                    onClick = { onSectionClick(index) },
+                )
+            }
+        }
+        if (showDivider) {
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant,
+                thickness = 0.5.dp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FeeServiceHallSectionChip(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        shape = CircleShape,
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+        border = null,
+        label = {
+            Text(
+                text = text,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+    )
+}
+
 @Composable
 private fun CategoryHeader(name: String) {
     Text(
         text = name, style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
     )
 }
 
