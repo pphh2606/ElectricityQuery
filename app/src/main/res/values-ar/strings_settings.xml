@@ -10,6 +10,8 @@
     <string name="settings_config_desc">معرف المتصفح وإعدادات أخرى</string>
     <string name="settings_about">حول</string>
     <string name="settings_about_desc">إصدار التطبيق، معلومات المطور</string>
+    <string name="settings_webvpn_enabled">وكيل WebVPN</string>
+    <string name="settings_webvpn_enabled_desc">عند التفعيل، يتم توجيه جميع طلبات الشبكة عبر WebVPN الخاص بالمدرسة</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  التخصيص                                   -->
@@ -53,6 +55,8 @@
     <string name="config_title">الإعدادات</string>
     <string name="config_user_agent">معرف المتصفح</string>
     <string name="config_user_agent_desc">تعيين User-Agent</string>
+    <string name="webvpn_settings_title">إعدادات WebVPN</string>
+    <string name="webvpn_settings_desc">مفتاح وكيل WebVPN والإعدادات ذات الصلة</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  إعدادات معرف المتصفح                       -->
@@ -92,6 +96,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">اللغة</string>
     <string name="language_select">اختيار اللغة</string>
+    <string name="language_system">اتباع النظام</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  مسح مساحة التخزين                          -->

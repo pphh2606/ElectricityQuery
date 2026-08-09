@@ -10,6 +10,8 @@
     <string name="settings_config_desc">ブラウザ識別子などの設定</string>
     <string name="settings_about">について</string>
     <string name="settings_about_desc">アプリバージョン、開発者情報</string>
+    <string name="settings_webvpn_enabled">WebVPN プロキシ</string>
+    <string name="settings_webvpn_enabled_desc">有効にすると、すべてのネットワークリクエストを学校の WebVPN 経由で送信します</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  個人設定                                   -->
@@ -53,6 +55,8 @@
     <string name="config_title">設定</string>
     <string name="config_user_agent">ブラウザ識別子</string>
     <string name="config_user_agent_desc">User-Agentを設定</string>
+    <string name="webvpn_settings_title">WebVPN 設定</string>
+    <string name="webvpn_settings_desc">WebVPN プロキシのスイッチなどの設定</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  ブラウザ識別子設定 + 編集                  -->
@@ -92,6 +96,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">言語</string>
     <string name="language_select">言語を選択</string>
+    <string name="language_system">システムに従う</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  ストレージクリア                             -->

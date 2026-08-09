@@ -61,7 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import edu.cqwu.electricity.login.data.WebVpnEncoder
+import edu.cqwu.electricity.network.WebVpnEncoder
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.app.Routes

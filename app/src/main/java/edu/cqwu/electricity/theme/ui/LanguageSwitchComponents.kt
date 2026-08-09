@@ -2,6 +2,7 @@ package edu.cqwu.electricity.theme.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.Icon
@@ -65,20 +66,26 @@ fun LanguageSwitchSheet(
         fullscreen = false,
     ) {
         AppLanguage.entries.forEach { language ->
+            val title = if (language == AppLanguage.SYSTEM) {
+                stringResource(R.string.language_system)
+            } else {
+                language.displayName
+            }
             BottomSheetItem(
                 icon = null,
-                title = language.displayName,
+                title = title,
                 selected = language == currentLanguage,
                 onClick = {
-                    settingsPrefs.setAppLanguage(language)
-                    onDismiss()
-                    // 重启 Activity 应用新语言
                     val activity = context as? Activity ?: return@BottomSheetItem
-                    val intent = Intent(activity, activity.javaClass)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    activity.startActivity(intent)
-                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    activity.finish()
+                    onDismiss()
+                    settingsPrefs.setAppLanguage(language)
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        val intent = Intent(activity, activity.javaClass)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        activity.startActivity(intent)
+                        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        activity.finish()
+                    }
                 },
             )
         }

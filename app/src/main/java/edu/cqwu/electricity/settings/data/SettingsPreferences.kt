@@ -1,18 +1,24 @@
 package edu.cqwu.electricity.settings.data
 
+import android.app.LocaleManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
+import android.os.LocaleList
 import androidx.compose.ui.graphics.Color
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import edu.cqwu.electricity.home.data.CustomServiceEntry
+import java.util.Locale
 
 /**
  * 应用语言枚举
- * CHINESE: 中文（默认）
+ * SYSTEM: 跟随系统
+ * CHINESE: 中文
  * ENGLISH: 英文
  */
 enum class AppLanguage(val value: String, val displayName: String) {
+    SYSTEM("system", "跟随系统"),
     CHINESE("zh", "简体中文"),
     TRADITIONAL_CHINESE("zh-TW", "繁體中文"),
     ENGLISH("en", "English"),
@@ -20,9 +26,38 @@ enum class AppLanguage(val value: String, val displayName: String) {
     ARABIC("ar", "العربية"),
     JAPANESE("ja", "日本語");
 
+    val localeTag: String?
+        get() = when (this) {
+            SYSTEM -> null
+            CHINESE -> "zh"
+            TRADITIONAL_CHINESE -> "zh-TW"
+            ENGLISH -> "en"
+            FRENCH -> "fr"
+            ARABIC -> "ar"
+            JAPANESE -> "ja"
+        }
+
     companion object {
         fun fromValue(value: String): AppLanguage {
-            return entries.firstOrNull { it.value == value } ?: CHINESE
+            return entries.firstOrNull { it.value == value } ?: SYSTEM
+        }
+
+        fun fromLanguageTag(tag: String): AppLanguage {
+            val locale = Locale.forLanguageTag(tag)
+            return when (locale.language) {
+                "zh" -> {
+                    if (locale.country == "TW" || locale.script == "Hant" || tag.contains("TW")) {
+                        TRADITIONAL_CHINESE
+                    } else {
+                        CHINESE
+                    }
+                }
+                "en" -> ENGLISH
+                "fr" -> FRENCH
+                "ar" -> ARABIC
+                "ja" -> JAPANESE
+                else -> SYSTEM
+            }
         }
     }
 }
@@ -65,8 +100,9 @@ sealed interface ThemeColorSource {
  */
 class SettingsPreferences(context: Context) {
 
+    private val appContext: Context = context.applicationContext
     private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
     // ── 夜间模式 ──
 
@@ -115,12 +151,48 @@ class SettingsPreferences(context: Context) {
     // ── 应用语言 ──
 
     fun getAppLanguage(): AppLanguage {
-        val raw = prefs.getString(KEY_APP_LANGUAGE, AppLanguage.CHINESE.value) ?: AppLanguage.CHINESE.value
-        return AppLanguage.fromValue(raw)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getPlatformAppLanguage()
+        } else {
+            val raw = prefs.getString(KEY_APP_LANGUAGE, AppLanguage.SYSTEM.value)
+                ?: AppLanguage.SYSTEM.value
+            AppLanguage.fromValue(raw)
+        }
     }
 
     fun setAppLanguage(language: AppLanguage) {
-        prefs.edit().putString(KEY_APP_LANGUAGE, language.value).apply()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            setPlatformAppLanguage(language)
+        } else {
+            prefs.edit().putString(KEY_APP_LANGUAGE, language.value).apply()
+        }
+    }
+
+    private fun getPlatformAppLanguage(): AppLanguage {
+        val localeManager = appContext.getSystemService(LocaleManager::class.java)
+        val applicationLocales = localeManager.applicationLocales
+        return if (applicationLocales.isEmpty) {
+            AppLanguage.SYSTEM
+        } else {
+            AppLanguage.fromLanguageTag(applicationLocales[0].toLanguageTag())
+        }
+    }
+
+    private fun setPlatformAppLanguage(language: AppLanguage) {
+        val localeManager = appContext.getSystemService(LocaleManager::class.java)
+        val localeList = language.localeTag?.let { LocaleList.forLanguageTags(it) }
+            ?: LocaleList.getEmptyLocaleList()
+        localeManager.applicationLocales = localeList
+    }
+
+    // ── WebVPN 代理 ──
+
+    fun isWebVpnEnabled(): Boolean {
+        return prefs.getBoolean(KEY_WEBVPN_ENABLED, false)
+    }
+
+    fun setWebVpnEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_WEBVPN_ENABLED, enabled).apply()
     }
 
     // ── 标题栏颜色样式 ──
@@ -245,6 +317,7 @@ class SettingsPreferences(context: Context) {
     companion object {
         private const val PREF_NAME = "settings_preferences"
         private const val KEY_APP_LANGUAGE = "app_language"
+        private const val KEY_WEBVPN_ENABLED = "webvpn_enabled"
         private const val KEY_NIGHT_MODE = "night_mode"
         private const val KEY_COLOR_SOURCE = "color_source"
         private const val KEY_SEED_COLOR = "seed_color"

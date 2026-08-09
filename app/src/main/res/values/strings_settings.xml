@@ -10,6 +10,8 @@
     <string name="settings_config_desc">浏览器标识等设置</string>
     <string name="settings_about">关于</string>
     <string name="settings_about_desc">应用版本、开发者信息</string>
+    <string name="settings_webvpn_enabled">WebVPN 代理</string>
+    <string name="settings_webvpn_enabled_desc">开启后所有网络请求将通过学校 WebVPN 转发</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  个性化设置                                 -->
@@ -53,6 +55,8 @@
     <string name="config_title">配置</string>
     <string name="config_user_agent">浏览器标识</string>
     <string name="config_user_agent_desc">设置 User-Agent</string>
+    <string name="webvpn_settings_title">WebVPN 设置</string>
+    <string name="webvpn_settings_desc">WebVPN 代理开关等设置</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  浏览器标识设置 + 编辑                      -->
@@ -92,6 +96,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">语言</string>
     <string name="language_select">选择语言</string>
+    <string name="language_system">跟随系统</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  清除存储空间                               -->

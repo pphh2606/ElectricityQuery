@@ -3,6 +3,7 @@ package edu.cqwu.electricity.app
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
+import edu.cqwu.electricity.settings.data.AppLanguage
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.settings.data.ThemeColorSource
@@ -43,8 +45,12 @@ class MainActivity : ComponentActivity() {
     private val _shortcutLaunchId = mutableIntStateOf(0)
 
     override fun attachBaseContext(newBase: Context) {
-        val language = SettingsPreferences(newBase).getAppLanguage().value
-        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, language))
+        val language = SettingsPreferences(newBase).getAppLanguage()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU || language == AppLanguage.SYSTEM) {
+            super.attachBaseContext(newBase)
+        } else {
+            super.attachBaseContext(LocaleContextWrapper.wrap(newBase, language.localeTag!!))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

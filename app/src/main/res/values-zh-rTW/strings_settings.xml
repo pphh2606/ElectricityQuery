@@ -10,6 +10,8 @@
     <string name="settings_config_desc">瀏覽器識別碼等設定</string>
     <string name="settings_about">關於</string>
     <string name="settings_about_desc">應用程式版本、開發者資訊</string>
+    <string name="settings_webvpn_enabled">WebVPN 代理</string>
+    <string name="settings_webvpn_enabled_desc">啟用後所有網路請求將透過學校 WebVPN 轉送</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  個人化設定                                 -->
@@ -53,6 +55,8 @@
     <string name="config_title">組態</string>
     <string name="config_user_agent">瀏覽器識別碼</string>
     <string name="config_user_agent_desc">設定 User-Agent</string>
+    <string name="webvpn_settings_title">WebVPN 設定</string>
+    <string name="webvpn_settings_desc">WebVPN 代理開關等設定</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  瀏覽器識別碼設定 + 編輯                     -->
@@ -92,6 +96,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">語言</string>
     <string name="language_select">選取語言</string>
+    <string name="language_system">跟隨系統</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  清除儲存空間                               -->

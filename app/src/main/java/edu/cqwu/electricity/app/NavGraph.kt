@@ -78,6 +78,7 @@ import edu.cqwu.electricity.settings.ui.SettingsScreen
 import edu.cqwu.electricity.settings.ui.StorageClearScreen
 import edu.cqwu.electricity.settings.ui.UserAgentEditScreen
 import edu.cqwu.electricity.settings.ui.UserAgentSettingsScreen
+import edu.cqwu.electricity.settings.ui.WebVpnSettingsScreen
 import edu.cqwu.electricity.shortcut.ui.AddShortcutScreen
 import edu.cqwu.electricity.speakup.ui.MessageDetailScreen
 import edu.cqwu.electricity.speakup.ui.MessageListScreen
@@ -100,6 +101,7 @@ object Routes {
     const val PERSONALIZATION = "personalization"
     const val QR_CODE_SETTINGS = "qr_code_settings"
     const val QR_LOGIN = "qr_login"
+    const val WEBVPN_SETTINGS = "webvpn_settings"
     const val ELECTRICITY_MAIN = "electricity_main"
     const val DETAIL = "detail/{detailType}/{roomId}"
     const val PAYMENT_SELECTION = "payment_selection"
@@ -658,6 +660,14 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() },
                 onNavigateToUserAgent = { navController.navigate(Routes.USER_AGENT_SETTINGS) },
                 onNavigateToStorageClear = { navController.navigate(Routes.STORAGE_CLEAR) },
+                onNavigateToWebVpn = { navController.navigate(Routes.WEBVPN_SETTINGS) },
+            )
+        }
+
+        // WebVPN 设置页
+        animatedComposable(settings = animationSettings, route = Routes.WEBVPN_SETTINGS) {
+            WebVpnSettingsScreen(
+                onBack = { navController.popBackStack() },
             )
         }
 

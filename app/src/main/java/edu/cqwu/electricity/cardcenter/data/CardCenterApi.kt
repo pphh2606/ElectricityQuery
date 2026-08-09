@@ -127,7 +127,7 @@ class CardCenterApi {
         fun extractValue(label: String): String {
             val escapedLabel = Regex.escape(label)
             val regex = Regex(
-                """<p>\s*$escapedLabel\s*</p>\s*</div>\s*<div class="weui-cell__ft">([^<]*)""",
+                """<p>\s*$escapedLabel\s*</p>\s*</div>\s*<div class="weui-cell__ft"[^>]*>([^<]*)""",
                 RegexOption.IGNORE_CASE
             )
             return regex.find(html)?.groupValues?.getOrNull(1)?.trim() ?: ""
@@ -239,7 +239,7 @@ class CardCenterApi {
         fun extractValue(label: String): String {
             val escapedLabel = Regex.escape(label)
             val regex = Regex(
-                """<p>\s*$escapedLabel\s*</p>\s*</div>\s*<div class="weui-cell__ft">([^<]*)""",
+                """<p>\s*$escapedLabel\s*</p>\s*</div>\s*<div class="weui-cell__ft"[^>]*>([^<]*)""",
                 RegexOption.IGNORE_CASE
             )
             return regex.find(html)?.groupValues?.getOrNull(1)?.trim() ?: ""

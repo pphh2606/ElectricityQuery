@@ -10,6 +10,8 @@
     <string name="settings_config_desc">Identifiant de navigateur et autres</string>
     <string name="settings_about">À propos</string>
     <string name="settings_about_desc">Version de l\'application, infos développeur</string>
+    <string name="settings_webvpn_enabled">Proxy WebVPN</string>
+    <string name="settings_webvpn_enabled_desc">Acheminer toutes les requêtes réseau via le WebVPN de l\'école lorsqu\'il est activé</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Personnalisation                           -->
@@ -53,6 +55,8 @@
     <string name="config_title">Configuration</string>
     <string name="config_user_agent">User-Agent</string>
     <string name="config_user_agent_desc">Définir le User-Agent</string>
+    <string name="webvpn_settings_title">Paramètres WebVPN</string>
+    <string name="webvpn_settings_desc">Interrupteur du proxy WebVPN et paramètres associés</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  User-Agent                                 -->
@@ -92,6 +96,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="language_title">Langue</string>
     <string name="language_select">Choisir la langue</string>
+    <string name="language_system">Suivre le système</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Effacer l'espace de stockage               -->

@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import edu.cqwu.electricity.login.data.CookieStore
+import edu.cqwu.electricity.network.HttpDiagnostics
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -121,6 +122,7 @@ class FeeServiceHallApi {
                     Request.Builder().url(CAS_LOGIN_URL).get().build()
                 ).execute()
                 val step1Html = step1Resp.body.string()
+                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", CAS_LOGIN_URL, step1Resp)
                 Log.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
 
                 // 从 HTML 中提取 location.href 重定向地址
@@ -143,6 +145,7 @@ class FeeServiceHallApi {
                     Request.Builder().url(redirectUrl).get().build()
                 ).execute()
                 val step2Html = step2Resp.body.string()
+                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", redirectUrl, step2Resp)
                 Log.d("FeeServiceHallApi", "步骤2: CAS认证完成, 响应码=${step2Resp.code}, HTML长度=${step2Html.length}, finalUrl=${step2Resp.request.url}")
 
                 // 从 HTML 中提取 dlyscas 端点地址（含 idserial）
@@ -161,6 +164,7 @@ class FeeServiceHallApi {
                     Request.Builder().url(dlyscasUrl).get().build()
                 ).execute()
                 val location = step3Resp.header("Location") ?: ""
+                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", dlyscasUrl, step3Resp)
                 Log.d("FeeServiceHallApi", "步骤3: dlyscas 响应码=${step3Resp.code}, Location=$location")
 
                 // 从 Location 中提取 token 参数
@@ -180,9 +184,11 @@ class FeeServiceHallApi {
 
                 Result.success(decodedToken)
             } catch (e: SocketTimeoutException) {
+                HttpDiagnostics.logFailure("FeeServiceHallApi", CAS_LOGIN_URL, e)
                 Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 超时", e)
                 Result.failure(Exception("获取 Token 超时，请检查网络连接", e))
             } catch (e: Exception) {
+                HttpDiagnostics.logFailure("FeeServiceHallApi", CAS_LOGIN_URL, e)
                 Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 失败", e)
                 Result.failure(e)
             }
@@ -225,12 +231,15 @@ class FeeServiceHallApi {
         withContext(Dispatchers.IO) {
             try {
                 val request = buildBaseRequest(PROJECT_LIST_URL).build()
+                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
+                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 gson.parseApiResponse<FeeProjectResponse>(body).map { it.data ?: emptyList() }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
+                HttpDiagnostics.logFailure("FeeServiceHallApi", PROJECT_LIST_URL, e)
                 Result.failure(e)
             }
         }
@@ -269,12 +278,15 @@ class FeeServiceHallApi {
                     .post(bodyJson.toRequestBody(jsonMediaType))
                     .build()
 
+                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
+                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 gson.parseApiResponse<OrderListResponse>(body).map { it.data ?: OrderPageData(emptyList(), null, null, null) }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
+                HttpDiagnostics.logFailure("FeeServiceHallApi", ORDER_LIST_URL, e)
                 Result.failure(e)
             }
         }
@@ -294,12 +306,15 @@ class FeeServiceHallApi {
                 val request = buildBaseRequest(PROFILE_URL)
                     .post(bodyJson.toRequestBody(jsonMediaType))
                     .build()
+                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
+                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 gson.parseApiResponse<UserProfileResponse>(body).map { it.data ?: UserProfile(null, null, null) }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
+                HttpDiagnostics.logFailure("FeeServiceHallApi", PROFILE_URL, e)
                 Result.failure(e)
             }
         }
@@ -316,7 +331,9 @@ class FeeServiceHallApi {
                 val request = buildBaseRequest("$CLOSE_ORDER_URL/$orderId")
                     .post("".toRequestBody(jsonMediaType))
                     .build()
+                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
+                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 val base = gson.fromJson(body, ApiBaseResponse::class.java)
                 if (base.messageCode == "0") {
@@ -327,6 +344,7 @@ class FeeServiceHallApi {
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
+                HttpDiagnostics.logFailure("FeeServiceHallApi", "$CLOSE_ORDER_URL/$orderId", e)
                 Result.failure(e)
             }
         }

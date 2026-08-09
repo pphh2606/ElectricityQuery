@@ -27,9 +27,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
@@ -49,6 +52,8 @@ fun SettingsScreen(
 ) {
     val nav = LocalNavController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val context = LocalContext.current
+    val settingsPrefs = remember { SettingsPreferences(context) }
 
     Scaffold(
         topBar = {

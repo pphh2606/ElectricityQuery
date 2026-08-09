@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.network
 
 import java.net.URI
 import javax.crypto.Cipher
@@ -21,7 +21,7 @@ import javax.crypto.spec.SecretKeySpec
  */
 object WebVpnEncoder {
 
-    private const val PROXY_BASE = "https://clientvpn.cqwu.edu.cn"
+    const val PROXY_BASE = "https://clientvpn.cqwu.edu.cn"
     private val KEY_IV = "CASB2021EnLink!!".toByteArray(Charsets.UTF_8) // 16 bytes
 
     /**

@@ -6,8 +6,10 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import edu.cqwu.electricity.login.data.CookieStore
+import edu.cqwu.electricity.network.WebVpnSettings
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import edu.cqwu.electricity.feedback.util.CrashHandler
+import edu.cqwu.electricity.settings.data.SettingsPreferences
 
 /**
  * 自定义 Application，配置 Coil ImageLoader
@@ -20,6 +22,7 @@ class ElectricityApp : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+        WebVpnSettings.enabled = SettingsPreferences(this).isWebVpnEnabled()
         // 崩溃捕获必须在最前面注册，确保第三方 SDK 初始化前就已就绪
         CrashHandler.init(this)
         instance = this

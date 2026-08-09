@@ -66,7 +66,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.login.data.AccountManager
-import edu.cqwu.electricity.login.data.WebVpnEncoder
+import edu.cqwu.electricity.network.WebVpnEncoder
 import edu.cqwu.electricity.theme.ui.OpenUrlDialog
 import edu.cqwu.electricity.login.ui.AccountManagerSheet
 

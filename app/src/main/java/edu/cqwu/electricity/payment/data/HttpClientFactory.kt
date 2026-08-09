@@ -4,6 +4,8 @@ import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
 import edu.cqwu.electricity.login.data.UserAgentInterceptor
 import edu.cqwu.electricity.login.data.UserAwareCookieJar
+import edu.cqwu.electricity.network.HttpDiagnostics
+import edu.cqwu.electricity.network.WebVpnInterceptor
 import okhttp3.CookieJar
 import okhttp3.Dns
 import okhttp3.OkHttpClient
@@ -81,6 +83,18 @@ object HttpClientFactory {
     }
 
     /**
+     * 不带 WebVPN 拦截器的无重定向客户端，供 WebVPN 自动登录流程使用，
+     * 避免自动登录请求再次触发 WebVpnInterceptor 造成递归。
+     */
+    fun createNoRedirectWithoutWebVpn(cookieJar: CookieJar? = null): OkHttpClient {
+        return buildClient(
+            cookieJar = cookieJar,
+            followRedirects = false,
+            includeWebVpn = false,
+        )
+    }
+
+    /**
      * 自定义超时时间的客户端。
      *
      * 用于特殊场景（如 HTML 版账单查询需要 30 秒超时）。
@@ -128,6 +142,7 @@ object HttpClientFactory {
         connectTimeout: Long = DEFAULT_TIMEOUT_SECONDS,
         readTimeout: Long = DEFAULT_TIMEOUT_SECONDS,
         writeTimeout: Long = DEFAULT_TIMEOUT_SECONDS,
+        includeWebVpn: Boolean = true,
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
             .connectTimeout(connectTimeout, TimeUnit.SECONDS)
@@ -135,8 +150,15 @@ object HttpClientFactory {
             .writeTimeout(writeTimeout, TimeUnit.SECONDS)
             .dns(PreferIPv4Dns)
             .addInterceptor(UserAgentInterceptor)
+            .eventListener(HttpDiagnostics.eventListener)
             .followRedirects(followRedirects)
             .followSslRedirects(followRedirects)
+
+        if (includeWebVpn) {
+            val webVpnInterceptor = WebVpnInterceptor(cookieJar)
+            builder.addInterceptor(webVpnInterceptor)
+            builder.addNetworkInterceptor(webVpnInterceptor)
+        }
 
         if (cookieJar != null) {
             builder.cookieJar(cookieJar)

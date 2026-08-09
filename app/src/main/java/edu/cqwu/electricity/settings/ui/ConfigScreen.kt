@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Smartphone
+import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.settings.data.AppLanguage
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.theme.ui.LanguageSwitchSheet
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
@@ -52,6 +54,7 @@ fun ConfigScreen(
     onBack: () -> Unit,
     onNavigateToUserAgent: () -> Unit,
     onNavigateToStorageClear: () -> Unit = {},
+    onNavigateToWebVpn: () -> Unit,
 ) {
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val context = LocalContext.current
@@ -88,6 +91,14 @@ fun ConfigScreen(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 Column {
+                    // ── WebVPN 设置 ──
+                    ConfigEntry(
+                        icon = Icons.Outlined.VpnKey,
+                        title = stringResource(R.string.webvpn_settings_title),
+                        subtitle = stringResource(R.string.webvpn_settings_desc),
+                        onClick = onNavigateToWebVpn,
+                    )
+
                     // ── 浏览器标识 ──
                     ConfigEntry(
                         icon = Icons.Outlined.Smartphone,
@@ -100,7 +111,11 @@ fun ConfigScreen(
                     ConfigEntry(
                         icon = Icons.Outlined.Language,
                         title = stringResource(R.string.language_title),
-                        subtitle = currentLanguage.displayName,
+                        subtitle = if (currentLanguage == AppLanguage.SYSTEM) {
+                            stringResource(R.string.language_system)
+                        } else {
+                            currentLanguage.displayName
+                        },
                         onClick = { showLanguageSheet = true },
                     )
 
