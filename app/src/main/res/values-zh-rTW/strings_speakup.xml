@@ -3,7 +3,6 @@
     <string name="speakup_title">有話要說</string>
     <string name="speakup_publish">發布留言</string>
     <string name="speakup_browse">留言瀏覽</string>
-    <string name="speakup_browse_not_ready">留言瀏覽功能開發中</string>
     <string name="speakup_messages_title">留言瀏覽</string>
     <string name="speakup_detail_title">留言詳情</string>
     <string name="speakup_no_messages">暫無留言</string>
@@ -14,7 +13,6 @@
     <string name="speakup_problem_solved">是否已解決您所提的問題：</string>
     <string name="speakup_score">評分：</string>
     <string name="speakup_score_unit">分</string>
-    <string name="speakup_unknown_error">未知錯誤</string>
     <string name="speakup_message_label">留言</string>
     <string name="speakup_reply_label">答覆</string>
 </resources>

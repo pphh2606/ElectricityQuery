@@ -3,14 +3,12 @@ package edu.cqwu.electricity.profile.data
 import android.util.Log
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.profile.data.StudentInfo
-import edu.cqwu.electricity.profile.data.StudentInfoResponse
-import edu.cqwu.electricity.login.data.CookieStore
-import edu.cqwu.electricity.payment.data.HttpClientFactory
-import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.AccountManager
+import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.ServiceLoginManager
+import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

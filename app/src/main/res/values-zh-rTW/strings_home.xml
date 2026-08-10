@@ -6,7 +6,9 @@
     <string name="home_title">首頁</string>
     <string name="home_search_apps">搜尋應用程式…</string>
     <string name="home_no_match">找不到符合的應用程式</string>
-    <string name="home_search_result">搜尋結果（共 %1$d 個）</string>
+    <plurals name="home_search_result">
+        <item quantity="other">搜尋結果（共 %1$d 個）</item>
+    </plurals>
     <string name="home_my_services">我的服務</string>
     <string name="home_custom_website">自訂網站</string>
     <string name="home_external_app_title">開啟外部應用程式</string>

@@ -4,9 +4,13 @@
     <!--  通知公告                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="notice_title">通知公告</string>
-    <string name="notice_total_count">共 %1$d 条通知</string>
+    <plurals name="notice_total_count">
+        <item quantity="other">共 %1$d 条通知</item>
+    </plurals>
     <string name="notice_search_hint">搜索通知公告</string>
-    <string name="notice_search_result">搜索 \"%1$s\" 共 %2$d 条结果</string>
+    <plurals name="notice_search_result">
+        <item quantity="other">搜索 \"%1$s\" 共 %2$d 条结果</item>
+    </plurals>
     <string name="notice_detail_title">通知详情</string>
     <string name="notice_loading_detail">正在加载详情…</string>
     <string name="notice_publisher">发布单位</string>

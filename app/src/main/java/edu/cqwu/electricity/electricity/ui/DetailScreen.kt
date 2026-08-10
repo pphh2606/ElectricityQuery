@@ -55,8 +55,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.electricity.data.HourDataRecord
@@ -111,6 +113,7 @@ fun DetailScreen(
     var showMenu by remember { mutableStateOf(false) }
     val snackbar = LocalSnackbarController.current
     val context = LocalContext.current
+    val resources = LocalResources.current
 
     // 2.3: 使用 rememberSaveable 持久化配置变更
     var pendingExportText by rememberSaveable { mutableStateOf("") }
@@ -123,9 +126,9 @@ fun DetailScreen(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
+                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -453,11 +456,11 @@ private fun UsageRecordCard(record: UsageRecord) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.detail_power_consumption, String.format("%.2f", record.consumeTotal)),
+                    text = stringResource(R.string.detail_power_consumption, String.format(Locale.US, "%.2f", record.consumeTotal)),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = stringResource(R.string.detail_cost, String.format("%.2f", record.costTotal)),
+                    text = stringResource(R.string.detail_cost, String.format(Locale.US, "%.2f", record.costTotal)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -488,7 +491,7 @@ private fun HourDataCard(record: HourDataRecord) {
         },
         supportingContent = {
             Text(
-                text = stringResource(R.string.detail_total_consumption, String.format("%.2f", record.dataTotal)),
+                text = stringResource(R.string.detail_total_consumption, String.format(Locale.US, "%.2f", record.dataTotal)),
                 style = MaterialTheme.typography.bodySmall
             )
         },
@@ -539,7 +542,7 @@ private fun MeterGroupCard(groupName: String, items: List<MeterDataItem>, unit: 
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "${String.format("%.3f", item.display)} $unit",
+                    text = "${String.format(Locale.US, "%.3f", item.display)} $unit",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -578,7 +581,7 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
                 appendLine("-".repeat(40))
                 records?.forEach { record ->
                     appendLine(
-                        String.format("%-20s %-10.2f %-10.2f",
+                        String.format(Locale.US, "%-20s %-10.2f %-10.2f",
                             record.costTime,
                             record.consumeTotal,
                             record.costTotal)
@@ -591,7 +594,7 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
                 appendLine("-".repeat(30))
                 detailState.currentData?.hourDataObj?.forEach { record ->
                     appendLine(
-                        String.format("%-20s %-10.2f",
+                        String.format(Locale.US, "%-20s %-10.2f",
                             record.dataTime,
                             record.dataTotal)
                     )
@@ -626,7 +629,7 @@ private fun StringBuilder.appendMeterStatusText(detailState: DetailState) {
     if (!currentItems.isNullOrEmpty()) {
         appendLine("\n【电流】")
         currentItems.forEach { item ->
-            appendLine(String.format("  %s: %.3f A", item.name, item.display))
+            appendLine(String.format(Locale.US, "  %s: %.3f A", item.name, item.display))
         }
     }
 
@@ -635,7 +638,7 @@ private fun StringBuilder.appendMeterStatusText(detailState: DetailState) {
     if (!voltageItems.isNullOrEmpty()) {
         appendLine("\n【电压】")
         voltageItems.forEach { item ->
-            appendLine(String.format("  %s: %.3f V", item.name, item.display))
+            appendLine(String.format(Locale.US, "  %s: %.3f V", item.name, item.display))
         }
     }
 

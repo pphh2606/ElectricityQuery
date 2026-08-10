@@ -5,9 +5,6 @@ package edu.cqwu.electricity.electricity.ui
 // 剪贴板与文件导出
 
 // 提示弹窗
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -60,7 +57,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -69,11 +68,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.SnackbarController
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -111,6 +110,7 @@ fun RechargeRecordScreen(
     val snackbar = LocalSnackbarController.current
 
     val context = LocalContext.current
+    val resources = LocalResources.current
 
     // 文件导出启动器
     var pendingExportText by remember { mutableStateOf("") }
@@ -123,9 +123,9 @@ fun RechargeRecordScreen(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
+                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -195,7 +195,7 @@ fun RechargeRecordScreen(
                                 onClick = {
                                     showMenu = false
                                     val text = getRechargeRecordTextContent(recordState)
-                                    copyToClipboard(context, text, context.getString(R.string.recharge_record_export_title), snackbar)
+                                    copyToClipboard(context, text, resources.getString(R.string.recharge_record_export_title), snackbar)
                                 }
                             )
                             DropdownMenuItem(
@@ -204,7 +204,7 @@ fun RechargeRecordScreen(
                                 onClick = {
                                     showMenu = false
                                     pendingExportText = getRechargeRecordTextContent(recordState)
-                                    pendingExportLabel = context.getString(R.string.recharge_record_export_title)
+                                    pendingExportLabel = resources.getString(R.string.recharge_record_export_title)
                                     saveFileLauncher.launch("electricity_recharge_record.txt")
                                 }
                             )
@@ -309,7 +309,7 @@ fun RechargeRecordScreen(
                             // 合计（移到最上方）
                             item {
                                 Text(
-                                    text = stringResource(R.string.recharge_record_total, String.format("%.2f", total), reversedList.size),
+ text = pluralStringResource(R.plurals.recharge_record_total, reversedList.size, String.format(Locale.US, "%.2f", total)),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
@@ -413,7 +413,7 @@ private fun RechargeRecordCard(record: BuyRecord) {
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = stringResource(R.string.recharge_record_amount, String.format("%.2f", record.buyTotal)),
+            text = stringResource(R.string.recharge_record_amount, String.format(Locale.US, "%.2f", record.buyTotal)),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error
         )
@@ -440,13 +440,13 @@ private fun getRechargeRecordTextContent(recordState: RechargeRecordState): Stri
         val reversedList = recordState.list.reversed()
         val total = reversedList.sumOf { it.buyTotal }
         // 合计放到最前面
-        sb.appendLine("合计充值：${String.format("%.2f", total)} 元（共${reversedList.size} 笔）")
+        sb.appendLine("合计充值：${String.format(Locale.US, "%.2f", total)} 元（共${reversedList.size} 笔）")
         sb.appendLine("-".repeat(40))
         // 记录倒序输出
         reversedList.forEach { record ->
             sb.appendLine("充值人名：${record.userName}")
             sb.appendLine("充值时间：${record.buyTime}")
-            sb.appendLine("充值金额：${String.format("%.2f", record.buyTotal)} 元")
+            sb.appendLine("充值金额：${String.format(Locale.US, "%.2f", record.buyTotal)} 元")
             sb.appendLine("订单号：${record.orderNum}")
             sb.appendLine("-".repeat(40))
         }

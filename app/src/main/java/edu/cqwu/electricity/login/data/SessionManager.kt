@@ -1,8 +1,6 @@
 package edu.cqwu.electricity.login.data
 
 import android.util.Log
-import edu.cqwu.electricity.login.data.UserAwareCookieJar
-import edu.cqwu.electricity.login.data.UserCookieStore
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -90,7 +88,7 @@ object SessionManager {
 
             Log.d("SessionManager", "Cookie 有效！学号=$username, 实名=$realName")
 
-            SessionValidationResult.Valid(CasUserInfo(username = username, realName = realName))
+            SessionValidationResult.Valid
         } catch (e: SocketTimeoutException) {
             Log.w("SessionManager", "验证 Cookie 网络超时", e)
             SessionValidationResult.NetworkError("网络超时，请检查网络连接")

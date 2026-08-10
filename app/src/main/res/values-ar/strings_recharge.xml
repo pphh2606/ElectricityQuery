@@ -40,7 +40,14 @@
     <string name="recharge_record_time_range">الفترة الزمنية:</string>
     <string name="recharge_record_copy">نسخ</string>
     <string name="recharge_record_export">تصدير</string>
-    <string name="recharge_record_total">إجمالي الشحن: %1$s ¥ (%2$d عملية)</string>
+    <plurals name="recharge_record_total">
+        <item quantity="one">إجمالي الشحن: %1$s ¥ (%2$d عملية)</item>
+        <item quantity="other">إجمالي الشحن: %1$s ¥ (%2$d عملية)</item>
+        <item quantity="zero">إجمالي الشحن: %1$s ¥ (%2$d عملية)</item>
+        <item quantity="two">إجمالي الشحن: %1$s ¥ (%2$d عملية)</item>
+        <item quantity="few">إجمالي الشحن: %1$s ¥ (%2$d عملية)</item>
+        <item quantity="many">إجمالي الشحن: %1$s ¥ (%2$d عملية)</item>
+    </plurals>
     <string name="recharge_record_no_data">لا توجد سجلات</string>
     <string name="recharge_record_recharger">الشاحن: %1$s</string>
     <string name="recharge_record_time">وقت الشحن: %1$s</string>
@@ -72,7 +79,6 @@
     <string name="payment_continue">متابعة الدفع</string>
     <string name="payment_processing">جارٍ معالجة الدفع…</string>
     <string name="payment_order_failed">فشل إنشاء الطلب</string>
-    <string name="payment_close">إغلاق</string>
     <string name="payment_success">تم الدفع بنجاح!</string>
     <string name="payment_done">تم</string>
 
@@ -81,19 +87,12 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="error_enter_student_id">يرجى إدخال الرقم الجامعي</string>
     <string name="error_no_room">لم يتم اختيار غرفة</string>
-    <string name="error_invalid_amount">يرجى إدخال مبلغ صحيح</string>
-    <string name="error_amount_exceeded_recharge">المبلغ يتجاوز النطاق المسموح (0-1000¥)</string>
-    <string name="error_amount_exceeded_card">المبلغ يتجاوز الحد الأقصى للرصيد (%1$.0f¥)</string>
     <string name="error_parse_order_failed">فشل في تحليل معلومات الطلب: %1$s</string>
     <string name="error_create_order_failed">فشل في إنشاء الطلب: %1$s</string>
     <string name="error_no_rooms_bound">لا توجد غرف مرتبطة بهذا الحساب</string>
     <string name="error_query_failed">فشل الاستعلام</string>
     <string name="error_query_failed_detail">فشل الاستعلام: %1$s</string>
     <string name="error_query_record_failed">فشل في استعلام سجلات الشحن</string>
-    <string name="error_login_expired">انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.</string>
-    <string name="error_fetch_bill_failed">فشل في جلب الفاتورة</string>
-    <string name="error_fetch_account_failed">فشل في جلب معلومات الحساب</string>
-    <string name="error_load_failed">فشل التحميل</string>
     <string name="error_submit_payment_failed">فشل في إرسال الدفع: %1$s</string>
     <string name="error_order_closed">تم إغلاق الطلب</string>
     <string name="error_query_timeout">انتهت مهلة الاستعلام. يرجى التحقق من حالة الطلب لاحقاً.</string>
@@ -101,11 +100,4 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  تصدير السجلات                              -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="record_export_title">سجل الشحن</string>
-    <string name="record_export_empty">لا توجد سجلات شحن</string>
-    <string name="record_export_total">إجمالي الشحن: %1$s ¥ (%2$d عملية)</string>
-    <string name="record_export_name">الاسم: %1$s</string>
-    <string name="record_export_time">الوقت: %1$s</string>
-    <string name="record_export_amount">المبلغ: %1$s ¥</string>
-    <string name="record_export_order_no">رقم الطلب: %1$s</string>
 </resources>

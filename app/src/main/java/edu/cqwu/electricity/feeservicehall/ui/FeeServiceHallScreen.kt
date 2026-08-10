@@ -60,7 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -104,7 +104,7 @@ fun FeeServiceHallScreen(
     viewModel: FeeServiceHallViewModel = viewModel(),
     initialTab: Int = 0,
 ) {
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(initialPage = initialTab, pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
@@ -118,12 +118,12 @@ fun FeeServiceHallScreen(
     LaunchedEffect(uiState.closeOrderResult) {
         when (val result = uiState.closeOrderResult) {
             is CloseOrderResult.Success -> {
-                snackbar.show(context.getString(R.string.fee_order_close_success), ToastUtils.Type.SUCCESS)
+                snackbar.show(resources.getString(R.string.fee_order_close_success), ToastUtils.Type.SUCCESS)
                 selectedOrder = null
                 viewModel.consumeCloseOrderResult()
             }
             is CloseOrderResult.Error -> {
-                snackbar.show(context.getString(R.string.fee_order_close_failed, result.message), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.fee_order_close_failed, result.message), ToastUtils.Type.ERROR)
                 viewModel.consumeCloseOrderResult()
             }
             null -> {}
@@ -146,7 +146,7 @@ fun FeeServiceHallScreen(
                 order = order,
                 onContinuePayment = if (order.isPendingPayment && order.projectId != null) ({
                     val url = FeeServiceHallApi.buildContinuePaymentUrl(order.id, order.projectId!!)
-                    onNavigateToWebView(url, context.getString(R.string.fee_order_continue_pay))
+                    onNavigateToWebView(url, resources.getString(R.string.fee_order_continue_pay))
                     selectedOrder = null
                 }) else null,
                 onCloseOrder = if (order.isPendingPayment) ({
@@ -177,7 +177,7 @@ fun FeeServiceHallScreen(
                         }
                     }
                     IconButton(onClick = {
-                        onNavigateToWebView(ORIGINAL_WEB_URL, context.getString(R.string.fee_hall_title))
+                        onNavigateToWebView(ORIGINAL_WEB_URL, resources.getString(R.string.fee_hall_title))
                     }) {
                         Icon(Icons.Outlined.OpenInBrowser, contentDescription = stringResource(R.string.common_open_original_page))
                     }

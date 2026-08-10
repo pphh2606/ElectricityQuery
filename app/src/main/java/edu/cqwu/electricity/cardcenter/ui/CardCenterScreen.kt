@@ -44,7 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -125,9 +125,8 @@ fun CardCenterScreen(
             ) {
                 // 功能网格：3 列 × 2 行
                 item(key = "grid") {
-                    val ctx = LocalContext.current
+                    val resources = LocalResources.current
                     CardGrid(
-                        items = cardCenterItems,
                         onItemClick = { item ->
                             when (item.action) {
                                 CardAction.ACCOUNT_INFO -> nav.navigate(Routes.ACCOUNT_INFO)
@@ -136,7 +135,7 @@ fun CardCenterScreen(
                                 CardAction.CARD_LOST -> nav.navigate(Routes.CARD_LOST)
                                 CardAction.BILL -> nav.navigate(Routes.BILL)
                                 CardAction.CARD_RECHARGE -> onNavigateToCardRecharge()
-                                is CardAction.WEB_VIEW -> nav.navigate(Routes.unifiedWebViewRoute(item.action.url, ctx.getString(item.labelRes)))
+                                is CardAction.WEB_VIEW -> nav.navigate(Routes.unifiedWebViewRoute(item.action.url, resources.getString(item.labelRes)))
                             }
                         }
                     )
@@ -220,19 +219,17 @@ private val cardCenterItems = listOf(
  * 功能网格容器
  * 使用 Column + Row 手动分 3 列，避免嵌套 LazyVerticalGrid 的无限高度约束问题
  *
- * @param items 功能项列表
  * @param onItemClick 点击回调
  */
 @Composable
 private fun CardGrid(
-    items: List<CardGridItem>,
     onItemClick: (CardGridItem) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items.chunked(3).forEach { rowItems ->
+        cardCenterItems.chunked(3).forEach { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)

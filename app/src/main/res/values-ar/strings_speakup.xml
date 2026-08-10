@@ -3,7 +3,6 @@
     <string name="speakup_title">قول رأيك</string>
     <string name="speakup_publish">نشر رسالة</string>
     <string name="speakup_browse">عرض الرسائل</string>
-    <string name="speakup_browse_not_ready">عرض الرسائل قيد التطوير</string>
     <string name="speakup_messages_title">الرسائل</string>
     <string name="speakup_detail_title">تفاصيل الرسالة</string>
     <string name="speakup_no_messages">لا توجد رسائل</string>
@@ -14,7 +13,6 @@
     <string name="speakup_problem_solved">هل تم حل المشكلة:</string>
     <string name="speakup_score">التقييم:</string>
     <string name="speakup_score_unit">نقطة</string>
-    <string name="speakup_unknown_error">خطأ غير معروف</string>
     <string name="speakup_message_label">رسالة</string>
     <string name="speakup_reply_label">رد</string>
 </resources>

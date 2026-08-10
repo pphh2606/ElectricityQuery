@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
@@ -35,13 +36,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.PageTransition
-import edu.cqwu.electricity.settings.data.ReduceMotion
-import edu.cqwu.electricity.electricity.data.DetailType
-import edu.cqwu.electricity.qrcode.data.QrCodeType
-import edu.cqwu.electricity.login.data.SessionValidationResult
-import edu.cqwu.electricity.login.data.UserCookieStore
-import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.cardcenter.ui.AccountInfoScreen
 import edu.cqwu.electricity.cardcenter.ui.BillScreen
 import edu.cqwu.electricity.cardcenter.ui.BillViewModel
@@ -50,26 +44,31 @@ import edu.cqwu.electricity.cardcenter.ui.CardLostScreen
 import edu.cqwu.electricity.cardcenter.ui.CardPaymentScreen
 import edu.cqwu.electricity.cardcenter.ui.CardRechargeScreen
 import edu.cqwu.electricity.cardcenter.ui.CardRechargeViewModel
-import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.electricity.ui.DetailScreen
 import edu.cqwu.electricity.electricity.ui.DetailViewModel
 import edu.cqwu.electricity.electricity.ui.ElectricityMainScreen
 import edu.cqwu.electricity.electricity.ui.ElectricityViewModel
+import edu.cqwu.electricity.electricity.ui.MyRoomViewModel
+import edu.cqwu.electricity.electricity.ui.PaymentSelectionScreen
+import edu.cqwu.electricity.electricity.ui.RechargeRecordScreen
+import edu.cqwu.electricity.electricity.ui.RechargeViewModel
 import edu.cqwu.electricity.feedback.ui.FeedbackScreen
 import edu.cqwu.electricity.feeservicehall.ui.FeeServiceHallScreen
+import edu.cqwu.electricity.login.data.SessionManager
+import edu.cqwu.electricity.login.data.SessionValidationResult
+import edu.cqwu.electricity.login.data.UserCookieStore
 import edu.cqwu.electricity.login.ui.LoginScreen
 import edu.cqwu.electricity.login.ui.QrLoginScreen
-import edu.cqwu.electricity.electricity.ui.MyRoomViewModel
 import edu.cqwu.electricity.notice.ui.NoticeDetailScreen
 import edu.cqwu.electricity.notice.ui.NoticeScreen
 import edu.cqwu.electricity.notice.ui.NoticeViewModel
 import edu.cqwu.electricity.profile.ui.MyInfoScreen
+import edu.cqwu.electricity.qrcode.data.QrCodeType
 import edu.cqwu.electricity.qrcode.ui.QrCodeDisplayScreen
-import edu.cqwu.electricity.electricity.ui.PaymentSelectionScreen
-import edu.cqwu.electricity.electricity.ui.RechargeRecordScreen
-import edu.cqwu.electricity.electricity.ui.RechargeScreen
-import edu.cqwu.electricity.electricity.ui.RechargeViewModel
 import edu.cqwu.electricity.scan.ui.ScanScreen
+import edu.cqwu.electricity.settings.data.PageTransition
+import edu.cqwu.electricity.settings.data.ReduceMotion
 import edu.cqwu.electricity.settings.ui.AboutScreen
 import edu.cqwu.electricity.settings.ui.ConfigScreen
 import edu.cqwu.electricity.settings.ui.PersonalizationScreen
@@ -87,9 +86,10 @@ import edu.cqwu.electricity.theme.ui.AnimationSettings
 import edu.cqwu.electricity.theme.ui.LocalAnimationSettings
 import edu.cqwu.electricity.theme.ui.LocalColorSourceState
 import edu.cqwu.electricity.theme.ui.LocalNightModeState
+import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.webview.ui.UnifiedWebViewScreen
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.webview.ui.UnifiedWebViewScreen
 
 /**
  * 路由定义
@@ -323,7 +323,7 @@ fun AppNavGraph(
     shortcutLaunchId: Int = 0,
     modifier: Modifier = Modifier,
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val resources = LocalResources.current
     val viewModel: ElectricityViewModel = viewModel()
     val rechargeViewModel: RechargeViewModel = viewModel()
     val cardRechargeViewModel: CardRechargeViewModel = viewModel()
@@ -732,7 +732,7 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() },
                 onOpenUrl = { url ->
                     navController.popBackStack()
-                    navController.navigate(Routes.unifiedWebViewRoute(url, context.getString(R.string.scan_title)))
+                    navController.navigate(Routes.unifiedWebViewRoute(url, resources.getString(R.string.scan_title)))
                 },
             )
         }

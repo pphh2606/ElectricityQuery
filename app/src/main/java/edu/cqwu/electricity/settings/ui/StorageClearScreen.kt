@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -87,6 +88,7 @@ fun StorageClearScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val snackbar = LocalSnackbarController.current
     val scope = rememberCoroutineScope()
@@ -196,7 +198,7 @@ fun StorageClearScreen(
 
     fun getSelectedNames(): List<String> {
         return items.filter { checked[it.key] == true }
-            .map { context.getString(it.titleRes) }
+            .map { resources.getString(it.titleRes) }
     }
 
     fun hasCautionSelected(): Boolean {
@@ -216,7 +218,7 @@ fun StorageClearScreen(
                 }
                 sizes.clear()
                 sizes.putAll(result)
-                snackbar.show(context.getString(R.string.storage_clear_success), ToastUtils.Type.SUCCESS)
+                snackbar.show(resources.getString(R.string.storage_clear_success), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
                 snackbar.show("清除失败: ${e.message}", ToastUtils.Type.ERROR)
             } finally {
@@ -347,7 +349,7 @@ fun StorageClearScreen(
                     onClick = {
                         if (!hasSelection) {
                             snackbar.show(
-                                context.getString(R.string.storage_clear_nothing_selected),
+                                resources.getString(R.string.storage_clear_nothing_selected),
                                 ToastUtils.Type.ERROR,
                             )
                             return@Button

@@ -40,7 +40,9 @@
     <string name="recharge_record_time_range">照会期間：</string>
     <string name="recharge_record_copy">コピー</string>
     <string name="recharge_record_export">エクスポート</string>
-    <string name="recharge_record_total">合計チャージ：%1$s 元（全 %2$d 件）</string>
+    <plurals name="recharge_record_total">
+        <item quantity="other">合計チャージ：%1$s 元（全 %2$d 件）</item>
+    </plurals>
     <string name="recharge_record_no_data">記録が見つかりません</string>
     <string name="recharge_record_recharger">チャージ者：%1$s</string>
     <string name="recharge_record_time">チャージ日時：%1$s</string>
@@ -72,7 +74,6 @@
     <string name="payment_continue">支払い続ける</string>
     <string name="payment_processing">支払い処理中…</string>
     <string name="payment_order_failed">注文作成失敗</string>
-    <string name="payment_close">支払いを閉じる</string>
     <string name="payment_success">支払い成功！</string>
     <string name="payment_done">完了</string>
 
@@ -81,19 +82,12 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="error_enter_student_id">学籍番号を入力してください</string>
     <string name="error_no_room">ルームが選択されていません</string>
-    <string name="error_invalid_amount">有効な金額を入力してください</string>
-    <string name="error_amount_exceeded_recharge">金額が許容範囲を超えています（0～1000元）</string>
-    <string name="error_amount_exceeded_card">金額が残高上限を超えています（%1$.0f元）</string>
     <string name="error_parse_order_failed">注文情報の解析に失敗しました：%1$s</string>
     <string name="error_create_order_failed">注文の作成に失敗しました：%1$s</string>
     <string name="error_no_rooms_bound">このアカウントに紐付いたルームがありません</string>
     <string name="error_query_failed">照会に失敗しました</string>
     <string name="error_query_failed_detail">照会に失敗しました：%1$s</string>
     <string name="error_query_record_failed">チャージ記録の照会に失敗しました</string>
-    <string name="error_login_expired">セッションが期限切れです。再度ログインしてください。</string>
-    <string name="error_fetch_bill_failed">請求書の取得に失敗しました</string>
-    <string name="error_fetch_account_failed">アカウント情報の取得に失敗しました</string>
-    <string name="error_load_failed">読み込みに失敗しました</string>
     <string name="error_submit_payment_failed">支払いの送信に失敗しました：%1$s</string>
     <string name="error_order_closed">注文は既に閉じられています</string>
     <string name="error_query_timeout">照会がタイムアウトしました。後ほど注文状態をご確認ください。</string>
@@ -101,11 +95,4 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  記録エクスポート                           -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="record_export_title">チャージ記録を照会</string>
-    <string name="record_export_empty">チャージ記録が見つかりません</string>
-    <string name="record_export_total">合計チャージ：%1$s 元（全%2$d件）</string>
-    <string name="record_export_name">名義人：%1$s</string>
-    <string name="record_export_time">チャージ日時：%1$s</string>
-    <string name="record_export_amount">チャージ金額：%1$s 元</string>
-    <string name="record_export_order_no">注文番号：%1$s</string>
 </resources>

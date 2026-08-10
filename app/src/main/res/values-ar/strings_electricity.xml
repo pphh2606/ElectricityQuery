@@ -58,7 +58,14 @@
     <string name="building_no_rooms">لا توجد غرف</string>
     <string name="building_reload">إعادة تحميل</string>
     <string name="building_no_buildings">لا توجد مبانٍ في هذا الحرم</string>
-    <string name="building_rooms_count">%1$d غرفة</string>
+    <plurals name="building_rooms_count">
+        <item quantity="one">%1$d غرفة</item>
+        <item quantity="other">%1$d غرفة</item>
+        <item quantity="zero">%1$d غرفة</item>
+        <item quantity="two">%1$d غرفة</item>
+        <item quantity="few">%1$d غرفة</item>
+        <item quantity="many">%1$d غرفة</item>
+    </plurals>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  استعلام الكهرباء                           -->

@@ -2,8 +2,6 @@ package edu.cqwu.electricity.login.data
 
 import android.util.Log
 import edu.cqwu.electricity.payment.data.HttpClientFactory
-import edu.cqwu.electricity.login.data.UserAwareCookieJar
-import edu.cqwu.electricity.login.data.UserCookieStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -52,7 +50,7 @@ class CasAuthApi {
             followRedirects = true,
         )
 
-        return performLogin(username, password, tempClient, tag = "(user)") { url ->
+        return performLogin(username, password, tempClient) { url ->
             tempStore.getCookie(url) ?: ""
         }.also { result ->
             // 登录成功时，将临时存储附加到结果中供调用方提交
@@ -66,7 +64,6 @@ class CasAuthApi {
      * @param username    学号
      * @param password    密码
      * @param client      用于 HTTP 请求的 OkHttpClient
-     * @param tag         日志标签后缀
      * @param cookieProvider 从指定 URL 获取 Cookie 字符串的函数
      * @return Result<LoginResult>
      */
@@ -74,12 +71,11 @@ class CasAuthApi {
         username: String,
         password: String,
         client: OkHttpClient,
-        tag: String,
         cookieProvider: (String) -> String
     ): Result<LoginResult> = withContext(Dispatchers.IO) {
         try {
             val t0 = System.currentTimeMillis()
-            Log.d("CasAuthApi", "开始CAS登录$tag: GET $LOGIN_URL")
+            Log.d("CasAuthApi", "开始CAS登录(user): GET $LOGIN_URL")
 
             val outcome = CasLoginFlow.login(
                 client = client,
@@ -91,19 +87,18 @@ class CasAuthApi {
                 existingHtml = null,
             )
 
-            val t4 = System.currentTimeMillis()
-            Log.d("CasAuthApi", "登录POST响应$tag: code=${outcome.responseCode}, location=${outcome.location}")
+            Log.d("CasAuthApi", "登录POST响应(user): code=${outcome.responseCode}, location=${outcome.location}")
 
             val cookieString = cookieProvider(LOGIN_URL)
             val castgc = CookieParser.getValue(cookieString, "CASTGC")
 
             if (castgc == null) {
-                Log.e("CasAuthApi", "未获取到 CASTGC$tag, 共有${cookieString.split(";").size}个Cookie")
+                Log.e("CasAuthApi", "未获取到 CASTGC(user), 共有${cookieString.split(";").size}个Cookie")
                 throw RuntimeException("登录失败：未能获取到 CASTGC Cookie，请检查账号或密码")
             }
 
             val t5 = System.currentTimeMillis()
-            Log.d("CasAuthApi", "登录总耗时$tag: ${t5 - t0}ms, CASTGC=$castgc")
+            Log.d("CasAuthApi", "登录总耗时(user): ${t5 - t0}ms, CASTGC=$castgc")
 
             Result.success(LoginResult(
                 username = username,
@@ -112,10 +107,10 @@ class CasAuthApi {
         } catch (e: CancellationException) {
             throw e
         } catch (e: SocketTimeoutException) {
-            Log.e("CasAuthApi", "登录失败$tag", e)
+            Log.e("CasAuthApi", "登录失败(user)", e)
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("CasAuthApi", "登录失败$tag", e)
+            Log.e("CasAuthApi", "登录失败(user)", e)
             Result.failure(e)
         }
     }

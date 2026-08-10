@@ -5,7 +5,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="feedback_title">フィードバック</string>
     <string name="feedback_attach_log">アプリログを添付（クラッシュ記録を含む）</string>
-    <string name="feedback_crash_count">%1$d 件の過去クラッシュ記録があります。送信時に自動添付されます</string>
+    <plurals name="feedback_crash_count">
+        <item quantity="other">%1$d 件の過去クラッシュ記録があります。送信時に自動添付されます</item>
+    </plurals>
     <string name="feedback_log_preview">ログプレビュー</string>
     <string name="feedback_title_label">タイトル（任意）</string>
     <string name="feedback_content_label">フィードバック内容</string>

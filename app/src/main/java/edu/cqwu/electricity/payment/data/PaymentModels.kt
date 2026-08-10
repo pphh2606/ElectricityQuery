@@ -1,7 +1,5 @@
 package edu.cqwu.electricity.payment.data
 
-import com.google.gson.annotations.SerializedName
-
 // ==================== 支付相关模型 ====================
 
 /**

@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.theme.ui
 
 import android.os.Build
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -156,7 +156,7 @@ fun 电费查询Theme(
 
     // 根据 darkTheme 动态更新系统状态栏和导航栏图标颜色
     val view = LocalView.current
-    val window = (LocalContext.current as? ComponentActivity)?.window
+    val window = LocalActivity.current?.window
     SideEffect {
         window?.let {
             val controller = WindowInsetsControllerCompat(it, view)

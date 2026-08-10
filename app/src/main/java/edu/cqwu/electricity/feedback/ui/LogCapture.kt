@@ -74,7 +74,7 @@ object LogCapture {
             val process = ProcessBuilder(*command)
                 .redirectErrorStream(true)
                 .start()
-            if (!process.waitForSafe(LOG_TIMEOUT_MS)) {
+            if (!process.waitForSafe()) {
                 process.destroy()
                 return ""
             }
@@ -130,19 +130,18 @@ object LogCapture {
      * - API 26+：使用 [java.lang.Process.waitFor] 原生超时支持
      * - API < 26：以 100ms 间隔轮询 [java.lang.Process.exitValue]，超时返回 false
      *
-     * @param timeoutMs 超时毫秒数
      * @return true 进程已退出，false 超时
      */
-    private fun java.lang.Process.waitForSafe(timeoutMs: Long): Boolean {
+    private fun java.lang.Process.waitForSafe(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return try {
-                waitFor(timeoutMs, TimeUnit.MILLISECONDS)
+                waitFor(LOG_TIMEOUT_MS, TimeUnit.MILLISECONDS)
             } catch (_: Exception) {
                 false
             }
         }
         // API < 26：轮询
-        val deadline = System.currentTimeMillis() + timeoutMs
+        val deadline = System.currentTimeMillis() + LOG_TIMEOUT_MS
         while (System.currentTimeMillis() < deadline) {
             try {
                 exitValue()

@@ -36,10 +36,24 @@
     <string name="fee_order_partner">الشريك</string>
     <string name="fee_hall_no_orders">لا توجد طلبات</string>
     <string name="fee_order_project_name">اسم المشروع</string>
-    <string name="fee_order_loaded_count">تم تحميل %1$d</string>
+    <plurals name="fee_order_loaded_count">
+        <item quantity="one">تم تحميل %1$d</item>
+        <item quantity="other">تم تحميل %1$d</item>
+        <item quantity="zero">تم تحميل %1$d</item>
+        <item quantity="two">تم تحميل %1$d</item>
+        <item quantity="few">تم تحميل %1$d</item>
+        <item quantity="many">تم تحميل %1$d</item>
+    </plurals>
     <string name="fee_order_page_info">صفحة %1$d/%2$d</string>
     <string name="fee_order_no_label">رقم الطلب: %1$s</string>
-    <string name="fee_hall_order_all_loaded">— تم تحميل %1$d —</string>
+    <plurals name="fee_hall_order_all_loaded">
+        <item quantity="one">— تم تحميل %1$d —</item>
+        <item quantity="other">— تم تحميل %1$d —</item>
+        <item quantity="zero">— تم تحميل %1$d —</item>
+        <item quantity="two">— تم تحميل %1$d —</item>
+        <item quantity="few">— تم تحميل %1$d —</item>
+        <item quantity="many">— تم تحميل %1$d —</item>
+    </plurals>
     <string name="fee_order_continue_pay">متابعة الدفع</string>
     <string name="fee_order_close">إغلاق الطلب</string>
     <string name="fee_order_closing">جارٍ إغلاق الطلب…</string>

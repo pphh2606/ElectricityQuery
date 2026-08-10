@@ -5,7 +5,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="feedback_title">意見回饋</string>
     <string name="feedback_attach_log">附帶應用程式記錄（含崩潰記錄）</string>
-    <string name="feedback_crash_count">存在 %1$d 條歷史崩潰記錄，傳送時將自動附帶</string>
+    <plurals name="feedback_crash_count">
+        <item quantity="other">存在 %1$d 條歷史崩潰記錄，傳送時將自動附帶</item>
+    </plurals>
     <string name="feedback_log_preview">記錄預覽</string>
     <string name="feedback_title_label">標題（可選）</string>
     <string name="feedback_content_label">回饋內容</string>

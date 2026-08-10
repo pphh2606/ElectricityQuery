@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 /**
  * 校园卡充值页面状态
@@ -161,7 +162,7 @@ class CardRechargeViewModel(application: Application) : AndroidViewModel(applica
                     payment = PaymentState(),
                 )
             }
-            api.createOrder(PROJECT_ID, String.format("%.2f", amount))
+            api.createOrder(PROJECT_ID, String.format(Locale.US, "%.2f", amount))
                 .onSuccess { order ->
                     _uiState.update {
                         it.copy(isCreatingOrder = false, orderResult = order)

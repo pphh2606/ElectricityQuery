@@ -40,7 +40,9 @@
     <string name="recharge_record_time_range">查詢時間範圍：</string>
     <string name="recharge_record_copy">複製</string>
     <string name="recharge_record_export">匯出</string>
-    <string name="recharge_record_total">合計加值：%1$s 元（共 %2$d 筆）</string>
+    <plurals name="recharge_record_total">
+        <item quantity="other">合計加值：%1$s 元（共 %2$d 筆）</item>
+    </plurals>
     <string name="recharge_record_no_data">未查詢到記錄</string>
     <string name="recharge_record_recharger">加值人：%1$s</string>
     <string name="recharge_record_time">加值時間：%1$s</string>
@@ -72,7 +74,6 @@
     <string name="payment_continue">繼續支付</string>
     <string name="payment_processing">正在處理支付…</string>
     <string name="payment_order_failed">訂單建立失敗</string>
-    <string name="payment_close">關閉支付</string>
     <string name="payment_success">支付成功！</string>
     <string name="payment_done">完成</string>
 
@@ -81,19 +82,12 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="error_enter_student_id">請輸入學號</string>
     <string name="error_no_room">未選取房間</string>
-    <string name="error_invalid_amount">請輸入有效金額</string>
-    <string name="error_amount_exceeded_recharge">金額超出合理範圍（0-1000元）</string>
-    <string name="error_amount_exceeded_card">金額超出最大餘額限制（%1$.0f元）</string>
     <string name="error_parse_order_failed">解析訂單資訊失敗：%1$s</string>
     <string name="error_create_order_failed">建立訂單失敗：%1$s</string>
     <string name="error_no_rooms_bound">該帳號下未繫結任何房間</string>
     <string name="error_query_failed">查詢失敗</string>
     <string name="error_query_failed_detail">查詢失敗：%1$s</string>
     <string name="error_query_record_failed">查詢加值記錄失敗</string>
-    <string name="error_login_expired">登入已過期，請重新登入</string>
-    <string name="error_fetch_bill_failed">取得帳單失敗</string>
-    <string name="error_fetch_account_failed">取得帳戶資訊失敗</string>
-    <string name="error_load_failed">載入失敗</string>
     <string name="error_submit_payment_failed">提交支付失敗：%1$s</string>
     <string name="error_order_closed">訂單已關閉</string>
     <string name="error_query_timeout">查詢逾時，請稍後檢視訂單狀態</string>
@@ -101,11 +95,4 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  加值記錄匯出                               -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="record_export_title">查詢加值記錄</string>
-    <string name="record_export_empty">未查詢到加值記錄</string>
-    <string name="record_export_total">合計加值：%1$s 元（共%2$d 筆）</string>
-    <string name="record_export_name">加值人名：%1$s</string>
-    <string name="record_export_time">加值時間：%1$s</string>
-    <string name="record_export_amount">加值金額：%1$s 元</string>
-    <string name="record_export_order_no">訂單號：%1$s</string>
 </resources>

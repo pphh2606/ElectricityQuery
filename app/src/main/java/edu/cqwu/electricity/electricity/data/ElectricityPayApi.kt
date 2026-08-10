@@ -2,11 +2,10 @@ package edu.cqwu.electricity.electricity.data
 
 import android.util.Log
 import com.google.gson.annotations.SerializedName
-import edu.cqwu.electricity.electricity.data.OrderStatusData
-import edu.cqwu.electricity.payment.data.ApiResponse
-import edu.cqwu.electricity.payment.data.PayApiBase
 import edu.cqwu.electricity.feeservicehall.data.ApiBusinessException
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
+import edu.cqwu.electricity.payment.data.ApiResponse
+import edu.cqwu.electricity.payment.data.PayApiBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody

@@ -2,12 +2,11 @@ package edu.cqwu.electricity.hall.data
 
 import android.util.Log
 import com.google.gson.Gson
-import edu.cqwu.electricity.hall.data.FavoriteAppResponse
-import edu.cqwu.electricity.hall.data.HallItem
-import edu.cqwu.electricity.hall.data.UserFavoritesResponse
+import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.EHALL_APP_SHOW_URL
+import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.FAVORITE_APPS_URL
+import edu.cqwu.electricity.login.data.ServiceLoginManager
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.payment.data.HttpClientFactory
-import edu.cqwu.electricity.login.data.ServiceLoginManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request

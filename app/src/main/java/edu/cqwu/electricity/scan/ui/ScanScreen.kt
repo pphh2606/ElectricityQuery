@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.scan.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -64,6 +65,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
@@ -97,6 +99,7 @@ private const val TAG = "ScanScreen"
 private const val SCAN_FRAME_RATIO = 0.7f
 private const val ANALYSIS_WIDTH = 1280
 private const val ANALYSIS_HEIGHT = 720
+private const val QR_DECODE_MAX_DIMENSION = 1024
 
 // ════════════════════════════════════════════════════════════════════════
 // 权限状态机
@@ -253,7 +256,7 @@ private fun decodeQrFromUri(context: Context, uri: Uri): String? {
             BitmapFactory.decodeStream(it, null, opts)
         }
 
-        val sampleSize = computeInSampleSize(opts.outWidth, opts.outHeight, 1024, 1024)
+        val sampleSize = computeInSampleSize(opts.outWidth, opts.outHeight)
 
         val decodeOpts = BitmapFactory.Options().apply { inSampleSize = sampleSize }
         val bitmap = context.contentResolver.openInputStream(uri)?.use {
@@ -282,14 +285,12 @@ private fun decodeQrFromUri(context: Context, uri: Uri): String? {
 private fun computeInSampleSize(
     rawWidth: Int,
     rawHeight: Int,
-    reqWidth: Int,
-    reqHeight: Int,
 ): Int {
     var inSampleSize = 1
-    if (rawHeight > reqHeight || rawWidth > reqWidth) {
+    if (rawHeight > QR_DECODE_MAX_DIMENSION || rawWidth > QR_DECODE_MAX_DIMENSION) {
         val halfHeight = rawHeight / 2
         val halfWidth = rawWidth / 2
-        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+        while (halfHeight / inSampleSize >= QR_DECODE_MAX_DIMENSION && halfWidth / inSampleSize >= QR_DECODE_MAX_DIMENSION) {
             inSampleSize *= 2
         }
     }
@@ -334,12 +335,14 @@ private fun handleScanResult(
 // ════════════════════════════════════════════════════════════════════════
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ScanScreen(
     onBack: () -> Unit,
     onOpenUrl: (url: String) -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val snackbar = LocalSnackbarController.current
 
@@ -422,7 +425,7 @@ fun ScanScreen(
             if (text != null) {
                 handleScanResult(text, context, onOpenUrl, onBack, { isScanPaused = false }) { msg -> snackbar.show(msg) }
             } else {
-                snackbar.show(context.getString(R.string.qrcode_no_result))
+                snackbar.show(resources.getString(R.string.qrcode_no_result))
                 isScanPaused = false
             }
         }
@@ -484,7 +487,7 @@ fun ScanScreen(
                     camera = cam
                 } catch (e: Exception) {
                     Log.e(TAG, "Camera bind failed", e)
-                    snackbar.show(context.getString(R.string.qrcode_camera_failed))
+                    snackbar.show(resources.getString(R.string.qrcode_camera_failed))
                 }
             }, executor)
 
@@ -503,6 +506,9 @@ fun ScanScreen(
                 val point = factory.createPoint(event.x, event.y)
                 val focusAction = FocusMeteringAction.Builder(point).build()
                 camera?.cameraControl?.startFocusAndMetering(focusAction)
+            }
+            if (event.action == MotionEvent.ACTION_UP) {
+                v.performClick()
             }
             true
         }

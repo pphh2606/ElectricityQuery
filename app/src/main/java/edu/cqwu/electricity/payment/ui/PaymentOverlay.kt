@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -58,9 +59,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -191,7 +192,7 @@ fun PaymentMethodCard(
  * @param onClose 关闭覆盖层回调
  * @param onPaymentComplete 支付完成回调
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun PaymentOverlay(
@@ -210,8 +211,7 @@ fun PaymentOverlay(
     val density = LocalDensity.current
 
     // ── 尺寸计算 ──
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
+    val screenHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val minHeight = screenHeight * 0.5f
     val handleBarHeight = 60.dp
 
@@ -223,7 +223,6 @@ fun PaymentOverlay(
     var isHiding by remember { mutableStateOf(false) }
 
     // ── WebView 状态 ──
-    var isLoading by remember { mutableStateOf(true) }
     var progress by remember { mutableIntStateOf(10) }
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
 
@@ -313,7 +312,7 @@ fun PaymentOverlay(
 
     // ── Scrim 透明度 ──
     val fraction = ((sheetHeight - minHeight) / (screenHeight - minHeight)).coerceIn(0f, 1f)
-    val scrimAlpha = lerp(0.32f, 0.5f, fraction)
+    val scrimAlpha = lerp(fraction)
 
     // ── 渲染 ──
     Box(modifier = Modifier.fillMaxSize()) {
@@ -459,13 +458,11 @@ fun PaymentOverlay(
 
                                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                                         super.onPageStarted(view, url, favicon)
-                                        isLoading = true
                                         Log.d(TAG, "页面开始加载: $url")
                                     }
 
                                     override fun onPageFinished(view: WebView?, url: String?) {
                                         super.onPageFinished(view, url)
-                                        isLoading = false
                                         Log.d(TAG, "页面加载完成: $url")
                                     }
 
@@ -482,7 +479,6 @@ fun PaymentOverlay(
                                 webChromeClient = object : WebChromeClient() {
                                     override fun onProgressChanged(view: WebView?, newProgress: Int) {
                                         progress = newProgress
-                                        if (newProgress == 100) isLoading = false
                                     }
                                 }
 
@@ -533,4 +529,4 @@ fun PaymentOverlay(
 }
 
 // lerp 辅助
-private fun lerp(start: Float, stop: Float, fraction: Float): Float = start + (stop - start) * fraction.coerceIn(0f, 1f)
+private fun lerp(fraction: Float): Float = 0.32f + (0.5f - 0.32f) * fraction.coerceIn(0f, 1f)

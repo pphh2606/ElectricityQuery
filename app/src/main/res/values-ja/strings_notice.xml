@@ -4,9 +4,13 @@
     <!--  通知                                       -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="notice_title">お知らせ</string>
-    <string name="notice_total_count">全 %1$d 件のお知らせ</string>
+    <plurals name="notice_total_count">
+        <item quantity="other">全 %1$d 件のお知らせ</item>
+    </plurals>
     <string name="notice_search_hint">お知らせを検索</string>
-    <string name="notice_search_result">\"%1$s\" の検索結果：全 %2$d 件</string>
+    <plurals name="notice_search_result">
+        <item quantity="other">\"%1$s\" の検索結果：全 %2$d 件</item>
+    </plurals>
     <string name="notice_detail_title">お知らせ詳細</string>
     <string name="notice_loading_detail">詳細を読み込み中…</string>
     <string name="notice_publisher">発行元</string>

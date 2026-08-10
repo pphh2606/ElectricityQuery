@@ -58,7 +58,9 @@
     <string name="building_no_rooms">暫無房間</string>
     <string name="building_reload">重新載入</string>
     <string name="building_no_buildings">該校區下無建築物</string>
-    <string name="building_rooms_count">%1$d 間</string>
+    <plurals name="building_rooms_count">
+        <item quantity="other">%1$d 間</item>
+    </plurals>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  電費查詢                                   -->

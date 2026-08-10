@@ -67,6 +67,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.background
 import coil.compose.AsyncImage
@@ -268,10 +269,7 @@ private fun HallSearchTab(
                 else -> {
                     FlatAppsList(
                         items = uiState.searchResults,
-                        isLoggedIn = false,
-                        togglingAppId = null,
                         onItemClick = onItemClick,
-                        onFavoriteClick = null,
                     )
                 }
             }
@@ -518,19 +516,16 @@ private fun HallCategoryHeader(name: String) {
 @Composable
 private fun FlatAppsList(
     items: List<HallItem>,
-    isLoggedIn: Boolean,
-    togglingAppId: String?,
     onItemClick: (HallItem) -> Unit,
-    onFavoriteClick: ((HallItem) -> Unit)? = null,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = items, key = { it.appId }) { item ->
             HallListItem(
                 item = item,
-                isLoggedIn = isLoggedIn,
-                isTogglingFavorite = togglingAppId == item.appId,
+                isLoggedIn = false,
+                isTogglingFavorite = false,
                 onClick = { onItemClick(item) },
-                onFavoriteClick = onFavoriteClick,
+                onFavoriteClick = null,
             )
             HorizontalDivider(
                 color = MaterialTheme.colorScheme.outlineVariant,
@@ -606,10 +601,7 @@ private fun FavoriteAppsContent(
         else -> {
             FlatAppsList(
                 items = items,
-                isLoggedIn = false,
-                togglingAppId = null,
                 onItemClick = onItemClick,
-                onFavoriteClick = null,
             )
         }
     }
@@ -725,7 +717,7 @@ private fun HallListItem(
 private fun formatFavoriteCount(count: Int): String {
     return if (count >= 1000) {
         val value = count.toDouble() / 1000.0
-        String.format("%.1fk", value)
+        String.format(Locale.US, "%.1fk", value)
     } else {
         count.toString()
     }

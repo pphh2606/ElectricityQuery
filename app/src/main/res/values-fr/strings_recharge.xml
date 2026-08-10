@@ -40,7 +40,11 @@
     <string name="recharge_record_time_range">Période :</string>
     <string name="recharge_record_copy">Copier</string>
     <string name="recharge_record_export">Exporter</string>
-    <string name="recharge_record_total">Total rechargé : %1$s ¥ (%2$d opérations)</string>
+    <plurals name="recharge_record_total">
+        <item quantity="one">Total rechargé : %1$s ¥ (%2$d opération)</item>
+        <item quantity="other">Total rechargé : %1$s ¥ (%2$d opérations)</item>
+        <item quantity="many">Total rechargé : %1$s ¥ (%2$d opérations)</item>
+    </plurals>
     <string name="recharge_record_no_data">Aucun enregistrement</string>
     <string name="recharge_record_recharger">Rechargé par : %1$s</string>
     <string name="recharge_record_time">Date : %1$s</string>
@@ -72,7 +76,6 @@
     <string name="payment_continue">Continuer le paiement</string>
     <string name="payment_processing">Traitement du paiement…</string>
     <string name="payment_order_failed">Échec de création de commande</string>
-    <string name="payment_close">Fermer</string>
     <string name="payment_success">Paiement réussi !</string>
     <string name="payment_done">Terminé</string>
 
@@ -81,19 +84,12 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="error_enter_student_id">Veuillez saisir le numéro étudiant</string>
     <string name="error_no_room">Aucune chambre sélectionnée</string>
-    <string name="error_invalid_amount">Veuillez saisir un montant valide</string>
-    <string name="error_amount_exceeded_recharge">Montant hors de la plage autorisée (0–1000 ¥)</string>
-    <string name="error_amount_exceeded_card">Montant supérieur à la limite de solde (%1$.0f ¥)</string>
     <string name="error_parse_order_failed">Échec de l\'analyse des informations de commande : %1$s</string>
     <string name="error_create_order_failed">Échec de la création de la commande : %1$s</string>
     <string name="error_no_rooms_bound">Aucune chambre liée à ce compte</string>
     <string name="error_query_failed">Échec de la requête</string>
     <string name="error_query_failed_detail">Échec de la requête : %1$s</string>
     <string name="error_query_record_failed">Échec de la consultation de l\'historique de recharge</string>
-    <string name="error_login_expired">Session expirée. Veuillez vous reconnecter.</string>
-    <string name="error_fetch_bill_failed">Échec de la récupération de la facture</string>
-    <string name="error_fetch_account_failed">Échec de la récupération des informations du compte</string>
-    <string name="error_load_failed">Échec du chargement</string>
     <string name="error_submit_payment_failed">Échec de la soumission du paiement : %1$s</string>
     <string name="error_order_closed">Commande fermée</string>
     <string name="error_query_timeout">Délai d\'attente dépassé. Veuillez vérifier l\'état de la commande plus tard.</string>
@@ -101,11 +97,4 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Export d\'historique                        -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="record_export_title">Historique de recharge</string>
-    <string name="record_export_empty">Aucun historique de recharge</string>
-    <string name="record_export_total">Total rechargé : %1$s ¥ (%2$d opérations)</string>
-    <string name="record_export_name">Nom : %1$s</string>
-    <string name="record_export_time">Date : %1$s</string>
-    <string name="record_export_amount">Montant : %1$s ¥</string>
-    <string name="record_export_order_no">N° de commande : %1$s</string>
 </resources>

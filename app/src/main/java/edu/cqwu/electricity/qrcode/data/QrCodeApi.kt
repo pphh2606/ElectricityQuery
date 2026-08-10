@@ -71,7 +71,7 @@ class QrCodeApi {
             HtmlFormParser.checkAndThrow(html)
 
             // 解析 HTML，提取 <input id="myText"> 的 value
-            val value = extractInputValueById(html, "myText")
+            val value = extractInputValueById(html)
                 ?: throw RuntimeException("获取二维码失败：页面中未找到二维码数据")
             val tParse = System.currentTimeMillis()
             Log.d("QrCodeApi_DEBUG", "fetchQrCode 解析耗时: ${tParse - tHttp}ms")
@@ -91,14 +91,14 @@ class QrCodeApi {
     /**
      * 从 HTML 中提取 <input id="id"> 的 value 属性
      */
-    private fun extractInputValueById(html: String, id: String): String? {
+    private fun extractInputValueById(html: String): String? {
         // 匹配 <input ... id="myText" ... value="..." ...>
-        val pattern1 = Regex("""<input[^>]*\sid\s*=\s*["']$id["'][^>]*\svalue\s*=\s*["']([^"']*)["']""", RegexOption.IGNORE_CASE)
+        val pattern1 = Regex("""<input[^>]*\sid\s*=\s*["']myText["'][^>]*\svalue\s*=\s*["']([^"']*)["']""", RegexOption.IGNORE_CASE)
         val match1 = pattern1.find(html)
         if (match1 != null) return match1.groupValues[1]
 
         // 匹配 <input ... value="..." ... id="myText" ...>
-        val pattern2 = Regex("""<input[^>]*\svalue\s*=\s*["']([^"']*)["'][^>]*\sid\s*=\s*["']$id["']""", RegexOption.IGNORE_CASE)
+        val pattern2 = Regex("""<input[^>]*\svalue\s*=\s*["']([^"']*)["'][^>]*\sid\s*=\s*["']myText["']""", RegexOption.IGNORE_CASE)
         val match2 = pattern2.find(html)
         if (match2 != null) return match2.groupValues[1]
 

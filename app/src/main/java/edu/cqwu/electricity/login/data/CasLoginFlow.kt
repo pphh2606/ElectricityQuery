@@ -162,13 +162,13 @@ object CasLoginFlow {
 
         val response = client.newCall(request).execute()
         return response.use {
-            when {
-                it.code in 300..399 -> {
+            when (it.code) {
+                in 300..399 -> {
                     val location = it.header("Location")
                         ?: throw IOException("CAS 登录返回重定向但缺少 Location: ${it.code}")
                     CasLoginOutcome(it.code, location)
                 }
-                it.code in 200..299 -> {
+                in 200..299 -> {
                     val body = it.body.string()
                     if (HtmlFormParser.isCasLoginPage(body)) {
                         throw CasLoginException.LoginRejected()

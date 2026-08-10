@@ -58,7 +58,11 @@
     <string name="building_no_rooms">Aucune chambre</string>
     <string name="building_reload">Recharger</string>
     <string name="building_no_buildings">Aucun bâtiment sur ce campus</string>
-    <string name="building_rooms_count">%1$d chambres</string>
+    <plurals name="building_rooms_count">
+        <item quantity="one">%1$d chambre</item>
+        <item quantity="other">%1$d chambres</item>
+        <item quantity="many">%1$d chambres</item>
+    </plurals>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Consultation électricité                   -->

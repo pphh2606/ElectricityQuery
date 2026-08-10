@@ -4,7 +4,6 @@ import android.app.Activity
 import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -32,9 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import edu.cqwu.electricity.theme.ui.LocalQrCodeSettings
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -43,39 +39,43 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
-import kotlinx.coroutines.Job
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.QrCodeColorMode
+import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.login.data.CasAuthApi
 import edu.cqwu.electricity.login.data.CookieParser
 import edu.cqwu.electricity.login.data.CookieStore
-import edu.cqwu.electricity.cardcenter.data.CardCenterApi
+import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.qrcode.data.QrCodeApi
 import edu.cqwu.electricity.qrcode.data.QrCodeType
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.settings.data.QrCodeColorMode
+import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.LocalQrCodeSettings
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.QrCodeView
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -138,6 +138,7 @@ fun QrCodeDisplayScreen(
     val snackbar = LocalSnackbarController.current
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val qrCodeApi = remember { QrCodeApi() }
     val api = remember { CardCenterApi() }
 
@@ -198,7 +199,7 @@ fun QrCodeDisplayScreen(
                 isLoading = false
                 isRefreshing = false
                 requiresReLogin = true
-                errorMessage = context.getString(R.string.qrcode_login_expired)
+                errorMessage = resources.getString(R.string.qrcode_login_expired)
                 return@launch
             }
 
@@ -218,9 +219,9 @@ fun QrCodeDisplayScreen(
                 isRefreshing = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
-                    errorMessage = context.getString(R.string.qrcode_login_expired)
+                    errorMessage = resources.getString(R.string.qrcode_login_expired)
                 } else {
-                    errorMessage = error.message ?: context.getString(R.string.qrcode_fetch_failed)
+                    errorMessage = error.message ?: resources.getString(R.string.qrcode_fetch_failed)
                 }
             }
         }
@@ -273,10 +274,10 @@ fun QrCodeDisplayScreen(
                     result.onSuccess { content ->
                         qrCodeContent = content
                     }.onFailure { error ->
-                        val msg = error.message ?: context.getString(R.string.qrcode_refresh_failed)
+                        val msg = error.message ?: resources.getString(R.string.qrcode_refresh_failed)
                         if (error is SessionExpiredException) {
                             requiresReLogin = true
-                            errorMessage = context.getString(R.string.qrcode_login_expired)
+                            errorMessage = resources.getString(R.string.qrcode_login_expired)
                         } else {
                             snackbar.show(msg, ToastUtils.Type.ERROR)
                         }

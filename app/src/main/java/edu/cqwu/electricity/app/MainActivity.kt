@@ -2,8 +2,8 @@ package edu.cqwu.electricity.app
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.os.Build
+import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,9 +22,9 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import edu.cqwu.electricity.settings.data.AppLanguage
 import edu.cqwu.electricity.settings.data.SettingsPreferences
-import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.settings.data.ThemeColorSource
-import edu.cqwu.electricity.app.AppShell
+import edu.cqwu.electricity.settings.util.LocaleContextWrapper
+import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.theme.ui.AnimationSettings
 import edu.cqwu.electricity.theme.ui.ColorSourceState
 import edu.cqwu.electricity.theme.ui.LocalAnimationSettings
@@ -36,7 +36,6 @@ import edu.cqwu.electricity.theme.ui.NightModeState
 import edu.cqwu.electricity.theme.ui.QrCodeSettings
 import edu.cqwu.electricity.theme.ui.TopBarState
 import edu.cqwu.electricity.theme.ui.电费查询Theme
-import edu.cqwu.electricity.settings.util.LocaleContextWrapper
 
 class MainActivity : ComponentActivity() {
 

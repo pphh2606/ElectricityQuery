@@ -5,7 +5,10 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="feedback_title">Feedback</string>
     <string name="feedback_attach_log">Attach app logs (including crash records)</string>
-    <string name="feedback_crash_count">%1$d historical crash records found; will be attached automatically</string>
+    <plurals name="feedback_crash_count">
+        <item quantity="one">%1$d historical crash record found; will be attached automatically</item>
+        <item quantity="other">%1$d historical crash records found; will be attached automatically</item>
+    </plurals>
     <string name="feedback_log_preview">Log Preview</string>
     <string name="feedback_title_label">Title (optional)</string>
     <string name="feedback_content_label">Feedback Content</string>

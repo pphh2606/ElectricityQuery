@@ -58,7 +58,9 @@
     <string name="building_no_rooms">ルームがありません</string>
     <string name="building_reload">再読み込み</string>
     <string name="building_no_buildings">このキャンパスには建物がありません</string>
-    <string name="building_rooms_count">%1$d 室</string>
+    <plurals name="building_rooms_count">
+        <item quantity="other">%1$d 室</item>
+    </plurals>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  電気料金照会                               -->

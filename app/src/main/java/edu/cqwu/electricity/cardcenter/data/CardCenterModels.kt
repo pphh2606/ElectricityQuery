@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.cardcenter.data
 
-import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -138,7 +137,7 @@ data class H5BillItem(
             type = tradename,
             billNo = refno,
             merchant = shopname.ifBlank { buyername },
-            amount = String.format("%.2f", amount),
+            amount = String.format(Locale.US, "%.2f", amount),
             paymentMethod = "",
             status = statusText,
             statusCssClass = cssClass,

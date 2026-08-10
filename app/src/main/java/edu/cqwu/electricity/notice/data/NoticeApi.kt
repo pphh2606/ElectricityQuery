@@ -2,10 +2,6 @@ package edu.cqwu.electricity.notice.data
 
 import android.util.Log
 import com.google.gson.Gson
-import edu.cqwu.electricity.notice.data.NoticeDetailQp
-import edu.cqwu.electricity.notice.data.NoticeDetailResponse
-import edu.cqwu.electricity.notice.data.NoticeItem
-import edu.cqwu.electricity.notice.data.NoticeResponse
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

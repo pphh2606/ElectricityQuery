@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -61,7 +62,7 @@ fun CustomWebsiteDialog(
     var iconUri by remember { mutableStateOf<Uri?>(null) }
     var titleError by remember { mutableStateOf<String?>(null) }
     var urlError by remember { mutableStateOf<String?>(null) }
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
     // 系统图片选择器
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -197,11 +198,11 @@ fun CustomWebsiteDialog(
             keyboardActions = KeyboardActions(
                 onGo = {
                     if (titleInput.isBlank()) {
-                        titleError = context.getString(R.string.custom_website_title_required)
+                        titleError = resources.getString(R.string.custom_website_title_required)
                     } else if (isValidUrl(urlInput)) {
                         onConfirm(titleInput.trim(), normalizeUrl(urlInput), iconUri?.toString())
                     } else {
-                        urlError = context.getString(R.string.custom_website_url_invalid)
+                        urlError = resources.getString(R.string.custom_website_url_invalid)
                     }
                 }
             )

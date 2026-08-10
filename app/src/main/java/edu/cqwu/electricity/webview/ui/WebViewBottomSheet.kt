@@ -29,17 +29,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -61,10 +61,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -95,6 +96,7 @@ private const val TAG = "WebViewBottomSheet"
  * @param title 初始标题（加载中显示）
  */
 @SuppressLint("SetJavaScriptEnabled")
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WebViewBottomSheet(
     visible: Boolean,
@@ -103,13 +105,13 @@ fun WebViewBottomSheet(
     title: String = "",
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
 
     // ── 尺寸计算（统一 Dp）──
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
+    val screenHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val halfHeight = screenHeight * 0.5f
     val dismissThreshold = screenHeight * 0.4f  // 低于此高度松手 → 关闭
     val handleBarHeight = 44.dp
@@ -122,10 +124,9 @@ fun WebViewBottomSheet(
     var isHiding by remember { mutableStateOf(false) }
 
     // ── 其他状态 ──
-    var isLoading by remember { mutableStateOf(true) }
     var canGoBack by remember { mutableStateOf(false) }
     var progress by remember { mutableIntStateOf(10) }
-    var pageTitle by remember { mutableStateOf(title.ifBlank { context.getString(R.string.webview_loading) }) }
+    var pageTitle by remember { mutableStateOf(title.ifBlank { resources.getString(R.string.webview_loading) }) }
     var showMenu by remember { mutableStateOf(false) }
     data class WebViewErrorState(val errorCode: Int, val description: String, val isHttpError: Boolean = false)
     var webErrorState by remember { mutableStateOf<WebViewErrorState?>(null) }
@@ -176,7 +177,7 @@ fun WebViewBottomSheet(
 
     // ── Scrim 透明度 ──
     val fraction = ((sheetHeight - halfHeight) / (screenHeight - halfHeight)).coerceIn(0f, 1f)
-    val scrimAlpha = lerp(0.32f, 0.5f, fraction)
+    val scrimAlpha = lerp(fraction)
 
     // ── 渲染 ──
     if (visible || isHiding) {
@@ -305,7 +306,7 @@ fun WebViewBottomSheet(
                                             try {
                                                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(webViewRef.value?.url ?: url)))
                                             } catch (_: ActivityNotFoundException) {
-                                                snackbar.show(context.getString(R.string.common_no_browser), ToastUtils.Type.ERROR)
+                                                snackbar.show(resources.getString(R.string.common_no_browser), ToastUtils.Type.ERROR)
                                             }
                                         }
                                     )
@@ -337,16 +338,15 @@ fun WebViewBottomSheet(
                                     webViewClient = object : WebViewClient() {
                                         override fun onPageStarted(view: WebView?, pageUrl: String?, favicon: Bitmap?) {
                                             super.onPageStarted(view, pageUrl, favicon)
-                                            isLoading = true; webErrorState = null; canGoBack = view?.canGoBack() == true
+                                            webErrorState = null; canGoBack = view?.canGoBack() == true
                                         }
                                         override fun onPageFinished(view: WebView?, pageUrl: String?) {
                                             super.onPageFinished(view, pageUrl)
-                                            isLoading = false; canGoBack = view?.canGoBack() == true
+                                            canGoBack = view?.canGoBack() == true
                                         }
                                         override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                                             super.onReceivedError(view, request, error)
                                             if (request?.isForMainFrame == true && webErrorState == null) {
-                                                isLoading = false
                                                 webErrorState = WebViewErrorState(error?.errorCode ?: -1, error?.description?.toString() ?: ctx.getString(R.string.common_unknown_error))
                                             }
                                         }
@@ -371,7 +371,7 @@ fun WebViewBottomSheet(
 
                                     webChromeClient = object : WebChromeClient() {
                                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                                            progress = newProgress; if (newProgress == 100) isLoading = false
+                                            progress = newProgress
                                         }
                                         override fun onReceivedTitle(view: WebView?, t: String?) {
                                             super.onReceivedTitle(view, t); if (!t.isNullOrBlank()) pageTitle = t
@@ -421,4 +421,4 @@ fun WebViewBottomSheet(
 }
 
 // lerp 辅助
-private fun lerp(start: Float, stop: Float, fraction: Float): Float = start + (stop - start) * fraction.coerceIn(0f, 1f)
+private fun lerp(fraction: Float): Float = 0.32f + (0.5f - 0.32f) * fraction.coerceIn(0f, 1f)

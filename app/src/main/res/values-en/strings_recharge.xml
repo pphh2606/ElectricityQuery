@@ -40,7 +40,10 @@
     <string name="recharge_record_time_range">Time Range:</string>
     <string name="recharge_record_copy">Copy</string>
     <string name="recharge_record_export">Export</string>
-    <string name="recharge_record_total">Total: %1$s CNY (%2$d records)</string>
+    <plurals name="recharge_record_total">
+        <item quantity="one">Total: %1$s CNY (%2$d record)</item>
+        <item quantity="other">Total: %1$s CNY (%2$d records)</item>
+    </plurals>
     <string name="recharge_record_no_data">No records found</string>
     <string name="recharge_record_recharger">Paid by: %1$s</string>
     <string name="recharge_record_time">Time: %1$s</string>
@@ -72,7 +75,6 @@
     <string name="payment_continue">Continue Payment</string>
     <string name="payment_processing">Processing payment…</string>
     <string name="payment_order_failed">Order creation failed</string>
-    <string name="payment_close">Close Payment</string>
     <string name="payment_success">Payment Successful!</string>
     <string name="payment_done">Done</string>
 
@@ -81,19 +83,12 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="error_enter_student_id">Please enter a student ID</string>
     <string name="error_no_room">No room selected</string>
-    <string name="error_invalid_amount">Please enter a valid amount</string>
-    <string name="error_amount_exceeded_recharge">Amount exceeds the allowed range (0–1000 CNY)</string>
-    <string name="error_amount_exceeded_card">Amount exceeds the maximum balance limit (%1$.0f CNY)</string>
     <string name="error_parse_order_failed">Failed to parse order info: %1$s</string>
     <string name="error_create_order_failed">Failed to create order: %1$s</string>
     <string name="error_no_rooms_bound">No rooms are linked to this account</string>
     <string name="error_query_failed">Query failed</string>
     <string name="error_query_failed_detail">Query failed: %1$s</string>
     <string name="error_query_record_failed">Failed to query recharge records</string>
-    <string name="error_login_expired">Login session expired. Please log in again.</string>
-    <string name="error_fetch_bill_failed">Failed to retrieve bill</string>
-    <string name="error_fetch_account_failed">Failed to retrieve account info</string>
-    <string name="error_load_failed">Failed to load</string>
     <string name="error_submit_payment_failed">Failed to submit payment: %1$s</string>
     <string name="error_order_closed">Order has been closed</string>
     <string name="error_query_timeout">Query timed out. Please check the order status later.</string>
@@ -101,11 +96,4 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Record Export                              -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="record_export_title">Recharge Records</string>
-    <string name="record_export_empty">No recharge records found</string>
-    <string name="record_export_total">Total: %1$s CNY (%2$d records)</string>
-    <string name="record_export_name">Name: %1$s</string>
-    <string name="record_export_time">Time: %1$s</string>
-    <string name="record_export_amount">Amount: %1$s CNY</string>
-    <string name="record_export_order_no">Order No: %1$s</string>
 </resources>

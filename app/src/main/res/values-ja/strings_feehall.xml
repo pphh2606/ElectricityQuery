@@ -36,10 +36,14 @@
     <string name="fee_order_partner">パートナー</string>
     <string name="fee_hall_no_orders">注文がありません</string>
     <string name="fee_order_project_name">プロジェクト名</string>
-    <string name="fee_order_loaded_count">%1$d 件読み込み済み</string>
+    <plurals name="fee_order_loaded_count">
+        <item quantity="other">%1$d 件読み込み済み</item>
+    </plurals>
     <string name="fee_order_page_info">%1$d/%2$d ページ</string>
     <string name="fee_order_no_label">注文番号: %1$s</string>
-    <string name="fee_hall_order_all_loaded">— 全 %1$d 件読み込み完了 —</string>
+    <plurals name="fee_hall_order_all_loaded">
+        <item quantity="other">— 全 %1$d 件読み込み完了 —</item>
+    </plurals>
     <string name="fee_order_continue_pay">支払いを続ける</string>
     <string name="fee_order_close">注文を閉じる</string>
     <string name="fee_order_closing">注文を閉じています…</string>

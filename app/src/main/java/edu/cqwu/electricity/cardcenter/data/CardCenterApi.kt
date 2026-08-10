@@ -2,26 +2,9 @@ package edu.cqwu.electricity.cardcenter.data
 
 import android.util.Log
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import edu.cqwu.electricity.cardcenter.data.AccountInfo
-import edu.cqwu.electricity.electricity.data.BalanceResponse
-import edu.cqwu.electricity.cardcenter.data.BillFilter
-import edu.cqwu.electricity.cardcenter.data.BillPageInfo
-import edu.cqwu.electricity.cardcenter.data.BillRecord
-import edu.cqwu.electricity.electricity.data.BuildingNode
-import edu.cqwu.electricity.electricity.data.BuildingResponse
-import edu.cqwu.electricity.electricity.data.BuyListResponse
-import edu.cqwu.electricity.cardcenter.data.CardLostInfo
-import edu.cqwu.electricity.cardcenter.data.CardLostResponse
-import edu.cqwu.electricity.electricity.data.CurrentDataResponse
-import edu.cqwu.electricity.cardcenter.data.H5BillResponse
-import edu.cqwu.electricity.electricity.data.RechargeResponse
-import edu.cqwu.electricity.electricity.data.UsageResponse
-import edu.cqwu.electricity.electricity.data.UserRoomInfo
-import edu.cqwu.electricity.electricity.data.WechatUserResponse
-import edu.cqwu.electricity.payment.data.HttpClientFactory
-import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.HtmlFormParser
+import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,11 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 import java.util.concurrent.TimeUnit
-import kotlin.collections.iterator
 
 /**
  * API 请求封装类，对应 Python 版 ElectricityQuery 类
@@ -45,8 +24,6 @@ import kotlin.collections.iterator
 class CardCenterApi {
 
     companion object {
-        val HEADERS: Map<String, String> = mapOf("Accept" to "*/*")
-
         // ==================== EPay 常量 ====================
         /** EPay 基础 URL（修复 C：统一收敛硬编码 IP） */
         private const val EPAY_BASE = "http://218.194.176.214:8382"
@@ -76,12 +53,6 @@ class CardCenterApi {
         }
 
     }
-
-    private val client = HttpClientFactory.create(
-        connectTimeout = 10,
-        readTimeout = 10,
-        writeTimeout = 10,
-    )
 
     private val gson = Gson()
 
@@ -544,35 +515,4 @@ class CardCenterApi {
 
     // ==================== 内部方法 ====================
 
-    private fun executeGet(url: String, extraHeaders: Map<String, String> = emptyMap()): String {
-        val requestBuilder = Request.Builder().url(url).get()
-        // 添加其他默认请求头（User-Agent 由拦截器自动注入）
-        HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
-        extraHeaders.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
-
-        Log.d("CardCenterApi", "请求 URL: $url")
-        val response = client.newCall(requestBuilder.build()).execute()
-        if (!response.isSuccessful) {
-            throw RuntimeException("HTTP ${response.code}: ${response.message}")
-        }
-        val body = response.body.string()
-        Log.d("CardCenterApi", "响应体原始内容: $body")
-        return body
-    }
-
-    /**
-     * 统一异常捕获，将异常转换为 Result.failure()
-     * 注意：必须重新抛出 CancellationException，避免吞掉协程取消信号
-     */
-    private suspend fun <T> safeApiCall(call: suspend () -> T): Result<T> {
-        return withContext(Dispatchers.IO) {
-            try {
-                Result.success(call())
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
 }

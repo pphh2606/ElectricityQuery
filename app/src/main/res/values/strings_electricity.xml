@@ -58,7 +58,9 @@
     <string name="building_no_rooms">暂无房间</string>
     <string name="building_reload">重新加载</string>
     <string name="building_no_buildings">该校区下无楼栋</string>
-    <string name="building_rooms_count">%1$d 间</string>
+    <plurals name="building_rooms_count">
+        <item quantity="other">%1$d 间</item>
+    </plurals>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  电费查询页面                               -->

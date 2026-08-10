@@ -38,7 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import androidx.compose.runtime.Composable
@@ -91,7 +91,7 @@ fun CardLostScreen(
     var showConfirmDialog by remember { mutableStateOf(false) }
     // 操作结果提示
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     var errorDialogMessage by remember { mutableStateOf<String?>(null) }
 
@@ -116,9 +116,9 @@ fun CardLostScreen(
                 isRefreshing = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
-                    errorMessage = context.getString(R.string.card_lost_login_expired)
+                    errorMessage = resources.getString(R.string.card_lost_login_expired)
                 } else {
-                    errorMessage = error.message ?: context.getString(R.string.card_lost_fetch_error)
+                    errorMessage = error.message ?: resources.getString(R.string.card_lost_fetch_error)
                 }
             }
         }
@@ -138,16 +138,16 @@ fun CardLostScreen(
             result.onSuccess { response ->
                 if (response.retcode == "0") {
                     // 挂失成功 — Toast 提示
-                    snackbar.show(context.getString(R.string.card_lost_success), ToastUtils.Type.SUCCESS)
+                    snackbar.show(resources.getString(R.string.card_lost_success), ToastUtils.Type.SUCCESS)
                     // 延迟后刷新卡信息，更新卡状态为"挂失"
                     delay(800)
                     loadCardInfo()
                 } else {
                     // 挂失失败 — 显示错误对话框
-                    errorDialogMessage = response.retmsg.ifBlank { context.getString(R.string.card_lost_failure) }
+                    errorDialogMessage = response.retmsg.ifBlank { resources.getString(R.string.card_lost_failure) }
                 }
             }.onFailure { error ->
-                errorDialogMessage = error.message ?: context.getString(R.string.card_lost_request_error)
+                errorDialogMessage = error.message ?: resources.getString(R.string.card_lost_request_error)
             }
         }
     }

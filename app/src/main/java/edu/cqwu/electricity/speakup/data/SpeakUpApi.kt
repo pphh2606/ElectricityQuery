@@ -2,13 +2,9 @@ package edu.cqwu.electricity.speakup.data
 
 import android.util.Log
 import com.google.gson.Gson
-import edu.cqwu.electricity.speakup.data.ConsultationArea
-import edu.cqwu.electricity.speakup.data.ConsultationAreaResponse
-import edu.cqwu.electricity.speakup.data.ConsultationMessage
-import edu.cqwu.electricity.speakup.data.MessageListResponse
+import edu.cqwu.electricity.login.data.ServiceLoginManager
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.payment.data.HttpClientFactory
-import edu.cqwu.electricity.login.data.ServiceLoginManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody

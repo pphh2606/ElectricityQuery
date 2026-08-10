@@ -56,11 +56,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -126,8 +126,6 @@ fun BillScreen(
     // 每个 tab 独立维护 LazyListState，保持各自的滚动位置
     val listStates: List<LazyListState> = remember { List(tabLabelKeys.size) { LazyListState() } }
 
-    // ── 稳定化 onClick 回调 ──
-    val stableOnNavigateToWebView by rememberUpdatedState(onNavigateToWebView)
     val detailTitleStr = stringResource(R.string.bill_detail_title)
     val onRecordClick = remember<(edu.cqwu.electricity.cardcenter.data.BillRecord) -> Unit> {
         { record ->
@@ -606,7 +604,7 @@ private fun BillEmptyListContent(tabNo: Int) {
 @Composable
 private fun BillStatsRow(pageInfo: BillPageInfo) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = stringResource(R.string.bill_loaded_count, pageInfo.records.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+ Text(text = pluralStringResource(R.plurals.bill_loaded_count, pageInfo.records.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(text = stringResource(R.string.bill_page_info, pageInfo.currentPage, pageInfo.totalPages), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -634,7 +632,7 @@ private fun BillFooterContent(uiState: BillUiState, pageInfo: BillPageInfo, view
         } else if (pageInfo.records.isNotEmpty()) {
             val isCapped = pageInfo.records.size >= 100
             Text(
-                text = if (isCapped) stringResource(R.string.bill_capped_hint) else stringResource(R.string.bill_all_loaded, pageInfo.records.size),
+ text = if (isCapped) stringResource(R.string.bill_capped_hint) else pluralStringResource(R.plurals.bill_all_loaded, pageInfo.records.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

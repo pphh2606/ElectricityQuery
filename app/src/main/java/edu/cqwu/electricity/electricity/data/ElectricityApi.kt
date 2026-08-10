@@ -3,38 +3,16 @@ package edu.cqwu.electricity.electricity.data
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import edu.cqwu.electricity.cardcenter.data.AccountInfo
-import edu.cqwu.electricity.electricity.data.BalanceResponse
-import edu.cqwu.electricity.cardcenter.data.BillFilter
-import edu.cqwu.electricity.cardcenter.data.BillPageInfo
-import edu.cqwu.electricity.cardcenter.data.BillRecord
-import edu.cqwu.electricity.electricity.data.BuildingNode
-import edu.cqwu.electricity.electricity.data.BuildingResponse
-import edu.cqwu.electricity.electricity.data.BuyListResponse
-import edu.cqwu.electricity.cardcenter.data.CardLostInfo
-import edu.cqwu.electricity.cardcenter.data.CardLostResponse
-import edu.cqwu.electricity.electricity.data.CurrentDataResponse
-import edu.cqwu.electricity.cardcenter.data.H5BillResponse
-import edu.cqwu.electricity.electricity.data.RechargeResponse
-import edu.cqwu.electricity.electricity.data.UsageResponse
-import edu.cqwu.electricity.electricity.data.UserRoomInfo
-import edu.cqwu.electricity.electricity.data.WechatUserResponse
 import edu.cqwu.electricity.payment.data.HttpClientFactory
-import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.login.data.SessionManager
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.concurrent.TimeUnit
-import kotlin.collections.iterator
 
 /**
  * API 请求封装类，对应 Python 版 ElectricityQuery 类
@@ -198,7 +176,7 @@ class ElectricityApi {
                 "roomId" to roomId,
                 "openId" to openId,
                 "roomName" to roomName,
-                "payFee" to String.format("%.2f", amount)
+                "payFee" to String.format(Locale.US, "%.2f", amount)
             )
             val jsonBody = gson.toJson(payload)
             Log.d("ElectricityApi", "充值请求 Body: $jsonBody")

@@ -5,7 +5,14 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="feedback_title">التعليقات</string>
     <string name="feedback_attach_log">إرفاق سجلات التطبيق (تشمل الأعطال)</string>
-    <string name="feedback_crash_count">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</string>
+    <plurals name="feedback_crash_count">
+        <item quantity="one">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</item>
+        <item quantity="other">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</item>
+        <item quantity="zero">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</item>
+        <item quantity="two">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</item>
+        <item quantity="few">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</item>
+        <item quantity="many">يوجد %1$d سجل عطل، ستُرفق تلقائيًا</item>
+    </plurals>
     <string name="feedback_log_preview">معاينة السجلات</string>
     <string name="feedback_title_label">العنوان (اختياري)</string>
     <string name="feedback_content_label">المحتوى</string>

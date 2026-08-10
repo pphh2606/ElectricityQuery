@@ -4,9 +4,15 @@
     <!--  Notices                                    -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="notice_title">Notices</string>
-    <string name="notice_total_count">%1$d notices total</string>
+    <plurals name="notice_total_count">
+        <item quantity="one">%1$d notice total</item>
+        <item quantity="other">%1$d notices total</item>
+    </plurals>
     <string name="notice_search_hint">Search notices</string>
-    <string name="notice_search_result">Search "%1$s" — %2$d results</string>
+    <plurals name="notice_search_result">
+        <item quantity="one">Search "%1$s" — %2$d result</item>
+        <item quantity="other">Search "%1$s" — %2$d results</item>
+    </plurals>
     <string name="notice_detail_title">Notice Details</string>
     <string name="notice_loading_detail">Loading details…</string>
     <string name="notice_publisher">Publisher</string>

@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.notice.ui
 
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
 
 import androidx.compose.foundation.clickable
@@ -141,7 +142,7 @@ fun NoticeScreen(
                             )
                             if (viewModel.totalItem > 0) {
                                 Text(
-                                    text = stringResource(R.string.notice_total_count, viewModel.totalItem),
+ text = pluralStringResource(R.plurals.notice_total_count, viewModel.totalItem),
                                     style = MaterialTheme.typography.bodySmall,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -295,7 +296,7 @@ fun NoticeScreen(
                         if (viewModel.searchKeyword.isNotBlank() && viewModel.items.isNotEmpty()) {
                             item(key = "search_header") {
                                 Text(
-                                    text = stringResource(R.string.notice_search_result, viewModel.searchKeyword, viewModel.totalItem),
+ text = pluralStringResource(R.plurals.notice_search_result, viewModel.totalItem, viewModel.searchKeyword),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)

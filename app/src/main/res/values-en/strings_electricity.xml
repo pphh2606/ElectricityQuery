@@ -58,7 +58,10 @@
     <string name="building_no_rooms">No rooms</string>
     <string name="building_reload">Reload</string>
     <string name="building_no_buildings">No buildings in this campus</string>
-    <string name="building_rooms_count">%1$d rooms</string>
+    <plurals name="building_rooms_count">
+        <item quantity="one">%1$d room</item>
+        <item quantity="other">%1$d rooms</item>
+    </plurals>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Electricity Query                          -->

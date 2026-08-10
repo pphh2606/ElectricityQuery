@@ -68,6 +68,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -116,6 +117,7 @@ fun LoginScreen(
         loginViewModel.resetState(clearForm = clearForm)
     }
     val context = LocalContext.current
+    val resources = LocalResources.current
     val focusManager = LocalFocusManager.current
     val nav = LocalNavController.current
 
@@ -148,7 +150,7 @@ fun LoginScreen(
     // 拦截系统返回（包括侧滑手势和物理返回键）
     // 加载中拦截，防止登录请求中误触退出导致状态丢失
     BackHandler(enabled = uiState.isLoading) {
-        snackbar.show(context.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
+        snackbar.show(resources.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
     }
 
     // 收集一次性事件（替代 LaunchedEffect(uiState.error/loginResult/autoLoginResult)）
@@ -160,7 +162,7 @@ fun LoginScreen(
                     snackbar.show(event.msg, ToastUtils.Type.ERROR)
                 }
                 is LoginEvent.LoginSuccess -> {
-                    snackbar.show(context.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
+                    snackbar.show(resources.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
                     delay(1500)
                     onBack()
                 }
@@ -168,11 +170,11 @@ fun LoginScreen(
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)
                         as android.content.ClipboardManager
                     val clip = ClipData.newPlainText(
-                        context.getString(R.string.login_export_credential),
+                        resources.getString(R.string.login_export_credential),
                         event.encryptedData
                     )
                     clipboard.setPrimaryClip(clip)
-                    snackbar.show(context.getString(R.string.login_credential_copied), ToastUtils.Type.SUCCESS)
+                    snackbar.show(resources.getString(R.string.login_credential_copied), ToastUtils.Type.SUCCESS)
                     showExportDialog = false
                 }
             }

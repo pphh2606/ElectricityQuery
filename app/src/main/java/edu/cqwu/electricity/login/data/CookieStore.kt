@@ -70,10 +70,6 @@ class UserCookieStore {
         domainCookies[name] = value
     }
 
-    fun removeCookie(url: String, name: String) {
-        cookieMap[normalizeUrl(url)]?.remove(name)
-    }
-
     fun removeAllCookies() {
         cookieMap.clear()
     }

@@ -1,37 +1,29 @@
 package edu.cqwu.electricity.speakup.ui
 
-import androidx.compose.foundation.background
 import android.content.ClipData
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,15 +34,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
@@ -81,17 +77,7 @@ class MessageDetailViewModel(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     init {
-        loadDetail()
-    }
-
-    fun loadDetail() {
-        _uiState.value = UiState.Loading
-        viewModelScope.launch {
-            val result = api.fetchMessages(wid, 1, 1) // 用 WID 过滤
-            // 由于 API 不支持按 WID 查询列表，直接用分页查询中 WID 匹配
-            // 但实际上 getZxxx.do 也支持 {"WID":"xxx"} 参数获取单条详情
-            // 让我们直接用 WID 参数调用
-        }
+        loadDetailDirect()
     }
 
     /** 通过 WID 获取单条留言详情 */
@@ -140,6 +126,7 @@ fun MessageDetailScreen(
     ),
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val snackbar = LocalSnackbarController.current
     val uiState by viewModel.uiState.collectAsState()
@@ -171,7 +158,7 @@ fun MessageDetailScreen(
                             val url = "https://ehall.cqwu.edu.cn/qljfwappnew/sys/lwPsZxzxApp/*default/index.do#/zxylxq?WID=${detailMessage.wid}"
                             val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                             clipboard.setPrimaryClip(ClipData.newPlainText("speakup_link", url))
-                            snackbar.show(context.getString(R.string.speakup_link_copied), ToastUtils.Type.SUCCESS)
+                            snackbar.show(resources.getString(R.string.speakup_link_copied), ToastUtils.Type.SUCCESS)
                         }
                     }) {
                         Icon(Icons.Outlined.Share, contentDescription = null)

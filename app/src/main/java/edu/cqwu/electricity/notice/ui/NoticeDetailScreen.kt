@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.notice.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -53,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,6 +72,7 @@ import kotlinx.coroutines.withContext
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun NoticeDetailScreen(
     wid: String,
@@ -84,10 +87,11 @@ fun NoticeDetailScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
+    val resources = LocalResources.current
     val screenHeightPx = remember {
-        context.resources.displayMetrics.heightPixels
+        resources.displayMetrics.heightPixels
     }
-    val screenHeightDp = with(context.resources.displayMetrics) {
+    val screenHeightDp = with(resources.displayMetrics) {
         (heightPixels / density).toInt()
     }
     var contentHeightPx by remember { mutableIntStateOf(0) }
@@ -121,7 +125,7 @@ fun NoticeDetailScreen(
                 isLoading = false
                 isRefreshing = false
             }.onFailure { e ->
-                errorMessage = e.message ?: context.getString(R.string.notice_load_failed)
+                errorMessage = e.message ?: resources.getString(R.string.notice_load_failed)
                 isLoading = false
                 isRefreshing = false
             }
@@ -154,7 +158,7 @@ fun NoticeDetailScreen(
             putExtra(Intent.EXTRA_TEXT, shareText)
             type = "text/plain"
         }
-        val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.notice_share))
+        val shareIntent = Intent.createChooser(sendIntent, resources.getString(R.string.notice_share))
         context.startActivity(shareIntent)
     }
 
@@ -378,6 +382,17 @@ fun NoticeDetailScreen(
                                         setBackgroundColor(Color.TRANSPARENT)
                                         settings.javaScriptEnabled = true
                                         settings.domStorageEnabled = false
+                                        settings.javaScriptCanOpenWindowsAutomatically = false
+                                        settings.mediaPlaybackRequiresUserGesture = true
+                                        settings.setAllowFileAccess(false)
+                                        settings.setAllowContentAccess(false)
+                                        @Suppress("DEPRECATION")
+                                        settings.setAllowFileAccessFromFileURLs(false)
+                                        @Suppress("DEPRECATION")
+                                        settings.setAllowUniversalAccessFromFileURLs(false)
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            settings.safeBrowsingEnabled = true
+                                        }
                                         isVerticalScrollBarEnabled = false
                                         isHorizontalScrollBarEnabled = false
                                         overScrollMode = WebView.OVER_SCROLL_NEVER

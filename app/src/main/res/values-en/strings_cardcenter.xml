@@ -34,7 +34,10 @@
     <string name="bill_income">Income</string>
     <string name="bill_expense">Expense</string>
     <string name="bill_fetching">Fetching bills…%1$ds</string>
-    <string name="bill_loaded_count">Loaded %1$d records</string>
+    <plurals name="bill_loaded_count">
+        <item quantity="one">Loaded %1$d record</item>
+        <item quantity="other">Loaded %1$d records</item>
+    </plurals>
     <string name="bill_start_date">Start Date</string>
     <string name="bill_end_date">End Date</string>
     <string name="bill_page_info">Page %1$d/%2$d</string>
@@ -52,7 +55,10 @@
     <string name="bill_no_failed">No failed transactions</string>
     <string name="bill_no_records">No transaction records</string>
     <string name="bill_capped_hint">— Only showing last 100 records, more on web —</string>
-    <string name="bill_all_loaded">— All %1$d records loaded —</string>
+    <plurals name="bill_all_loaded">
+        <item quantity="one">— All %1$d record loaded —</item>
+        <item quantity="other">— All %1$d records loaded —</item>
+    </plurals>
     <string name="bill_hint_title">Tips</string>
     <string name="bill_hint_item1">Due to system limitations, loading all bills takes about 3 seconds, and loading the last 3 items takes about 15 seconds. Using the filter function also takes considerable time.</string>
     <string name="bill_hint_item2">Data sourced from the school\'s H5 and desktop websites, provided as-is.</string>
@@ -74,7 +80,6 @@
     <string name="card_recharge_student_id_placeholder">Enter Student ID</string>
     <string name="card_recharge_custom_amount_label">Custom Amount</string>
     <string name="card_recharge_custom_amount_placeholder">Enter other amount</string>
-    <string name="card_recharge_creating_order">Creating order…</string>
     <string name="card_recharge_next_step">Next</string>
     <string name="card_recharge_info_name">Name</string>
     <string name="card_recharge_info_student_id">Student ID</string>

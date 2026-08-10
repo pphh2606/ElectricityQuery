@@ -25,9 +25,6 @@ data class ImageItem(
         private const val BASE_URL = "https://ehall.cqwu.edu.cn"
     }
 
-    /** 缩略图完整 URL */
-    val smallUrlFull: String get() = if (smallSizeImageUrl.isNotBlank()) "$BASE_URL$smallSizeImageUrl" else ""
-
     /** 中等尺寸完整 URL */
     val middleUrlFull: String get() = if (middleSizeImageUrl.isNotBlank()) "$BASE_URL$middleSizeImageUrl" else ""
 

@@ -2,9 +2,7 @@ package edu.cqwu.electricity.hall.data
 
 import android.util.Log
 import com.google.gson.Gson
-import edu.cqwu.electricity.hall.data.HallCategory
-import edu.cqwu.electricity.hall.data.UserCategoryAppListResponse
-import edu.cqwu.electricity.hall.data.extractCategories
+import edu.cqwu.electricity.hall.data.HallServiceCenterApi.Companion.GET_USER_CATEGORY_APP_LIST_URL
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers

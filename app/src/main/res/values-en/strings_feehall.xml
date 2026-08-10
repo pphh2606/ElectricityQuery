@@ -36,10 +36,16 @@
     <string name="fee_order_partner">Partner</string>
     <string name="fee_hall_no_orders">No orders</string>
     <string name="fee_order_project_name">Project Name</string>
-    <string name="fee_order_loaded_count">%1$d loaded</string>
+    <plurals name="fee_order_loaded_count">
+        <item quantity="one">%1$d loaded</item>
+        <item quantity="other">%1$d loaded</item>
+    </plurals>
     <string name="fee_order_page_info">Page %1$d/%2$d</string>
     <string name="fee_order_no_label">Order No: %1$s</string>
-    <string name="fee_hall_order_all_loaded">— All %1$d orders loaded —</string>
+    <plurals name="fee_hall_order_all_loaded">
+        <item quantity="one">— All %1$d order loaded —</item>
+        <item quantity="other">— All %1$d orders loaded —</item>
+    </plurals>
     <string name="fee_order_continue_pay">Continue Payment</string>
     <string name="fee_order_close">Close Order</string>
     <string name="fee_order_closing">Closing order…</string>

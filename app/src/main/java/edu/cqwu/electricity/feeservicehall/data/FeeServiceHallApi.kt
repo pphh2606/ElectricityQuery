@@ -243,7 +243,6 @@ class FeeServiceHallApi {
         withContext(Dispatchers.IO) {
             try {
                 val request = buildBaseRequest(PROJECT_LIST_URL).build()
-                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
                 gson.parseApiResponse<FeeProjectResponse>(body).map { it.data ?: emptyList() }
@@ -288,7 +287,6 @@ class FeeServiceHallApi {
                     .post(bodyJson.toRequestBody(jsonMediaType))
                     .build()
 
-                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
                 gson.parseApiResponse<OrderListResponse>(body).map { it.data ?: OrderPageData(emptyList(), null, null, null) }
@@ -314,7 +312,6 @@ class FeeServiceHallApi {
                 val request = buildBaseRequest(PROFILE_URL)
                     .post(bodyJson.toRequestBody(jsonMediaType))
                     .build()
-                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
                 gson.parseApiResponse<UserProfileResponse>(body).map { it.data ?: UserProfile(null, null, null) }
@@ -337,7 +334,6 @@ class FeeServiceHallApi {
                 val request = buildBaseRequest("$CLOSE_ORDER_URL/$orderId")
                     .post("".toRequestBody(jsonMediaType))
                     .build()
-                val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
                 val base = gson.fromJson(body, ApiBaseResponse::class.java)

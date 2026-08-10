@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -70,6 +71,7 @@ fun AboutScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val appName = stringResource(id = R.string.app_name)
@@ -156,13 +158,13 @@ fun AboutScreen(
                                 )
                                 context.startActivity(intent)
                             } catch (e: Exception) {
-                                snackbar.show(context.getString(R.string.common_no_browser))
+                                snackbar.show(resources.getString(R.string.common_no_browser))
                             }
                         },
                     )
 
                     // 构建信息
-                    val isCiBuild = BuildConfig.BUILD_SOURCE == "github-actions"
+                    val isCiBuild = false
                     AboutEntry(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.about_build_info),
@@ -178,7 +180,7 @@ fun AboutScreen(
                                     )
                                     context.startActivity(intent)
                                 } catch (e: Exception) {
-                                    snackbar.show(context.getString(R.string.common_no_browser))
+                                    snackbar.show(resources.getString(R.string.common_no_browser))
                                 }
                             }
                         },
@@ -241,7 +243,7 @@ fun AboutScreen(
                         )
                         context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
-                        snackbar.show(context.getString(R.string.about_install_qq))
+                        snackbar.show(resources.getString(R.string.about_install_qq))
                     }
                 },
             )
@@ -254,7 +256,7 @@ fun AboutScreen(
                     showContactSheet = false
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("Bilibili UID", "1858606373"))
-                    snackbar.show(context.getString(R.string.common_copied_to_clipboard))
+                    snackbar.show(resources.getString(R.string.common_copied_to_clipboard))
                 },
             )
 
@@ -270,7 +272,7 @@ fun AboutScreen(
                     try {
                         context.startActivity(intent)
                     } catch (e: Exception) {
-                        snackbar.show(context.getString(R.string.about_no_mail_app))
+                        snackbar.show(resources.getString(R.string.about_no_mail_app))
                     }
                 },
             )

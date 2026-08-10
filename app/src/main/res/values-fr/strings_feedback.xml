@@ -5,7 +5,11 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="feedback_title">Commentaires</string>
     <string name="feedback_attach_log">Joindre les journaux (inclut les crashs)</string>
-    <string name="feedback_crash_count">%1$d crashs enregistrés, joints automatiquement</string>
+    <plurals name="feedback_crash_count">
+        <item quantity="one">%1$d crash enregistré, joint automatiquement</item>
+        <item quantity="other">%1$d crashs enregistrés, joints automatiquement</item>
+        <item quantity="many">%1$d crashs enregistrés, joints automatiquement</item>
+    </plurals>
     <string name="feedback_log_preview">Aperçu des journaux</string>
     <string name="feedback_title_label">Titre (optionnel)</string>
     <string name="feedback_content_label">Contenu</string>

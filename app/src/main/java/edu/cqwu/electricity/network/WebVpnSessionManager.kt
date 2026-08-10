@@ -76,12 +76,11 @@ object WebVpnSessionManager {
             )
         val lockKey = "${account.first}@${System.identityHashCode(cookieJar ?: CookieStoreOkHttpJar)}"
         runSingleFlight(lockKey) {
-            doAuthenticate(context, protectedUrl, cookieJar, account)
+            doAuthenticate(protectedUrl, cookieJar, account)
         }
     }
 
     private fun doAuthenticate(
-        context: Context,
         protectedUrl: String,
         cookieJar: CookieJar?,
         account: Pair<String, String>,

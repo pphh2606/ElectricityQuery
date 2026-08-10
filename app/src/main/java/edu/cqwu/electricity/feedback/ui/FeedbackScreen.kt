@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -95,7 +97,7 @@ fun FeedbackScreen(
 
     // 崩溃记录状态
     var hasCrashReports by remember { mutableStateOf(false) }
-    var crashReportCount by remember { mutableStateOf(0) }
+    var crashReportCount by remember { mutableIntStateOf(0) }
 
     // 日志预加载缓存：避免预览和发送时重复执行 logcat
     var cachedLogs by remember { mutableStateOf<String?>(null) }
@@ -376,7 +378,7 @@ fun FeedbackScreen(
                         modifier = Modifier.padding(end = 4.dp),
                     )
                     Text(
-                        text = stringResource(R.string.feedback_crash_count, crashReportCount),
+ text = pluralStringResource(R.plurals.feedback_crash_count, crashReportCount),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )

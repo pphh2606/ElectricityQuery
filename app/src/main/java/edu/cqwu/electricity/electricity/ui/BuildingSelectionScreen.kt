@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.electricity.ui
 
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
 
 import androidx.compose.animation.AnimatedVisibility
@@ -143,7 +144,7 @@ private fun ContentArea(
                                         isExpanded = uiState.expandedAreaIds.contains(area.id),
                                         onToggle = { viewModel.toggleArea(area.id) },
                                         onBuildingClick = { building, areaId ->
-                                            viewModel.selectBuilding(building, areaId)
+                                            viewModel.selectBuilding(building)
                                         }
                                     )
                                 }
@@ -306,7 +307,7 @@ private fun FloorRoomGroup(
                             )
                         }
                         is FloorRoomLoadState.Success -> {
-                            Text(stringResource(R.string.building_rooms_count, loadState.rooms.size), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+ Text(pluralStringResource(R.plurals.building_rooms_count, loadState.rooms.size), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         is FloorRoomLoadState.Error -> {
                             Text(stringResource(R.string.common_load_failed), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)

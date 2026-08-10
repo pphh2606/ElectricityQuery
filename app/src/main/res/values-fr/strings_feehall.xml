@@ -36,10 +36,18 @@
     <string name="fee_order_partner">Partenaire</string>
     <string name="fee_hall_no_orders">Aucune commande</string>
     <string name="fee_order_project_name">Nom du projet</string>
-    <string name="fee_order_loaded_count">%1$d chargés</string>
+    <plurals name="fee_order_loaded_count">
+        <item quantity="one">%1$d chargé</item>
+        <item quantity="other">%1$d chargés</item>
+        <item quantity="many">%1$d chargés</item>
+    </plurals>
     <string name="fee_order_page_info">Page %1$d/%2$d</string>
     <string name="fee_order_no_label">N° commande : %1$s</string>
-    <string name="fee_hall_order_all_loaded">— %1$d commandes chargées —</string>
+    <plurals name="fee_hall_order_all_loaded">
+        <item quantity="one">— %1$d commande chargée —</item>
+        <item quantity="other">— %1$d commandes chargées —</item>
+        <item quantity="many">— %1$d commandes chargées —</item>
+    </plurals>
     <string name="fee_order_continue_pay">Continuer le paiement</string>
     <string name="fee_order_close">Fermer la commande</string>
     <string name="fee_order_closing">Fermeture en cours…</string>

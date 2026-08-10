@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.theme.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -90,7 +89,7 @@ fun OpenUrlDialog(
     var useHalfScreen by remember { mutableStateOf(true) }
     var urlError by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
     // 弹窗弹出后自动聚焦输入框
     LaunchedEffect(visible) {
@@ -105,7 +104,7 @@ fun OpenUrlDialog(
         if (isValidUrl(urlInput)) {
             onConfirm(normalizeUrl(urlInput), isInternal, useHalfScreen)
         } else {
-            urlError = context.getString(R.string.open_url_invalid)
+            urlError = resources.getString(R.string.open_url_invalid)
         }
     }
 

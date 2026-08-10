@@ -1,8 +1,5 @@
 package edu.cqwu.electricity.electricity.ui
 
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -21,11 +18,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.MonetizationOn
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MonetizationOn
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SyncAlt
@@ -51,27 +48,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.R
+import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.login.data.AccountManager
+import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
-import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.electricity.ui.MyRoomViewModel
-import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.electricity.ui.RechargeScreen
-import edu.cqwu.electricity.electricity.ui.RechargeViewModel
 import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -117,6 +114,7 @@ fun ElectricityMainScreen(
     val pagerState = rememberPagerState(pageCount = { electricityTabIcons.size })
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val uiState by viewModel.uiState.collectAsState()
     val myRoomState by myRoomViewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -159,9 +157,9 @@ fun ElectricityMainScreen(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
+                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -261,7 +259,7 @@ fun ElectricityMainScreen(
                                     onClick = {
                                         showMyRoomMenu = false
                                         val text = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
-                                        copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
+                                        copyToClipboard(context, text, resources.getString(R.string.dashboard_title), snackbar)
                                     }
                                 )
                                 DropdownMenuItem(
@@ -270,7 +268,7 @@ fun ElectricityMainScreen(
                                     onClick = {
                                         showMyRoomMenu = false
                                         pendingExportText = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
-                                        pendingExportLabel = context.getString(R.string.dashboard_title)
+                                        pendingExportLabel = resources.getString(R.string.dashboard_title)
                                         saveFileLauncher.launch("electricity_dashboard.txt")
                                     }
                                 )
@@ -310,7 +308,6 @@ fun ElectricityMainScreen(
                         DashboardScreen(
                             room = room,
                             balance = balance,
-                            myRoomList = emptyList(),
                             isRefreshing = uiState.isBalanceRefreshing,
                             isLoading = uiState.isLoading,
                             error = uiState.error,
@@ -379,7 +376,7 @@ fun ElectricityMainScreen(
                             )
                             context.startActivity(intent)
                         } catch (_: ActivityNotFoundException) {
-                            snackbar.show(context.getString(R.string.common_no_browser))
+                            snackbar.show(resources.getString(R.string.common_no_browser))
                         }
                     }
                 )
@@ -435,7 +432,7 @@ fun ElectricityMainScreen(
                 TextButton(onClick = {
                     showRoomSwitchSheet = false
                     nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
-                        context.getString(R.string.electricity_bind_account)))
+                        resources.getString(R.string.electricity_bind_account)))
                 }) {
                     Text(stringResource(R.string.electricity_bind_account))
                 }
@@ -444,7 +441,7 @@ fun ElectricityMainScreen(
                 TextButton(onClick = {
                     showRoomSwitchSheet = false
                     nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
-                        context.getString(R.string.electricity_unbind_account)))
+                        resources.getString(R.string.electricity_unbind_account)))
                 }) {
                     Text(stringResource(R.string.electricity_unbind_account))
                 }
@@ -529,12 +526,10 @@ private fun MyRoomDashboardTab(
         DashboardScreen(
             room = uiState.selectedRoom,
             balance = uiState.balance,
-            myRoomList = uiState.myRoomList,
             isRefreshing = uiState.isBalanceRefreshing,
             isLoading = false,
             error = uiState.error,
             onRefresh = { viewModel.refreshBalance() },
-            onSwitchRoom = { viewModel.switchToMyRoom(it) },
         )
     }
 }

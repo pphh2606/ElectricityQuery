@@ -21,14 +21,6 @@ object WebViewUrlUtil {
 
     const val DOMAIN_ELECTRICITYPAY = "electricitypay.cqwu.edu.cn"
     const val DOMAIN_AUTHSERVER = "authserver"
-    const val DOMAIN_WX_TENPAY = "wx.tenpay.com"
-    const val DOMAIN_MCH_TENPAY = "mch.tenpay.com"
-    const val DOMAIN_ALIPAY_MCLIENT = "mclient.alipay.com"
-    const val DOMAIN_ALIPAY_RENDER = "render.alipay.com"
-    const val DOMAIN_ALIPAY = "alipay"
-    const val DOMAIN_PAY_CQWU = "pay.cqwu.edu.cn"
-    const val PATH_SHOWSELECT = "showselect"
-    const val PATH_PAY_PRE_SERVICE = "PayPreService"
 
     // ──────────── URL 判断方法 ────────────
 

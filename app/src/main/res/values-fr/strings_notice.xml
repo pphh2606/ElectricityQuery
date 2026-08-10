@@ -4,9 +4,17 @@
     <!--  Avis                                       -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="notice_title">Avis</string>
-    <string name="notice_total_count">%1$d avis au total</string>
+    <plurals name="notice_total_count">
+        <item quantity="one">%1$d avis au total</item>
+        <item quantity="other">%1$d avis au total</item>
+        <item quantity="many">%1$d avis au total</item>
+    </plurals>
     <string name="notice_search_hint">Rechercher des avis</string>
-    <string name="notice_search_result">« %1$s » : %2$d résultats</string>
+    <plurals name="notice_search_result">
+        <item quantity="one">« %1$s » : %2$d résultat</item>
+        <item quantity="other">« %1$s » : %2$d résultats</item>
+        <item quantity="many">« %1$s » : %2$d résultats</item>
+    </plurals>
     <string name="notice_detail_title">Détail de l\'avis</string>
     <string name="notice_loading_detail">Chargement des détails…</string>
     <string name="notice_publisher">Émetteur</string>

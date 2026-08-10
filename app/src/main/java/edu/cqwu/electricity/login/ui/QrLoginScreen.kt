@@ -1,15 +1,11 @@
 package edu.cqwu.electricity.login.ui
 
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
-import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.WindowManager
@@ -24,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -51,20 +48,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.ui.unit.dp
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.AccountStore
-import edu.cqwu.electricity.settings.data.QrCodeColorMode
 import edu.cqwu.electricity.login.data.QrLoginApi
-import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.QrCodeView
+import edu.cqwu.electricity.settings.data.QrCodeColorMode
 import edu.cqwu.electricity.theme.ui.LocalQrCodeSettings
+import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
+import edu.cqwu.electricity.theme.ui.QrCodeView
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
@@ -77,7 +75,7 @@ import kotlinx.coroutines.withContext
  */
 private sealed class QrLoginUiState {
     data object Initializing : QrLoginUiState()        // 初始化中（由 PullToRefreshBox 指示器替代加载动画）
-    data class Ready(val lt: String, val execution: String) : QrLoginUiState()  // 已获取二维码
+    data object Ready : QrLoginUiState()  // 已获取二维码
     data object Scanned : QrLoginUiState()             // 已扫码，待确认
     data object Confirmed : QrLoginUiState()           // 已确认，正在提交
     data class Error(val message: String) : QrLoginUiState()  // 错误
@@ -106,6 +104,7 @@ fun QrLoginScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val api = remember { QrLoginApi() }
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val snackbar = LocalSnackbarController.current
@@ -168,7 +167,7 @@ fun QrLoginScreen(
             // Step 1: 获取登录页，解析 lt/execution
             val pageResult = api.fetchLoginPage()
             if (pageResult.isFailure) {
-                uiState = QrLoginUiState.Error(pageResult.exceptionOrNull()?.message ?: context.getString(R.string.login_get_page_failed))
+                uiState = QrLoginUiState.Error(pageResult.exceptionOrNull()?.message ?: resources.getString(R.string.login_get_page_failed))
                 isRefreshing = false
                 return@launch
             }
@@ -177,7 +176,7 @@ fun QrLoginScreen(
             // Step 2: 获取二维码 UUID
             val uuidResult = api.fetchQrCodeUuid()
             if (uuidResult.isFailure) {
-                uiState = QrLoginUiState.Error(uuidResult.exceptionOrNull()?.message ?: context.getString(R.string.qrcode_fetch_failed))
+                uiState = QrLoginUiState.Error(uuidResult.exceptionOrNull()?.message ?: resources.getString(R.string.qrcode_fetch_failed))
                 isRefreshing = false
                 return@launch
             }
@@ -186,13 +185,13 @@ fun QrLoginScreen(
             // Step 2.5: 下载二维码图片并解码为内容字符串
             val decodeResult = api.downloadAndDecodeQrCode(uuid)
             if (decodeResult.isFailure) {
-                uiState = QrLoginUiState.Error(decodeResult.exceptionOrNull()?.message ?: context.getString(R.string.qrcode_decode_failed))
+                uiState = QrLoginUiState.Error(decodeResult.exceptionOrNull()?.message ?: resources.getString(R.string.qrcode_decode_failed))
                 isRefreshing = false
                 return@launch
             }
             qrCodeDecodedContent = decodeResult.getOrThrow()
 
-            uiState = QrLoginUiState.Ready(lt = pageData.lt, execution = pageData.execution)
+            uiState = QrLoginUiState.Ready
             isRefreshing = false
 
             // Step 3: 轮询扫码状态（与 uiState 解耦，始终运行直到 break）
@@ -225,17 +224,17 @@ fun QrLoginScreen(
                                     android.util.Log.w("QrLoginScreen", "保存用户到 AccountStore 失败", e)
                                 }
                             }
-                            snackbar.show(context.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
+                            snackbar.show(resources.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
                             onLoginSuccess()
                         } else {
                             uiState = QrLoginUiState.Error(
-                                submitResult.exceptionOrNull()?.message ?: context.getString(R.string.login_failed)
+                                submitResult.exceptionOrNull()?.message ?: resources.getString(R.string.login_failed)
                             )
                         }
                         break
                     }
                     "3" -> {
-                        uiState = QrLoginUiState.Error(context.getString(R.string.login_qr_expired))
+                        uiState = QrLoginUiState.Error(resources.getString(R.string.login_qr_expired))
                         break
                     }
                 }
@@ -388,9 +387,9 @@ fun QrLoginScreen(
                                                     saveQrCodeToGallery(context, content)
                                                 }
                                                 if (success) {
-                                                    snackbar.show(context.getString(R.string.qrcode_save_success), ToastUtils.Type.SUCCESS)
+                                                    snackbar.show(resources.getString(R.string.qrcode_save_success), ToastUtils.Type.SUCCESS)
                                                 } else {
-                                                    snackbar.show(context.getString(R.string.qrcode_save_failed), ToastUtils.Type.ERROR)
+                                                    snackbar.show(resources.getString(R.string.qrcode_save_failed), ToastUtils.Type.ERROR)
                                                 }
                                             }
                                         }
@@ -503,9 +502,9 @@ fun QrLoginScreen(
  * 生成二维码 Bitmap。
  * 使用 ZXing QRCodeWriter 编码内容，生成指定尺寸的纯黑白二维码图片。
  */
-private fun generateQrCodeBitmap(content: String, size: Int): Bitmap? {
+private fun generateQrCodeBitmap(content: String): Bitmap? {
     return try {
-        val bitMatrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size)
+        val bitMatrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, 512, 512)
         val w = bitMatrix.width
         val h = bitMatrix.height
         val pixels = IntArray(w * h)
@@ -535,7 +534,7 @@ private fun generateQrCodeBitmap(content: String, size: Int): Bitmap? {
  */
 private fun saveQrCodeToGallery(context: Context, content: String): Boolean {
     return try {
-        val bitmap = generateQrCodeBitmap(content, 512) ?: return false
+        val bitmap = generateQrCodeBitmap(content) ?: return false
 
         val filename = "QR_Login_${System.currentTimeMillis()}.png"
         val contentValues = ContentValues().apply {

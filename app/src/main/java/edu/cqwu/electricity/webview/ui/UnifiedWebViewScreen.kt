@@ -57,6 +57,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
@@ -119,6 +120,7 @@ fun UnifiedWebViewScreen(
     // 控制三点溢出菜单
     var showMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val resources = LocalResources.current
 
     // ═══ 文件上传回调 ═══
     var fileUploadCallback by remember { mutableStateOf<ValueCallback<Array<Uri>>?>(null) }
@@ -259,9 +261,9 @@ fun UnifiedWebViewScreen(
                                     showMenu = false
                                     val url = webViewRef.value?.url ?: return@DropdownMenuItem
                                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                                    val clip = android.content.ClipData.newPlainText(context.getString(R.string.webview_clip_label), url)
+                                    val clip = android.content.ClipData.newPlainText(resources.getString(R.string.webview_clip_label), url)
                                     clipboard.setPrimaryClip(clip)
-                                    snackbar.show(context.getString(R.string.webview_link_copied), ToastUtils.Type.SUCCESS)
+                                    snackbar.show(resources.getString(R.string.webview_link_copied), ToastUtils.Type.SUCCESS)
                                 }
                             )
                             DropdownMenuItem(
@@ -275,7 +277,7 @@ fun UnifiedWebViewScreen(
                                         putExtra(Intent.EXTRA_TEXT, url)
                                         type = "text/plain"
                                     }
-                                    context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.webview_share_link)))
+                                    context.startActivity(Intent.createChooser(sendIntent, resources.getString(R.string.webview_share_link)))
                                 }
                             )
                             DropdownMenuItem(
@@ -303,7 +305,7 @@ fun UnifiedWebViewScreen(
                                         WebVpnEncoder.toggle(currentUrl)
                                     } catch (e: Exception) {
                                         Log.e("WebView_DIAG", "URL 切换失败: ${e.message}")
-                                        snackbar.show(context.getString(R.string.webview_url_change_failed), ToastUtils.Type.ERROR)
+                                        snackbar.show(resources.getString(R.string.webview_url_change_failed), ToastUtils.Type.ERROR)
                                         null
                                     }
                                     if (toggledUrl != null) {
@@ -634,7 +636,7 @@ fun UnifiedWebViewScreen(
                         try {
                             context.startActivity(Intent(android.provider.Settings.ACTION_WIFI_SETTINGS))
                         } catch (_: ActivityNotFoundException) {
-                            snackbar.show(context.getString(R.string.webview_cannot_open_network_settings), ToastUtils.Type.ERROR)
+                            snackbar.show(resources.getString(R.string.webview_cannot_open_network_settings), ToastUtils.Type.ERROR)
                         }
                     }
                 )

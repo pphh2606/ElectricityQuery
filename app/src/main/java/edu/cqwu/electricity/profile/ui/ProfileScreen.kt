@@ -1,9 +1,6 @@
 package edu.cqwu.electricity.profile.ui
 
 import android.util.Log
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,52 +19,56 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.AddToHomeScreen
 import androidx.compose.material.icons.outlined.BrightnessAuto
 import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.AddToHomeScreen
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Surface
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import edu.cqwu.electricity.settings.data.NightMode
-import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalNightModeState
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import edu.cqwu.electricity.login.data.AccountStore
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import edu.cqwu.electricity.R
+import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.login.data.AccountManager
-import edu.cqwu.electricity.network.WebVpnEncoder
-import edu.cqwu.electricity.theme.ui.OpenUrlDialog
+import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.login.ui.AccountManagerSheet
+import edu.cqwu.electricity.network.WebVpnEncoder
+import edu.cqwu.electricity.settings.data.NightMode
+import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.LocalNightModeState
+import edu.cqwu.electricity.theme.ui.LocalTopBarState
+import edu.cqwu.electricity.theme.ui.OpenUrlDialog
+import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * 「我的」页面 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
@@ -135,11 +135,12 @@ fun ProfilePageContent(
     }
     val nav = LocalNavController.current
     val context = LocalContext.current
+    val resources = LocalResources.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
     var showAccountManagerSheet by remember { mutableStateOf(false) }
 
     // 响应式刷新用户名：页面从后台恢复时重新读取（支持切换账号后自动更新）
-    var usernameRefreshKey by remember { mutableStateOf(0) }
+    var usernameRefreshKey by remember { mutableIntStateOf(0) }
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -331,7 +332,7 @@ fun ProfilePageContent(
             } else {
                 url
             }
-            val title = context.getString(R.string.profile_open_url)
+            val title = resources.getString(R.string.profile_open_url)
             if (useHalfScreen) {
                 onOpenHalfScreen(finalUrl, title)
             } else {

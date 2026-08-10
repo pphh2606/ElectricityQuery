@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -88,6 +89,7 @@ fun CardRechargeScreen(
     val snackbar = LocalSnackbarController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val context = LocalContext.current
+    val resources = LocalResources.current
     val nav = LocalNavController.current
 
     // ── 其他充值方式弹窗状态 ──
@@ -323,7 +325,7 @@ fun CardRechargeScreen(
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
                     context.startActivity(intent)
                 } catch (_: ActivityNotFoundException) {
-                    snackbar.show(context.getString(R.string.recharge_install_campus_app))
+                    snackbar.show(resources.getString(R.string.recharge_install_campus_app))
                 }
                 showOtherRechargeDialog = false
             }
@@ -335,7 +337,7 @@ fun CardRechargeScreen(
             title = stringResource(R.string.recharge_method_inapp_h5),
             onClick = {
                 showOtherRechargeDialog = false
-                nav.navigate(Routes.unifiedWebViewRoute(cardRechargeH5Url, context.getString(R.string.card_center_recharge)))
+                nav.navigate(Routes.unifiedWebViewRoute(cardRechargeH5Url, resources.getString(R.string.card_center_recharge)))
             }
         )
 
@@ -351,7 +353,7 @@ fun CardRechargeScreen(
                     )
                     context.startActivity(intent)
                 } catch (_: ActivityNotFoundException) {
-                    snackbar.show(context.getString(R.string.common_no_browser))
+                    snackbar.show(resources.getString(R.string.common_no_browser))
                 }
                 showOtherRechargeDialog = false
             }

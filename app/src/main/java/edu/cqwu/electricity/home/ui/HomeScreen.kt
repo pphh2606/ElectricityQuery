@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.home.ui
 
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
 
 import android.content.ActivityNotFoundException
@@ -71,6 +72,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -224,6 +226,7 @@ fun HomePageContent(
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
     val listState = rememberLazyListState()
@@ -301,10 +304,10 @@ fun HomePageContent(
                     Log.w(TAG, "降级 campusnextins:// 也失败: ${e2.message}")
                 }
             }
-            snackbar.show(context.getString(R.string.home_install_campus_app, appName), ToastUtils.Type.ERROR)
+            snackbar.show(resources.getString(R.string.home_install_campus_app, appName), ToastUtils.Type.ERROR)
         } catch (e: Exception) {
             Log.e(TAG, "打开外部应用异常: ${e.message}")
-            snackbar.show(context.getString(R.string.home_open_failed, e.message ?: ""), ToastUtils.Type.ERROR)
+            snackbar.show(resources.getString(R.string.home_open_failed, e.message ?: ""), ToastUtils.Type.ERROR)
         }
     }
 
@@ -377,7 +380,7 @@ fun HomePageContent(
                             // 搜索结果标题
                             item(key = "search_header") {
                                 Text(
-                                    text = stringResource(R.string.home_search_result, filteredApps.size),
+ text = pluralStringResource(R.plurals.home_search_result, filteredApps.size),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface,

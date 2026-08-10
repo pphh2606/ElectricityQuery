@@ -2,7 +2,6 @@ package edu.cqwu.electricity.cardcenter.data
 
 import android.util.Log
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import edu.cqwu.electricity.payment.data.ApiResponse
 import edu.cqwu.electricity.payment.data.PayApiBase
 import edu.cqwu.electricity.feeservicehall.data.ApiBusinessException
@@ -57,32 +56,6 @@ class CardRechargeApi : PayApiBase() {
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "queryBasicInfo 失败", e)
-                Result.failure(e)
-            }
-        }
-    }
-
-    /**
-     * 查询可用支付渠道
-     */
-    suspend fun queryTradeChannels(
-        projectId: String = PROJECT_ID
-    ): Result<List<CardPaymentChannel>> = autoRetry {
-        withContext(Dispatchers.IO) {
-            try {
-                val url = "$PAY_DOMAIN/api/pay/open/pay/payrouterref/queryTradeChannel/$projectId/H5"
-                val request = buildBaseRequest(url).build()
-                val response = client.newCall(request).execute()
-                val body = response.body.string()
-                val listType = TypeToken.getParameterized(List::class.java, CardPaymentChannel::class.java).type
-                val parsed: ApiResponse<List<CardPaymentChannel>> = parseApiResponse(body, listType)
-                if (parsed.messageCode == "0") {
-                    Result.success(parsed.data ?: emptyList())
-                } else {
-                    Result.failure(ApiBusinessException(parsed.message))
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "queryTradeChannels 失败", e)
                 Result.failure(e)
             }
         }
@@ -230,17 +203,6 @@ data class CardRechargeOrderResult(
 )
 
 /**
- * 支付渠道（queryTradeChannel 响应）
- */
-data class CardPaymentChannel(
-    @SerializedName("id") val id: String,
-    @SerializedName("channelName") val channelName: String,
-    @SerializedName("code") val code: String,
-    @SerializedName("imageUrl") val imageUrl: String?,
-    @SerializedName("interfaceType") val interfaceType: String,
-)
-
-/**
  * 支付提交结果（toPayOrderTrade 响应）
  */
 data class CardPaymentResult(
@@ -262,9 +224,7 @@ data class CardOrderStatus(
     @SerializedName("amount") val amount: Long,
     @SerializedName("productDesc") val productDesc: String?,
     @SerializedName("schdualCloseTime") val schdualCloseTime: String?,
-) {
-
-}
+)
 
 // ═══════════════════════════════════════════
 //  内部数据结构（createOrder 嵌套 data）

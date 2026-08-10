@@ -45,14 +45,14 @@ object RedirectChainFollower {
             ).execute()
 
             response.use {
-                when {
-                    it.code in 300..399 -> {
+                when (it.code) {
+                    in 300..399 -> {
                         val location = it.header("Location")
                             ?: throw IOException("redirect missing Location: $currentUrl")
                         currentUrl = resolve(currentUrl, location)
                         redirectCount++
                     }
-                    it.code in 200..299 -> {
+                    in 200..299 -> {
                         val body = it.body.string()
                         if (HtmlFormParser.isCasLoginPage(body)) {
                             return currentUrl to body

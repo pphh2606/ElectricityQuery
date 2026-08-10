@@ -83,7 +83,7 @@ class FeeServiceHallViewModel : ViewModel() {
                 cal.add(Calendar.YEAR, -4)
                 val start = dateFormat.format(cal.time)
                 _uiState.update { it.copy(filterStartDate = start, filterEndDate = end) }
-                loadOrders(isRefresh = true)
+                loadOrders()
             }
             2 -> if (!hasLoadedProfile) { hasLoadedProfile = true; loadProfile() }
         }
@@ -113,12 +113,11 @@ class FeeServiceHallViewModel : ViewModel() {
     }
 
     // ── 订单 ──
-    private fun loadOrders(isRefresh: Boolean) {
+    private fun loadOrders() {
         viewModelScope.launch {
             val s = _uiState.value
             _uiState.update {
-                if (isRefresh) it.copy(isOrdersRefreshing = true, orderErrorMessage = null)
-                else it.copy(isOrdersLoading = true, orderErrorMessage = null)
+                it.copy(isOrdersRefreshing = true, orderErrorMessage = null)
             }
             api.fetchOrders(1, 10, s.filterProjectName, "", s.filterStartDate, s.filterEndDate)
                 .onSuccess { page ->
@@ -155,7 +154,7 @@ class FeeServiceHallViewModel : ViewModel() {
         }
     }
 
-    fun refreshOrders() { loadOrders(isRefresh = true) }
+    fun refreshOrders() { loadOrders() }
 
     /** 关闭订单 */
     fun closeOrder(orderId: String) {
@@ -180,14 +179,14 @@ class FeeServiceHallViewModel : ViewModel() {
     fun setOrderFilterProjectName(n: String) { _uiState.update { it.copy(filterProjectName = n) } }
     fun setOrderFilterStartDate(d: String) { _uiState.update { it.copy(filterStartDate = d) } }
     fun setOrderFilterEndDate(d: String) { _uiState.update { it.copy(filterEndDate = d) } }
-    fun applyOrderFilter() { _uiState.update { it.copy(showOrderFilter = false) }; loadOrders(isRefresh = true) }
+    fun applyOrderFilter() { _uiState.update { it.copy(showOrderFilter = false) }; loadOrders() }
     fun resetOrderFilter() {
         val cal = Calendar.getInstance()
         val end = dateFormat.format(cal.time)
         cal.add(Calendar.YEAR, -4)
         val start = dateFormat.format(cal.time)
         _uiState.update { it.copy(filterProjectName = "", filterStartDate = start, filterEndDate = end, showOrderFilter = false) }
-        loadOrders(isRefresh = true)
+        loadOrders()
     }
 
     // ── 个人资料 ──

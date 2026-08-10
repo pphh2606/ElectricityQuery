@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -44,7 +45,7 @@ fun AccountManagerSheet(
     val accountStore = remember { AccountStore.getInstance(context) }
 
     // 账号列表刷新触发器
-    var refreshTrigger by remember { mutableStateOf(0) }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
     val accounts = remember(refreshTrigger) { accountStore.getAllAccounts() }
     val activeUser = remember(refreshTrigger) { AccountManager.getActiveUser() }
 

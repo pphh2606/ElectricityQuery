@@ -6,7 +6,11 @@
     <string name="home_title">Accueil</string>
     <string name="home_search_apps">Rechercher des applications…</string>
     <string name="home_no_match">Aucune application trouvée</string>
-    <string name="home_search_result">Résultats (%1$d)</string>
+    <plurals name="home_search_result">
+        <item quantity="one">Résultat (%1$d)</item>
+        <item quantity="other">Résultats (%1$d)</item>
+        <item quantity="many">Résultats (%1$d)</item>
+    </plurals>
     <string name="home_my_services">Mes services</string>
     <string name="home_custom_website">Site personnalisé</string>
     <string name="home_external_app_title">Ouvrir une application externe</string>

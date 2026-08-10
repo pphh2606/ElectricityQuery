@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.LocaleList
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -168,6 +169,7 @@ class SettingsPreferences(context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun getPlatformAppLanguage(): AppLanguage {
         val localeManager = appContext.getSystemService(LocaleManager::class.java)
         val applicationLocales = localeManager.applicationLocales
@@ -178,6 +180,7 @@ class SettingsPreferences(context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setPlatformAppLanguage(language: AppLanguage) {
         val localeManager = appContext.getSystemService(LocaleManager::class.java)
         val localeList = language.localeTag?.let { LocaleList.forLanguageTags(it) }

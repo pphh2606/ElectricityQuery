@@ -6,7 +6,14 @@
     <string name="home_title">الرئيسية</string>
     <string name="home_search_apps">بحث في التطبيقات…</string>
     <string name="home_no_match">لا توجد تطبيقات مطابقة</string>
-    <string name="home_search_result">نتائج البحث (%1$d)</string>
+    <plurals name="home_search_result">
+        <item quantity="one">نتائج البحث (%1$d)</item>
+        <item quantity="other">نتائج البحث (%1$d)</item>
+        <item quantity="zero">نتائج البحث (%1$d)</item>
+        <item quantity="two">نتائج البحث (%1$d)</item>
+        <item quantity="few">نتائج البحث (%1$d)</item>
+        <item quantity="many">نتائج البحث (%1$d)</item>
+    </plurals>
     <string name="home_my_services">خدماتي</string>
     <string name="home_custom_website">موقع مخصص</string>
     <string name="home_external_app_title">فتح تطبيق خارجي</string>

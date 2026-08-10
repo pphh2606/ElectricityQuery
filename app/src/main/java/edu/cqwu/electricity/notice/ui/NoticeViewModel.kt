@@ -2,6 +2,7 @@ package edu.cqwu.electricity.notice.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import edu.cqwu.electricity.notice.data.NoticeApi
@@ -21,9 +22,9 @@ class NoticeViewModel : ViewModel() {
     // ── 列表状态（使用 mutableStateOf 使 Compose 可观察）──
     var items by mutableStateOf<List<NoticeItem>>(emptyList())
         private set
-    var currentPage by mutableStateOf(0)
+    var currentPage by mutableIntStateOf(0)
         private set
-    var totalItem by mutableStateOf(0)
+    var totalItem by mutableIntStateOf(0)
         private set
     var isLoading by mutableStateOf(true)
         private set

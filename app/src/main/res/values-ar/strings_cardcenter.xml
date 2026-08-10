@@ -34,7 +34,14 @@
     <string name="bill_income">دخل</string>
     <string name="bill_expense">مصروف</string>
     <string name="bill_fetching">جارٍ الجلب… %1$d ث</string>
-    <string name="bill_loaded_count">تم تحميل %1$d</string>
+    <plurals name="bill_loaded_count">
+        <item quantity="one">تم تحميل %1$d</item>
+        <item quantity="other">تم تحميل %1$d</item>
+        <item quantity="zero">تم تحميل %1$d</item>
+        <item quantity="two">تم تحميل %1$d</item>
+        <item quantity="few">تم تحميل %1$d</item>
+        <item quantity="many">تم تحميل %1$d</item>
+    </plurals>
     <string name="bill_start_date">تاريخ البداية</string>
     <string name="bill_end_date">تاريخ النهاية</string>
     <string name="bill_page_info">صفحة %1$d/%2$d</string>
@@ -52,7 +59,14 @@
     <string name="bill_no_failed">لا توجد معاملات فاشلة</string>
     <string name="bill_no_records">لا توجد معاملات</string>
     <string name="bill_capped_hint">— عرض آخر 100 فقط، للمزيد زر النسخة الويب —</string>
-    <string name="bill_all_loaded">— تم تحميل %1$d —</string>
+    <plurals name="bill_all_loaded">
+        <item quantity="one">— تم تحميل %1$d —</item>
+        <item quantity="other">— تم تحميل %1$d —</item>
+        <item quantity="zero">— تم تحميل %1$d —</item>
+        <item quantity="two">— تم تحميل %1$d —</item>
+        <item quantity="few">— تم تحميل %1$d —</item>
+        <item quantity="many">— تم تحميل %1$d —</item>
+    </plurals>
     <string name="bill_hint_title">نصائح</string>
     <string name="bill_hint_item1">بسبب قيود النظام، يستغرق تحميل جميع الفواتير حوالي 3 ثوانٍ، وتحميل آخر 3 عناصر يستغرق حوالي 15 ثانية. كما يستغرق استخدام وظيفة التصفية وقتًا طويلًا.</string>
     <string name="bill_hint_item2">البيانات مستخرجة من موقع المدرسة H5 وموقع سطح المكتب، ومقدمة «كما هي».</string>
@@ -74,7 +88,6 @@
     <string name="card_recharge_student_id_placeholder">أدخل الرقم الجامعي</string>
     <string name="card_recharge_custom_amount_label">مبلغ مخصص</string>
     <string name="card_recharge_custom_amount_placeholder">أدخل مبلغًا آخر</string>
-    <string name="card_recharge_creating_order">جارٍ إنشاء الطلب…</string>
     <string name="card_recharge_next_step">التالي</string>
     <string name="card_recharge_info_name">الاسم</string>
     <string name="card_recharge_info_student_id">الرقم الجامعي</string>

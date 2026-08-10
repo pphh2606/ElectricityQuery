@@ -4,9 +4,23 @@
     <!--  الإشعارات                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="notice_title">الإشعارات</string>
-    <string name="notice_total_count">إجمالي %1$d إشعارًا</string>
+    <plurals name="notice_total_count">
+        <item quantity="one">إجمالي %1$d إشعارًا</item>
+        <item quantity="other">إجمالي %1$d إشعارًا</item>
+        <item quantity="zero">إجمالي %1$d إشعارًا</item>
+        <item quantity="two">إجمالي %1$d إشعارًا</item>
+        <item quantity="few">إجمالي %1$d إشعارًا</item>
+        <item quantity="many">إجمالي %1$d إشعارًا</item>
+    </plurals>
     <string name="notice_search_hint">بحث في الإشعارات</string>
-    <string name="notice_search_result">«%1$s»: %2$d نتيجة</string>
+    <plurals name="notice_search_result">
+        <item quantity="one">«%1$s»: %2$d نتيجة</item>
+        <item quantity="other">«%1$s»: %2$d نتيجة</item>
+        <item quantity="zero">«%1$s»: %2$d نتيجة</item>
+        <item quantity="two">«%1$s»: %2$d نتيجة</item>
+        <item quantity="few">«%1$s»: %2$d نتيجة</item>
+        <item quantity="many">«%1$s»: %2$d نتيجة</item>
+    </plurals>
     <string name="notice_detail_title">تفاصيل الإشعار</string>
     <string name="notice_loading_detail">جارٍ تحميل التفاصيل…</string>
     <string name="notice_publisher">جهة الإصدار</string>

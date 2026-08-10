@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -83,6 +84,7 @@ fun AddShortcutScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
     val scope = rememberCoroutineScope()
@@ -102,7 +104,7 @@ fun AddShortcutScreen(
         result.onSuccess { categories = it }
             .onFailure { e ->
                 loadError = e.message ?: "加载失败"
-                snackbar.show(context.getString(R.string.common_load_failed), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_load_failed), ToastUtils.Type.ERROR)
             }
         isLoading = false
     }
@@ -252,7 +254,7 @@ fun AddShortcutScreen(
                             val app = selectedApp
                             if (app == null) {
                                 snackbar.show(
-                                    context.getString(R.string.shortcut_no_function_selected),
+                                    resources.getString(R.string.shortcut_no_function_selected),
                                     ToastUtils.Type.ERROR
                                 )
                                 return@Button
@@ -269,7 +271,7 @@ fun AddShortcutScreen(
                                 when (val result = ShortcutHelper.createPinnedShortcut(context, appInfo, label)) {
                                     is ShortcutHelper.CreateResult.Success -> {
                                         snackbar.show(
-                                            context.getString(R.string.shortcut_success),
+                                            resources.getString(R.string.shortcut_success),
                                             ToastUtils.Type.SUCCESS
                                         )
                                         isCreating = false
@@ -279,14 +281,14 @@ fun AddShortcutScreen(
                                     is ShortcutHelper.CreateResult.NotSupported -> {
                                         isCreating = false
                                         snackbar.show(
-                                            context.getString(R.string.shortcut_not_supported),
+                                            resources.getString(R.string.shortcut_not_supported),
                                             ToastUtils.Type.ERROR
                                         )
                                     }
                                     is ShortcutHelper.CreateResult.Failed -> {
                                         isCreating = false
                                         snackbar.show(
-                                            context.getString(R.string.shortcut_permission_hint),
+                                            resources.getString(R.string.shortcut_permission_hint),
                                             ToastUtils.Type.ERROR
                                         )
                                     }

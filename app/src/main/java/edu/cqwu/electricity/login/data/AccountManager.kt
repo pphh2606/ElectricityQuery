@@ -1,9 +1,6 @@
 package edu.cqwu.electricity.login.data
 
 import android.util.Log
-import edu.cqwu.electricity.login.data.CookieStore
-import edu.cqwu.electricity.login.data.UserCookieStore
-import kotlin.collections.iterator
 
 /**
  * 自动切换结果

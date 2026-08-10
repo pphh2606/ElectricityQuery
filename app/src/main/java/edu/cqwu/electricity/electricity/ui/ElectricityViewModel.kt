@@ -130,7 +130,7 @@ class ElectricityViewModel(
         request = { api.getAreas() }
     )
 
-    fun selectBuilding(building: BuildingNode, areaId: String) {
+    fun selectBuilding(building: BuildingNode) {
         val floors = building.children ?: emptyList()
         _uiState.update {
             Log.d("DEBUG_expand", "selectBuilding BEFORE: expandedAreaIds=${it.expandedAreaIds}")

@@ -51,28 +51,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.login.data.AccountManager
+import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
-import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
 
 /**
@@ -94,6 +90,7 @@ fun RechargeScreen(
 ) {
     val recharge by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
 
@@ -327,7 +324,7 @@ fun RechargeScreen(
                                             } else {
                                                 Text(
                                                     text = recharge.balance?.let {
-                                                        String.format("%.2f", it.userBalance)
+                                                        String.format(Locale.US, "%.2f", it.userBalance)
                                                     } ?: stringResource(R.string.common_loading),
                                                     style = MaterialTheme.typography.bodyLarge,
                                                     fontWeight = FontWeight.SemiBold,
@@ -453,7 +450,7 @@ fun RechargeScreen(
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
                         context.startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
-                        snackbar.show(context.getString(R.string.recharge_install_campus_app))
+                        snackbar.show(resources.getString(R.string.recharge_install_campus_app))
                     }
                     showOtherRechargeDialog = false
                 }
@@ -481,7 +478,7 @@ fun RechargeScreen(
                         )
                         context.startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
-                        snackbar.show(context.getString(R.string.common_no_browser))
+                        snackbar.show(resources.getString(R.string.common_no_browser))
                     }
                     showOtherRechargeDialog = false
                 }
@@ -557,7 +554,7 @@ private fun RoomSelectionDialog(
     onDismiss: () -> Unit,
     onNavigateToWebView: (String, String) -> Unit = { _, _ -> }
 ) {
-    val context = LocalContext.current
+    val resources = LocalResources.current
     BottomSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
@@ -566,7 +563,7 @@ private fun RoomSelectionDialog(
             TextButton(onClick = {
                 onDismiss()
                 onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
-                    context.getString(R.string.electricity_bind_account))
+                    resources.getString(R.string.electricity_bind_account))
             }) {
                 Text(stringResource(R.string.electricity_bind_account))
             }
@@ -575,7 +572,7 @@ private fun RoomSelectionDialog(
             TextButton(onClick = {
                 onDismiss()
                 onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
-                    context.getString(R.string.electricity_unbind_account))
+                    resources.getString(R.string.electricity_unbind_account))
             }) {
                 Text(stringResource(R.string.electricity_unbind_account))
             }

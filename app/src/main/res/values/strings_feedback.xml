@@ -5,7 +5,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="feedback_title">意见反馈</string>
     <string name="feedback_attach_log">附带应用日志（含崩溃记录）</string>
-    <string name="feedback_crash_count">存在 %1$d 条历史崩溃记录，发送时将自动附带</string>
+    <plurals name="feedback_crash_count">
+        <item quantity="other">存在 %1$d 条历史崩溃记录，发送时将自动附带</item>
+    </plurals>
     <string name="feedback_log_preview">日志预览</string>
     <string name="feedback_title_label">标题（可选）</string>
     <string name="feedback_content_label">反馈内容</string>

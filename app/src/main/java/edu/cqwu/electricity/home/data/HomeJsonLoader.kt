@@ -2,8 +2,6 @@ package edu.cqwu.electricity.home.data
 
 import android.content.Context
 import com.google.gson.Gson
-import edu.cqwu.electricity.home.data.HomeCategory
-import edu.cqwu.electricity.home.data.HomeResponse
 import java.io.IOException
 
 class HomeJsonLoader(private val context: Context) {

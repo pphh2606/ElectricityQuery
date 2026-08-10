@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.feeservicehall.ui
 
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.DatePickerField
 import androidx.compose.animation.AnimatedVisibility
@@ -49,6 +50,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 
@@ -220,7 +222,7 @@ private fun OrderStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(stringResource(R.string.fee_order_loaded_count, loadedCount), style = MaterialTheme.typography.bodySmall,
+ Text(pluralStringResource(R.plurals.fee_order_loaded_count, loadedCount), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(stringResource(R.string.fee_order_page_info, currentPage, totalPages), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -229,7 +231,7 @@ private fun OrderStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int) {
 
 @Composable
 private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
-    val amountText = String.format("%.2f", order.amountYuan)
+    val amountText = String.format(Locale.US, "%.2f", order.amountYuan)
     val statusColor = when (order.status) {
         "COMPLETED" -> Color(0xFF4CAF50)
         "PENDING", "PENDING_PAYMENT" -> Color(0xFFFF9800)
@@ -305,7 +307,7 @@ private fun OrderFooterContent(uiState: FeeServiceHallUiState, onLoadMore: () ->
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
             )
         } else if (uiState.orders.isNotEmpty()) {
-            Text(stringResource(R.string.fee_hall_order_all_loaded, uiState.orders.size),
+ Text(pluralStringResource(R.plurals.fee_hall_order_all_loaded, uiState.orders.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

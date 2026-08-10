@@ -53,15 +53,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.DetailType
-import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.electricity.data.displayName
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.app.Routes
@@ -76,24 +77,20 @@ import edu.cqwu.electricity.theme.util.ToastUtils
  *
  * @param room 当前选中的房间（可能为 null）
  * @param balance 余额数据（可能为 null，表示加载中或查询失败）
- * @param myRoomList 我的寝室房间列表（查询 Tab 传入空列表即可）
  * @param isRefreshing 当前是否正在刷新
  * @param isLoading 当前是否正在加载
  * @param error 错误信息
  * @param onRefresh 下拉刷新回调
- * @param onSwitchRoom 切换房间回调（我的 Tab 使用）
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     room: BuildingNode?,
     balance: BalanceResponse?,
-    myRoomList: List<UserRoomInfo>,
     isRefreshing: Boolean,
     isLoading: Boolean,
     error: String?,
     onRefresh: () -> Unit,
-    onSwitchRoom: (UserRoomInfo) -> Unit = {},
 ) {
     val nav = LocalNavController.current
 
@@ -169,6 +166,7 @@ fun DashboardMenuButton(
 ) {
     val snackbar = LocalSnackbarController.current
     val context = LocalContext.current
+    val resources = LocalResources.current
 
     var showMenu by remember { mutableStateOf(false) }
     var pendingExportText by remember { mutableStateOf("") }
@@ -181,9 +179,9 @@ fun DashboardMenuButton(
                 context.contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(pendingExportText.toByteArray(Charsets.UTF_8))
                 }
-                snackbar.show(context.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
+                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show(context.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             }
             pendingExportText = ""
             pendingExportLabel = ""
@@ -208,7 +206,7 @@ fun DashboardMenuButton(
                 onClick = {
                     showMenu = false
                     val text = getDashboardTextContent(room, balance)
-                    copyToClipboard(context, text, context.getString(R.string.dashboard_title), snackbar)
+                    copyToClipboard(context, text, resources.getString(R.string.dashboard_title), snackbar)
                 }
             )
             DropdownMenuItem(
@@ -217,7 +215,7 @@ fun DashboardMenuButton(
                 onClick = {
                     showMenu = false
                     pendingExportText = getDashboardTextContent(room, balance)
-                    pendingExportLabel = context.getString(R.string.dashboard_title)
+                    pendingExportLabel = resources.getString(R.string.dashboard_title)
                     saveFileLauncher.launch("electricity_dashboard.txt")
                 }
             )
@@ -354,7 +352,7 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = String.format("%.2f", balance.remainEletricCapacity),
+                        text = String.format(Locale.US, "%.2f", balance.remainEletricCapacity),
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -669,7 +667,7 @@ private fun BalanceRow(label: String, amount: Double, unit: String) {
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "${String.format("%.2f", amount)} $unit",
+            text = "${String.format(Locale.US, "%.2f", amount)} $unit",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
@@ -698,12 +696,12 @@ fun getDashboardTextContent(room: BuildingNode?, balance: BalanceResponse?): Str
 
     if (balance != null) {
         sb.appendLine("\n【用电信息】")
-        sb.appendLine("  剩余电量: ${String.format("%.2f", balance.remainEletricCapacity)} 度")
+        sb.appendLine("  剩余电量: ${String.format(Locale.US, "%.2f", balance.remainEletricCapacity)} 度")
 
         sb.appendLine("\n【账户余额】")
-        sb.appendLine("  现金余额: ${String.format("%.2f", balance.userBalance)} 元")
-        sb.appendLine("  补贴余额: ${String.format("%.2f", balance.subsidyBalance)} 元")
-        sb.appendLine("  基础余额: ${String.format("%.2f", balance.baseBalance)} 元")
+        sb.appendLine("  现金余额: ${String.format(Locale.US, "%.2f", balance.userBalance)} 元")
+        sb.appendLine("  补贴余额: ${String.format(Locale.US, "%.2f", balance.subsidyBalance)} 元")
+        sb.appendLine("  基础余额: ${String.format(Locale.US, "%.2f", balance.baseBalance)} 元")
 
         sb.appendLine("\n【支付状态】")
         sb.appendLine("  在线支付: ${if (balance.payEnable == 1) "已启用" else "已禁用"}")
