@@ -22,8 +22,20 @@ sealed class SessionValidationResult {
 }
 
 /**
- * Session 过期异常。
- * 当 API 请求响应被重定向到 CAS 登录页时抛出此异常。
- * UI 层捕获后应提示用户重新登录。
+ * WebVPN 自动登录失败原因，供调用方区分“需要用户手动处理”和“协议/页面结构异常”。
  */
-class SessionExpiredException(message: String) : Exception(message)
+enum class SessionExpiryReason {
+    NO_SAVED_ACCOUNT,
+    CAPTCHA_REQUIRED,
+    LOGIN_REJECTED,
+    PROTOCOL_MISMATCH,
+}
+
+/**
+ * Session 过期异常。
+ * 当 API 请求响应被重定向到 CAS 登录页时抛出此异常，UI 层捕获后提示用户重新登录。
+ */
+class SessionExpiredException(
+    message: String,
+    val reason: SessionExpiryReason? = null,
+) : Exception(message)

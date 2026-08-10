@@ -7,6 +7,7 @@ import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.login.data.CredentialExporter
 import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.CasAuthApi
+import edu.cqwu.electricity.login.data.CasLoginException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -156,6 +157,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     .onFailure { e ->
                         val errorMsg = when {
+                            e is CasLoginException.CaptchaRequired -> "需要验证码，请手动完成登录"
+                            e is CasLoginException.LoginRejected -> "登录失败：账号或密码错误"
+                            e is CasLoginException.MissingField -> "获取登录参数失败"
                             e.message?.contains("无法获取加密 salt") == true -> "获取登录参数失败，请检查网络"
                             e.message?.contains("无法获取 lt") == true -> "获取登录参数失败"
                             e.message?.contains("未能获取到 CASTGC") == true -> "登录失败：账号或密码错误"

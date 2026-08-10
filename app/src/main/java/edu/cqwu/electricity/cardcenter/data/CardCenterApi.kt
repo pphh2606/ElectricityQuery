@@ -21,7 +21,7 @@ import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.electricity.data.WechatUserResponse
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.login.data.SessionManager
+import edu.cqwu.electricity.login.data.HtmlFormParser
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -77,7 +77,11 @@ class CardCenterApi {
 
     }
 
-    private val client = HttpClientFactory.createWithTimeout(10, 10, 10)
+    private val client = HttpClientFactory.create(
+        connectTimeout = 10,
+        readTimeout = 10,
+        writeTimeout = 10,
+    )
 
     private val gson = Gson()
 
@@ -97,7 +101,7 @@ class CardCenterApi {
             val html = response.body.string()
 
             // 检查是否被重定向到 CAS 登录页
-            SessionManager.checkSessionOrThrow(html)
+            HtmlFormParser.checkAndThrow(html)
 
             // 解析 HTML 提取字段
             val accountInfo = parseAccountInfoHtml(html)
@@ -178,7 +182,7 @@ class CardCenterApi {
 
             val html = response.body.string()
 
-            SessionManager.checkSessionOrThrow(html)
+            HtmlFormParser.checkAndThrow(html)
 
             val cardInfo = parseCardLostInfoHtml(html)
             Log.d("CardCenterApi", "卡挂失信息: $cardInfo")
@@ -265,7 +269,7 @@ class CardCenterApi {
         withContext(Dispatchers.IO) {
             try {
                 val html = postBillQuery(filter)
-                SessionManager.checkSessionOrThrow(html)
+                HtmlFormParser.checkAndThrow(html)
                 val allZones = parseAllZones(html)
                 Log.d("CardCenterApi", "四区解析完成: zone数量=${allZones.size}")
                 Result.success(allZones)
@@ -352,7 +356,7 @@ class CardCenterApi {
             val json = response.body.string()
 
             // 检查是否被重定向到 CAS 登录页
-            SessionManager.checkSessionOrThrow(json)
+            HtmlFormParser.checkAndThrow(json)
 
             val h5Response = gson.fromJson(json, H5BillResponse::class.java)
             // 修复 1：校验 retcode，服务器返回错误码时抛异常

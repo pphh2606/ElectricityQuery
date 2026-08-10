@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.QrCodeColorMode
 import edu.cqwu.electricity.login.data.CasAuthApi
+import edu.cqwu.electricity.login.data.CookieParser
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.qrcode.data.QrCodeApi
@@ -191,7 +192,7 @@ fun QrCodeDisplayScreen(
             // ═══ 本地预检查：发起 HTTP 请求前先检查 CookieManager 中是否有有效的 CASTGC ═══
             // 避免在 CASTGC 不存在或已过期时仍然走完完整的 CAS 重定向链（耗时 ~15s）
             val castgc = withContext(Dispatchers.IO) {
-                CookieStore.getCookieValue(CasAuthApi.LOGIN_URL, "CASTGC")
+                CookieParser.getValue(CookieStore.getCookie(CasAuthApi.LOGIN_URL), "CASTGC")
             }
             if (castgc == null) {
                 isLoading = false

@@ -6,7 +6,6 @@ import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
-import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import edu.cqwu.electricity.login.data.UserAwareCookieJar
 import edu.cqwu.electricity.login.data.UserCookieStore
@@ -46,12 +45,10 @@ class QrLoginApi {
     private val cookieStore = UserCookieStore()
 
     /** 使用独立 CookieJar 的 OkHttpClient，不携带任何已有登录信息 */
-    private val client = HttpClientFactory.createNoRedirect(
-        cookieJar = UserAwareCookieJar(cookieStore)
-    ).newBuilder()
-        .followRedirects(true)
-        .followSslRedirects(true)
-        .build()
+    private val client = HttpClientFactory.create(
+        cookieJar = UserAwareCookieJar(cookieStore),
+        followRedirects = true,
+    )
 
     // ═══════════════════════════════════════════
 
@@ -68,19 +65,18 @@ class QrLoginApi {
             ).execute()
 
             val html = response.body.string()
-
-            // 解析 lt (Login Ticket)
-            val lt = HtmlFormParser.extractInputValue(html, "lt")
-                ?: throw RuntimeException("无法从扫码登录页解析 lt")
-
-            // 解析 execution (Spring Web Flow 状态)
-            val execution = HtmlFormParser.extractInputValue(html, "execution")
-                ?: throw RuntimeException("无法从扫码登录页解析 execution")
-
-            Result.success(LoginPageData(lt, execution))
+            Result.success(parseQrLoginPage(html))
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    internal fun parseQrLoginPage(html: String): LoginPageData {
+        val lt = HtmlFormParser.extractInputValue(html, "lt")
+            ?: throw RuntimeException("无法从扫码登录页解析 lt")
+        val execution = HtmlFormParser.extractInputValue(html, "execution")
+            ?: throw RuntimeException("无法从扫码登录页解析 execution")
+        return LoginPageData(lt, execution)
     }
 
     /**
@@ -211,8 +207,9 @@ class QrLoginApi {
 
             // 使用独立的临时客户端（禁用 followRedirects），只请求第一个 302 响应
             // 避免 CAS 重定向链最后一步超时（>15s）
-            val submitClient = HttpClientFactory.createNoRedirect(
-                cookieJar = UserAwareCookieJar(cookieStore)
+            val submitClient = HttpClientFactory.create(
+                cookieJar = UserAwareCookieJar(cookieStore),
+                followRedirects = false,
             )
 
             val response = submitClient.newCall(
@@ -236,20 +233,10 @@ class QrLoginApi {
                 throw RuntimeException("扫码登录失败：未能获取到 CASTGC Cookie")
             }
 
-            // ═══ 将私有 cookieStore 中的所有 Cookie 导入到全局 CookieManager ═══
-            // 注意：必须复制所有 Cookie（route、JSESSIONID、CASTGC、CASPRIVACY 等），
-            // 不能只复制 CASTGC。CookieManager.setCookie() 一次只接受一个 Cookie，
-            // 所以需要从 getAllCookies() 逐个复制。
-            val allCookiesMap = cookieStore.getAllCookies()
-            for ((domain, domainCookies) in allCookiesMap) {
-                for ((cookieName, cookieValue) in domainCookies) {
-                    CookieStore.setCookie(domain, "$cookieName=$cookieValue")
-                }
-            }
-
             // ═══ 提取用户信息并保存到 AccountManager ═══
             // 使用同一个独立 client（含全部 Cookie）请求 /authserver/index.do
             var username = ""
+            var committed = false
             try {
                 val indexResponse = client.newCall(
                     Request.Builder()
@@ -267,9 +254,14 @@ class QrLoginApi {
 
                     // 使用统一的提交方法，将临时 CookieStore 迁移到持久存储
                     AccountManager.commitLoginCookies(username, cookieStore)
+                    committed = true
                 }
             } catch (e: Exception) {
                 Log.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
+            }
+
+            if (!committed) {
+                cookieStore.syncToCookieManager()
             }
 
             val cookieString = cookieStore.getCookie("https://authserver.cqwu.edu.cn") ?: ""

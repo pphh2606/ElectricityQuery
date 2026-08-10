@@ -102,6 +102,8 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     Log.w("HallViewModel", "ehall 服务器不可达（无校园网？），保持本地 JSON")
                 } catch (e: java.net.SocketTimeoutException) {
                     Log.w("HallViewModel", "ehall 连接超时，保持本地 JSON")
+                } catch (e: java.io.IOException) {
+                    Log.w("HallViewModel", "ehall session 初始化网络异常，保持本地 JSON")
                 }
             }
 

@@ -62,7 +62,11 @@ class ElectricityApi {
         )
     }
 
-    private val client = HttpClientFactory.createWithTimeout(10, 10, 10)
+    private val client = HttpClientFactory.create(
+        connectTimeout = 10,
+        readTimeout = 10,
+        writeTimeout = 10,
+    )
 
     private val gson = Gson()
 

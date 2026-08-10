@@ -1,16 +1,14 @@
 package edu.cqwu.electricity.login.data
 
 import android.util.Log
-import edu.cqwu.electricity.login.data.UserAgentInterceptor
 import edu.cqwu.electricity.login.data.UserAwareCookieJar
 import edu.cqwu.electricity.login.data.UserCookieStore
+import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.util.concurrent.TimeUnit
 
 /**
  * 会话管理器（Step 1：认证验证）。
@@ -29,14 +27,12 @@ object SessionManager {
 
     /** 复用的 OkHttpClient 基础配置，cookieJar 通过 newBuilder() 动态替换 */
     private val baseClient by lazy {
-        OkHttpClient.Builder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .addInterceptor(UserAgentInterceptor)
-            .build()
+        HttpClientFactory.create(
+            connectTimeout = 5,
+            readTimeout = 15,
+            writeTimeout = 15,
+            includeWebVpn = false,
+        )
     }
 
     // ═══════════════════════════════════════════
@@ -107,17 +103,4 @@ object SessionManager {
         }
     }
 
-    // ═══════════════════════════════════════════
-    //  会话检测（委托 HtmlFormParser）
-    // ═══════════════════════════════════════════
-
-    /**
-     * 判断响应 HTML 是否为 CAS 登录页。
-     */
-    fun isCasLoginPage(html: String): Boolean = HtmlFormParser.isCasLoginPage(html)
-
-    /**
-     * 检查 HTML 是否为 CAS 登录页，是则抛出 [SessionExpiredException]。
-     */
-    fun checkSessionOrThrow(html: String) = HtmlFormParser.checkAndThrow(html)
 }

@@ -9,7 +9,7 @@ import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.AccountManager
-import edu.cqwu.electricity.login.data.SessionManager
+import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.ServiceLoginManager
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -147,7 +147,7 @@ class CampusphereApi {
                     throw NotLoggedInException()
                 }
 
-                if (SessionManager.isCasLoginPage(responseBody)) {
+                if (HtmlFormParser.isCasLoginPage(responseBody)) {
                     throw SessionExpiredException("会话已过期，请重新登录")
                 }
 
@@ -209,7 +209,7 @@ class CampusphereApi {
                 if (isNotLoggedIn(responseBody)) {
                     throw NotLoggedInException()
                 }
-                if (SessionManager.isCasLoginPage(responseBody)) {
+                if (HtmlFormParser.isCasLoginPage(responseBody)) {
                     throw SessionExpiredException("会话已过期，请重新登录")
                 }
 

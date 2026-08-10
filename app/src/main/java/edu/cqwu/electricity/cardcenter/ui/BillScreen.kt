@@ -67,6 +67,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.data.BillPageInfo
+import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.DatePickerField
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -131,7 +132,7 @@ fun BillScreen(
     val onRecordClick = remember<(edu.cqwu.electricity.cardcenter.data.BillRecord) -> Unit> {
         { record ->
             if (record.detailUrl.isNotBlank()) {
-                billDetailUrl = viewModel.getBillDetailUrl(record.detailUrl)
+                billDetailUrl = CardCenterApi.getBillDetailUrl(record.detailUrl)
             }
         }
     }

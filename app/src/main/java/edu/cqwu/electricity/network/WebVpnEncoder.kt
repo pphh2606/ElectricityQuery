@@ -79,6 +79,11 @@ object WebVpnEncoder {
         return url.startsWith(PROXY_BASE)
     }
 
+    fun toggle(url: String): String {
+        val trimmed = url.trim()
+        return if (isWebVpnUrl(trimmed)) decode(trimmed) else transform(trimmed)
+    }
+
     /**
      * AES-CBC 解密主机名
      *

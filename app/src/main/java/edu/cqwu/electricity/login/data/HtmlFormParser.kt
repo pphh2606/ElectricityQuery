@@ -77,11 +77,24 @@ object HtmlFormParser {
         }
     }
 
+    /**
+     * 从 HTML 中提取 JS 重定向地址，兼容 location.href / window.location 等常见写法。
+     */
+    fun extractJsRedirect(html: String): String? {
+        val match = JS_REDIRECT_REGEX.find(html) ?: return null
+        return match.groupValues[1].ifEmpty { match.groupValues[2] }
+    }
+
     // ═══════════════════════════════════════════
     //  CAS 用户信息提取
     // ═══════════════════════════════════════════
 
     /** 预编译正则，避免每次调用临时构造 */
+    private val JS_REDIRECT_REGEX = Regex(
+        """(?:window\.location(?:\.href)?|location\.href)\s*=\s*["']([^"']+)["']|""" +
+            """(?:window\.)?location\.(?:replace|assign)\s*\(\s*["']([^"']+)["']""",
+        RegexOption.IGNORE_CASE,
+    )
     private val USERNAME_REGEX = Regex("""data-name="id">([^<]+)</div>""")
     private val REAL_NAME_REGEX = Regex("""data-name="name">([^<]+)</div>""")
 

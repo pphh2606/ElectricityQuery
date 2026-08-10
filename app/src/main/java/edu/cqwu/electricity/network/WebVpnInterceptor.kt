@@ -5,12 +5,18 @@ import android.webkit.CookieManager
 import edu.cqwu.electricity.app.ElectricityApp
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.login.data.SessionExpiryReason
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+
+/**
+ * 标记手动 CAS 登录流程的请求，WebVPN 拦截器只做 URL 转换，不再触发自动登录。
+ */
+internal object ManualCasFlowTag
 
 /**
  * WebVPN 请求转换与自动登录拦截器。
@@ -27,6 +33,8 @@ class WebVpnInterceptor(
     },
 ) : Interceptor {
 
+    private object AppLayerTag
+
     private val autoLoginAttempted = ThreadLocal<Boolean>()
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -38,7 +46,17 @@ class WebVpnInterceptor(
                 transformRequest(chain, original)
             }
             WebVpnEncoder.isWebVpnUrl(original.url.toString()) -> {
-                handleProxyResponse(original) { chain.proceed(it) }
+                if (original.tag(ManualCasFlowTag::class.java) != null) {
+                    chain.proceed(original)
+                } else if (original.tag(AppLayerTag::class.java) != null) {
+                    handleProxyResponse(original) { chain.proceed(it) }
+                } else {
+                    executeWithLoginRetry(
+                        original.newBuilder().tag(AppLayerTag::class.java, AppLayerTag).build(),
+                    ) {
+                        chain.proceed(it)
+                    }
+                }
             }
             else -> chain.proceed(original)
         }
@@ -90,7 +108,10 @@ class WebVpnInterceptor(
         proceed: (Request) -> Response,
     ): Response {
         if (autoLoginAttempted.get() == true) {
-            throw SessionExpiredException("WebVPN 自动登录后仍需要登录")
+            throw SessionExpiredException(
+                "WebVPN 自动登录后仍需要登录",
+                SessionExpiryReason.LOGIN_REJECTED,
+            )
         }
 
         autoLoginAttempted.set(true)
@@ -98,7 +119,10 @@ class WebVpnInterceptor(
             return try {
                 proceed(buildRetryRequest(transformedRequest))
             } catch (e: WebVpnRetryException) {
-                throw SessionExpiredException("WebVPN 自动登录后仍需要登录")
+                throw SessionExpiredException(
+                    "WebVPN 自动登录后仍需要登录",
+                    SessionExpiryReason.LOGIN_REJECTED,
+                )
             }
         } finally {
             autoLoginAttempted.remove()
@@ -107,7 +131,10 @@ class WebVpnInterceptor(
 
     internal fun loginAndRetry(request: Request): Nothing {
         if (autoLoginAttempted.get() == true) {
-            throw SessionExpiredException("WebVPN 自动登录后仍需要登录")
+            throw SessionExpiredException(
+                "WebVPN 自动登录后仍需要登录",
+                SessionExpiryReason.LOGIN_REJECTED,
+            )
         }
 
         val protectedUrl = runCatching {
@@ -121,9 +148,15 @@ class WebVpnInterceptor(
     private fun buildRetryRequest(original: Request): Request {
         val freshCookies = loadProxyCookies(original.url)
         return if (freshCookies.isNullOrBlank()) {
-            original.newBuilder().removeHeader("Cookie").build()
+            original.newBuilder()
+                .removeHeader("Cookie")
+                .tag(AppLayerTag::class.java, AppLayerTag)
+                .build()
         } else {
-            original.newBuilder().header("Cookie", freshCookies).build()
+            original.newBuilder()
+                .header("Cookie", freshCookies)
+                .tag(AppLayerTag::class.java, AppLayerTag)
+                .build()
         }
     }
 
@@ -149,6 +182,10 @@ class WebVpnInterceptor(
     private fun buildTransformedRequest(original: Request, transformedUrl: String): Request {
         val builder = original.newBuilder()
             .url(transformedUrl)
+            .tag(AppLayerTag::class.java, AppLayerTag)
+        if (original.tag(ManualCasFlowTag::class.java) != null) {
+            builder.tag(ManualCasFlowTag::class.java, ManualCasFlowTag)
+        }
 
         rewriteOriginHeader(builder, original, "Origin")
         rewriteOriginHeader(builder, original, "Referer")

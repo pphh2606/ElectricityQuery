@@ -300,11 +300,7 @@ fun UnifiedWebViewScreen(
                                     showMenu = false
                                     val currentUrl = webViewRef.value?.url ?: return@DropdownMenuItem
                                     val toggledUrl = try {
-                                        if (WebVpnEncoder.isWebVpnUrl(currentUrl)) {
-                                            WebVpnEncoder.decode(currentUrl)
-                                        } else {
-                                            WebVpnEncoder.transform(currentUrl)
-                                        }
+                                        WebVpnEncoder.toggle(currentUrl)
                                     } catch (e: Exception) {
                                         Log.e("WebView_DIAG", "URL 切换失败: ${e.message}")
                                         snackbar.show(context.getString(R.string.webview_url_change_failed), ToastUtils.Type.ERROR)
@@ -624,11 +620,7 @@ fun UnifiedWebViewScreen(
                         val currentUrl = webViewRef.value?.url
                         if (currentUrl != null) {
                             val toggledUrl = try {
-                                if (WebVpnEncoder.isWebVpnUrl(currentUrl)) {
-                                    WebVpnEncoder.decode(currentUrl)
-                                } else {
-                                    WebVpnEncoder.transform(currentUrl)
-                                }
+                                WebVpnEncoder.toggle(currentUrl)
                             } catch (e: Exception) {
                                 Log.e("WebView_DIAG", "URL切换失败: ${e.message}")
                                 null

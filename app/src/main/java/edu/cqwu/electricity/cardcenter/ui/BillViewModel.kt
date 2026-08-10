@@ -637,11 +637,6 @@ class BillViewModel : ViewModel() {
         _uiState.update { it.copy(tempExpense = value) }
     }
 
-    /** 获取账单详情的完整 URL */
-    fun getBillDetailUrl(relativePath: String): String {
-        return CardCenterApi.getBillDetailUrl(relativePath)
-    }
-
     // ==================== 加载计时器 ====================
 
     private fun startMoreTimer() {

@@ -3,11 +3,15 @@ package edu.cqwu.electricity.feeservicehall.data
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import edu.cqwu.electricity.login.data.CookieParser
 import edu.cqwu.electricity.login.data.CookieStore
-import edu.cqwu.electricity.network.HttpDiagnostics
+import edu.cqwu.electricity.login.data.HtmlFormParser
+import edu.cqwu.electricity.network.ManualCasFlowTag
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -62,7 +66,11 @@ private data class UserProfileResponse(
 
 class FeeServiceHallApi {
 
-    private val client = HttpClientFactory.createWithTimeout(10, 10, 10)
+    private val client = HttpClientFactory.create(
+        connectTimeout = 10,
+        readTimeout = 10,
+        writeTimeout = 10,
+    )
 
     private val gson = Gson()
     private val jsonMediaType = "application/json;charset=UTF-8".toMediaType()
@@ -76,6 +84,8 @@ class FeeServiceHallApi {
         private const val CLOSE_ORDER_URL = "$PAY_DOMAIN/api/pay/web/order/closeOrderById"
         private const val CAS_LOGIN_URL = "$PAY_DOMAIN/casLogin/"
         private const val XTOKEN_COOKIE_NAME = "datalook_reimbursement_token"
+
+        private val tokenMutex = Mutex()
 
         fun buildPaymentUrl(proModelUrl: String?, projectId: String): String {
             val handler = proModelUrl?.let { "${it}Pay" } ?: "commonPay"
@@ -96,102 +106,104 @@ class FeeServiceHallApi {
          * 同时尝试带路径和不带路径的 URL，确保兼容 CookieManager 的行为差异。
          */
         fun getXToken(): String? {
-            return CookieStore.getCookieValue(PAY_DOMAIN, XTOKEN_COOKIE_NAME)
-                ?: CookieStore.getCookieValue("$PAY_DOMAIN/", XTOKEN_COOKIE_NAME)
-                ?: CookieStore.getCookieValue("$PAY_DOMAIN/casLogin/", XTOKEN_COOKIE_NAME)
+            return CookieParser.getValue(CookieStore.getCookie(PAY_DOMAIN), XTOKEN_COOKIE_NAME)
+                ?: CookieParser.getValue(CookieStore.getCookie("$PAY_DOMAIN/"), XTOKEN_COOKIE_NAME)
+                ?: CookieParser.getValue(CookieStore.getCookie("$PAY_DOMAIN/casLogin/"), XTOKEN_COOKIE_NAME)
         }
 
         /**
          * 自动获取 pay.cqwu.edu.cn 的 JWT Token（datalook_reimbursement_token）。
          *
-         * 按需触发完整的 CAS Ticket 交换 → dlyscas 签发链：
-         *   1. GET /casLogin/ → 解析 authserver 重定向 URL
-         *   2. GET authserver（携带 CASTGC）→ 自动跟随 302 完成 ticket 交换 → 获得 JSESSIONID
-         *   3. GET /casLogin/（携带 JSESSIONID）→ 解析 dlyscas 重定向 URL（含 idserial）
-         *   4. GET dlyscas 端点 → 从 302 Location 头中提取 JWT Token
-         *   5. 将 Token 写入 CookieManager
-         *
-         * @return Result<String> JWT Token 字符串
+         * 流程与网页版一致：
+         *   1. GET /casLogin/
+         *   2. 若跳转 authserver，则跟随 CAS 完成 ticket 交换，再解析 dlyscas 地址
+         *   3. 若已登录，/casLogin/ 会直接跳转 dlyscas
+         *   4. GET dlyscas → 从 302 Location 中提取 JWT Token
          */
-        suspend fun obtainPayToken(): Result<String> = withContext(Dispatchers.IO) {
-            try {
-                Log.d("FeeServiceHallApi", ">>> 自动获取 pay JWT Token 开始")
+        suspend fun obtainPayToken(): Result<String> = tokenMutex.withLock {
+            getXToken()?.let { return@withLock Result.success(it) }
+            withContext(Dispatchers.IO) {
+                try {
+                    Log.d("FeeServiceHallApi", ">>> 自动获取 pay JWT Token 开始")
+                    val tokenRegex = Regex("""token=([^&]+)""")
+                    val shared = HttpClientFactory.shared
 
-                // ── 步骤1: 访问 /casLogin/，获取 authserver CAS 登录地址 ──
-                val step1Resp = HttpClientFactory.shared.newCall(
-                    Request.Builder().url(CAS_LOGIN_URL).get().build()
-                ).execute()
-                val step1Html = step1Resp.body.string()
-                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", CAS_LOGIN_URL, step1Resp)
-                Log.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
+                    // ── 步骤1: 访问 /casLogin/ ──
+                    val step1Resp = shared.newCall(
+                        Request.Builder().url(CAS_LOGIN_URL).get()
+                            .tag(ManualCasFlowTag::class.java, ManualCasFlowTag)
+                            .build(),
+                    ).execute()
+                    val step1Html = step1Resp.body.string()
+                    Log.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
 
-                // 从 HTML 中提取 location.href 重定向地址
-                val locationRegex = Regex("""location\.href\s*=\s*['"]([^'"]+)['"]""")
-                val redirectUrl = locationRegex.find(step1Html)?.groupValues?.getOrNull(1)
-                    ?: return@withContext Result.failure(Exception("无法从 /casLogin/ 解析重定向地址"))
-                Log.d("FeeServiceHallApi", "步骤1: 解析到重定向地址=$redirectUrl")
+                    val firstRedirect = HtmlFormParser.extractJsRedirect(step1Html)
+                        ?: return@withContext Result.failure(Exception("无法从 /casLogin/ 解析重定向地址"))
+                    Log.d("FeeServiceHallApi", "步骤1: 解析到重定向地址=$firstRedirect")
 
-                // ── 步骤2: 访问 authserver CAS 登录页（携带 CASTGC）──
-                // HttpClientFactory.shared 带有 CookieStoreOkHttpJar + followRedirects=true，
-                // 会自动完成重定向链:
-                //   authserver(302+ticket) → /casLogin/?ticket=...(302+JSESSIONID) → /casLogin/(200)
-                // 最终 /casLogin/ 返回 JS 重定向到 dlyscas 端点
-                val step2Client = HttpClientFactory.shared.newBuilder()
-                    .followRedirects(true)
-                    .followSslRedirects(true)
-                    .build()
+                    // ── 步骤2: 仅在需要 CAS 认证时跟随 authserver ──
+                    val dlyscasUrl = if (firstRedirect.contains("/authserver/")) {
+                        val casClient = shared.newBuilder()
+                            .followRedirects(true)
+                            .followSslRedirects(true)
+                            .build()
+                        val casResp = casClient.newCall(
+                            Request.Builder().url(firstRedirect).get()
+                                .tag(ManualCasFlowTag::class.java, ManualCasFlowTag)
+                                .build(),
+                        ).execute()
+                        val casHtml = casResp.body.string()
+                        val finalUrl = casResp.request.url.toString()
+                        Log.d(
+                            "FeeServiceHallApi",
+                            "步骤2: CAS认证完成, 响应码=${casResp.code}, HTML长度=${casHtml.length}, finalUrl=$finalUrl",
+                        )
 
-                val step2Resp = step2Client.newCall(
-                    Request.Builder().url(redirectUrl).get().build()
-                ).execute()
-                val step2Html = step2Resp.body.string()
-                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", redirectUrl, step2Resp)
-                Log.d("FeeServiceHallApi", "步骤2: CAS认证完成, 响应码=${step2Resp.code}, HTML长度=${step2Html.length}, finalUrl=${step2Resp.request.url}")
+                        val tokenFromFinal = tokenRegex.find(finalUrl)?.groupValues?.getOrNull(1)
+                        if (tokenFromFinal != null) {
+                            return@withContext storePayToken(tokenFromFinal)
+                        }
+                        HtmlFormParser.extractJsRedirect(casHtml)
+                            ?: return@withContext Result.failure(Exception("无法从 CAS 响应解析 dlyscas 地址"))
+                    } else {
+                        firstRedirect
+                    }
+                    Log.d("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=$dlyscasUrl")
 
-                // 从 HTML 中提取 dlyscas 端点地址（含 idserial）
-                val dlyscasUrl = locationRegex.find(step2Html)?.groupValues?.getOrNull(1)
-                    ?: return@withContext Result.failure(Exception("无法从 CAS 响应解析 dlyscas 地址"))
-                Log.d("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=$dlyscasUrl")
+                    // ── 步骤3: 访问 dlyscas，获取 JWT Token ──
+                    val step3Client = shared.newBuilder()
+                        .followRedirects(false)
+                        .followSslRedirects(false)
+                        .build()
+                    val step3Resp = step3Client.newCall(
+                        Request.Builder().url(dlyscasUrl).get()
+                            .tag(ManualCasFlowTag::class.java, ManualCasFlowTag)
+                            .build(),
+                    ).execute()
+                    val location = step3Resp.header("Location") ?: ""
+                    Log.d("FeeServiceHallApi", "步骤3: dlyscas 响应码=${step3Resp.code}, Location=$location")
 
-                // ── 步骤3: 访问 dlyscas 端点，获取 JWT Token ──
-                // 必须禁用 followRedirects，因为 302 的 Location 中包含 token 参数
-                val step3Client = HttpClientFactory.shared.newBuilder()
-                    .followRedirects(false)
-                    .followSslRedirects(false)
-                    .build()
-
-                val step3Resp = step3Client.newCall(
-                    Request.Builder().url(dlyscasUrl).get().build()
-                ).execute()
-                val location = step3Resp.header("Location") ?: ""
-                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", dlyscasUrl, step3Resp)
-                Log.d("FeeServiceHallApi", "步骤3: dlyscas 响应码=${step3Resp.code}, Location=$location")
-
-                // 从 Location 中提取 token 参数
-                val tokenRegex = Regex("""token=([^&]+)""")
-                val token = tokenRegex.find(location)?.groupValues?.getOrNull(1)
-                    ?: return@withContext Result.failure(Exception("无法从 dlyscas 响应中提取 JWT Token"))
-
-                // URL 解码 token（JWT 可能包含 URL 编码字符）
-                val decodedToken = URLDecoder.decode(token, "UTF-8")
-                Log.d("FeeServiceHallApi", ">>> JWT Token 获取成功, 长度=${decodedToken.length}")
-
-                // ── 步骤4: 将 Token 写入 CookieManager ──
-                CookieStore.setCookie(PAY_DOMAIN, "$XTOKEN_COOKIE_NAME=$decodedToken")
-                CookieStore.setCookie("$PAY_DOMAIN/", "$XTOKEN_COOKIE_NAME=$decodedToken")
-                CookieStore.setCookie("$PAY_DOMAIN/casLogin/", "$XTOKEN_COOKIE_NAME=$decodedToken")
-                CookieStore.setCookie(PAY_DOMAIN, "datalook_login_status=false")
-
-                Result.success(decodedToken)
-            } catch (e: SocketTimeoutException) {
-                HttpDiagnostics.logFailure("FeeServiceHallApi", CAS_LOGIN_URL, e)
-                Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 超时", e)
-                Result.failure(Exception("获取 Token 超时，请检查网络连接", e))
-            } catch (e: Exception) {
-                HttpDiagnostics.logFailure("FeeServiceHallApi", CAS_LOGIN_URL, e)
-                Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 失败", e)
-                Result.failure(e)
+                    val token = tokenRegex.find(location)?.groupValues?.getOrNull(1)
+                        ?: return@withContext Result.failure(Exception("无法从 dlyscas 响应中提取 JWT Token"))
+                    storePayToken(token)
+                } catch (e: SocketTimeoutException) {
+                    Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 超时", e)
+                    Result.failure(Exception("获取 Token 超时，请检查网络连接", e))
+                } catch (e: Exception) {
+                    Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 失败", e)
+                    Result.failure(e)
+                }
             }
+        }
+
+        private fun storePayToken(token: String): Result<String> {
+            val decodedToken = URLDecoder.decode(token, "UTF-8")
+            Log.d("FeeServiceHallApi", ">>> JWT Token 获取成功, 长度=${decodedToken.length}")
+            CookieStore.setCookie(PAY_DOMAIN, "$XTOKEN_COOKIE_NAME=$decodedToken")
+            CookieStore.setCookie("$PAY_DOMAIN/", "$XTOKEN_COOKIE_NAME=$decodedToken")
+            CookieStore.setCookie("$PAY_DOMAIN/casLogin/", "$XTOKEN_COOKIE_NAME=$decodedToken")
+            CookieStore.setCookie(PAY_DOMAIN, "datalook_login_status=false")
+            return Result.success(decodedToken)
         }
     }
 
@@ -233,13 +245,11 @@ class FeeServiceHallApi {
                 val request = buildBaseRequest(PROJECT_LIST_URL).build()
                 val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
-                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 gson.parseApiResponse<FeeProjectResponse>(body).map { it.data ?: emptyList() }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
-                HttpDiagnostics.logFailure("FeeServiceHallApi", PROJECT_LIST_URL, e)
                 Result.failure(e)
             }
         }
@@ -280,13 +290,11 @@ class FeeServiceHallApi {
 
                 val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
-                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 gson.parseApiResponse<OrderListResponse>(body).map { it.data ?: OrderPageData(emptyList(), null, null, null) }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
-                HttpDiagnostics.logFailure("FeeServiceHallApi", ORDER_LIST_URL, e)
                 Result.failure(e)
             }
         }
@@ -308,13 +316,11 @@ class FeeServiceHallApi {
                     .build()
                 val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
-                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 gson.parseApiResponse<UserProfileResponse>(body).map { it.data ?: UserProfile(null, null, null) }
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
-                HttpDiagnostics.logFailure("FeeServiceHallApi", PROFILE_URL, e)
                 Result.failure(e)
             }
         }
@@ -333,7 +339,6 @@ class FeeServiceHallApi {
                     .build()
                 val requestUrl = request.url.toString()
                 val response = client.newCall(request).execute()
-                HttpDiagnostics.logRedirectChain("FeeServiceHallApi", requestUrl, response)
                 val body = response.body.string()
                 val base = gson.fromJson(body, ApiBaseResponse::class.java)
                 if (base.messageCode == "0") {
@@ -344,7 +349,6 @@ class FeeServiceHallApi {
             } catch (e: ApiBusinessException) {
                 Result.failure(e)
             } catch (e: Exception) {
-                HttpDiagnostics.logFailure("FeeServiceHallApi", "$CLOSE_ORDER_URL/$orderId", e)
                 Result.failure(e)
             }
         }

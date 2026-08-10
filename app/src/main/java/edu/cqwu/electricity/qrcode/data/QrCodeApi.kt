@@ -2,7 +2,7 @@ package edu.cqwu.electricity.qrcode.data
 
 import android.util.Log
 import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.login.data.SessionManager
+import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -68,7 +68,7 @@ class QrCodeApi {
             Log.d("QrCodeApi_DEBUG", "fetchQrCode 网络耗时: ${tHttp - t0}ms, 响应状态=${response.code}, HTML长度=${html.length}")
 
             // 检查是否被重定向到 CAS 登录页（Cookie 过期）
-            SessionManager.checkSessionOrThrow(html)
+            HtmlFormParser.checkAndThrow(html)
 
             // 解析 HTML，提取 <input id="myText"> 的 value
             val value = extractInputValueById(html, "myText")
