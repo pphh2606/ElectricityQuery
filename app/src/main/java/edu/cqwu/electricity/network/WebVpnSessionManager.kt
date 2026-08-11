@@ -2,16 +2,20 @@ package edu.cqwu.electricity.network
 
 import android.content.Context
 import android.util.Log
+import android.webkit.CookieManager
 import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.login.data.CasLoginException
 import edu.cqwu.electricity.login.data.CasLoginFlow
+import edu.cqwu.electricity.login.data.CookieParser
 import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
 import edu.cqwu.electricity.login.data.RedirectChainFollower
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.SessionExpiryReason
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import okhttp3.CookieJar
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 
@@ -143,13 +147,20 @@ object WebVpnSessionManager {
                 SessionExpiryReason.LOGIN_REJECTED,
             )
         val ticketUrl = RedirectChainFollower.resolve(loginUrl, location)
-        Log.d(TAG, "CAS 登录成功，跟踪 ticket 回调: ${ticketUrl.take(120)}")
-        val finalPage = RedirectChainFollower.followToCasLoginPage(
-            client = client,
-            startUrl = ticketUrl,
-            tolerateHttpError = true,
-            tag = TAG,
-        )
+        Log.d(TAG, "CAS 登录成功，跟踪 ticket 回调: ${LogRedactor.url(ticketUrl)}")
+        val finalPage = try {
+            RedirectChainFollower.followToCasLoginPage(
+                client = client,
+                startUrl = ticketUrl,
+                tag = TAG,
+                referer = loginUrl,
+            )
+        } catch (e: IOException) {
+            throw SessionExpiredException(
+                "WebVPN CAS ticket 校验失败：${e.message}",
+                SessionExpiryReason.LOGIN_REJECTED,
+            )
+        }
         if (finalPage != null) {
             throw SessionExpiredException(
                 "WebVPN CAS ticket 校验后仍返回登录页",
@@ -158,6 +169,21 @@ object WebVpnSessionManager {
         }
 
         Log.d(TAG, "WebVPN CAS 自动登录完成")
+        persistWebVpnCookies(cookieJar)
+    }
+
+    private fun persistWebVpnCookies(cookieJar: CookieJar?) {
+        val activeUser = AccountManager.getActiveUser() ?: return
+        if (cookieJar != null && cookieJar !== CookieStoreOkHttpJar) return
+
+        val cookieString = CookieManager.getInstance().getCookie(WebVpnEncoder.PROXY_BASE)
+            ?: return
+        val store = AccountManager.getCookiesForUser(activeUser)
+        val parsed = CookieParser.parse(cookieString)
+        parsed.forEach { (name, value) ->
+            store.setCookie(WebVpnEncoder.PROXY_BASE, "$name=$value")
+        }
+        Log.d(TAG, "WebVPN 自动登录完成，已同步 clientvpn Cookie: ${parsed.keys.sorted()}")
     }
 
     private fun resolveSavedAccount(context: Context): Pair<String, String>? {

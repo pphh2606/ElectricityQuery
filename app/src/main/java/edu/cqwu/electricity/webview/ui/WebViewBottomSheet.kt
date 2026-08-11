@@ -347,7 +347,19 @@ fun WebViewBottomSheet(
                                         override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                                             super.onReceivedError(view, request, error)
                                             if (request?.isForMainFrame == true && webErrorState == null) {
-                                                webErrorState = WebViewErrorState(error?.errorCode ?: -1, error?.description?.toString() ?: ctx.getString(R.string.common_unknown_error))
+                                                val code =
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                        error?.errorCode ?: -1
+                                                    } else {
+                                                        -1
+                                                    }
+                                                val description =
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                        error?.description?.toString()
+                                                    } else {
+                                                        null
+                                                    } ?: ctx.getString(R.string.common_unknown_error)
+                                                webErrorState = WebViewErrorState(code, description)
                                             }
                                         }
                                         override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {

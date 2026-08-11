@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package edu.cqwu.electricity.feeservicehall.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi

@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.login.data
 
 import android.util.Log
+import edu.cqwu.electricity.feedback.util.LogRedactor
 
 /**
  * 自动切换结果
@@ -72,7 +73,10 @@ object AccountManager {
             }
         }
 
-        Log.d("AccountManager", "commitLoginCookies: 用户[$username] 已提交 ${allCookies.size} 个域的 Cookie")
+        Log.d(
+            "AccountManager",
+            "commitLoginCookies: 用户[${LogRedactor.mask(username)}] 已提交 ${allCookies.size} 个域的 Cookie",
+        )
 
         // 切换到该用户（清除系统 CookieManager + 同步持久存储到系统）
         switchToUser(username)

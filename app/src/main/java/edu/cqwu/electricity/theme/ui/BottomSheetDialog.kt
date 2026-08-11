@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.theme.ui
 
-import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -119,11 +118,8 @@ fun BottomSheetDialog(
     trailingButton: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    // Android 7+：skipPartiallyExpanded = false 支持拖拽中间态动画
-    // Android 6：skipPartiallyExpanded = true 避免 AnchoredDraggableState
-    //           偏移量在布局前未初始化导致的崩溃
-    val computedSkip = skipPartiallyExpanded
-        ?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) !fullscreen else true
+    // Match Android 7+ sheet-state behavior on all supported API levels.
+    val computedSkip = skipPartiallyExpanded ?: !fullscreen
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = computedSkip
     )

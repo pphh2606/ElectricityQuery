@@ -3,6 +3,7 @@ package edu.cqwu.electricity.network
 import android.util.Log
 import android.webkit.CookieManager
 import edu.cqwu.electricity.app.ElectricityApp
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.SessionExpiryReason
@@ -10,8 +11,11 @@ import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 
 /**
  * 标记手动 CAS 登录流程的请求，WebVPN 拦截器只做 URL 转换，不再触发自动登录。
@@ -28,6 +32,7 @@ internal object ManualCasFlowTag
  */
 class WebVpnInterceptor(
     private val cookieJar: CookieJar?,
+    private val swallowSessionExpired: Boolean = false,
     private val sessionAuthenticator: (String) -> Unit = { protectedUrl ->
         WebVpnSessionManager.authenticate(ElectricityApp.instance, protectedUrl, cookieJar)
     },
@@ -38,6 +43,18 @@ class WebVpnInterceptor(
     private val autoLoginAttempted = ThreadLocal<Boolean>()
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        return try {
+            interceptInternal(chain)
+        } catch (e: SessionExpiredException) {
+            if (swallowSessionExpired) {
+                sessionExpiredResponse(chain.request())
+            } else {
+                throw e
+            }
+        }
+    }
+
+    private fun interceptInternal(chain: Interceptor.Chain): Response {
         val original = chain.request()
         if (!WebVpnSettings.enabled) return chain.proceed(original)
 
@@ -62,12 +79,25 @@ class WebVpnInterceptor(
         }
     }
 
+    private fun sessionExpiredResponse(request: Request): Response {
+        return Response.Builder()
+            .request(request)
+            .protocol(Protocol.HTTP_1_1)
+            .code(502)
+            .message("WebVPN session expired")
+            .body("WebVPN session expired".toResponseBody("text/plain; charset=utf-8".toMediaType()))
+            .build()
+    }
+
     private fun transformRequest(chain: Interceptor.Chain, original: Request): Response {
         val transformedUrl = runCatching {
             WebVpnEncoder.transform(original.url.toString())
         }.getOrNull() ?: return chain.proceed(original)
 
-        Log.d(TAG, "WebVPN 转换: ${original.url.toString().take(200)} -> $transformedUrl")
+        Log.d(
+            TAG,
+            "WebVPN 转换: ${LogRedactor.url(original.url.toString())} -> ${LogRedactor.url(transformedUrl)}",
+        )
         val response = executeWithLoginRetry(buildTransformedRequest(original, transformedUrl)) {
             chain.proceed(it)
         }
@@ -86,6 +116,10 @@ class WebVpnInterceptor(
             saveProxyCookies(response)
         }
         if (needsWebVpnLogin(response, request)) {
+            Log.w(
+                TAG,
+                "WebVPN 响应仍需要登录: HTTP ${response.code}, location=${LogRedactor.url(response.header("Location"))}",
+            )
             response.close()
             loginAndRetry(request)
         }
@@ -108,6 +142,7 @@ class WebVpnInterceptor(
         proceed: (Request) -> Response,
     ): Response {
         if (autoLoginAttempted.get() == true) {
+            Log.w(TAG, "WebVPN 自动登录后仍需要登录（已在本次请求尝试过）")
             throw SessionExpiredException(
                 "WebVPN 自动登录后仍需要登录",
                 SessionExpiryReason.LOGIN_REJECTED,
@@ -119,6 +154,7 @@ class WebVpnInterceptor(
             return try {
                 proceed(buildRetryRequest(transformedRequest))
             } catch (e: WebVpnRetryException) {
+                Log.w(TAG, "WebVPN 自动登录后重试仍返回需要登录")
                 throw SessionExpiredException(
                     "WebVPN 自动登录后仍需要登录",
                     SessionExpiryReason.LOGIN_REJECTED,
@@ -131,6 +167,7 @@ class WebVpnInterceptor(
 
     internal fun loginAndRetry(request: Request): Nothing {
         if (autoLoginAttempted.get() == true) {
+            Log.w(TAG, "WebVPN 重试请求仍需要登录，放弃自动登录")
             throw SessionExpiredException(
                 "WebVPN 自动登录后仍需要登录",
                 SessionExpiryReason.LOGIN_REJECTED,
@@ -140,7 +177,7 @@ class WebVpnInterceptor(
         val protectedUrl = runCatching {
             WebVpnEncoder.decode(request.url.toString())
         }.getOrNull() ?: request.url.toString()
-        Log.d(TAG, "WebVPN 检测到需要登录，开始自动登录: $protectedUrl")
+        Log.d(TAG, "WebVPN 检测到需要登录，开始自动登录: ${LogRedactor.url(protectedUrl)}")
         sessionAuthenticator(protectedUrl)
         throw WebVpnRetryException()
     }

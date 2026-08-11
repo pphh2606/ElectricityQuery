@@ -1,9 +1,25 @@
 # 更新日志
+
+## 兼容性改进
+- 应用最低支持版本从 Android 6.0 降为 Android 5.0（`minSdk` 从 23 改为 21），让更多旧手机也能安装运行。
+
 ## Bug 修复
-- 修复多语言与留言详情的问题：留言详情页启动时直接调用 `fetchMessageDetail(wid)`（按留言 ID 查询单条详情的接口）加载内容，不再停留在空状态；金额格式化统一使用 `Locale.US`（美式语言环境，强制保留小数点），数量文案改用 `plurals`（Android 复数资源），页面提示改为从 `LocalResources`（Compose 组合局部资源）读取，避免切换语言后仍显示旧语言或错误的小数分隔符。
+- 修复 WebVPN 自动登录后 Cookie 未同步的问题。
+- 补齐旧版 Android 的兼容处理（自动登录完成后把 clientvpn 域的 Cookie 写回当前账号存储；Android 10 以下不再把二维码写入系统相册、Android 6 以下改用旧锁屏接口并统一弹窗拖拽行为、WebView 错误回调在 API 23 以下读取不到错误对象时使用默认文案）。
+
 ## 安全改进
-- 收紧通知详情页 WebView 的安全设置：关闭文件和内容访问、要求用户手势后才自动播放媒体并启用安全浏览（Safe Browsing，浏览器拦截恶意网址的功能），降低打开校内网页时的风险。
+- 新增日志脱敏工具 `LogRedactor`，并在登录、扫码、支付、WebVPN、通知、办事大厅等日志中统一隐藏 Cookie、Token、密码、学号、姓名和重定向地址等敏感信息（调试日志里用 `****` 替代真实值，降低 Logcat 泄露个人信息的风险）。
+
 ## 架构改进
-- 简化网络与页面架构：清理各 API 中不再使用的请求封装、卡片充值支付渠道查询接口（`queryTradeChannels`）及对应数据模型、WebView 支付域名常量和登录校验类型，统一复用共享的 OkHttp 客户端（Android 的 HTTP 请求库）；半屏 WebView 与支付弹层改用 `LocalWindowInfo`（当前窗口尺寸信息）计算高度，并移除未使用的加载状态。
+- 调整 WebVPN 网络链路：二维码登录请求不再走 WebVPN 转换。
+- 图片加载改用独立的 WebVPN 图片客户端（会话过期时返回统一占位响应而不是把异常抛到 OkHttp 异步线程）。
+- 重定向跟踪增加 Referer 支持，让不同业务使用更匹配的网络通道。
+
+## 界面优化
+- 语言选择弹窗改为可滚动列表，并允许弹窗停留在中间展开高度（`BottomSheet` 部分展开），语言选项较多时也不会被截断或遮挡。
+
+## 依赖变更
+- 下调 `coreKtx`、`lifecycle-runtime-ktx`、`activity-compose`、Compose BOM、`materialKolor`、`CameraX` 等依赖版本，以兼容 Android 5.0 并保持既有功能可用（这些库的新版本要求更高系统版本）。
+
 ## 工程配置
-- 应用版本号从 1475 提升到 1478，并关闭 App Bundle 的语言资源拆分（`enableSplit = false`，即所有语言资源打进同一个安装包），确保应用内切换语言功能始终可用。
+- 应用版本号从 1478 提升到 1491。

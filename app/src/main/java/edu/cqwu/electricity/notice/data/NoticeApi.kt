@@ -2,6 +2,7 @@ package edu.cqwu.electricity.notice.data
 
 import android.util.Log
 import com.google.gson.Gson
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -61,7 +62,7 @@ class NoticeApi {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
 
-            Log.d(TAG, "通知公告响应: ${body.take(200)}")
+            Log.d(TAG, "通知公告响应: ${LogRedactor.body(body)}")
 
             val noticeResponse = gson.fromJson(body, NoticeResponse::class.java)
             val qp = noticeResponse.qp
@@ -106,7 +107,7 @@ class NoticeApi {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
 
-            Log.d(TAG, "通知详情响应: ${body.take(300)}")
+            Log.d(TAG, "通知详情响应: ${LogRedactor.body(body)}")
 
             val detailResponse = gson.fromJson(body, NoticeDetailResponse::class.java)
             val detail = detailResponse.list?.firstOrNull()

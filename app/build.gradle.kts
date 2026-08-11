@@ -49,7 +49,7 @@ android {
 
     defaultConfig {
         applicationId = "edu.cqwu.electricity"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 36
         versionCode = currentVersionCode
         versionName = "1.0"

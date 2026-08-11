@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.login.data
 
 import android.util.Log
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -29,17 +30,21 @@ object RedirectChainFollower {
         startUrl: String,
         tolerateHttpError: Boolean = false,
         tag: String? = null,
+        referer: String? = null,
     ): Pair<String, String>? {
         var currentUrl = startUrl
         var redirectCount = 0
 
         while (redirectCount < MAX_REDIRECTS) {
-            tag?.let { Log.d(it, "redirect ${redirectCount + 1}: ${currentUrl.take(100)}") }
+            tag?.let { Log.d(it, "redirect ${redirectCount + 1}: ${LogRedactor.url(currentUrl)}") }
             val response = client.newCall(
                 Request.Builder()
                     .url(currentUrl)
                     .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
                     .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
+                    .apply {
+                        if (referer != null) addHeader("Referer", referer)
+                    }
                     .get()
                     .build(),
             ).execute()

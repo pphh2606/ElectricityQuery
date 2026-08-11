@@ -52,9 +52,8 @@ class ElectricityApp : Application(), ImageLoaderFactory {
             }
             .crossfade(true)
             .okHttpClient {
-                // 使用共享的 OkHttpClient，自动携带 ehall 认证 Cookie
-                // 解决 Coil 加载 ehall 图片时无 Cookie 导致返回 HTML 而非图片的问题
-                HttpClientFactory.shared
+                // WebVPN 图片专用 client：会话过期时不把 SessionExpiredException 抛到 OkHttp 异步线程
+                HttpClientFactory.webVpnImageClient
             }
             .build()
     }

@@ -446,8 +446,18 @@ fun UnifiedWebViewScreen(
                                 ) {
                                     super.onReceivedError(view, request, error)
                                     if (request?.isForMainFrame == true && webErrorState == null) {
-                                        val code = error?.errorCode ?: -1
-                                        val desc = error?.description?.toString() ?: context.getString(R.string.common_unknown_error)
+                                        val code =
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                error?.errorCode ?: -1
+                                            } else {
+                                                -1
+                                            }
+                                        val desc =
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                error?.description?.toString()
+                                            } else {
+                                                null
+                                            } ?: context.getString(R.string.common_unknown_error)
                                         Log.w("WebView_DIAG", ">>> 主框架加载错误: code=$code, desc=$desc")
                                         isLoading = false
                                         webErrorState = WebViewError(

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.WindowManager
@@ -533,6 +534,9 @@ private fun generateQrCodeBitmap(content: String): Bitmap? {
  * @return true 表示保存成功，false 表示保存失败
  */
 private fun saveQrCodeToGallery(context: Context, content: String): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        return false
+    }
     return try {
         val bitmap = generateQrCodeBitmap(content) ?: return false
 

@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.login.data
 
 import android.util.Log
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -87,7 +88,7 @@ class CasAuthApi {
                 existingHtml = null,
             )
 
-            Log.d("CasAuthApi", "登录POST响应(user): code=${outcome.responseCode}, location=${outcome.location}")
+            Log.d("CasAuthApi", "登录POST响应(user): code=${outcome.responseCode}, location=${LogRedactor.url(outcome.location)}")
 
             val cookieString = cookieProvider(LOGIN_URL)
             val castgc = CookieParser.getValue(cookieString, "CASTGC")
@@ -98,7 +99,7 @@ class CasAuthApi {
             }
 
             val t5 = System.currentTimeMillis()
-            Log.d("CasAuthApi", "登录总耗时(user): ${t5 - t0}ms, CASTGC=$castgc")
+            Log.d("CasAuthApi", "登录总耗时(user): ${t5 - t0}ms, CASTGC=${LogRedactor.mask(castgc)}")
 
             Result.success(LoginResult(
                 username = username,

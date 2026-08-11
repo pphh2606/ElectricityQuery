@@ -3,6 +3,7 @@ package edu.cqwu.electricity.profile.data
 import android.util.Log
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.login.data.HtmlFormParser
@@ -137,7 +138,7 @@ class CampusphereApi {
             val info = client.newCall(request).execute().use { response ->
                 val responseBody = response.body.string()
 
-                Log.d(TAG, "API 响应(前200): ${responseBody.take(200)}")
+                Log.d(TAG, "API 响应(前200): ${LogRedactor.body(responseBody)}")
 
                 // ⚠️ 检查未登录响应（body 是 JSON，不是 HTML，不能用 SessionChecker）
                 if (isNotLoggedIn(responseBody)) {
@@ -166,7 +167,10 @@ class CampusphereApi {
                     ?: throw Exception("学生信息为空")
             }
 
-            Log.d(TAG, "学生信息获取成功: ${info.userName}(${info.userId})")
+            Log.d(
+                TAG,
+                "学生信息获取成功: ${LogRedactor.mask(info.userName)}(${LogRedactor.mask(info.userId)})",
+            )
             Result.success(info)
         } catch (e: NotLoggedInException) {
             Result.failure(e)

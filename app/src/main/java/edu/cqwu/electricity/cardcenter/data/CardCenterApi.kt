@@ -2,6 +2,7 @@ package edu.cqwu.electricity.cardcenter.data
 
 import android.util.Log
 import com.google.gson.Gson
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.payment.data.HttpClientFactory
@@ -195,7 +196,7 @@ class CardCenterApi {
 
             val body = response.body.string()
 
-            Log.d("CardCenterApi", "卡挂失响应: $body")
+            Log.d("CardCenterApi", "卡挂失响应: ${LogRedactor.body(body)}")
 
             val cardLostResponse = gson.fromJson(body, CardLostResponse::class.java)
             Result.success(cardLostResponse)

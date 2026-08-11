@@ -7,6 +7,7 @@ import android.app.Activity
 import android.app.KeyguardManager
 import android.content.ClipData
 import android.content.Context
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -234,7 +235,13 @@ fun LoginScreen(
                                 onClick = {
                                     showMenu = false
                                     val km = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                                    if (km.isDeviceSecure) {
+                                    @Suppress("DEPRECATION")
+                                    val deviceSecure = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        km.isDeviceSecure
+                                    } else {
+                                        km.isKeyguardSecure
+                                    }
+                                    if (deviceSecure) {
                                         @Suppress("DEPRECATION")
                                         val intent = km.createConfirmDeviceCredentialIntent(
                                             authTitle,

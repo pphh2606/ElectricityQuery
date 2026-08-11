@@ -2,6 +2,7 @@ package edu.cqwu.electricity.electricity.data
 
 import android.util.Log
 import com.google.gson.annotations.SerializedName
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.feeservicehall.data.ApiBusinessException
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.payment.data.ApiResponse
@@ -109,7 +110,7 @@ class ElectricityPayApi : PayApiBase() {
 
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
-                Log.d(TAG, "gotToPay 响应: ${body.take(200)}...")
+            Log.d(TAG, "gotToPay 响应: ${LogRedactor.body(body)}...")
 
                 val parsed: ApiResponse<GotToPayResponseData> = parseApiResponse(body, GotToPayResponseData::class.java)
                 if (parsed.messageCode == "0" && parsed.data != null) {
@@ -155,7 +156,7 @@ class ElectricityPayApi : PayApiBase() {
                     throw RuntimeException("HTTP ${response.code}: ${response.message}")
                 }
                 val body = response.body.string()
-                Log.d(TAG, "订单状态响应: ${body.take(200)}...")
+            Log.d(TAG, "订单状态响应: ${LogRedactor.body(body)}...")
 
                 val parsed: ApiResponse<OrderStatusData> = parseApiResponse(body, OrderStatusData::class.java)
                 if (parsed.messageCode == "0" && parsed.data != null) {

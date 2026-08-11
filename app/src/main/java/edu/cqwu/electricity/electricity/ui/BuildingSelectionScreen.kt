@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package edu.cqwu.electricity.electricity.ui
 
 import androidx.compose.ui.res.stringResource

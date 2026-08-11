@@ -92,6 +92,7 @@ class UserCookieStore {
         val cm = CookieManager.getInstance()
         val knownDomains = listOf(
             "https://authserver.cqwu.edu.cn",
+            "https://clientvpn.cqwu.edu.cn",
             "https://electricitypay.cqwu.edu.cn",
             "https://pay.cqwu.edu.cn",
             "http://218.194.176.214:8382",

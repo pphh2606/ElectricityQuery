@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.login.data
 
 import android.util.Log
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -86,7 +87,10 @@ object SessionManager {
 
             val realName = HtmlFormParser.extractRealName(html) ?: ""
 
-            Log.d("SessionManager", "Cookie 有效！学号=$username, 实名=$realName")
+            Log.d(
+                "SessionManager",
+                "Cookie 有效！学号=${LogRedactor.mask(username)}, 实名=${LogRedactor.mask(realName)}",
+            )
 
             SessionValidationResult.Valid
         } catch (e: SocketTimeoutException) {

@@ -32,6 +32,13 @@ object HttpClientFactory {
         create(cookieJar = CookieStoreOkHttpJar)
     }
 
+    val webVpnImageClient: OkHttpClient by lazy {
+        create(
+            cookieJar = CookieStoreOkHttpJar,
+            swallowSessionExpired = true,
+        )
+    }
+
     fun createForUser(username: String): OkHttpClient {
         val userStore = AccountManager.getCookiesForUser(username)
         return create(cookieJar = UserAwareCookieJar(userStore))
@@ -44,6 +51,7 @@ object HttpClientFactory {
         readTimeout: Long = DEFAULT_TIMEOUT_SECONDS,
         writeTimeout: Long = DEFAULT_TIMEOUT_SECONDS,
         includeWebVpn: Boolean = true,
+        swallowSessionExpired: Boolean = false,
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
             .connectTimeout(connectTimeout, TimeUnit.SECONDS)
@@ -55,7 +63,10 @@ object HttpClientFactory {
             .followSslRedirects(followRedirects)
 
         if (includeWebVpn) {
-            val webVpnInterceptor = WebVpnInterceptor(cookieJar)
+            val webVpnInterceptor = WebVpnInterceptor(
+                cookieJar = cookieJar,
+                swallowSessionExpired = swallowSessionExpired,
+            )
             builder.addInterceptor(webVpnInterceptor)
             builder.addNetworkInterceptor(webVpnInterceptor)
         }

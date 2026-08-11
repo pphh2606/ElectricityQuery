@@ -3,6 +3,7 @@ package edu.cqwu.electricity.electricity.data
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -179,7 +180,7 @@ class ElectricityApi {
                 "payFee" to String.format(Locale.US, "%.2f", amount)
             )
             val jsonBody = gson.toJson(payload)
-            Log.d("ElectricityApi", "充值请求 Body: $jsonBody")
+            Log.d("ElectricityApi", "充值请求 Body: ${LogRedactor.body(jsonBody)}")
 
             val requestBody = jsonBody.toRequestBody("application/json; charset=UTF-8".toMediaType())
             val requestBuilder = Request.Builder()
@@ -196,7 +197,7 @@ class ElectricityApi {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
             val body = response.body.string()
-            Log.d("ElectricityApi", "充值响应: $body")
+            Log.d("ElectricityApi", "充值响应: ${LogRedactor.body(body)}")
 
             val rechargeResponse = gson.fromJson(body, RechargeResponse::class.java)
             val payUrl = rechargeResponse.payUrl
@@ -298,7 +299,7 @@ class ElectricityApi {
             throw RuntimeException("HTTP ${response.code}: ${response.message}")
         }
         val body = response.body.string()
-        Log.d("ElectricityApi", "响应体原始内容: $body")
+        Log.d("ElectricityApi", "响应体原始内容: ${LogRedactor.body(body)}")
         return body
     }
 

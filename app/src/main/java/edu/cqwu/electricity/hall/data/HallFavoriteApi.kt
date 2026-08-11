@@ -2,6 +2,7 @@ package edu.cqwu.electricity.hall.data
 
 import android.util.Log
 import com.google.gson.Gson
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.EHALL_APP_SHOW_URL
 import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.FAVORITE_APPS_URL
 import edu.cqwu.electricity.login.data.ServiceLoginManager
@@ -81,7 +82,7 @@ class HallFavoriteApi {
             val body = response.body.string()
 
             Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 收到响应，长度=${body.length}")
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 响应前200字: ${body.take(200)}")
+            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 响应前200字: ${LogRedactor.body(body)}")
 
             // JSON API 响应直接反序列化，通过 hasLogin 字段判断登录态
             val result = gson.fromJson(body, UserFavoritesResponse::class.java)
@@ -143,7 +144,7 @@ class HallFavoriteApi {
             val response = client.newCall(request).execute()
             val body = response.body.string()
 
-            Log.d("HallFavoriteApi", "toggleFavorite 响应: $body")
+            Log.d("HallFavoriteApi", "toggleFavorite 响应: ${LogRedactor.body(body)}")
 
             // JSON API 响应直接反序列化，通过 hasLogin 字段判断登录态
             val result = gson.fromJson(body, FavoriteAppResponse::class.java)

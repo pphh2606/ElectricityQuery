@@ -3,6 +3,7 @@ package edu.cqwu.electricity.feeservicehall.data
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.CookieParser
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.login.data.HtmlFormParser
@@ -139,7 +140,7 @@ class FeeServiceHallApi {
 
                     val firstRedirect = HtmlFormParser.extractJsRedirect(step1Html)
                         ?: return@withContext Result.failure(Exception("无法从 /casLogin/ 解析重定向地址"))
-                    Log.d("FeeServiceHallApi", "步骤1: 解析到重定向地址=$firstRedirect")
+                    Log.d("FeeServiceHallApi", "步骤1: 解析到重定向地址=${LogRedactor.url(firstRedirect)}")
 
                     // ── 步骤2: 仅在需要 CAS 认证时跟随 authserver ──
                     val dlyscasUrl = if (firstRedirect.contains("/authserver/")) {
@@ -168,7 +169,7 @@ class FeeServiceHallApi {
                     } else {
                         firstRedirect
                     }
-                    Log.d("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=$dlyscasUrl")
+                    Log.d("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=${LogRedactor.url(dlyscasUrl)}")
 
                     // ── 步骤3: 访问 dlyscas，获取 JWT Token ──
                     val step3Client = shared.newBuilder()
@@ -181,7 +182,10 @@ class FeeServiceHallApi {
                             .build(),
                     ).execute()
                     val location = step3Resp.header("Location") ?: ""
-                    Log.d("FeeServiceHallApi", "步骤3: dlyscas 响应码=${step3Resp.code}, Location=$location")
+                    Log.d(
+                        "FeeServiceHallApi",
+                        "步骤3: dlyscas 响应码=${step3Resp.code}, Location=${LogRedactor.url(location)}",
+                    )
 
                     val token = tokenRegex.find(location)?.groupValues?.getOrNull(1)
                         ?: return@withContext Result.failure(Exception("无法从 dlyscas 响应中提取 JWT Token"))

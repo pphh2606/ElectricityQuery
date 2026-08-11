@@ -45,7 +45,7 @@ internal class CookieJarBridge(
                     }
                     .build()
             } catch (e: Exception) {
-                Log.w("CookieJarBridge", "解析 Cookie 失败: $name=$value", e)
+                Log.w("CookieJarBridge", "解析 Cookie 失败: $name=****", e)
                 null
             }
         }

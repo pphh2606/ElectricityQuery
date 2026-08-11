@@ -2,6 +2,7 @@ package edu.cqwu.electricity.payment.ui
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
@@ -472,7 +473,9 @@ fun PaymentOverlay(
                                         error: WebResourceError?
                                     ) {
                                         super.onReceivedError(view, request, error)
-                                        Log.e(TAG, "WebView 错误: ${error?.description} @ ${request?.url}")
+                                        val description =
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) error?.description else null
+                                        Log.e(TAG, "WebView 错误: $description @ ${request?.url}")
                                     }
                                 }
 
