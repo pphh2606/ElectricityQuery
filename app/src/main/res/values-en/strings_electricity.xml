@@ -34,9 +34,9 @@
     <string name="detail_power_consumption">Consumption: %1$s kWh</string>
     <string name="detail_cost">Cost: %1$s CNY</string>
     <string name="detail_total_consumption">Consumption: %1$s kWh</string>
-    <string name="detail_title_6months">Last 6 Months Usage</string>
-    <string name="detail_title_daily">Daily Usage This Month</string>
-    <string name="detail_title_hourly">Last 24h Detail</string>
+    <string name="detail_title_6months">Past 6 Months Usage</string>
+    <string name="detail_title_daily">This Month\'s Usage</string>
+    <string name="detail_title_hourly">Last 24h Usage</string>
     <string name="detail_title_meter">Meter Status</string>
     <string name="detail_chart_usage_kwh">Usage (kWh)</string>
     <string name="detail_chart_cost_yuan">Cost (CNY)</string>

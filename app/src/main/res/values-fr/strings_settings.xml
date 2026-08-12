@@ -132,7 +132,7 @@
 
     <string name="settings_topbar_surface_container_high">Accent foncé</string>
 
-    <string name="settings_reduce_motion_off">Toujours activer</string>
+    <string name="settings_reduce_motion_off">Toujours activé</string>
 
     <string name="settings_page_transition_fade">Fondu</string>
 
@@ -160,7 +160,7 @@
 
     <string name="settings_topbar_surface_container">Accent moyen</string>
 
-    <string name="settings_reduce_motion_on">Toujours réduire les animations</string>
+    <string name="settings_reduce_motion_on">Toujours désactivé</string>
 
     <string name="settings_page_transition_slide_vertical">Glissement vertical</string>
 

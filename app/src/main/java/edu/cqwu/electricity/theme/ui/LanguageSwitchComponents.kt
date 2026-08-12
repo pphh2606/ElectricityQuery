@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.theme.ui
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,7 +79,12 @@ fun LanguageSwitchSheet(
                 val title = if (language == AppLanguage.SYSTEM) {
                     stringResource(R.string.language_system)
                 } else {
-                        stringResource(language.labelRes)
+                    val currentName = stringResource(language.labelRes)
+                    if (currentName == language.nativeName) {
+                        currentName
+                    } else {
+                        "$currentName(${language.nativeName})"
+                    }
                 }
                 BottomSheetItem(
                     icon = null,
@@ -91,11 +95,7 @@ fun LanguageSwitchSheet(
                         onDismiss()
                         settingsPrefs.setAppLanguage(language)
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                            val intent = Intent(activity, activity.javaClass)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            activity.startActivity(intent)
-                            activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                            activity.finish()
+                            activity.recreate()
                         }
                     },
                 )

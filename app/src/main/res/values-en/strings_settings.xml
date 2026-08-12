@@ -132,7 +132,7 @@
 
     <string name="settings_topbar_surface_container_high">Dark accent</string>
 
-    <string name="settings_reduce_motion_off">Always enable</string>
+    <string name="settings_reduce_motion_off">Always on</string>
 
     <string name="settings_page_transition_fade">Fade</string>
 
@@ -160,7 +160,7 @@
 
     <string name="settings_topbar_surface_container">Medium accent</string>
 
-    <string name="settings_reduce_motion_on">Always reduce motion</string>
+    <string name="settings_reduce_motion_on">Always off</string>
 
     <string name="settings_page_transition_slide_vertical">Vertical slide</string>
 

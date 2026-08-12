@@ -20,19 +20,23 @@ import java.util.Locale
  * CHINESE: 中文
  * ENGLISH: 英文
  */
-enum class AppLanguage(val value: String, @StringRes val labelRes: Int) {
-    SYSTEM("system", R.string.language_system),
-    CHINESE("zh", R.string.settings_language_zh),
-    TRADITIONAL_CHINESE("zh-TW", R.string.settings_language_zh_tw),
-    ENGLISH("en", R.string.settings_language_en),
-    FRENCH("fr", R.string.settings_language_fr),
-    ARABIC("ar", R.string.settings_language_ar),
-    JAPANESE("ja", R.string.settings_language_ja);
+enum class AppLanguage(
+    val value: String,
+    @StringRes val labelRes: Int,
+    val nativeName: String,
+) {
+    SYSTEM("system", R.string.language_system, ""),
+    CHINESE("zh", R.string.settings_language_zh, "简体中文"),
+    TRADITIONAL_CHINESE("zh-TW", R.string.settings_language_zh_tw, "繁體中文"),
+    ENGLISH("en", R.string.settings_language_en, "English"),
+    FRENCH("fr", R.string.settings_language_fr, "Français"),
+    ARABIC("ar", R.string.settings_language_ar, "العربية"),
+    JAPANESE("ja", R.string.settings_language_ja, "日本語");
 
     val localeTag: String?
         get() = when (this) {
             SYSTEM -> null
-            CHINESE -> "zh"
+            CHINESE -> "zh-CN"
             TRADITIONAL_CHINESE -> "zh-TW"
             ENGLISH -> "en"
             FRENCH -> "fr"

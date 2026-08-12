@@ -110,9 +110,14 @@ object ShortcutHelper {
                 .setIntent(intent)
                 .build()
 
-            ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
-            Log.d(TAG, "快捷方式创建请求已提交: id=$shortcutId, label=$label")
-            CreateResult.Success
+            val success = ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
+            if (success) {
+                Log.d(TAG, "快捷方式创建请求已提交: id=$shortcutId, label=$label")
+                CreateResult.Success
+            } else {
+                Log.w(TAG, "Launcher 拒绝了快捷方式创建请求: id=$shortcutId")
+                CreateResult.NotSupported
+            }
         } catch (e: Exception) {
             Log.e(TAG, "创建快捷方式失败", e)
             CreateResult.Failed(e)

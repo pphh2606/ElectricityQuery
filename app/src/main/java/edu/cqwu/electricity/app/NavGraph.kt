@@ -91,6 +91,8 @@ import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.ui.UnifiedWebViewScreen
 
+private var startupCookieValidationDone = false
+
 /**
  * 路由定义
  */
@@ -337,20 +339,24 @@ fun AppNavGraph(
 
     val snackbar = LocalSnackbarController.current
 
-    // 启动时后台静默验证 Cookie 有效性
+    // 启动时后台静默验证 Cookie 有效性（仅进程启动后执行一次，
+    // 避免语言切换等 Activity 重建后再次跳转登录页）
     LaunchedEffect(Unit) {
-        val store = UserCookieStore() // 空 store，validate 内部会从系统 CookieManager 兜底
-        when (val result = SessionManager.validateCookie(store)) {
-            is SessionValidationResult.Valid -> {
-                android.util.Log.d("NavGraph", "启动 Cookie 验证：有效")
-            }
-            is SessionValidationResult.Invalid -> {
-                android.util.Log.d("NavGraph", "启动 Cookie 验证：失效，跳转登录页")
-                navController.navigate(Routes.COOKIE_EXPIRED_LOGIN)
-            }
-            is SessionValidationResult.NetworkError -> {
-                android.util.Log.w("NavGraph", "启动 Cookie 验证：网络错误 - ${result.message}")
-                snackbar.show(resources.getString(R.string.common_network_error), ToastUtils.Type.ERROR)
+        if (!startupCookieValidationDone) {
+            startupCookieValidationDone = true
+            val store = UserCookieStore() // 空 store，validate 内部会从系统 CookieManager 兜底
+            when (val result = SessionManager.validateCookie(store)) {
+                is SessionValidationResult.Valid -> {
+                    android.util.Log.d("NavGraph", "启动 Cookie 验证：有效")
+                }
+                is SessionValidationResult.Invalid -> {
+                    android.util.Log.d("NavGraph", "启动 Cookie 验证：失效，跳转登录页")
+                    navController.navigate(Routes.COOKIE_EXPIRED_LOGIN)
+                }
+                is SessionValidationResult.NetworkError -> {
+                    android.util.Log.w("NavGraph", "启动 Cookie 验证：网络错误 - ${result.message}")
+                    snackbar.show(resources.getString(R.string.common_network_error), ToastUtils.Type.ERROR)
+                }
             }
         }
     }

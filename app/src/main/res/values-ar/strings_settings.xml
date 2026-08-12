@@ -132,7 +132,7 @@
 
     <string name="settings_topbar_surface_container_high">تمييز غامق</string>
 
-    <string name="settings_reduce_motion_off">دائمًا تشغيل</string>
+    <string name="settings_reduce_motion_off">تشغيل دائمًا</string>
 
     <string name="settings_page_transition_fade">تلاشي</string>
 
@@ -160,7 +160,7 @@
 
     <string name="settings_topbar_surface_container">تمييز متوسط</string>
 
-    <string name="settings_reduce_motion_on">تقليل الحركة دائمًا</string>
+    <string name="settings_reduce_motion_on">إيقاف دائمًا</string>
 
     <string name="settings_page_transition_slide_vertical">انزلاق عمودي</string>
 

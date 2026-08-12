@@ -34,9 +34,9 @@
     <string name="detail_power_consumption">用电量: %1$s 度</string>
     <string name="detail_cost">费用: %1$s 元</string>
     <string name="detail_total_consumption">用电量: %1$s 度</string>
-    <string name="detail_title_6months">最近6个月用电记录</string>
-    <string name="detail_title_daily">本月每日用电</string>
-    <string name="detail_title_hourly">近24h用电明细</string>
+    <string name="detail_title_6months">近半年用电记录</string>
+    <string name="detail_title_daily">本月用电记录</string>
+    <string name="detail_title_hourly">近24h用电记录</string>
     <string name="detail_title_meter">电表实时状态</string>
     <string name="detail_chart_usage_kwh">用电量(度)</string>
     <string name="detail_chart_cost_yuan">费用(元)</string>

@@ -34,9 +34,9 @@
     <string name="detail_power_consumption">Conso. : %1$s kWh</string>
     <string name="detail_cost">Coût : %1$s ¥</string>
     <string name="detail_total_consumption">Conso. : %1$s kWh</string>
-    <string name="detail_title_6months">Historique 6 mois</string>
-    <string name="detail_title_daily">Conso. quotidienne du mois</string>
-    <string name="detail_title_hourly">Détail 24h</string>
+    <string name="detail_title_6months">Consommation des 6 derniers mois</string>
+    <string name="detail_title_daily">Consommation de ce mois</string>
+    <string name="detail_title_hourly">Consommation des dernières 24h</string>
     <string name="detail_title_meter">État du compteur</string>
     <string name="detail_chart_usage_kwh">Conso.(kWh)</string>
     <string name="detail_chart_cost_yuan">Coût(¥)</string>

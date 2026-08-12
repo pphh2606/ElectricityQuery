@@ -132,7 +132,7 @@
 
     <string name="settings_topbar_surface_container_high">濃いアクセント</string>
 
-    <string name="settings_reduce_motion_off">常に有効にする</string>
+    <string name="settings_reduce_motion_off">常にオン</string>
 
     <string name="settings_page_transition_fade">フェード</string>
 
@@ -160,7 +160,7 @@
 
     <string name="settings_topbar_surface_container">中間アクセント</string>
 
-    <string name="settings_reduce_motion_on">常に動きを減らす</string>
+    <string name="settings_reduce_motion_on">常にオフ</string>
 
     <string name="settings_page_transition_slide_vertical">垂直スライド</string>
 

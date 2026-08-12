@@ -34,9 +34,9 @@
     <string name="detail_power_consumption">使用量: %1$s 度</string>
     <string name="detail_cost">費用: %1$s 円</string>
     <string name="detail_total_consumption">使用量: %1$s 度</string>
-    <string name="detail_title_6months">最近6ヶ月の電力使用記録</string>
-    <string name="detail_title_daily">今月の日別使用量</string>
-    <string name="detail_title_hourly">過去24時間の詳細</string>
+    <string name="detail_title_6months">過去6か月の電力使用記録</string>
+    <string name="detail_title_daily">今月の電力使用記録</string>
+    <string name="detail_title_hourly">過去24時間の電力使用記録</string>
     <string name="detail_title_meter">メーターリアルタイム状態</string>
     <string name="detail_chart_usage_kwh">使用量(度)</string>
     <string name="detail_chart_cost_yuan">費用(円)</string>

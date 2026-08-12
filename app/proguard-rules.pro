@@ -1,5 +1,8 @@
 # 关闭 R8 混淆（obfuscation），保留代码压缩和资源删除
 -dontobfuscate
+-optimizationpasses 5
+-allowaccessmodification
+-mergeinterfacesaggressively
 
 # ============================================================
 # Project-specific ProGuard / R8 rules
@@ -8,7 +11,6 @@
 # ============================================================
 # Jetpack Compose
 # ============================================================
--keep class androidx.compose.** { *; }
 -keepclassmembers class * implements androidx.compose.runtime.Composable { *; }
 -dontwarn androidx.compose.**
 
@@ -27,8 +29,6 @@
 # ============================================================
 -dontwarn okhttp3.**
 -dontwarn okio.**
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
 
 # ============================================================
 # Gson
@@ -47,25 +47,21 @@
 # ============================================================
 # Coil
 # ============================================================
--keep class coil.** { *; }
 -dontwarn coil.**
 
 # ============================================================
 # Zxing (QR Code scanning)
 # ============================================================
--keep class com.google.zxing.** { *; }
 -dontwarn com.google.zxing.**
 
 # ============================================================
 # MaterialKolor (HCT color science)
 # ============================================================
--keep class com.materialkolor.** { *; }
 -dontwarn com.materialkolor.**
 
 # ============================================================
 # Navigation Compose
 # ============================================================
--keep class androidx.navigation.** { *; }
 -dontwarn androidx.navigation.**
 
 # ============================================================

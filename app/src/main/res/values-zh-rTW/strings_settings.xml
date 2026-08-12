@@ -160,7 +160,7 @@
 
     <string name="settings_topbar_surface_container">中等強調</string>
 
-    <string name="settings_reduce_motion_on">始終減少動畫</string>
+    <string name="settings_reduce_motion_on">始終關閉</string>
 
     <string name="settings_page_transition_slide_vertical">垂直滑動</string>
 

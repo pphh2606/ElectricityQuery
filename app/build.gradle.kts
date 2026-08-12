@@ -53,6 +53,7 @@ android {
         targetSdk = 36
         versionCode = currentVersionCode
         versionName = "1.0"
+        resConfigs("zh", "zh-rCN", "zh-rTW", "en", "fr", "ja", "ar")
 
         buildConfigField("String", "BUILD_TIME",
             "\"${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}\"")
@@ -79,7 +80,7 @@ android {
     }
     bundle {
         language {
-            enableSplit = false
+            enableSplit = true
         }
     }
     compileOptions {

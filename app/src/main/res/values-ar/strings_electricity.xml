@@ -35,8 +35,8 @@
     <string name="detail_cost">التكلفة: %1$s ¥</string>
     <string name="detail_total_consumption">الاستهلاك: %1$s ك.و.س</string>
     <string name="detail_title_6months">سجل آخر 6 أشهر</string>
-    <string name="detail_title_daily">الاستهلاك اليومي للشهر</string>
-    <string name="detail_title_hourly">تفاصيل 24 ساعة</string>
+    <string name="detail_title_daily">استهلاك هذا الشهر</string>
+    <string name="detail_title_hourly">سجل آخر 24 ساعة</string>
     <string name="detail_title_meter">حالة العداد</string>
     <string name="detail_chart_usage_kwh">الاستهلاك(ك.و.س)</string>
     <string name="detail_chart_cost_yuan">التكلفة(¥)</string>
