@@ -52,6 +52,7 @@ import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.electricity.data.displayName
 import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.util.ToastUtils
 
 /**
@@ -84,7 +85,7 @@ fun BuildingSelectionScreen(
     // 显示错误（使用 ToastOverlay 替代 Snackbar）
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
-            snackbar.show(it, ToastUtils.Type.ERROR)
+            snackbar.show(it.resolve(context.resources), ToastUtils.Type.ERROR)
             viewModel.clearError()
         }
     }
@@ -309,7 +310,7 @@ private fun FloorRoomGroup(
                             )
                         }
                         is FloorRoomLoadState.Success -> {
- Text(pluralStringResource(R.plurals.building_rooms_count, loadState.rooms.size), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(pluralStringResource(R.plurals.building_rooms_count, loadState.rooms.size, loadState.rooms.size), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         is FloorRoomLoadState.Error -> {
                             Text(stringResource(R.string.common_load_failed), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
@@ -352,7 +353,7 @@ private fun FloorRoomGroup(
                         }
                     }
                     is FloorRoomLoadState.Error -> {
-                        Text(stringResource(R.string.common_load_failed) + ": ${loadState.message}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp))
+                        Text(stringResource(R.string.common_load_failed) + ": " + loadState.message.resolve(LocalContext.current.resources), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp))
                         TextButton(onClick = { onLoadFloor(floor) }) { Text(stringResource(R.string.building_reload)) }
                     }
                 }

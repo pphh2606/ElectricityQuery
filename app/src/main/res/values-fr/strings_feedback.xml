@@ -14,4 +14,76 @@
     <string name="feedback_title_label">Titre (optionnel)</string>
     <string name="feedback_content_label">Contenu</string>
     <string name="feedback_preview_log">Aperçu</string>
+
+    <string name="crash_report_thread_group">Groupe de threads : %1$s</string>
+
+    <string name="feedback_email_subject">Commentaires sur l\'application Electricity Query</string>
+
+    <string name="crash_report_basic_info">--- Informations de base ---</string>
+
+    <string name="crash_report_stack">--- Trace de la pile de crash ---</string>
+
+    <string name="feedback_log_section_crash">═══ Enregistrements de crash ═══</string>
+
+    <string name="feedback_email_system">Système : Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_record">║ Enregistrement de crash n°%1$d (%2$s)</string>
+
+    <string name="feedback_email_app_version">Version de l\'application : %1$s (%2$s)</string>
+
+    <string name="feedback_email_content_title">--- Contenu des commentaires ---</string>
+
+    <string name="crash_report_version_info_failed">Informations de version : récupération impossible</string>
+
+    <string name="crash_report_device">Modèle de l\'appareil : %1$s</string>
+
+    <string name="crash_report_brand">Marque : %1$s</string>
+
+    <string name="feedback_log_section_process">═══ Journaux du processus actuel (logcat --pid) ═══</string>
+
+    <string name="crash_report_thread_priority">Priorité du thread : %1$s</string>
+
+    <string name="feedback_log_loading">(Chargement des journaux, veuillez réessayer plus tard)</string>
+
+    <string name="feedback_log_section_crash_buffer">═══ Journaux du tampon de crash (logcat -b crash) ═══</string>
+
+    <string name="crash_report_version_code">Code de version : %1$s</string>
+
+    <string name="crash_report_version_name">Nom de version : %1$s</string>
+
+    <string name="crash_report_manufacturer">Fabricant : %1$s</string>
+
+    <string name="crash_report_is_main_thread">Thread principal : %1$s</string>
+
+    <string name="feedback_share_log">Partager les journaux</string>
+
+    <string name="crash_report_abi">ABI : %1$s</string>
+
+    <string name="feedback_log_empty">(Aucun contenu de journal)</string>
+
+    <string name="feedback_email_title_suffix"> : %1$s</string>
+
+    <string name="feedback_email_device_title">--- Informations sur l\'appareil ---</string>
+
+    <string name="crash_report_title">Rapport de plantage de l\'application</string>
+
+    <string name="crash_report_thread_id">ID du thread : %1$s</string>
+
+    <string name="crash_report_system">Système : Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_package">Nom du paquet : %1$s</string>
+
+    <string name="feedback_email_log_title">--- Journaux ---</string>
+
+    <string name="crash_report_thread_name">Nom du thread : %1$s</string>
+
+    <string name="feedback_email_device">Appareil : %1$s</string>
+
+    <string name="crash_report_time">Heure du plantage : %1$s</string>
+
+    <string name="crash_report_pid">PID du processus : %1$s</string>
+
+    <string name="crash_report_read_failed">[Échec de la lecture du fichier de crash : %1$s]</string>
+
+    <string name="feedback_log_no_logs">(Aucun journal récupéré)</string>
 </resources>

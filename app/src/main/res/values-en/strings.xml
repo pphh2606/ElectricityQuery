@@ -56,4 +56,16 @@
     <string name="common_disabled">Disabled</string>
     <string name="common_re_query">Retry</string>
     <string name="common_copied_to_clipboard">Copied to clipboard</string>
+    <string name="common_refresh_failed">Refresh failed</string>
+    <string name="common_network_error">Network error, please check your connection</string>
+    <string name="common_query_failed">Query failed</string>
+    <string name="common_favorite_added">Added to favorites</string>
+    <string name="common_favorite_removed">Removed from favorites</string>
+    <string name="common_favorite_toggle_failed">Failed to update favorites</string>
+    <string name="common_clearing">Clearing…</string>
+    <string name="common_clear_failed">Clear failed: %1$s</string>
+    <string name="common_share_failed">Share failed</string>
+    <string name="common_no_mail_app">No mail app found, please install one</string>
+
+    <string name="common_unknown">Unknown</string>
 </resources>

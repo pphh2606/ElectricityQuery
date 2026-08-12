@@ -49,4 +49,16 @@
     <string name="fee_order_closing">注文を閉じています…</string>
     <string name="fee_order_close_success">注文を閉じました</string>
     <string name="fee_order_close_failed">閉じ失敗: %1$s</string>
+
+    <string name="fee_order_status_pending">支払い待ち</string>
+
+    <string name="fee_order_status_refund">返金済み</string>
+
+    <string name="payment_channel_alipay">支付宝</string>
+
+    <string name="payment_channel_wechat">微信支付</string>
+
+    <string name="fee_order_status_closed">クローズ</string>
+
+    <string name="fee_order_status_paid">支払い済み</string>
 </resources>

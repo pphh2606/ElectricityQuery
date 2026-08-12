@@ -12,4 +12,76 @@
     <string name="feedback_title_label">タイトル（任意）</string>
     <string name="feedback_content_label">フィードバック内容</string>
     <string name="feedback_preview_log">ログをプレビュー</string>
+
+    <string name="crash_report_thread_group">スレッドグループ: %1$s</string>
+
+    <string name="feedback_email_subject">電気料金照会アプリのフィードバック</string>
+
+    <string name="crash_report_basic_info">--- 基本情報 ---</string>
+
+    <string name="crash_report_stack">--- クラッシュスタック ---</string>
+
+    <string name="feedback_log_section_crash">═══ クラッシュ記録 ═══</string>
+
+    <string name="feedback_email_system">システム: Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_record">║ クラッシュ記録 #%1$d (%2$s)</string>
+
+    <string name="feedback_email_app_version">アプリバージョン: %1$s (%2$s)</string>
+
+    <string name="feedback_email_content_title">--- フィードバック内容 ---</string>
+
+    <string name="crash_report_version_info_failed">バージョン情報: 取得に失敗しました</string>
+
+    <string name="crash_report_device">端末モデル: %1$s</string>
+
+    <string name="crash_report_brand">ブランド: %1$s</string>
+
+    <string name="feedback_log_section_process">═══ 現在のプロセスログ (logcat --pid) ═══</string>
+
+    <string name="crash_report_thread_priority">スレッド優先度: %1$s</string>
+
+    <string name="feedback_log_loading">(ログを読み込み中です。後でもう一度お試しください)</string>
+
+    <string name="feedback_log_section_crash_buffer">═══ クラッシュバッファログ (logcat -b crash) ═══</string>
+
+    <string name="crash_report_version_code">バージョンコード: %1$s</string>
+
+    <string name="crash_report_version_name">バージョン名: %1$s</string>
+
+    <string name="crash_report_manufacturer">メーカー: %1$s</string>
+
+    <string name="crash_report_is_main_thread">メインスレッド: %1$s</string>
+
+    <string name="feedback_share_log">ログを共有</string>
+
+    <string name="crash_report_abi">ABI: %1$s</string>
+
+    <string name="feedback_log_empty">(ログ内容はありません)</string>
+
+    <string name="feedback_email_title_suffix">：%1$s</string>
+
+    <string name="feedback_email_device_title">--- 端末情報 ---</string>
+
+    <string name="crash_report_title">アプリのクラッシュレポート</string>
+
+    <string name="crash_report_thread_id">スレッド ID: %1$s</string>
+
+    <string name="crash_report_system">システム: Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_package">パッケージ名: %1$s</string>
+
+    <string name="feedback_email_log_title">--- ログ ---</string>
+
+    <string name="crash_report_thread_name">スレッド名: %1$s</string>
+
+    <string name="feedback_email_device">端末: %1$s</string>
+
+    <string name="crash_report_time">クラッシュ時間: %1$s</string>
+
+    <string name="crash_report_pid">プロセス PID: %1$s</string>
+
+    <string name="crash_report_read_failed">[クラッシュファイルの読み取りに失敗しました: %1$s]</string>
+
+    <string name="feedback_log_no_logs">(ログを取得できませんでした)</string>
 </resources>

@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.LocaleList
+import androidx.annotation.StringRes
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.home.data.CustomServiceEntry
 import java.util.Locale
 
@@ -18,14 +20,14 @@ import java.util.Locale
  * CHINESE: 中文
  * ENGLISH: 英文
  */
-enum class AppLanguage(val value: String, val displayName: String) {
-    SYSTEM("system", "跟随系统"),
-    CHINESE("zh", "简体中文"),
-    TRADITIONAL_CHINESE("zh-TW", "繁體中文"),
-    ENGLISH("en", "English"),
-    FRENCH("fr", "Français"),
-    ARABIC("ar", "العربية"),
-    JAPANESE("ja", "日本語");
+enum class AppLanguage(val value: String, @StringRes val labelRes: Int) {
+    SYSTEM("system", R.string.language_system),
+    CHINESE("zh", R.string.settings_language_zh),
+    TRADITIONAL_CHINESE("zh-TW", R.string.settings_language_zh_tw),
+    ENGLISH("en", R.string.settings_language_en),
+    FRENCH("fr", R.string.settings_language_fr),
+    ARABIC("ar", R.string.settings_language_ar),
+    JAPANESE("ja", R.string.settings_language_ja);
 
     val localeTag: String?
         get() = when (this) {
@@ -338,13 +340,13 @@ class SettingsPreferences(context: Context) {
 }
 
 /** 页面过渡动画类型 */
-enum class PageTransition(val value: String, val displayName: String) {
-    NONE("none", "无动画"),
-    SLIDE("slide", "水平滑动"),
-    SLIDE_VERTICAL("slide_vertical", "垂直滑动"),
-    FADE("fade", "淡入淡出"),
-    FADE_SCALE("fade_scale", "缩放淡入"),
-    CUPERTINO("cupertino", "Cupertino");
+enum class PageTransition(val value: String, @StringRes val labelRes: Int) {
+    NONE("none", R.string.settings_page_transition_none),
+    SLIDE("slide", R.string.settings_page_transition_slide),
+    SLIDE_VERTICAL("slide_vertical", R.string.settings_page_transition_slide_vertical),
+    FADE("fade", R.string.settings_page_transition_fade),
+    FADE_SCALE("fade_scale", R.string.settings_page_transition_fade_scale),
+    CUPERTINO("cupertino", R.string.settings_page_transition_cupertino);
 
     companion object {
         fun fromValue(value: String): PageTransition {
@@ -354,10 +356,10 @@ enum class PageTransition(val value: String, val displayName: String) {
 }
 
 /** 减少动画模式 */
-enum class ReduceMotion(val value: String, val displayName: String) {
-    SYSTEM("system", "跟随系统"),
-    ON("on", "始终减少"),
-    OFF("off", "始终开启");
+enum class ReduceMotion(val value: String, @StringRes val labelRes: Int) {
+    SYSTEM("system", R.string.settings_reduce_motion_system),
+    ON("on", R.string.settings_reduce_motion_on),
+    OFF("off", R.string.settings_reduce_motion_off);
 
     companion object {
         fun fromValue(value: String): ReduceMotion {
@@ -367,14 +369,14 @@ enum class ReduceMotion(val value: String, val displayName: String) {
 }
 
 /** 标题栏颜色样式 */
-enum class TopBarStyle(val value: String, val displayName: String) {
-    SURFACE("surface", "背景色"),
-    SURFACE_CONTAINER_LOWEST("surface_container_lowest", "极浅强调"),
-    SURFACE_CONTAINER_LOW("surface_container_low", "浅强调"),
-    SURFACE_CONTAINER("surface_container", "中等强调"),
-    SURFACE_CONTAINER_HIGH("surface_container_high", "深强调"),
-    SURFACE_CONTAINER_HIGHEST("surface_container_highest", "最深强调"),
-    SURFACE_VARIANT("surface_variant", "变体色");
+enum class TopBarStyle(val value: String, @StringRes val labelRes: Int) {
+    SURFACE("surface", R.string.settings_topbar_surface),
+    SURFACE_CONTAINER_LOWEST("surface_container_lowest", R.string.settings_topbar_surface_container_lowest),
+    SURFACE_CONTAINER_LOW("surface_container_low", R.string.settings_topbar_surface_container_low),
+    SURFACE_CONTAINER("surface_container", R.string.settings_topbar_surface_container),
+    SURFACE_CONTAINER_HIGH("surface_container_high", R.string.settings_topbar_surface_container_high),
+    SURFACE_CONTAINER_HIGHEST("surface_container_highest", R.string.settings_topbar_surface_container_highest),
+    SURFACE_VARIANT("surface_variant", R.string.settings_topbar_surface_variant);
 
     companion object {
         fun fromValue(value: String): TopBarStyle {
@@ -395,11 +397,11 @@ enum class QrCodeColorMode(val value: String) {
     }
 }
 
-/** 夜间模式的显示名称 */
-val NightMode.displayName: String
+/** 夜间模式的显示资源 */
+val NightMode.labelRes: Int
     get() = when (this) {
-        NightMode.SYSTEM -> "跟随系统"
-        NightMode.LIGHT -> "浅色模式"
-        NightMode.DARK -> "深色模式"
+        NightMode.SYSTEM -> R.string.settings_night_mode_system
+        NightMode.LIGHT -> R.string.settings_night_mode_light
+        NightMode.DARK -> R.string.settings_night_mode_dark
     }
 

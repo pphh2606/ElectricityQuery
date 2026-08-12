@@ -350,7 +350,7 @@ fun AppNavGraph(
             }
             is SessionValidationResult.NetworkError -> {
                 android.util.Log.w("NavGraph", "启动 Cookie 验证：网络错误 - ${result.message}")
-                snackbar.show("网络异常，请检查网络连接", ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_network_error), ToastUtils.Type.ERROR)
             }
         }
     }

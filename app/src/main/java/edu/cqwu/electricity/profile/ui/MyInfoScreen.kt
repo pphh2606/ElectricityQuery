@@ -101,7 +101,7 @@ fun MyInfoScreen(
             when {
                 uiState.needsLogin -> {
                     ReLoginContent(
-                        errorMessage = stringResource(R.string.my_info_login_expired),
+                        errorMessage = null,
                         requiresReLogin = true,
                         onReLogin = onReLogin,
                         onRetry = { viewModel.loadStudentInfo() },

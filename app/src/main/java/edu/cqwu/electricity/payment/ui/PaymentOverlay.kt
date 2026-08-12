@@ -134,7 +134,7 @@ fun PaymentMethodCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = method.displayName.first().toString(),
+                        text = stringResource(method.labelRes).first().toString(),
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -145,7 +145,7 @@ fun PaymentMethodCard(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = method.displayName,
+                        text = stringResource(method.labelRes),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                 )

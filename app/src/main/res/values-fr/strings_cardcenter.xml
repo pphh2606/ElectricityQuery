@@ -73,7 +73,6 @@
     <string name="card_lost_success">Perte déclarée avec succès</string>
     <string name="card_lost_request_error">Erreur de requête</string>
     <string name="card_lost_fetch_error">Échec de récupération des infos de la carte</string>
-    <string name="card_lost_login_expired">Session expirée, veuillez vous reconnecter</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Recharge carte campus                      -->
@@ -88,4 +87,28 @@
     <string name="card_recharge_title_for_user">Recharger pour %1$s</string>
     <string name="card_recharge_record">Enregistrements</string>
     <string name="card_recharge_consume_record">Dépenses</string>
+
+    <string name="bill_html_structure_changed">La structure de la page de factures a changé, veuillez mettre à jour l\'application</string>
+
+    <string name="bill_load_failed">Échec du chargement des factures</string>
+
+    <string name="login_required_auth">Non connecté, veuillez d\'abord vous authentifier</string>
+
+    <string name="card_bill_status_unknown">Inconnu</string>
+
+    <string name="login_required_open_web">Non connecté, veuillez ouvrir la page d\'origine pour vous authentifier</string>
+
+    <string name="card_bill_status_terminated">Transaction interrompue</string>
+
+    <string name="card_bill_status_waiting_pay">En attente de paiement</string>
+
+    <string name="card_bill_status_failed">Transaction échouée</string>
+
+    <string name="card_bill_status_canceled">Transaction annulée</string>
+
+    <string name="card_bill_status_waiting_other_pay">En attente du paiement de l\'autre partie</string>
+
+    <string name="card_bill_status_success">Transaction réussie</string>
+
+    <string name="card_account_info_fetch_failed">Échec de la récupération des informations du compte</string>
 </resources>

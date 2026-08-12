@@ -15,4 +15,14 @@
     <string name="speakup_score_unit">分</string>
     <string name="speakup_message_label">留言</string>
     <string name="speakup_reply_label">答覆</string>
+
+    <string name="speakup_error_setup_role">設定角色失敗：%1$s</string>
+
+    <string name="speakup_error_no_active_role">找不到使用中的角色</string>
+
+    <string name="speakup_error_fetch_areas">取得諮詢區列表失敗：%1$s</string>
+
+    <string name="speakup_error_fetch_messages">取得留言列表失敗：%1$s</string>
+
+    <string name="speakup_error_fetch_detail">取得留言詳情失敗：%1$s</string>
 </resources>

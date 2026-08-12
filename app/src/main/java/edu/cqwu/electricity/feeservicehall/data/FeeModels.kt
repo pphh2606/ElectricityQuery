@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.feeservicehall.data
 
+import androidx.annotation.StringRes
+import edu.cqwu.electricity.R
 import com.google.gson.annotations.SerializedName
 
 // ═══════════════════════════════════════════
@@ -57,24 +59,26 @@ data class OrderRecord(
     /** 金额（单位：元），从分的转换 */
     val amountYuan: Double get() = amount / 100.0
 
-    /** 状态显示文本 */
-    val statusDisplay: String get() = when (status) {
-        "COMPLETED" -> "已支付"
-        "PENDING", "PENDING_PAYMENT" -> "待支付"
-        "REFUND" -> "已退款"
-        "CLOSED" -> "已关闭"
-        else -> status
-    }
+    @get:StringRes
+    val statusRes: Int?
+        get() = when (status) {
+            "COMPLETED" -> R.string.fee_order_status_paid
+            "PENDING", "PENDING_PAYMENT" -> R.string.fee_order_status_pending
+            "REFUND" -> R.string.fee_order_status_refund
+            "CLOSED" -> R.string.fee_order_status_closed
+            else -> null
+        }
 
     /** 是否为待支付状态 */
     val isPendingPayment: Boolean get() = status == "PENDING_PAYMENT"
 
-    /** 支付渠道显示文本 */
-    val tradeChannelDisplay: String get() = when (tradeChannel) {
-        "01" -> "支付宝"
-        "02" -> "微信支付"
-        else -> tradeChannel ?: "未知"
-    }
+    @get:StringRes
+    val tradeChannelRes: Int?
+        get() = when (tradeChannel) {
+            "01" -> R.string.payment_channel_alipay
+            "02" -> R.string.payment_channel_wechat
+            else -> null
+        }
 }
 
 data class OrderPageData(

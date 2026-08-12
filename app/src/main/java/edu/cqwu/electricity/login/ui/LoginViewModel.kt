@@ -3,6 +3,7 @@ package edu.cqwu.electricity.login.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.login.data.CredentialExporter
 import edu.cqwu.electricity.login.data.AccountManager
@@ -128,11 +129,11 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (username.isBlank()) {
-            viewModelScope.launch { _events.send(LoginEvent.Error("请输入学号")) }
+            viewModelScope.launch { _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_student_id_required))) }
             return
         }
         if (password.isBlank()) {
-            viewModelScope.launch { _events.send(LoginEvent.Error("请输入密码")) }
+            viewModelScope.launch { _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_password_required))) }
             return
         }
 
@@ -157,17 +158,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     .onFailure { e ->
                         val errorMsg = when {
-                            e is CasLoginException.CaptchaRequired -> "需要验证码，请手动完成登录"
-                            e is CasLoginException.LoginRejected -> "登录失败：账号或密码错误"
-                            e is CasLoginException.MissingField -> "获取登录参数失败"
-                            e.message?.contains("无法获取加密 salt") == true -> "获取登录参数失败，请检查网络"
-                            e.message?.contains("无法获取 lt") == true -> "获取登录参数失败"
-                            e.message?.contains("未能获取到 CASTGC") == true -> "登录失败：账号或密码错误"
-                            e.message?.contains("无法连接到") == true -> "网络连接失败，请检查网络"
+                            e is CasLoginException.CaptchaRequired -> getApplication<Application>().getString(R.string.login_error_captcha_required)
+                            e is CasLoginException.LoginRejected -> getApplication<Application>().getString(R.string.login_error_invalid_credentials)
+                            e is CasLoginException.MissingField -> getApplication<Application>().getString(R.string.login_error_fetch_params)
+                            e.message?.contains("无法获取加密 salt") == true -> getApplication<Application>().getString(R.string.login_error_fetch_params_network)
+                            e.message?.contains("无法获取 lt") == true -> getApplication<Application>().getString(R.string.login_error_fetch_params)
+                            e.message?.contains("未能获取到 CASTGC") == true -> getApplication<Application>().getString(R.string.login_error_invalid_credentials)
+                            e.message?.contains("无法连接到") == true -> getApplication<Application>().getString(R.string.login_error_network)
                             e.message?.contains("SocketTimeout") == true || e.message?.contains("Socket closed") == true -> {
-                                "网络请求超时，服务器连接不稳定，请稍后重试"
+                                getApplication<Application>().getString(R.string.login_error_timeout)
                             }
-                            else -> e.message ?: "登录失败，未知错误"
+                            else -> e.message ?: getApplication<Application>().getString(R.string.login_error_unknown)
                         }
                         _uiState.update { it.copy(isLoading = false) }
                         _events.send(LoginEvent.Error(errorMsg))
@@ -175,7 +176,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 android.util.Log.e("LoginViewModel", "登录异常", e)
                 _uiState.update { it.copy(isLoading = false) }
-                _events.send(LoginEvent.Error("登录异常: ${e.message}"))
+                _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_exception, e.message ?: "")))
             }
         }
     }
@@ -185,7 +186,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     fun exportCredentials(exportPassword: String) {
         viewModelScope.launch {
             if (exportPassword.length < 4) {
-                _events.send(LoginEvent.Error("密码长度不能少于4位"))
+                _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_password_too_short)))
                 return@launch
             }
             val state = _uiState.value
@@ -207,7 +208,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             if (accounts.isEmpty()) {
-                _events.send(LoginEvent.Error("没有可导出的账号，请先登录一次"))
+                _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_no_account_to_export)))
                 return@launch
             }
 
@@ -215,7 +216,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 val encrypted = CredentialExporter.export(accounts, exportPassword)
                 _events.send(LoginEvent.ExportSuccess(encrypted))
             } catch (e: Exception) {
-                _events.send(LoginEvent.Error("导出失败: ${e.message}"))
+                _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_export_failed, e.message ?: "")))
             }
         }
     }
@@ -226,11 +227,11 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         val accounts = try {
             CredentialExporter.import(encryptedData, exportPassword)
         } catch (e: Exception) {
-            viewModelScope.launch { _events.send(LoginEvent.Error("凭据解析失败: ${e.message}")) }
+            viewModelScope.launch { _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_parse_credential, e.message ?: ""))) }
             return
         }
         if (accounts.isNullOrEmpty()) {
-            viewModelScope.launch { _events.send(LoginEvent.Error("凭据导入失败：密码错误或数据已损坏")) }
+            viewModelScope.launch { _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_import_credential))) }
             return
         }
 

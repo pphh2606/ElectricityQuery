@@ -48,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import android.content.res.Resources
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,6 +66,8 @@ import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.electricity.data.displayName
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.resolve
+import edu.cqwu.electricity.theme.ui.UiMessage
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -89,10 +92,11 @@ fun DashboardScreen(
     balance: BalanceResponse?,
     isRefreshing: Boolean,
     isLoading: Boolean,
-    error: String?,
+    error: UiMessage?,
     onRefresh: () -> Unit,
 ) {
     val nav = LocalNavController.current
+    val resources = LocalResources.current
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -129,7 +133,7 @@ fun DashboardScreen(
                 // 查询失败/空状态
                 item(key = "error_state") {
                     ErrorStateCard(
-                        message = error ?: stringResource(R.string.common_load_failed),
+                        message = error?.resolve(resources) ?: stringResource(R.string.common_load_failed),
                         onRetry = onRefresh
                     )
                 }
@@ -205,7 +209,7 @@ fun DashboardMenuButton(
                 leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                 onClick = {
                     showMenu = false
-                    val text = getDashboardTextContent(room, balance)
+                    val text = getDashboardTextContent(room, balance, resources)
                     copyToClipboard(context, text, resources.getString(R.string.dashboard_title), snackbar)
                 }
             )
@@ -214,7 +218,7 @@ fun DashboardMenuButton(
                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                 onClick = {
                     showMenu = false
-                    pendingExportText = getDashboardTextContent(room, balance)
+                    pendingExportText = getDashboardTextContent(room, balance, resources)
                     pendingExportLabel = resources.getString(R.string.dashboard_title)
                     saveFileLauncher.launch("electricity_dashboard.txt")
                 }
@@ -682,31 +686,31 @@ private fun BalanceRow(label: String, amount: Double, unit: String) {
 /**
  * 根据当前房间和余额信息生成格式化的纯文本内容（用于复制和导出）
  */
-fun getDashboardTextContent(room: BuildingNode?, balance: BalanceResponse?): String {
+fun getDashboardTextContent(room: BuildingNode?, balance: BalanceResponse?, resources: Resources): String {
     val sb = StringBuilder()
-    sb.appendLine("电费查询结果")
+    sb.appendLine(resources.getString(R.string.electricity_export_title))
     sb.appendLine("=".repeat(40))
 
-    sb.appendLine("\n【房间信息】")
+    sb.appendLine("\n" + resources.getString(R.string.electricity_export_room_info))
     val roomNum = room?.let {
         if (it.num.isNullOrBlank() || it.num == "0") it.name else it.num
-    } ?: "未知"
-    sb.appendLine("  房间名称/编号: $roomNum")
-    sb.appendLine("  房间 ID: ${room?.id ?: "-"}")
+    } ?: resources.getString(R.string.common_unknown)
+    sb.appendLine(resources.getString(R.string.electricity_export_room_name, roomNum))
+    sb.appendLine(resources.getString(R.string.electricity_export_room_id, room?.id ?: "-"))
 
     if (balance != null) {
-        sb.appendLine("\n【用电信息】")
-        sb.appendLine("  剩余电量: ${String.format(Locale.US, "%.2f", balance.remainEletricCapacity)} 度")
+        sb.appendLine("\n" + resources.getString(R.string.electricity_export_usage_info))
+        sb.appendLine(resources.getString(R.string.electricity_export_remain_electricity, String.format(Locale.US, "%.2f", balance.remainEletricCapacity)))
 
-        sb.appendLine("\n【账户余额】")
-        sb.appendLine("  现金余额: ${String.format(Locale.US, "%.2f", balance.userBalance)} 元")
-        sb.appendLine("  补贴余额: ${String.format(Locale.US, "%.2f", balance.subsidyBalance)} 元")
-        sb.appendLine("  基础余额: ${String.format(Locale.US, "%.2f", balance.baseBalance)} 元")
+        sb.appendLine("\n" + resources.getString(R.string.electricity_export_account_balance))
+        sb.appendLine(resources.getString(R.string.electricity_export_cash_balance, String.format(Locale.US, "%.2f", balance.userBalance)))
+        sb.appendLine(resources.getString(R.string.electricity_export_subsidy_balance, String.format(Locale.US, "%.2f", balance.subsidyBalance)))
+        sb.appendLine(resources.getString(R.string.electricity_export_base_balance, String.format(Locale.US, "%.2f", balance.baseBalance)))
 
-        sb.appendLine("\n【支付状态】")
-        sb.appendLine("  在线支付: ${if (balance.payEnable == 1) "已启用" else "已禁用"}")
+        sb.appendLine("\n" + resources.getString(R.string.electricity_export_payment_status))
+        sb.appendLine(resources.getString(R.string.electricity_export_online_payment, if (balance.payEnable == 1) resources.getString(R.string.common_enabled) else resources.getString(R.string.common_disabled)))
     } else {
-        sb.appendLine("\n余额数据暂未加载")
+        sb.appendLine("\n" + resources.getString(R.string.electricity_export_balance_not_loaded))
     }
 
     return sb.toString()

@@ -1,10 +1,12 @@
 package edu.cqwu.electricity.notice.ui
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
 import edu.cqwu.electricity.notice.data.NoticeItem
@@ -17,7 +19,7 @@ import kotlinx.coroutines.withContext
  * 列表数据和详情数据缓存在此，导航切换时不会销毁。
  * 从通知页返回首页时调用 [clear] 清空缓存。
  */
-class NoticeViewModel : ViewModel() {
+class NoticeViewModel(application: Application) : AndroidViewModel(application) {
 
     // ── 列表状态（使用 mutableStateOf 使 Compose 可观察）──
     var items by mutableStateOf<List<NoticeItem>>(emptyList())
@@ -73,7 +75,7 @@ class NoticeViewModel : ViewModel() {
         }.onFailure { error ->
             isLoading = false
             isLoadingMore = false
-            errorMessage = error.message ?: "加载通知公告失败"
+            errorMessage = error.message ?: getApplication<Application>().getString(R.string.notice_list_load_failed)
         }
     }
 

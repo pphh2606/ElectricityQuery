@@ -123,4 +123,64 @@
     <string name="storage_clear_success">Clear complete</string>
     <string name="storage_clear_nothing_selected">Please select at least one item</string>
     <string name="storage_clear_zero_size">0 B</string>
+
+    <string name="about_source_github">GitHub Actions</string>
+
+    <string name="settings_night_mode_system">Follow system</string>
+
+    <string name="about_commit_hash">Commit Hash: %1$s</string>
+
+    <string name="settings_topbar_surface_container_high">Dark accent</string>
+
+    <string name="settings_reduce_motion_off">Always enable</string>
+
+    <string name="settings_page_transition_fade">Fade</string>
+
+    <string name="settings_language_ar">Arabic</string>
+
+    <string name="settings_page_transition_none">No animation</string>
+
+    <string name="settings_topbar_surface_container_lowest">Very light accent</string>
+
+    <string name="about_build_time">Build Time: %1$s</string>
+
+    <string name="about_source">Source: %1$s</string>
+
+    <string name="about_source_local">Local Build</string>
+
+    <string name="settings_topbar_surface">Background color</string>
+
+    <string name="settings_night_mode_dark">Dark mode</string>
+
+    <string name="settings_language_en">English</string>
+
+    <string name="settings_topbar_surface_container_highest">Darkest accent</string>
+
+    <string name="settings_topbar_surface_variant">Variant color</string>
+
+    <string name="settings_topbar_surface_container">Medium accent</string>
+
+    <string name="settings_reduce_motion_on">Always reduce motion</string>
+
+    <string name="settings_page_transition_slide_vertical">Vertical slide</string>
+
+    <string name="settings_reduce_motion_system">Follow system</string>
+
+    <string name="settings_page_transition_cupertino">Cupertino</string>
+
+    <string name="settings_language_zh">Simplified Chinese</string>
+
+    <string name="settings_night_mode_light">Light mode</string>
+
+    <string name="settings_page_transition_slide">Horizontal slide</string>
+
+    <string name="settings_language_fr">French</string>
+
+    <string name="settings_language_zh_tw">Traditional Chinese</string>
+
+    <string name="settings_language_ja">Japanese</string>
+
+    <string name="settings_topbar_surface_container_low">Light accent</string>
+
+    <string name="settings_page_transition_fade_scale">Fade and scale</string>
 </resources>

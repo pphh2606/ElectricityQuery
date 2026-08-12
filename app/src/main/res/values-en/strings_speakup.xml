@@ -15,4 +15,14 @@
     <string name="speakup_score_unit">pts</string>
     <string name="speakup_message_label">message</string>
     <string name="speakup_reply_label">reply</string>
+
+    <string name="speakup_error_setup_role">Failed to set role: %1$s</string>
+
+    <string name="speakup_error_no_active_role">No active role found</string>
+
+    <string name="speakup_error_fetch_areas">Failed to fetch consultation areas: %1$s</string>
+
+    <string name="speakup_error_fetch_messages">Failed to fetch messages: %1$s</string>
+
+    <string name="speakup_error_fetch_detail">Failed to fetch message details: %1$s</string>
 </resources>

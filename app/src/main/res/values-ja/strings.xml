@@ -56,4 +56,16 @@
     <string name="common_disabled">無効</string>
     <string name="common_re_query">再照会</string>
     <string name="common_copied_to_clipboard">クリップボードにコピーしました</string>
+    <string name="common_refresh_failed">更新に失敗しました</string>
+    <string name="common_network_error">ネットワークエラーです。接続を確認してください</string>
+    <string name="common_query_failed">照会に失敗しました</string>
+    <string name="common_favorite_added">お気に入りに追加しました</string>
+    <string name="common_favorite_removed">お気に入りから削除しました</string>
+    <string name="common_favorite_toggle_failed">お気に入りの更新に失敗しました</string>
+    <string name="common_clearing">削除中…</string>
+    <string name="common_clear_failed">削除に失敗しました：%1$s</string>
+    <string name="common_share_failed">共有に失敗しました</string>
+    <string name="common_no_mail_app">メールアプリが見つかりません</string>
+
+    <string name="common_unknown">不明</string>
 </resources>

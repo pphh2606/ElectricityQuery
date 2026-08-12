@@ -220,7 +220,7 @@ fun StorageClearScreen(
                 sizes.putAll(result)
                 snackbar.show(resources.getString(R.string.storage_clear_success), ToastUtils.Type.SUCCESS)
             } catch (e: Exception) {
-                snackbar.show("清除失败: ${e.message}", ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_clear_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             } finally {
                 isClearing = false
             }
@@ -373,7 +373,7 @@ fun StorageClearScreen(
                     },
                 ) {
                     Text(
-                        text = if (isClearing) "清除中…" else stringResource(R.string.storage_clear_button),
+                        text = if (isClearing) stringResource(R.string.common_clearing) else stringResource(R.string.storage_clear_button),
                         modifier = Modifier.padding(vertical = 4.dp),
                     )
                 }

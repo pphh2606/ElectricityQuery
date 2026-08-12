@@ -70,4 +70,62 @@
     <string name="electricity_myroom_querying">正在取得我的寢室資訊…</string>
     <string name="electricity_bind_account">戶號綁定</string>
     <string name="electricity_unbind_account">戶號解綁</string>
+
+    <string name="detail_export_usage">用電量（度）</string>
+
+    <string name="electricity_export_room_id">房間 ID: %1$s</string>
+
+    <string name="detail_export_time">時間</string>
+
+    <string name="electricity_user_not_registered">取得使用者資訊失敗，請先在電費平台註冊</string>
+
+    <string name="electricity_export_usage_info">用電資訊</string>
+
+    <string name="detail_export_section_current">電流</string>
+
+    <string name="electricity_export_cash_balance">現金餘額: %1$s 元</string>
+
+    <string name="electricity_no_room_bound">此帳號未綁定任何房間</string>
+
+    <string name="electricity_export_subsidy_balance">補貼餘額: %1$s 元</string>
+
+    <string name="electricity_export_base_balance">基礎餘額: %1$s 元</string>
+
+    <string name="electricity_timeout_retry">請求逾時，請重試</string>
+
+    <string name="electricity_export_room_info">房間資訊</string>
+
+    <string name="electricity_export_online_payment">線上支付: %1$s</string>
+
+    <string name="detail_export_no_meter_data">暫無電表資料</string>
+
+    <string name="electricity_fetch_campuses_failed">取得校區列表失敗: %1$s</string>
+
+    <string name="electricity_export_remain_electricity">剩餘電量: %1$s 度</string>
+
+    <string name="electricity_export_account_balance">帳戶餘額</string>
+
+    <string name="electricity_export_payment_status">支付狀態</string>
+
+    <string name="detail_export_section_power">目前功率/累計值</string>
+
+    <string name="electricity_balance_query_failed">查詢餘額失敗: %1$s</string>
+
+    <string name="electricity_export_title">電費查詢結果</string>
+
+    <string name="electricity_export_balance_not_loaded">餘額資料暫未載入</string>
+
+    <string name="detail_export_section_power_status">電源狀態</string>
+
+    <string name="detail_export_cost">費用（元）</string>
+
+    <string name="detail_room_not_selected">未指定房間</string>
+
+    <string name="detail_query_failed">查詢失敗: %1$s</string>
+
+    <string name="detail_month_unit">月</string>
+
+    <string name="electricity_export_room_name">房間名稱/編號: %1$s</string>
+
+    <string name="detail_export_section_voltage">電壓</string>
 </resources>

@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.hall.data.HallCategory
 import edu.cqwu.electricity.hall.data.HallItem
 import edu.cqwu.electricity.hall.data.HallSearchApi
@@ -187,11 +188,7 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     it.copy(
                         isFavoriteLoading = false,
                         requiresReLogin = requiresReLogin,
-                        errorMessage = if (requiresReLogin) {
-                            "登录已过期，请重新登录"
-                        } else {
-                            error.message ?: "加载失败"
-                        },
+                        errorMessage = if (requiresReLogin) null else error.message ?: getApplication<Application>().getString(R.string.common_load_failed),
                     )
                 }
             }
@@ -236,7 +233,7 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     it.copy(
                         isSearchLoading = false,
                         requiresReLogin = requiresReLogin,
-                        searchError = error.message ?: "加载失败",
+                        searchError = if (requiresReLogin) null else error.message ?: getApplication<Application>().getString(R.string.common_load_failed),
                     )
                 }
             }
@@ -314,8 +311,8 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                             else app
                         },
                         togglingFavoriteAppId = null,
-                        snackbarEvent = if (newFavorite) "已收藏" to ToastUtils.Type.SUCCESS
-                                        else "已取消收藏" to ToastUtils.Type.SUCCESS,
+                        snackbarEvent = if (newFavorite) getApplication<Application>().getString(R.string.common_favorite_added) to ToastUtils.Type.SUCCESS
+                                        else getApplication<Application>().getString(R.string.common_favorite_removed) to ToastUtils.Type.SUCCESS,
                     )
                 }
             }.onFailure { error ->
@@ -324,10 +321,9 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     it.copy(
                         togglingFavoriteAppId = null,
                         requiresReLogin = requiresReLogin,
-                        errorMessage = if (requiresReLogin) "登录已过期，请重新登录"
-                                       else error.message ?: "切换收藏失败",
+                        errorMessage = if (requiresReLogin) null else error.message ?: getApplication<Application>().getString(R.string.common_favorite_toggle_failed),
                         snackbarEvent = if (requiresReLogin) null
-                                        else (error.message ?: "切换收藏失败") to ToastUtils.Type.ERROR,
+                                        else (error.message ?: getApplication<Application>().getString(R.string.common_favorite_toggle_failed)) to ToastUtils.Type.ERROR,
                     )
                 }
             }
@@ -388,7 +384,7 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                         _uiState.update {
                             it.copy(
                                 requiresReLogin = requiresReLogin,
-                                errorMessage = if (requiresReLogin) "登录已过期，请重新登录" else null,
+                                errorMessage = null,
                             )
                         }
                     }

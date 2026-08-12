@@ -51,4 +51,16 @@
     <string name="fee_order_closing">Closing order…</string>
     <string name="fee_order_close_success">Order closed</string>
     <string name="fee_order_close_failed">Close failed: %1$s</string>
+
+    <string name="fee_order_status_pending">Pending payment</string>
+
+    <string name="fee_order_status_refund">Refunded</string>
+
+    <string name="payment_channel_alipay">Alipay</string>
+
+    <string name="payment_channel_wechat">WeChat Pay</string>
+
+    <string name="fee_order_status_closed">Closed</string>
+
+    <string name="fee_order_status_paid">Paid</string>
 </resources>

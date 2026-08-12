@@ -13,4 +13,76 @@
     <string name="feedback_title_label">Title (optional)</string>
     <string name="feedback_content_label">Feedback Content</string>
     <string name="feedback_preview_log">Preview Log</string>
+
+    <string name="crash_report_thread_group">Thread group: %1$s</string>
+
+    <string name="feedback_email_subject">Electricity Query app feedback</string>
+
+    <string name="crash_report_basic_info">--- Basic information ---</string>
+
+    <string name="crash_report_stack">--- Crash stack trace ---</string>
+
+    <string name="feedback_log_section_crash">═══ Crash records ═══</string>
+
+    <string name="feedback_email_system">System: Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_record">║ Crash record #%1$d (%2$s)</string>
+
+    <string name="feedback_email_app_version">App version: %1$s (%2$s)</string>
+
+    <string name="feedback_email_content_title">--- Feedback content ---</string>
+
+    <string name="crash_report_version_info_failed">Version info: failed to retrieve</string>
+
+    <string name="crash_report_device">Device model: %1$s</string>
+
+    <string name="crash_report_brand">Brand: %1$s</string>
+
+    <string name="feedback_log_section_process">═══ Current process logs (logcat --pid) ═══</string>
+
+    <string name="crash_report_thread_priority">Thread priority: %1$s</string>
+
+    <string name="feedback_log_loading">(Logs are loading, please try again later)</string>
+
+    <string name="feedback_log_section_crash_buffer">═══ Crash buffer logs (logcat -b crash) ═══</string>
+
+    <string name="crash_report_version_code">Version code: %1$s</string>
+
+    <string name="crash_report_version_name">Version name: %1$s</string>
+
+    <string name="crash_report_manufacturer">Manufacturer: %1$s</string>
+
+    <string name="crash_report_is_main_thread">Is main thread: %1$s</string>
+
+    <string name="feedback_share_log">Share logs</string>
+
+    <string name="crash_report_abi">ABI: %1$s</string>
+
+    <string name="feedback_log_empty">(No log content)</string>
+
+    <string name="feedback_email_title_suffix">: %1$s</string>
+
+    <string name="feedback_email_device_title">--- Device information ---</string>
+
+    <string name="crash_report_title">App crash report</string>
+
+    <string name="crash_report_thread_id">Thread ID: %1$s</string>
+
+    <string name="crash_report_system">System: Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_package">Package name: %1$s</string>
+
+    <string name="feedback_email_log_title">--- Logs ---</string>
+
+    <string name="crash_report_thread_name">Thread name: %1$s</string>
+
+    <string name="feedback_email_device">Device: %1$s</string>
+
+    <string name="crash_report_time">Crash time: %1$s</string>
+
+    <string name="crash_report_pid">Process PID: %1$s</string>
+
+    <string name="crash_report_read_failed">[Failed to read crash file: %1$s]</string>
+
+    <string name="feedback_log_no_logs">(No logs retrieved)</string>
 </resources>

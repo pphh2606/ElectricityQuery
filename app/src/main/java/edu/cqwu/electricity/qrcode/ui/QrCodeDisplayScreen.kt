@@ -199,7 +199,7 @@ fun QrCodeDisplayScreen(
                 isLoading = false
                 isRefreshing = false
                 requiresReLogin = true
-                errorMessage = resources.getString(R.string.qrcode_login_expired)
+                errorMessage = null
                 return@launch
             }
 
@@ -219,7 +219,7 @@ fun QrCodeDisplayScreen(
                 isRefreshing = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
-                    errorMessage = resources.getString(R.string.qrcode_login_expired)
+                    errorMessage = null
                 } else {
                     errorMessage = error.message ?: resources.getString(R.string.qrcode_fetch_failed)
                 }
@@ -277,7 +277,7 @@ fun QrCodeDisplayScreen(
                         val msg = error.message ?: resources.getString(R.string.qrcode_refresh_failed)
                         if (error is SessionExpiredException) {
                             requiresReLogin = true
-                            errorMessage = resources.getString(R.string.qrcode_login_expired)
+                            errorMessage = null
                         } else {
                             snackbar.show(msg, ToastUtils.Type.ERROR)
                         }

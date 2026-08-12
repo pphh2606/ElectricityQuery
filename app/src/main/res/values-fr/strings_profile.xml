@@ -24,7 +24,6 @@
     <string name="my_info_status">Statut</string>
     <string name="my_info_collapse">Réduire</string>
     <string name="my_info_expand">Développer</string>
-    <string name="my_info_login_expired">Session expirée, veuillez vous reconnecter</string>
     <string name="profile_not_logged_in">Non connecté</string>
     <string name="profile_my_info_cd">Mes informations</string>
 </resources>

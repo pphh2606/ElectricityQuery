@@ -59,4 +59,16 @@
     <string name="fee_order_closing">جارٍ إغلاق الطلب…</string>
     <string name="fee_order_close_success">تم إغلاق الطلب</string>
     <string name="fee_order_close_failed">فشل الإغلاق: %1$s</string>
+
+    <string name="fee_order_status_pending">بانتظار الدفع</string>
+
+    <string name="fee_order_status_refund">تم الاسترداد</string>
+
+    <string name="payment_channel_alipay">علي باي</string>
+
+    <string name="payment_channel_wechat">وي شات</string>
+
+    <string name="fee_order_status_closed">تم الإغلاق</string>
+
+    <string name="fee_order_status_paid">تم الدفع</string>
 </resources>

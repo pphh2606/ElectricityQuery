@@ -142,7 +142,7 @@ fun NoticeScreen(
                             )
                             if (viewModel.totalItem > 0) {
                                 Text(
- text = pluralStringResource(R.plurals.notice_total_count, viewModel.totalItem),
+            text = pluralStringResource(R.plurals.notice_total_count, viewModel.totalItem, viewModel.totalItem),
                                     style = MaterialTheme.typography.bodySmall,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -296,7 +296,7 @@ fun NoticeScreen(
                         if (viewModel.searchKeyword.isNotBlank() && viewModel.items.isNotEmpty()) {
                             item(key = "search_header") {
                                 Text(
- text = pluralStringResource(R.plurals.notice_search_result, viewModel.totalItem, viewModel.searchKeyword),
+            text = pluralStringResource(R.plurals.notice_search_result, viewModel.totalItem, viewModel.searchKeyword, viewModel.totalItem),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)

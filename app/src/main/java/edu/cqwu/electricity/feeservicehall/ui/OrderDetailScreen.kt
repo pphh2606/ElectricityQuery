@@ -146,7 +146,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
             else -> Color(0xFF9E9E9E)
         }
         Text(
-            text = order.statusDisplay,
+            text = if (order.statusRes != null) stringResource(order.statusRes!!) else order.status.ifBlank { stringResource(R.string.common_unknown) },
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Medium,
             color = statusColor,
@@ -193,7 +193,11 @@ private fun OrderInfoSection(order: OrderRecord) {
             InfoRow(label = stringResource(R.string.fee_order_close_time), value = order.schdualCloseTime)
         }
 
-        InfoRow(label = stringResource(R.string.fee_order_channel), value = order.tradeChannelDisplay)
+        InfoRow(
+            label = stringResource(R.string.fee_order_channel),
+            value = if (order.tradeChannelRes != null) stringResource(order.tradeChannelRes!!)
+                    else order.tradeChannel?.ifBlank { stringResource(R.string.common_unknown) } ?: stringResource(R.string.common_unknown)
+        )
 
         if (order.balanceOrderTradeOrderNo != null) {
             InfoRow(label = stringResource(R.string.fee_order_transaction_no), value = order.balanceOrderTradeOrderNo)

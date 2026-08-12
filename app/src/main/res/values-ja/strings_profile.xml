@@ -24,7 +24,6 @@
     <string name="my_info_status">在籍状況</string>
     <string name="my_info_collapse">折りたたむ</string>
     <string name="my_info_expand">展開</string>
-    <string name="my_info_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
     <string name="profile_not_logged_in">未ログイン</string>
     <string name="profile_my_info_cd">個人情報</string>
 </resources>

@@ -3,9 +3,11 @@ package edu.cqwu.electricity.electricity.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.electricity.data.UsageResponse
 import edu.cqwu.electricity.electricity.data.ElectricityApi
+import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +22,7 @@ import kotlinx.coroutines.launch
 data class DetailState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
-    val error: String? = null,
+    val error: UiMessage? = null,
     val sixMonthUsage: UsageResponse? = null,
     val monthDailyUsage: UsageResponse? = null,
     val currentData: CurrentDataResponse? = null,
@@ -56,7 +58,7 @@ class DetailViewModel(
      */
     fun loadSixMonthUsage() {
         if (roomId.isBlank()) {
-            _detailState.update { it.copy(error = "未指定房间") }
+            _detailState.update { it.copy(error = UiMessage(R.string.detail_room_not_selected)) }
             return
         }
         viewModelScope.launch {
@@ -71,7 +73,7 @@ class DetailViewModel(
                 }
                 .onFailure { e ->
                     _detailState.update {
-                        it.copy(isLoading = false, isRefreshing = false, error = "查询失败: ${e.localizedMessage}")
+                        it.copy(isLoading = false, isRefreshing = false, error = UiMessage(R.string.detail_query_failed, listOf(e.localizedMessage ?: "")))
                     }
                 }
         }
@@ -82,7 +84,7 @@ class DetailViewModel(
      */
     fun loadMonthDailyUsage() {
         if (roomId.isBlank()) {
-            _detailState.update { it.copy(error = "未指定房间") }
+            _detailState.update { it.copy(error = UiMessage(R.string.detail_room_not_selected)) }
             return
         }
         viewModelScope.launch {
@@ -97,7 +99,7 @@ class DetailViewModel(
                 }
                 .onFailure { e ->
                     _detailState.update {
-                        it.copy(isLoading = false, isRefreshing = false, error = "查询失败: ${e.localizedMessage}")
+                        it.copy(isLoading = false, isRefreshing = false, error = UiMessage(R.string.detail_query_failed, listOf(e.localizedMessage ?: "")))
                     }
                 }
         }
@@ -108,7 +110,7 @@ class DetailViewModel(
      */
     fun loadCurrentData() {
         if (roomId.isBlank()) {
-            _detailState.update { it.copy(error = "未指定房间") }
+            _detailState.update { it.copy(error = UiMessage(R.string.detail_room_not_selected)) }
             return
         }
         viewModelScope.launch {
@@ -123,7 +125,7 @@ class DetailViewModel(
                 }
                 .onFailure { e ->
                     _detailState.update {
-                        it.copy(isLoading = false, isRefreshing = false, error = "查询失败: ${e.localizedMessage}")
+                        it.copy(isLoading = false, isRefreshing = false, error = UiMessage(R.string.detail_query_failed, listOf(e.localizedMessage ?: "")))
                     }
                 }
         }

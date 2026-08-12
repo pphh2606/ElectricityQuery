@@ -15,4 +15,14 @@
     <string name="speakup_score_unit">点</string>
     <string name="speakup_message_label">投稿</string>
     <string name="speakup_reply_label">返信</string>
+
+    <string name="speakup_error_setup_role">役割の設定に失敗しました: %1$s</string>
+
+    <string name="speakup_error_no_active_role">アクティブな役割が見つかりません</string>
+
+    <string name="speakup_error_fetch_areas">相談エリア一覧の取得に失敗しました: %1$s</string>
+
+    <string name="speakup_error_fetch_messages">メッセージ一覧の取得に失敗しました: %1$s</string>
+
+    <string name="speakup_error_fetch_detail">メッセージ詳細の取得に失敗しました: %1$s</string>
 </resources>

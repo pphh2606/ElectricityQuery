@@ -7,6 +7,7 @@
     <string name="login_unified_auth">Unified Identity Authentication</string>
     <string name="login_remember_password">Remember password</string>
     <string name="login_relogin">Re-login</string>
+    <string name="login_expired">Login expired, please log in again</string>
     <string name="login_security_notice_title">Security Notice</string>
     <string name="login_security_notice_1">When using the account and password login, credentials are encrypted on-device via AES-CBC and sent directly to the school CAS unified authentication server. Encryption uses a dynamic salt issued by the official server, unique for each request. This app never sends your account or password to any third-party server.</string>
     <string name="login_security_notice_2">When using QR code login, an independent cookie environment is used. You can save the QR code locally and scan it with an already logged-in device, or use the \"Open in other app\" feature to share the link to a logged-in environment for authentication.</string>
@@ -77,4 +78,34 @@
     <string name="account_manager_title">Account Manager</string>
     <string name="account_manager_current">Current</string>
     <string name="account_manager_add">Add Account</string>
+
+    <string name="login_error_fetch_params_network">Failed to get login parameters, please check your network</string>
+
+    <string name="login_error_student_id_required">Please enter your student ID</string>
+
+    <string name="login_error_exception">Login exception: %1$s</string>
+
+    <string name="login_error_import_credential">Credential import failed: incorrect password or corrupted data</string>
+
+    <string name="login_error_parse_credential">Failed to parse credentials: %1$s</string>
+
+    <string name="login_error_network">Network connection failed, please check your network</string>
+
+    <string name="login_error_invalid_credentials">Login failed: incorrect username or password</string>
+
+    <string name="login_error_no_account_to_export">No accounts available to export, please log in once first</string>
+
+    <string name="login_error_password_required">Please enter your password</string>
+
+    <string name="login_error_export_failed">Export failed: %1$s</string>
+
+    <string name="login_error_unknown">Login failed, unknown error</string>
+
+    <string name="login_error_captcha_required">Verification code required, please complete login manually</string>
+
+    <string name="login_error_password_too_short">Password must be at least 4 characters</string>
+
+    <string name="login_error_timeout">Network request timed out, the connection is unstable, please try again later</string>
+
+    <string name="login_error_fetch_params">Failed to get login parameters</string>
 </resources>

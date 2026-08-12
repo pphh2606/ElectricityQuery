@@ -62,7 +62,7 @@ import edu.cqwu.electricity.settings.data.PageTransition
 import edu.cqwu.electricity.settings.data.ReduceMotion
 import edu.cqwu.electricity.settings.data.ThemeColorSource
 import edu.cqwu.electricity.settings.data.TopBarStyle
-import edu.cqwu.electricity.settings.data.displayName
+import edu.cqwu.electricity.settings.data.labelRes
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
@@ -122,7 +122,7 @@ fun PersonalizationScreen(
             ) {
                 SettingRow(
                     icon = Icons.Outlined.Contrast, title = stringResource(R.string.personalization_night_mode),
-                    subtitle = currentNightMode.displayName,
+                    subtitle = stringResource(currentNightMode.labelRes),
                     onClick = { showNightModeDialog = true },
                 )
             }
@@ -154,7 +154,7 @@ fun PersonalizationScreen(
                     )
                     SettingRow(
                         icon = Icons.Outlined.FormatPaint, title = stringResource(R.string.personalization_topbar_color),
-                        subtitle = currentTopBarStyle.displayName,
+                        subtitle = stringResource(currentTopBarStyle.labelRes),
                         onClick = { showTopBarStyleDialog = true },
                     )
                 }
@@ -190,15 +190,15 @@ fun PersonalizationScreen(
                     SettingRow(
                         icon = Icons.Outlined.Animation, title = stringResource(R.string.personalization_page_transition),
                         subtitle = if (currentReduceMotion == ReduceMotion.ON) {
-                            "${currentPageTransition.displayName}${stringResource(R.string.personalization_reduce_motion_override)}"
+                            "${stringResource(currentPageTransition.labelRes)}${stringResource(R.string.personalization_reduce_motion_override)}"
                         } else {
-                            currentPageTransition.displayName
+                            stringResource(currentPageTransition.labelRes)
                         },
                         onClick = { showPageTransitionDialog = true },
                     )
                     SettingRow(
                         icon = Icons.Outlined.MotionPhotosAuto, title = stringResource(R.string.personalization_reduce_motion),
-                        subtitle = currentReduceMotion.displayName,
+                        subtitle = stringResource(currentReduceMotion.labelRes),
                         onClick = { showReduceMotionDialog = true },
                     )
                 }
@@ -226,7 +226,7 @@ fun PersonalizationScreen(
         visible = showTopBarStyleDialog,
         title = stringResource(R.string.personalization_topbar_color), current = currentTopBarStyle,
         entries = TopBarStyle.entries,
-        displayText = { it.displayName },
+        displayText = { stringResource(it.labelRes) },
         onSelect = { onTopBarStyleChange(it); showTopBarStyleDialog = false },
         onDismiss = { showTopBarStyleDialog = false },
     )
@@ -234,7 +234,7 @@ fun PersonalizationScreen(
         visible = showPageTransitionDialog,
         title = stringResource(R.string.personalization_page_transition), current = currentPageTransition,
         entries = PageTransition.entries,
-        displayText = { it.displayName },
+        displayText = { stringResource(it.labelRes) },
         onSelect = { onPageTransitionChange(it); showPageTransitionDialog = false },
         onDismiss = { showPageTransitionDialog = false },
     )
@@ -242,7 +242,7 @@ fun PersonalizationScreen(
         visible = showReduceMotionDialog,
         title = stringResource(R.string.personalization_reduce_motion), current = currentReduceMotion,
         entries = ReduceMotion.entries,
-        displayText = { it.displayName },
+        displayText = { stringResource(it.labelRes) },
         onSelect = { onReduceMotionChange(it); showReduceMotionDialog = false },
         onDismiss = { showReduceMotionDialog = false },
     )
@@ -336,7 +336,7 @@ private fun NightModeSelectionDialog(visible: Boolean = true, onSelect: (NightMo
                     NightMode.LIGHT -> Icons.Outlined.Contrast
                     NightMode.DARK -> Icons.Outlined.DarkMode
                 },
-                title = mode.displayName,
+                title = stringResource(mode.labelRes),
                 onClick = {
                     onSelect(mode)
                     onDismiss()
@@ -406,7 +406,7 @@ private fun <T> SelectionDialog(
     title: String,
     current: T,
     entries: List<T>,
-    displayText: (T) -> String,
+    displayText: @Composable (T) -> String,
     onSelect: (T) -> Unit,
     onDismiss: () -> Unit,
 ) {

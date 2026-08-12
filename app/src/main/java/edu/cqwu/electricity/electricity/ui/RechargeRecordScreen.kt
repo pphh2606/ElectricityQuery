@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import android.content.res.Resources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -194,7 +195,7 @@ fun RechargeRecordScreen(
                                 leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    val text = getRechargeRecordTextContent(recordState)
+                                    val text = getRechargeRecordTextContent(recordState, resources)
                                     copyToClipboard(context, text, resources.getString(R.string.recharge_record_export_title), snackbar)
                                 }
                             )
@@ -203,7 +204,7 @@ fun RechargeRecordScreen(
                                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    pendingExportText = getRechargeRecordTextContent(recordState)
+                                    pendingExportText = getRechargeRecordTextContent(recordState, resources)
                                     pendingExportLabel = resources.getString(R.string.recharge_record_export_title)
                                     saveFileLauncher.launch("electricity_recharge_record.txt")
                                 }
@@ -309,7 +310,7 @@ fun RechargeRecordScreen(
                             // 合计（移到最上方）
                             item {
                                 Text(
- text = pluralStringResource(R.plurals.recharge_record_total, reversedList.size, String.format(Locale.US, "%.2f", total)),
+            text = pluralStringResource(R.plurals.recharge_record_total, reversedList.size, String.format(Locale.US, "%.2f", total), reversedList.size),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
@@ -429,25 +430,23 @@ private fun RechargeRecordCard(record: BuyRecord) {
 /**
  * 生成充值记录的纯文本内容（用于复制和导出）
  */
-private fun getRechargeRecordTextContent(recordState: RechargeRecordState): String {
+private fun getRechargeRecordTextContent(recordState: RechargeRecordState, resources: Resources): String {
     val sb = StringBuilder()
-    sb.appendLine("查询充值记录")
+    sb.appendLine(resources.getString(R.string.recharge_record_export_title))
     sb.appendLine("=".repeat(40))
 
     if (recordState.list.isEmpty()) {
-        sb.appendLine("未查询到充值记录")
+        sb.appendLine(resources.getString(R.string.recharge_record_no_data))
     } else {
         val reversedList = recordState.list.reversed()
         val total = reversedList.sumOf { it.buyTotal }
-        // 合计放到最前面
-        sb.appendLine("合计充值：${String.format(Locale.US, "%.2f", total)} 元（共${reversedList.size} 笔）")
+        sb.appendLine(resources.getQuantityString(R.plurals.recharge_record_total, reversedList.size, String.format(Locale.US, "%.2f", total), reversedList.size))
         sb.appendLine("-".repeat(40))
-        // 记录倒序输出
         reversedList.forEach { record ->
-            sb.appendLine("充值人名：${record.userName}")
-            sb.appendLine("充值时间：${record.buyTime}")
-            sb.appendLine("充值金额：${String.format(Locale.US, "%.2f", record.buyTotal)} 元")
-            sb.appendLine("订单号：${record.orderNum}")
+            sb.appendLine(resources.getString(R.string.recharge_record_recharger, record.userName))
+            sb.appendLine(resources.getString(R.string.recharge_record_time, record.buyTime))
+            sb.appendLine(resources.getString(R.string.recharge_record_amount, String.format(Locale.US, "%.2f", record.buyTotal)))
+            sb.appendLine(resources.getString(R.string.recharge_record_order_no, record.orderNum))
             sb.appendLine("-".repeat(40))
         }
     }

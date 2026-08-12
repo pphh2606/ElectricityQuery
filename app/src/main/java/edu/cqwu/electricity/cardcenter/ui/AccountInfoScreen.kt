@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.cardcenter.ui
 
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalResources
 import edu.cqwu.electricity.R
 
 import androidx.compose.foundation.layout.Arrangement
@@ -71,6 +72,7 @@ fun AccountInfoScreen(
     onBack: () -> Unit,
     onReLogin: () -> Unit = {}
 ) {
+    val resources = LocalResources.current
     var isLoading by remember { mutableStateOf(true) }
     var isRefreshing by remember { mutableStateOf(false) }
     var accountInfo by remember { mutableStateOf<AccountInfo?>(null) }
@@ -99,9 +101,9 @@ fun AccountInfoScreen(
                 isRefreshing = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
-                    errorMessage = "登录已过期，请重新登录"
+                    errorMessage = null
                 } else {
-                    errorMessage = error.message ?: "获取账户信息失败"
+                    errorMessage = error.message ?: resources.getString(R.string.card_account_info_fetch_failed)
                 }
             }
         }

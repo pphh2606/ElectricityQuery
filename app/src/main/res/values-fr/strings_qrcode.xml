@@ -7,7 +7,6 @@
     <string name="qrcode_display_scan_hint">Présentez le QR code au scanner</string>
     <string name="qrcode_display_auto_refresh">Actualisation auto</string>
     <string name="qrcode_display_balance">Solde %1$s ￥</string>
-    <string name="qrcode_login_expired">Session expirée, veuillez vous reconnecter</string>
     <string name="qrcode_fetch_failed">Échec d\'obtention du QR code</string>
     <string name="qrcode_refresh_failed">Échec d\'actualisation</string>
     <string name="qrcode_decode_failed">Échec de décodage du QR code</string>

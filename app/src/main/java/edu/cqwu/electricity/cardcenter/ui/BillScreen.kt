@@ -60,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -71,6 +72,7 @@ import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.DatePickerField
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
@@ -99,6 +101,7 @@ fun BillScreen(
     onReLogin: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val resources = LocalResources.current
 
     // ── 半屏 WebView 弹窗状态（账单详情用）──
     var billDetailUrl by remember { mutableStateOf<String?>(null) }
@@ -159,7 +162,7 @@ fun BillScreen(
     val snackbarController = LocalSnackbarController.current
     LaunchedEffect(Unit) {
         viewModel.snackbarMessage.collectLatest { message ->
-            snackbarController.show(message, ToastUtils.Type.ERROR)
+            snackbarController.show(message.resolve(resources), ToastUtils.Type.ERROR)
         }
     }
 
@@ -304,14 +307,14 @@ fun BillScreen(
                                    // 逐 Tab 错误状态（后台 Tab 加载失败时的轻量提示）
                                    uiState.perTabError[pageTabNo] != null -> {
                                        item(key = "tab_error") {
-                                           BillTabErrorContent(uiState.perTabError[pageTabNo] ?: stringResource(R.string.common_load_failed))
+                                           BillTabErrorContent(uiState.perTabError[pageTabNo]?.resolve(resources) ?: stringResource(R.string.common_load_failed))
                                        }
                                    }
                                    // 错误状态仅当前活跃 Tab 显示
                                    uiState.errorMessage != null && pageTabNo == uiState.activeTab -> {
                                        item(key = "error") {
                                            ReLoginContent(
-                                               errorMessage = uiState.errorMessage,
+                                               errorMessage = uiState.errorMessage?.resolve(resources),
                                                requiresReLogin = uiState.requiresReLogin,
                                                onReLogin = onReLogin,
                                                onRetry = { viewModel.loadBills() },
@@ -530,7 +533,7 @@ private fun BillRecordCard(
             // 第三行：交易类型 + 状态
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text(text = record.type, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
-                BillStatusBadge(status = record.status, cssClass = record.statusCssClass)
+                BillStatusBadge(status = stringResource(record.statusRes ?: R.string.card_bill_status_unknown), cssClass = record.statusCssClass)
             }
         }
     }
@@ -604,7 +607,7 @@ private fun BillEmptyListContent(tabNo: Int) {
 @Composable
 private fun BillStatsRow(pageInfo: BillPageInfo) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
- Text(text = pluralStringResource(R.plurals.bill_loaded_count, pageInfo.records.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = pluralStringResource(R.plurals.bill_loaded_count, pageInfo.records.size, pageInfo.records.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(text = stringResource(R.string.bill_page_info, pageInfo.currentPage, pageInfo.totalPages), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -632,7 +635,7 @@ private fun BillFooterContent(uiState: BillUiState, pageInfo: BillPageInfo, view
         } else if (pageInfo.records.isNotEmpty()) {
             val isCapped = pageInfo.records.size >= 100
             Text(
- text = if (isCapped) stringResource(R.string.bill_capped_hint) else pluralStringResource(R.plurals.bill_all_loaded, pageInfo.records.size),
+                text = if (isCapped) stringResource(R.string.bill_capped_hint) else pluralStringResource(R.plurals.bill_all_loaded, pageInfo.records.size, pageInfo.records.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

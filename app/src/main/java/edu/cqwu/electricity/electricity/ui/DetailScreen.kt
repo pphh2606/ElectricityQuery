@@ -2,6 +2,8 @@ package edu.cqwu.electricity.electricity.ui
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
+import android.content.res.Resources
+import edu.cqwu.electricity.theme.ui.resolve
 
 // 三点菜单
 
@@ -171,7 +173,7 @@ fun DetailScreen(
                                 leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    val text = getDetailTextContent(detailType, detailState)
+                                    val text = getDetailTextContent(detailType, detailState, resources)
                                     copyToClipboard(context, text, title, snackbar)
                                 }
                             )
@@ -180,7 +182,7 @@ fun DetailScreen(
                                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    pendingExportText = getDetailTextContent(detailType, detailState)
+                                    pendingExportText = getDetailTextContent(detailType, detailState, resources)
                                     pendingExportLabel = title
                                     saveFileLauncher.launch("electricity_detail.txt")
                                 }
@@ -218,7 +220,7 @@ fun DetailScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = detailState.error ?: stringResource(R.string.common_unknown_error),
+                                text = detailState.error?.resolve(resources) ?: stringResource(R.string.common_unknown_error),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -300,10 +302,11 @@ private fun UsageListWithChart(
  */
 @Composable
 private fun SixMonthUsageContent(data: UsageResponse?) {
+    val resources = LocalResources.current
     UsageListWithChart(
         data = data,
         emptyMessage = stringResource(R.string.detail_empty_record),
-        xLabelTransform = { it.costTime.takeLast(2) + "月" }
+        xLabelTransform = { it.costTime.takeLast(2) + resources.getString(R.string.detail_month_unit) }
     )
 }
 
@@ -565,9 +568,9 @@ private fun MeterGroupCard(groupName: String, items: List<MeterDataItem>, unit: 
  * 2.2: 根据详情类型和详情状态，生成格式化的纯文本内容（用于复制和导出）。
  * 提取通用表格生成逻辑，减少冗余。
  */
-private fun getDetailTextContent(detailType: DetailType, detailState: DetailState): String {
+private fun getDetailTextContent(detailType: DetailType, detailState: DetailState, resources: Resources): String {
     return buildString {
-        appendLine(getDetailTitle(detailType))
+        appendLine(getDetailTitle(detailType, resources))
         appendLine("=".repeat(40))
 
         when (detailType) {
@@ -577,7 +580,7 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
                     DetailType.SIX_MONTH_USAGE -> detailState.sixMonthUsage?.costObj
                     else -> detailState.monthDailyUsage?.costObj
                 }
-                appendLine(String.format("%-20s %-10s %-10s", "时间", "用电量(度)", "费用(元)"))
+                appendLine(String.format("%-20s %-10s %-10s", resources.getString(R.string.detail_export_time), resources.getString(R.string.detail_export_usage), resources.getString(R.string.detail_export_cost)))
                 appendLine("-".repeat(40))
                 records?.forEach { record ->
                     appendLine(
@@ -590,7 +593,7 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
             }
 
             DetailType.HOURLY_USAGE -> {
-                appendLine(String.format("%-20s %-10s", "时间", "用电量(度)"))
+                appendLine(String.format("%-20s %-10s", resources.getString(R.string.detail_export_time), resources.getString(R.string.detail_export_usage)))
                 appendLine("-".repeat(30))
                 detailState.currentData?.hourDataObj?.forEach { record ->
                     appendLine(
@@ -602,7 +605,7 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
             }
 
             DetailType.METER_STATUS -> {
-                appendMeterStatusText(detailState)
+                appendMeterStatusText(detailState, resources)
             }
         }
     }
@@ -611,23 +614,23 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
 /**
  * 获取详情标题。
  */
-private fun getDetailTitle(detailType: DetailType): String = when (detailType) {
-    DetailType.SIX_MONTH_USAGE -> "最近6个月用电记录"
-    DetailType.MONTH_DAILY_USAGE -> "本月每日用电"
-    DetailType.HOURLY_USAGE -> "近24h用电明细"
-    DetailType.METER_STATUS -> "电表实时状态"
+private fun getDetailTitle(detailType: DetailType, resources: Resources): String = when (detailType) {
+    DetailType.SIX_MONTH_USAGE -> resources.getString(R.string.detail_title_6months)
+    DetailType.MONTH_DAILY_USAGE -> resources.getString(R.string.detail_title_daily)
+    DetailType.HOURLY_USAGE -> resources.getString(R.string.detail_title_hourly)
+    DetailType.METER_STATUS -> resources.getString(R.string.detail_title_meter)
 }
 
 /**
  * 生成电表状态的纯文本内容。
  */
-private fun StringBuilder.appendMeterStatusText(detailState: DetailState) {
+private fun StringBuilder.appendMeterStatusText(detailState: DetailState, resources: Resources) {
     val data = detailState.currentData ?: return
 
     // 电流
     val currentItems = data.exp4
     if (!currentItems.isNullOrEmpty()) {
-        appendLine("\n【电流】")
+        appendLine("\n" + resources.getString(R.string.detail_export_section_current))
         currentItems.forEach { item ->
             appendLine(String.format(Locale.US, "  %s: %.3f A", item.name, item.display))
         }
@@ -636,7 +639,7 @@ private fun StringBuilder.appendMeterStatusText(detailState: DetailState) {
     // 电压
     val voltageItems = data.exp3
     if (!voltageItems.isNullOrEmpty()) {
-        appendLine("\n【电压】")
+        appendLine("\n" + resources.getString(R.string.detail_export_section_voltage))
         voltageItems.forEach { item ->
             appendLine(String.format(Locale.US, "  %s: %.3f V", item.name, item.display))
         }
@@ -644,19 +647,19 @@ private fun StringBuilder.appendMeterStatusText(detailState: DetailState) {
 
     // 功率/累计值
     if (!data.exp2.isNullOrBlank()) {
-        appendLine("\n【当前功率/累计值】")
+        appendLine("\n" + resources.getString(R.string.detail_export_section_power))
         appendLine("  ${data.exp2}")
     }
 
     // 电源状态
     if (!data.exp5.isNullOrBlank()) {
-        appendLine("\n【电源状态】")
+        appendLine("\n" + resources.getString(R.string.detail_export_section_power_status))
         appendLine("  ${data.exp5}")
     }
 
     if (currentItems.isNullOrEmpty() && voltageItems.isNullOrEmpty()
         && data.exp2.isNullOrBlank() && data.exp5.isNullOrBlank()) {
-        appendLine("暂无电表数据")
+        appendLine(resources.getString(R.string.detail_export_no_meter_data))
     }
 }
 

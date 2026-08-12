@@ -24,4 +24,6 @@
     <string name="notice_load_failed">Failed to load details</string>
     <string name="notice_no_content">No content</string>
     <string name="notice_no_more">— No more —</string>
+
+    <string name="notice_list_load_failed">Failed to load notices</string>
 </resources>

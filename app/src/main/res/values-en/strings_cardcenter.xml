@@ -71,7 +71,6 @@
     <string name="card_lost_success">Report lost successful</string>
     <string name="card_lost_request_error">Request error</string>
     <string name="card_lost_fetch_error">Failed to fetch card info</string>
-    <string name="card_lost_login_expired">Session expired, please login again</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Campus Card Recharge                       -->
@@ -86,4 +85,28 @@
     <string name="card_recharge_title_for_user">Recharge for %1$s</string>
     <string name="card_recharge_record">Recharge Records</string>
     <string name="card_recharge_consume_record">Spending Records</string>
+
+    <string name="bill_html_structure_changed">Bill page structure changed, please update the app</string>
+
+    <string name="bill_load_failed">Failed to load bills</string>
+
+    <string name="login_required_auth">Not logged in, please complete authentication first</string>
+
+    <string name="card_bill_status_unknown">Unknown</string>
+
+    <string name="login_required_open_web">Not logged in, please open the original page to authenticate</string>
+
+    <string name="card_bill_status_terminated">Transaction terminated</string>
+
+    <string name="card_bill_status_waiting_pay">Waiting for payment</string>
+
+    <string name="card_bill_status_failed">Transaction failed</string>
+
+    <string name="card_bill_status_canceled">Transaction canceled</string>
+
+    <string name="card_bill_status_waiting_other_pay">Waiting for the other party to pay</string>
+
+    <string name="card_bill_status_success">Transaction successful</string>
+
+    <string name="card_account_info_fetch_failed">Failed to fetch account info</string>
 </resources>

@@ -12,4 +12,76 @@
     <string name="feedback_title_label">標題（可選）</string>
     <string name="feedback_content_label">回饋內容</string>
     <string name="feedback_preview_log">預覽記錄</string>
+
+    <string name="crash_report_thread_group">執行緒群組: %1$s</string>
+
+    <string name="feedback_email_subject">電費查詢 App 回饋</string>
+
+    <string name="crash_report_basic_info">--- 基本資訊 ---</string>
+
+    <string name="crash_report_stack">--- 崩潰堆疊 ---</string>
+
+    <string name="feedback_log_section_crash">═══ 崩潰記錄 ═══</string>
+
+    <string name="feedback_email_system">系統: Android %1$s（API %2$d）</string>
+
+    <string name="crash_report_record">║ 崩潰記錄 #%1$d（%2$s）</string>
+
+    <string name="feedback_email_app_version">App 版本: %1$s (%2$s)</string>
+
+    <string name="feedback_email_content_title">--- 回饋內容 ---</string>
+
+    <string name="crash_report_version_info_failed">版本資訊: 取得失敗</string>
+
+    <string name="crash_report_device">裝置型號: %1$s</string>
+
+    <string name="crash_report_brand">品牌: %1$s</string>
+
+    <string name="feedback_log_section_process">═══ 目前程序日誌（logcat --pid）═══</string>
+
+    <string name="crash_report_thread_priority">執行緒優先順序: %1$s</string>
+
+    <string name="feedback_log_loading">（日誌載入中，請稍後再試）</string>
+
+    <string name="feedback_log_section_crash_buffer">═══ crash 緩衝區日誌（logcat -b crash）═══</string>
+
+    <string name="crash_report_version_code">版本號碼: %1$s</string>
+
+    <string name="crash_report_version_name">版本名稱: %1$s</string>
+
+    <string name="crash_report_manufacturer">製造商: %1$s</string>
+
+    <string name="crash_report_is_main_thread">是否主執行緒: %1$s</string>
+
+    <string name="feedback_share_log">分享日誌</string>
+
+    <string name="crash_report_abi">ABI: %1$s</string>
+
+    <string name="feedback_log_empty">（無日誌內容）</string>
+
+    <string name="feedback_email_title_suffix">：%1$s</string>
+
+    <string name="feedback_email_device_title">--- 裝置資訊 ---</string>
+
+    <string name="crash_report_title">應用程式崩潰報告</string>
+
+    <string name="crash_report_thread_id">執行緒 ID: %1$s</string>
+
+    <string name="crash_report_system">系統: Android %1$s（API %2$d）</string>
+
+    <string name="crash_report_package">套件名稱: %1$s</string>
+
+    <string name="feedback_email_log_title">--- 日誌 ---</string>
+
+    <string name="crash_report_thread_name">執行緒名稱: %1$s</string>
+
+    <string name="feedback_email_device">裝置: %1$s</string>
+
+    <string name="crash_report_time">崩潰時間: %1$s</string>
+
+    <string name="crash_report_pid">程序 PID: %1$s</string>
+
+    <string name="crash_report_read_failed">[讀取崩潰檔案失敗: %1$s]</string>
+
+    <string name="feedback_log_no_logs">（未取得日誌）</string>
 </resources>

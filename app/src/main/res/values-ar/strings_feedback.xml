@@ -17,4 +17,76 @@
     <string name="feedback_title_label">العنوان (اختياري)</string>
     <string name="feedback_content_label">المحتوى</string>
     <string name="feedback_preview_log">معاينة</string>
+
+    <string name="crash_report_thread_group">مجموعة الخيط: %1$s</string>
+
+    <string name="feedback_email_subject">ملاحظات تطبيق استعلام الكهرباء</string>
+
+    <string name="crash_report_basic_info">--- المعلومات الأساسية ---</string>
+
+    <string name="crash_report_stack">--- مكدس الانهيار ---</string>
+
+    <string name="feedback_log_section_crash">═══ سجلات الأعطال ═══</string>
+
+    <string name="feedback_email_system">النظام: Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_record">║ سجل الانهيار #%1$d (%2$s)</string>
+
+    <string name="feedback_email_app_version">إصدار التطبيق: %1$s (%2$s)</string>
+
+    <string name="feedback_email_content_title">--- محتوى الملاحظات ---</string>
+
+    <string name="crash_report_version_info_failed">معلومات الإصدار: فشل الحصول عليها</string>
+
+    <string name="crash_report_device">طراز الجهاز: %1$s</string>
+
+    <string name="crash_report_brand">العلامة التجارية: %1$s</string>
+
+    <string name="feedback_log_section_process">═══ سجل العملية الحالية (logcat --pid) ═══</string>
+
+    <string name="crash_report_thread_priority">أولوية الخيط: %1$s</string>
+
+    <string name="feedback_log_loading">(جارٍ تحميل السجلات، يرجى المحاولة لاحقاً)</string>
+
+    <string name="feedback_log_section_crash_buffer">═══ سجل مخزن الأعطال (logcat -b crash) ═══</string>
+
+    <string name="crash_report_version_code">رقم الإصدار: %1$s</string>
+
+    <string name="crash_report_version_name">اسم الإصدار: %1$s</string>
+
+    <string name="crash_report_manufacturer">الشركة المصنعة: %1$s</string>
+
+    <string name="crash_report_is_main_thread">الخيط الرئيسي: %1$s</string>
+
+    <string name="feedback_share_log">مشاركة السجلات</string>
+
+    <string name="crash_report_abi">ABI: %1$s</string>
+
+    <string name="feedback_log_empty">(لا يوجد محتوى سجل)</string>
+
+    <string name="feedback_email_title_suffix">：%1$s</string>
+
+    <string name="feedback_email_device_title">--- معلومات الجهاز ---</string>
+
+    <string name="crash_report_title">تقرير تعطل التطبيق</string>
+
+    <string name="crash_report_thread_id">معرف الخيط: %1$s</string>
+
+    <string name="crash_report_system">النظام: Android %1$s (API %2$d)</string>
+
+    <string name="crash_report_package">اسم الحزمة: %1$s</string>
+
+    <string name="feedback_email_log_title">--- السجلات ---</string>
+
+    <string name="crash_report_thread_name">اسم الخيط: %1$s</string>
+
+    <string name="feedback_email_device">الجهاز: %1$s</string>
+
+    <string name="crash_report_time">وقت الانهيار: %1$s</string>
+
+    <string name="crash_report_pid">معرف العملية: %1$s</string>
+
+    <string name="crash_report_read_failed">[فشل قراءة ملف الانهيار: %1$s]</string>
+
+    <string name="feedback_log_no_logs">(لم يتم الحصول على السجلات)</string>
 </resources>

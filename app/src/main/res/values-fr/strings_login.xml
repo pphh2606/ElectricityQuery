@@ -7,6 +7,7 @@
     <string name="login_unified_auth">Authentification unifiée</string>
     <string name="login_remember_password">Mémoriser le mot de passe</string>
     <string name="login_relogin">Reconnexion</string>
+    <string name="login_expired">Session expirée, veuillez vous reconnecter</string>
     <string name="login_security_notice_title">Note de sécurité</string>
     <string name="login_security_notice_1">Lors de la connexion par identifiant et mot de passe, les informations sont chiffrées sur l\'appareil via AES-CBC et envoyées directement au serveur CAS de l\'établissement. Le chiffrement utilise un salt dynamique fourni par le serveur officiel, unique à chaque requête. Cette application n\'envoie jamais votre identifiant ou mot de passe à un serveur tiers.</string>
     <string name="login_security_notice_2">Lors de la connexion par QR code, un environnement de cookies indépendant est utilisé. Vous pouvez enregistrer le QR code localement et le scanner avec un appareil déjà connecté, ou utiliser la fonctionnalité « Ouvrir dans une autre application » pour partager le lien vers un environnement connecté.</string>
@@ -77,4 +78,34 @@
     <string name="account_manager_title">Gestion des comptes</string>
     <string name="account_manager_current">Actuel</string>
     <string name="account_manager_add">Ajouter un compte</string>
+
+    <string name="login_error_fetch_params_network">Échec de la récupération des paramètres de connexion, vérifiez le réseau</string>
+
+    <string name="login_error_student_id_required">Veuillez saisir votre numéro étudiant</string>
+
+    <string name="login_error_exception">Exception de connexion : %1$s</string>
+
+    <string name="login_error_import_credential">Échec de l\'importation des informations d\'identification : mot de passe incorrect ou données corrompues</string>
+
+    <string name="login_error_parse_credential">Échec de l\'analyse des informations d\'identification : %1$s</string>
+
+    <string name="login_error_network">Échec de la connexion réseau, vérifiez le réseau</string>
+
+    <string name="login_error_invalid_credentials">Échec de la connexion : identifiant ou mot de passe incorrect</string>
+
+    <string name="login_error_no_account_to_export">Aucun compte à exporter, veuillez d\'abord vous connecter</string>
+
+    <string name="login_error_password_required">Veuillez saisir votre mot de passe</string>
+
+    <string name="login_error_export_failed">Échec de l\'exportation : %1$s</string>
+
+    <string name="login_error_unknown">Échec de la connexion, erreur inconnue</string>
+
+    <string name="login_error_captcha_required">Code de vérification requis, veuillez terminer la connexion manuellement</string>
+
+    <string name="login_error_password_too_short">Le mot de passe doit contenir au moins 4 caractères</string>
+
+    <string name="login_error_timeout">Délai de requête réseau dépassé, connexion instable, réessayez plus tard</string>
+
+    <string name="login_error_fetch_params">Échec de la récupération des paramètres de connexion</string>
 </resources>

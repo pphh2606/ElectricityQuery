@@ -22,4 +22,6 @@
     <string name="notice_load_failed">詳細の読み込みに失敗</string>
     <string name="notice_no_content">内容がありません</string>
     <string name="notice_no_more">— これ以上ありません —</string>
+
+    <string name="notice_list_load_failed">お知らせの読み込みに失敗しました</string>
 </resources>

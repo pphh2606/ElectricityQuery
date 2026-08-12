@@ -7,7 +7,6 @@
     <string name="qrcode_display_scan_hint">QRコードをスキャン機器に向けてください</string>
     <string name="qrcode_display_auto_refresh">自動更新</string>
     <string name="qrcode_display_balance">残高 %1$s ￥</string>
-    <string name="qrcode_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
     <string name="qrcode_fetch_failed">QRコードの取得に失敗</string>
     <string name="qrcode_refresh_failed">更新失敗</string>
     <string name="qrcode_decode_failed">QRコードのデコードに失敗</string>

@@ -7,6 +7,7 @@
     <string name="login_unified_auth">統一身份認證登入</string>
     <string name="login_remember_password">記住密碼</string>
     <string name="login_relogin">重新登入</string>
+    <string name="login_expired">登入已過期，請重新登入</string>
     <string name="login_security_notice_title">登入說明</string>
     <string name="login_security_notice_1">使用帳號和密碼登入時，認證資訊直接在裝置端透過 AES-CBC 加密後傳送到學校 CAS 統一認證伺服器，加密使用官方伺服器下發的動態 salt，每次請求獨立。本應用程式不會將帳號和密碼傳送到任何第三方伺服器。</string>
     <string name="login_security_notice_2">使用掃碼登入功能時，將使用獨立的 Cookie 環境進行登入。使用者可將二維碼儲存到本機，然後使用已登入的裝置掃碼登入；亦可使用「其他應用程式開啟」功能，將連結分享到已登入的環境中開啟進行登入。</string>
@@ -77,4 +78,34 @@
     <string name="account_manager_title">帳號管理</string>
     <string name="account_manager_current">目前</string>
     <string name="account_manager_add">新增帳號</string>
+
+    <string name="login_error_fetch_params_network">取得登入參數失敗，請檢查網路</string>
+
+    <string name="login_error_student_id_required">請輸入學號</string>
+
+    <string name="login_error_exception">登入例外：%1$s</string>
+
+    <string name="login_error_import_credential">憑證匯入失敗：密碼錯誤或資料已損壞</string>
+
+    <string name="login_error_parse_credential">憑證解析失敗：%1$s</string>
+
+    <string name="login_error_network">網路連線失敗，請檢查網路</string>
+
+    <string name="login_error_invalid_credentials">登入失敗：帳號或密碼錯誤</string>
+
+    <string name="login_error_no_account_to_export">沒有可匯出的帳號，請先登入一次</string>
+
+    <string name="login_error_password_required">請輸入密碼</string>
+
+    <string name="login_error_export_failed">匯出失敗：%1$s</string>
+
+    <string name="login_error_unknown">登入失敗，未知錯誤</string>
+
+    <string name="login_error_captcha_required">需要驗證碼，請手動完成登入</string>
+
+    <string name="login_error_password_too_short">密碼長度不能少於4位</string>
+
+    <string name="login_error_timeout">網路請求逾時，伺服器連線不穩定，請稍後重試</string>
+
+    <string name="login_error_fetch_params">取得登入參數失敗</string>
 </resources>

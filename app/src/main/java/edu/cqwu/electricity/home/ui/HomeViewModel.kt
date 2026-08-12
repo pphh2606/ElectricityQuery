@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import coil.Coil
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.home.data.CustomServiceEntry
 import edu.cqwu.electricity.home.data.HomeApp
@@ -63,7 +64,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 prefetchIcons(categories)
             }.onFailure { error ->
                 _uiState.update {
-                    it.copy(isLoading = false, error = error.message ?: "加载数据失败")
+                    it.copy(isLoading = false, error = error.message ?: getApplication<Application>().getString(R.string.common_load_failed))
                 }
             }
         }
@@ -94,7 +95,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(isRefreshing = false, error = e.message ?: "刷新失败")
+                        it.copy(isRefreshing = false, error = e.message ?: getApplication<Application>().getString(R.string.common_refresh_failed))
                     }
                 }
         }

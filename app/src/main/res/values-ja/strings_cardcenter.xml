@@ -69,7 +69,6 @@
     <string name="card_lost_success">紛失届の提出に成功</string>
     <string name="card_lost_request_error">リクエスト異常</string>
     <string name="card_lost_fetch_error">カード情報の取得に失敗</string>
-    <string name="card_lost_login_expired">ログインの有効期限が切れました。再ログインしてください</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  カードチャージ                             -->
@@ -84,4 +83,28 @@
     <string name="card_recharge_title_for_user">%1$s のチャージ</string>
     <string name="card_recharge_record">チャージ記録</string>
     <string name="card_recharge_consume_record">利用記録</string>
+
+    <string name="bill_html_structure_changed">明細ページの構成が変更されました。アプリを更新してください</string>
+
+    <string name="bill_load_failed">明細の読み込みに失敗しました</string>
+
+    <string name="login_required_auth">未ログインです。先に認証を完了してください</string>
+
+    <string name="card_bill_status_unknown">不明</string>
+
+    <string name="login_required_open_web">未ログインです。元のページを開いて認証してください</string>
+
+    <string name="card_bill_status_terminated">取引終了</string>
+
+    <string name="card_bill_status_waiting_pay">支払い待ち</string>
+
+    <string name="card_bill_status_failed">取引失敗</string>
+
+    <string name="card_bill_status_canceled">取引キャンセル</string>
+
+    <string name="card_bill_status_waiting_other_pay">相手の支払い待ち</string>
+
+    <string name="card_bill_status_success">取引成功</string>
+
+    <string name="card_account_info_fetch_failed">アカウント情報の取得に失敗しました</string>
 </resources>

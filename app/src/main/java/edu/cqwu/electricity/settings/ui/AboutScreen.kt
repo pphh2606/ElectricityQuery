@@ -168,9 +168,9 @@ fun AboutScreen(
                     AboutEntry(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.about_build_info),
-                        subtitle = "Build Time: ${BuildConfig.BUILD_TIME}\n" +
-                            "Commit Hash: ${BuildConfig.GIT_COMMIT_HASH}\n" +
-                            "Source: ${if (isCiBuild) "GitHub Actions" else "Local Build"}",
+                        subtitle = resources.getString(R.string.about_build_time, BuildConfig.BUILD_TIME) + "\n" +
+                            resources.getString(R.string.about_commit_hash, BuildConfig.GIT_COMMIT_HASH) + "\n" +
+                            resources.getString(R.string.about_source, if (isCiBuild) resources.getString(R.string.about_source_github) else resources.getString(R.string.about_source_local)),
                         onClick = {
                             if (isCiBuild) {
                                 try {

@@ -125,7 +125,7 @@ fun FeedbackScreen(
             Triple(
                 CrashHandler.hasCrashReports(),
                 CrashHandler.crashReportCount(),
-                LogCapture.getRecentLogs()
+                LogCapture.getRecentLogs(context)
             )
         }
         hasCrashReports = hasReports
@@ -137,8 +137,8 @@ fun FeedbackScreen(
     /** 获取需要附带的日志内容 */
     suspend fun getLogsToAttach(): String {
         if (!includeLogs && !hasCrashReports) return ""
-        val raw = cachedLogs ?: withContext(Dispatchers.IO) { LogCapture.getRecentLogs() }
-        return raw.takeIf { it.isNotBlank() && it != "(未获取到日志)" } ?: "(未获取到日志)"
+        val raw = cachedLogs ?: withContext(Dispatchers.IO) { LogCapture.getRecentLogs(context) }
+        return raw.takeIf { it.isNotBlank() && it != context.getString(R.string.feedback_log_no_logs) } ?: context.getString(R.string.feedback_log_no_logs)
     }
 
     fun sendByEmail() {
@@ -149,24 +149,24 @@ fun FeedbackScreen(
             val logs = getLogsToAttach()
 
             val emailBody = buildString {
-                appendLine("--- 反馈内容 ---")
+                appendLine(context.getString(R.string.feedback_email_content_title))
                 if (title.isNotBlank()) appendLine(title)
                 appendLine(content)
                 appendLine()
-                appendLine("--- 设备信息 ---")
-                appendLine("设备: ${Build.MODEL}")
-                appendLine("系统: Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
-                val versionName = pkgInfo?.versionName ?: "未知"
+                appendLine(context.getString(R.string.feedback_email_device_title))
+                appendLine(context.getString(R.string.feedback_email_device, Build.MODEL))
+                appendLine(context.getString(R.string.feedback_email_system, Build.VERSION.RELEASE, Build.VERSION.SDK_INT))
+                val versionName = pkgInfo?.versionName ?: context.getString(R.string.common_unknown)
                 val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     pkgInfo?.longVersionCode ?: 0L
                 } else {
                     @Suppress("DEPRECATION")
                     pkgInfo?.versionCode?.toLong() ?: 0L
                 }
-                appendLine("App 版本: $versionName ($versionCode)")
+                appendLine(context.getString(R.string.feedback_email_app_version, versionName, versionCode.toString()))
                 appendLine()
                 if (logs.isNotBlank()) {
-                    appendLine("--- 日志 ---")
+                    appendLine(context.getString(R.string.feedback_email_log_title))
                     append(logs)
                 }
             }
@@ -174,14 +174,18 @@ fun FeedbackScreen(
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = android.net.Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(FEEDBACK_EMAIL))
-                putExtra(Intent.EXTRA_SUBJECT, "电费查询 App 反馈${if (title.isNotBlank()) "：$title" else ""}")
+                putExtra(
+                    Intent.EXTRA_SUBJECT,
+                    context.getString(R.string.feedback_email_subject) +
+                        if (title.isNotBlank()) context.getString(R.string.feedback_email_title_suffix, title) else ""
+                )
                 putExtra(Intent.EXTRA_TEXT, emailBody)
             }
 
             try {
                 context.startActivity(intent)
             } catch (e: Exception) {
-                snackbar.show("未找到邮件应用，请安装邮箱客户端", ToastUtils.Type.ERROR)
+                snackbar.show(context.getString(R.string.common_no_mail_app), ToastUtils.Type.ERROR)
             } finally {
                 isSending = false
             }
@@ -217,9 +221,9 @@ fun FeedbackScreen(
             }
 
             try {
-                context.startActivity(Intent.createChooser(intent, "分享日志"))
+                context.startActivity(Intent.createChooser(intent, context.getString(R.string.common_share_log)))
             } catch (e: Exception) {
-                snackbar.show("分享失败", ToastUtils.Type.ERROR)
+                snackbar.show(context.getString(R.string.common_share_failed), ToastUtils.Type.ERROR)
             } finally {
                 isSending = false
             }
@@ -228,11 +232,11 @@ fun FeedbackScreen(
 
     fun loadLogPreview() {
         if (cachedLogs != null) {
-            previewLogText = cachedLogs!!.ifBlank { "(无日志内容)" }
+            previewLogText = cachedLogs!!.ifBlank { context.getString(R.string.feedback_log_empty) }
             showLogPreview = true
         } else {
             // 理论上缓存一定会存在（LaunchedEffect 中已加载），但兜底直接拉取
-            previewLogText = "(日志加载中，请稍后再试)"
+            previewLogText = context.getString(R.string.feedback_log_loading)
             showLogPreview = true
         }
     }
@@ -378,7 +382,7 @@ fun FeedbackScreen(
                         modifier = Modifier.padding(end = 4.dp),
                     )
                     Text(
- text = pluralStringResource(R.plurals.feedback_crash_count, crashReportCount),
+                    text = pluralStringResource(R.plurals.feedback_crash_count, crashReportCount, crashReportCount),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )

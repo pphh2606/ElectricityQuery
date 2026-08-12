@@ -56,4 +56,15 @@
     <string name="common_disabled">已禁用</string>
     <string name="common_re_query">重新查询</string>
     <string name="common_copied_to_clipboard">已复制到剪贴板</string>
+    <string name="common_refresh_failed">刷新失败</string>
+    <string name="common_network_error">网络异常，请检查网络连接</string>
+    <string name="common_query_failed">查询失败</string>
+    <string name="common_favorite_added">已收藏</string>
+    <string name="common_favorite_removed">已取消收藏</string>
+    <string name="common_favorite_toggle_failed">切换收藏失败</string>
+    <string name="common_clearing">清除中…</string>
+    <string name="common_clear_failed">清除失败：%1$s</string>
+    <string name="common_share_failed">分享失败</string>
+    <string name="common_no_mail_app">未找到邮件应用，请安装邮箱客户端</string>
+    <string name="common_unknown">未知</string>
 </resources>

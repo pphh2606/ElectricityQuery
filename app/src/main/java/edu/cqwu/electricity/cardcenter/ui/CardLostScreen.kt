@@ -116,7 +116,7 @@ fun CardLostScreen(
                 isRefreshing = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
-                    errorMessage = resources.getString(R.string.card_lost_login_expired)
+                    errorMessage = null
                 } else {
                     errorMessage = error.message ?: resources.getString(R.string.card_lost_fetch_error)
                 }

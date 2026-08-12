@@ -1,12 +1,15 @@
 package edu.cqwu.electricity.payment.data
 
+import androidx.annotation.StringRes
+import edu.cqwu.electricity.R
+
 // ==================== 支付相关模型 ====================
 
 /**
  * 支付方式枚举
  */
-enum class PaymentMethod(val payType: String, val displayName: String) {
-    WECHAT("02", "微信支付"),
-    ALIPAY("01", "支付宝")
+enum class PaymentMethod(val payType: String, @StringRes val labelRes: Int) {
+    WECHAT("02", R.string.payment_channel_wechat),
+    ALIPAY("01", R.string.payment_channel_alipay)
 }
 

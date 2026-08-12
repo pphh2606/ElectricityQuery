@@ -24,7 +24,6 @@
     <string name="my_info_status">Status</string>
     <string name="my_info_collapse">Collapse</string>
     <string name="my_info_expand">Expand</string>
-    <string name="my_info_login_expired">Login expired, please re-login</string>
     <string name="profile_not_logged_in">Not logged in</string>
     <string name="profile_my_info_cd">My Info</string>
 </resources>

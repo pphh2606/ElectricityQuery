@@ -80,7 +80,7 @@ fun LanguageSwitchSheet(
                 val title = if (language == AppLanguage.SYSTEM) {
                     stringResource(R.string.language_system)
                 } else {
-                    language.displayName
+                        stringResource(language.labelRes)
                 }
                 BottomSheetItem(
                     icon = null,

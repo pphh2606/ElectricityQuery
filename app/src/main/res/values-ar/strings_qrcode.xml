@@ -7,7 +7,6 @@
     <string name="qrcode_display_scan_hint">وجّه رمز QR نحو جهاز المسح</string>
     <string name="qrcode_display_auto_refresh">تحديث تلقائي</string>
     <string name="qrcode_display_balance">المتبقي %1$s ￥</string>
-    <string name="qrcode_login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
     <string name="qrcode_fetch_failed">فشل جلب رمز QR</string>
     <string name="qrcode_refresh_failed">فشل التحديث</string>
     <string name="qrcode_decode_failed">فشل فك تشفير رمز QR</string>

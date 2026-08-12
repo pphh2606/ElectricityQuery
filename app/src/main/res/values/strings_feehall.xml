@@ -49,4 +49,10 @@
     <string name="fee_order_closing">正在关闭订单…</string>
     <string name="fee_order_close_success">订单已关闭</string>
     <string name="fee_order_close_failed">关闭失败: %1$s</string>
+    <string name="fee_order_status_paid">已支付</string>
+    <string name="fee_order_status_pending">待支付</string>
+    <string name="fee_order_status_refund">已退款</string>
+    <string name="fee_order_status_closed">已关闭</string>
+    <string name="payment_channel_alipay">支付宝</string>
+    <string name="payment_channel_wechat">微信支付</string>
 </resources>

@@ -70,4 +70,62 @@
     <string name="electricity_myroom_querying">マイ寮室情報を取得中…</string>
     <string name="electricity_bind_account">口座紐付け</string>
     <string name="electricity_unbind_account">口座紐付け解除</string>
+
+    <string name="detail_export_usage">使用量 (kWh)</string>
+
+    <string name="electricity_export_room_id">部屋 ID: %1$s</string>
+
+    <string name="detail_export_time">時間</string>
+
+    <string name="electricity_user_not_registered">ユーザー情報の取得に失敗しました。先に電気料金プラットフォームで登録してください</string>
+
+    <string name="electricity_export_usage_info">電気使用量</string>
+
+    <string name="detail_export_section_current">電流</string>
+
+    <string name="electricity_export_cash_balance">現金残高: %1$s 元</string>
+
+    <string name="electricity_no_room_bound">このアカウントには部屋が登録されていません</string>
+
+    <string name="electricity_export_subsidy_balance">補助残高: %1$s 元</string>
+
+    <string name="electricity_export_base_balance">基本残高: %1$s 元</string>
+
+    <string name="electricity_timeout_retry">リクエストがタイムアウトしました。再試行してください</string>
+
+    <string name="electricity_export_room_info">部屋情報</string>
+
+    <string name="electricity_export_online_payment">オンライン支払い: %1$s</string>
+
+    <string name="detail_export_no_meter_data">メーターのデータがありません</string>
+
+    <string name="electricity_fetch_campuses_failed">キャンパス一覧の取得に失敗しました: %1$s</string>
+
+    <string name="electricity_export_remain_electricity">残り電気量: %1$s kWh</string>
+
+    <string name="electricity_export_account_balance">口座残高</string>
+
+    <string name="electricity_export_payment_status">支払い状況</string>
+
+    <string name="detail_export_section_power">現在の電力/累計値</string>
+
+    <string name="electricity_balance_query_failed">残高の照会に失敗しました: %1$s</string>
+
+    <string name="electricity_export_title">電気料金の照会結果</string>
+
+    <string name="electricity_export_balance_not_loaded">残高データはまだ読み込まれていません</string>
+
+    <string name="detail_export_section_power_status">電源状態</string>
+
+    <string name="detail_export_cost">料金 (元)</string>
+
+    <string name="detail_room_not_selected">部屋が選択されていません</string>
+
+    <string name="detail_query_failed">照会に失敗しました: %1$s</string>
+
+    <string name="detail_month_unit">月</string>
+
+    <string name="electricity_export_room_name">部屋名/番号: %1$s</string>
+
+    <string name="detail_export_section_voltage">電圧</string>
 </resources>

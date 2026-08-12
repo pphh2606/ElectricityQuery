@@ -32,4 +32,6 @@
     <string name="notice_load_failed">فشل تحميل التفاصيل</string>
     <string name="notice_no_content">لا يوجد محتوى</string>
     <string name="notice_no_more">— لا يوجد المزيد —</string>
+
+    <string name="notice_list_load_failed">فشل تحميل الإشعارات</string>
 </resources>

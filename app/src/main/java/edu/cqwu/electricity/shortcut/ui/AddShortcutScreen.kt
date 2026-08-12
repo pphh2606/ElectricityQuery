@@ -103,7 +103,7 @@ fun AddShortcutScreen(
         val result = withContext(Dispatchers.IO) { loader.loadCategories() }
         result.onSuccess { categories = it }
             .onFailure { e ->
-                loadError = e.message ?: "加载失败"
+                loadError = e.message ?: resources.getString(R.string.common_load_failed)
                 snackbar.show(resources.getString(R.string.common_load_failed), ToastUtils.Type.ERROR)
             }
         isLoading = false

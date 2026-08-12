@@ -7,6 +7,7 @@
     <string name="login_unified_auth">تسجيل الدخول الموحد</string>
     <string name="login_remember_password">تذكر كلمة المرور</string>
     <string name="login_relogin">إعادة تسجيل الدخول</string>
+    <string name="login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
     <string name="login_security_notice_title">ملاحظة أمنية</string>
     <string name="login_security_notice_1">عند تسجيل الدخول بالحساب وكلمة المرور، يتم تشفير بيانات الاعتماد على الجهاز عبر AES-CBC وإرسالها مباشرة إلى خادم CAS الموحد للجامعة. يستخدم التشفير ملحًا ديناميكيًا (Salt) من الخادم الرسمي، فريد لكل طلب. هذا التطبيق لا يرسل الحساب أو كلمة المرور إلى أي خادم خارجي.</string>
     <string name="login_security_notice_2">عند استخدام تسجيل الدخول عبر رمز QR، يتم استخدام بيئة ملفات تعريف ارتباط مستقلة. يمكنك حفظ رمز QR محليًا ومسحه بجهاز مسجل الدخول بالفعل، أو استخدام ميزة \"فتح بتطبيق آخر\" لمشاركة الرابط في بيئة مسجلة.</string>
@@ -77,4 +78,34 @@
     <string name="account_manager_title">إدارة الحسابات</string>
     <string name="account_manager_current">الحالي</string>
     <string name="account_manager_add">إضافة حساب</string>
+
+    <string name="login_error_fetch_params_network">فشل الحصول على معلمات تسجيل الدخول، يرجى التحقق من الشبكة</string>
+
+    <string name="login_error_student_id_required">يرجى إدخال رقم الطالب</string>
+
+    <string name="login_error_exception">استثناء تسجيل الدخول: %1$s</string>
+
+    <string name="login_error_import_credential">فشل استيراد بيانات الاعتماد: كلمة مرور خاطئة أو بيانات تالفة</string>
+
+    <string name="login_error_parse_credential">فشل تحليل بيانات الاعتماد: %1$s</string>
+
+    <string name="login_error_network">فشل الاتصال بالشبكة، يرجى التحقق من الشبكة</string>
+
+    <string name="login_error_invalid_credentials">فشل تسجيل الدخول: اسم المستخدم أو كلمة المرور غير صحيحة</string>
+
+    <string name="login_error_no_account_to_export">لا توجد حسابات قابلة للتصدير، يرجى تسجيل الدخول مرة واحدة أولاً</string>
+
+    <string name="login_error_password_required">يرجى إدخال كلمة المرور</string>
+
+    <string name="login_error_export_failed">فشل التصدير: %1$s</string>
+
+    <string name="login_error_unknown">فشل تسجيل الدخول، خطأ غير معروف</string>
+
+    <string name="login_error_captcha_required">مطلوب رمز تحقق، يرجى إكمال تسجيل الدخول يدوياً</string>
+
+    <string name="login_error_password_too_short">كلمة المرور يجب ألا تقل عن 4 أحرف</string>
+
+    <string name="login_error_timeout">انتهت مهلة طلب الشبكة، الاتصال غير مستقر، يرجى المحاولة لاحقاً</string>
+
+    <string name="login_error_fetch_params">فشل الحصول على معلمات تسجيل الدخول</string>
 </resources>

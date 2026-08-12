@@ -75,4 +75,62 @@
     <string name="electricity_myroom_querying">جارٍ جلب معلومات السكن…</string>
     <string name="electricity_bind_account">ربط الحساب</string>
     <string name="electricity_unbind_account">إلغاء ربط الحساب</string>
+
+    <string name="detail_export_usage">الاستهلاك (درجة)</string>
+
+    <string name="electricity_export_room_id">معرف الغرفة: %1$s</string>
+
+    <string name="detail_export_time">الوقت</string>
+
+    <string name="electricity_user_not_registered">فشل الحصول على معلومات المستخدم، يرجى التسجيل في منصة الكهرباء أولاً</string>
+
+    <string name="electricity_export_usage_info">معلومات الاستهلاك</string>
+
+    <string name="detail_export_section_current">التيار</string>
+
+    <string name="electricity_export_cash_balance">الرصيد النقدي: %1$s يوان</string>
+
+    <string name="electricity_no_room_bound">لا توجد غرف مرتبطة بهذا الحساب</string>
+
+    <string name="electricity_export_subsidy_balance">رصيد الإعانة: %1$s يوان</string>
+
+    <string name="electricity_export_base_balance">الرصيد الأساسي: %1$s يوان</string>
+
+    <string name="electricity_timeout_retry">انتهت مهلة الطلب، يرجى إعادة المحاولة</string>
+
+    <string name="electricity_export_room_info">معلومات الغرفة</string>
+
+    <string name="electricity_export_online_payment">الدفع عبر الإنترنت: %1$s</string>
+
+    <string name="detail_export_no_meter_data">لا توجد بيانات العداد حالياً</string>
+
+    <string name="electricity_fetch_campuses_failed">فشل جلب قائمة المناطق: %1$s</string>
+
+    <string name="electricity_export_remain_electricity">الكهرباء المتبقية: %1$s درجة</string>
+
+    <string name="electricity_export_account_balance">رصيد الحساب</string>
+
+    <string name="electricity_export_payment_status">حالة الدفع</string>
+
+    <string name="detail_export_section_power">الطاقة/القيمة التراكمية</string>
+
+    <string name="electricity_balance_query_failed">فشل الاستعلام عن الرصيد: %1$s</string>
+
+    <string name="electricity_export_title">نتيجة استعلام الكهرباء</string>
+
+    <string name="electricity_export_balance_not_loaded">لم يتم تحميل بيانات الرصيد بعد</string>
+
+    <string name="detail_export_section_power_status">حالة الطاقة</string>
+
+    <string name="detail_export_cost">التكلفة (يوان)</string>
+
+    <string name="detail_room_not_selected">لم يتم تحديد غرفة</string>
+
+    <string name="detail_query_failed">فشل الاستعلام: %1$s</string>
+
+    <string name="detail_month_unit">شهر</string>
+
+    <string name="electricity_export_room_name">اسم/رقم الغرفة: %1$s</string>
+
+    <string name="detail_export_section_voltage">الجهد</string>
 </resources>

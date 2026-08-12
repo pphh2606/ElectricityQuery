@@ -1,8 +1,10 @@
 package edu.cqwu.electricity.feedback.ui
 
+import android.content.Context
 import android.os.Build
 import android.os.Process
 import edu.cqwu.electricity.feedback.util.CrashHandler
+import edu.cqwu.electricity.R
 import java.util.concurrent.TimeUnit
 
 /**
@@ -34,13 +36,13 @@ object LogCapture {
      * @param lineCount 最大返回行数，默认 500
      * @return 日志文本，失败时返回错误描述
      */
-    fun getRecentLogs(lineCount: Int = 500): String {
+    fun getRecentLogs(context: Context, lineCount: Int = 500): String {
         val parts = mutableListOf<String>()
 
         // ── 优先级 1：持久化崩溃文件 ──
         val crashReports = CrashHandler.getCrashReports(maxFiles = 10)
         if (crashReports.isNotBlank()) {
-            parts.add("═══ 崩溃记录 ═══")
+            parts.add(context.getString(R.string.feedback_log_section_crash))
             parts.add("")
             parts.add(crashReports)
         }
@@ -48,7 +50,7 @@ object LogCapture {
         // ── 优先级 2：当前进程 logcat ──
         val currentLogs = getCurrentProcessLogs(lineCount)
         if (currentLogs.isNotBlank()) {
-            parts.add("═══ 当前进程日志 (logcat --pid) ═══")
+            parts.add(context.getString(R.string.feedback_log_section_process))
             parts.add("")
             parts.add(currentLogs)
         }
@@ -56,13 +58,13 @@ object LogCapture {
         // ── 优先级 3：crash 缓冲区（补充） ──
         val crashBufferLogs = getCrashBufferLogs(lineCount)
         if (crashBufferLogs.isNotBlank()) {
-            parts.add("═══ crash 缓冲区日志 (logcat -b crash) ═══")
+            parts.add(context.getString(R.string.feedback_log_section_crash_buffer))
             parts.add("")
             parts.add(crashBufferLogs)
         }
 
         return if (parts.isEmpty()) {
-            "(未获取到日志)"
+            context.getString(R.string.feedback_log_no_logs)
         } else {
             parts.joinToString("\n")
         }

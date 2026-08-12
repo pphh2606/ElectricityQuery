@@ -113,9 +113,9 @@ fun ConfigScreen(
                         title = stringResource(R.string.language_title),
                         subtitle = if (currentLanguage == AppLanguage.SYSTEM) {
                             stringResource(R.string.language_system)
-                        } else {
-                            currentLanguage.displayName
-                        },
+                } else {
+                    stringResource(currentLanguage.labelRes)
+                },
                         onClick = { showLanguageSheet = true },
                     )
 

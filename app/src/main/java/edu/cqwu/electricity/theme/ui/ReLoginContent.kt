@@ -46,7 +46,7 @@ fun ReLoginContent(
             modifier = Modifier.padding(32.dp),
         ) {
             Text(
-                text = errorMessage ?: "",
+                text = errorMessage ?: if (requiresReLogin) stringResource(R.string.login_expired) else "",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center,

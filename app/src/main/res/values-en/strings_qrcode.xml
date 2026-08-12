@@ -8,7 +8,6 @@
     <string name="qrcode_display_auto_refresh">Auto Refresh</string>
     <string name="qrcode_display_balance">Balance %1$s CNY</string>
 
-    <string name="qrcode_login_expired">Login expired, please re-login</string>
     <string name="qrcode_fetch_failed">Failed to fetch QR code</string>
     <string name="qrcode_refresh_failed">Refresh failed</string>
     <string name="qrcode_decode_failed">QR code decoding failed</string>

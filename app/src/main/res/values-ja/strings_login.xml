@@ -7,6 +7,7 @@
     <string name="login_unified_auth">統合認証ログイン</string>
     <string name="login_remember_password">パスワードを記憶</string>
     <string name="login_relogin">再ログイン</string>
+    <string name="login_expired">ログインの有効期限が切れました。再ログインしてください</string>
     <string name="login_security_notice_title">ログイン説明</string>
     <string name="login_security_notice_1">アカウントとパスワードでログインする際、認証情報はデバイス上でAES-CBC暗号化され、学校のCAS統合認証サーバーに直接送信されます。暗号化には公式サーバーから発行される動的saltが使用され、リクエストごとに異なります。本アプリはアカウントやパスワードを第三者サーバーに送信しません。</string>
     <string name="login_security_notice_2">QRコードログインでは、独立したCookie環境内で動作します。QRコードをローカルに保存して既にログイン済みのデバイスでスキャンするか、「他のアプリで開く」機能を使用してリンクをログイン済み環境で開くことで認証できます。</string>
@@ -77,4 +78,34 @@
     <string name="account_manager_title">アカウント管理</string>
     <string name="account_manager_current">現在</string>
     <string name="account_manager_add">アカウントを追加</string>
+
+    <string name="login_error_fetch_params_network">ログインパラメータの取得に失敗しました。ネットワークを確認してください</string>
+
+    <string name="login_error_student_id_required">学籍番号を入力してください</string>
+
+    <string name="login_error_exception">ログイン例外: %1$s</string>
+
+    <string name="login_error_import_credential">認証情報のインポートに失敗しました: パスワードが正しくないか、データが破損しています</string>
+
+    <string name="login_error_parse_credential">認証情報の解析に失敗しました: %1$s</string>
+
+    <string name="login_error_network">ネットワーク接続に失敗しました。ネットワークを確認してください</string>
+
+    <string name="login_error_invalid_credentials">ログイン失敗: ユーザー名またはパスワードが正しくありません</string>
+
+    <string name="login_error_no_account_to_export">エクスポートできるアカウントがありません。先に一度ログインしてください</string>
+
+    <string name="login_error_password_required">パスワードを入力してください</string>
+
+    <string name="login_error_export_failed">エクスポートに失敗しました: %1$s</string>
+
+    <string name="login_error_unknown">ログインに失敗しました。不明なエラーです</string>
+
+    <string name="login_error_captcha_required">認証コードが必要です。手動でログインを完了してください</string>
+
+    <string name="login_error_password_too_short">パスワードは4文字以上必要です</string>
+
+    <string name="login_error_timeout">ネットワークリクエストがタイムアウトしました。接続が不安定です。後でもう一度お試しください</string>
+
+    <string name="login_error_fetch_params">ログインパラメータの取得に失敗しました</string>
 </resources>

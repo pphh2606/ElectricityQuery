@@ -2,10 +2,12 @@ package edu.cqwu.electricity.electricity.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.electricity.data.ElectricityApi
+import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +25,7 @@ data class MyRoomUiState(
     val selectedRoom: BuildingNode? = null,
     val balance: BalanceResponse? = null,
     val isBalanceRefreshing: Boolean = false,
-    val error: String? = null,
+    val error: UiMessage? = null,
 )
 
 /**
@@ -40,7 +42,7 @@ class MyRoomViewModel(
     val uiState: StateFlow<MyRoomUiState> = _uiState.asStateFlow()
 
     // 错误事件 Channel
-    private val _errorEvent = Channel<String>(Channel.BUFFERED)
+    private val _errorEvent = Channel<UiMessage>(Channel.BUFFERED)
     val errorEvent = _errorEvent.receiveAsFlow()
 
     /**
@@ -66,7 +68,7 @@ class MyRoomViewModel(
             val wechatUser = userIdResult.getOrNull()
             if (wechatUser == null || wechatUser.id.isBlank()) {
                 _uiState.update { it.copy(isMyRoomQuerying = false) }
-                _errorEvent.trySend("获取用户信息失败，请先在电费平台注册")
+                _errorEvent.trySend(UiMessage(R.string.electricity_user_not_registered))
                 return@launch
             }
 
@@ -76,7 +78,7 @@ class MyRoomViewModel(
                 .onSuccess { rooms ->
                     if (rooms.isEmpty()) {
                         _uiState.update { it.copy(isMyRoomQuerying = false) }
-                        _errorEvent.trySend("该账号下未绑定任何房间")
+                        _errorEvent.trySend(UiMessage(R.string.electricity_no_room_bound))
                     } else {
                         val buildingNode = BuildingNode(
                             id = rooms[0].roomId,
@@ -99,13 +101,13 @@ class MyRoomViewModel(
                                 _uiState.update { it.copy(isBalanceRefreshing = false, balance = balance) }
                             }
                             .onFailure { e ->
-                                _uiState.update { it.copy(isBalanceRefreshing = false, error = "查询余额失败: ${e.localizedMessage}") }
+                                _uiState.update { it.copy(isBalanceRefreshing = false, error = UiMessage(R.string.electricity_balance_query_failed, listOf(e.localizedMessage ?: ""))) }
                             }
                     }
                 }
                 .onFailure { e ->
                     _uiState.update { it.copy(isMyRoomQuerying = false) }
-                    _errorEvent.trySend("查询失败: ${e.localizedMessage}")
+                    _errorEvent.trySend(UiMessage(R.string.common_query_failed, listOf(e.localizedMessage ?: "")))
                 }
         }
     }
@@ -134,7 +136,7 @@ class MyRoomViewModel(
                     _uiState.update { it.copy(isBalanceRefreshing = false, balance = balance) }
                 }
                 .onFailure { e ->
-                    _uiState.update { it.copy(isBalanceRefreshing = false, error = "查询余额失败: ${e.localizedMessage}") }
+                _uiState.update { it.copy(isBalanceRefreshing = false, error = UiMessage(R.string.electricity_balance_query_failed, listOf(e.localizedMessage ?: ""))) }
                 }
         }
     }
@@ -152,7 +154,7 @@ class MyRoomViewModel(
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(isBalanceRefreshing = false, error = "刷新失败: ${e.localizedMessage}")
+                        it.copy(isBalanceRefreshing = false, error = UiMessage(R.string.common_refresh_failed, listOf(e.localizedMessage ?: "")))
                     }
                 }
         }

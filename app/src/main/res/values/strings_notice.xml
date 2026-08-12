@@ -22,4 +22,5 @@
     <string name="notice_load_failed">加载详情失败</string>
     <string name="notice_no_content">暂无内容</string>
     <string name="notice_no_more">— 没有更多了 —</string>
+    <string name="notice_list_load_failed">加载通知公告失败</string>
 </resources>

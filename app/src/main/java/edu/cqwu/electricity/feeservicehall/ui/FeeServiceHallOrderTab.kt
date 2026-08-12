@@ -225,7 +225,7 @@ private fun OrderStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
- Text(pluralStringResource(R.plurals.fee_order_loaded_count, loadedCount), style = MaterialTheme.typography.bodySmall,
+        Text(pluralStringResource(R.plurals.fee_order_loaded_count, loadedCount, loadedCount), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(stringResource(R.string.fee_order_page_info, currentPage, totalPages), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -283,7 +283,13 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(8.dp))
-                Text(order.statusDisplay, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = statusColor)
+                Text(
+                    if (order.statusRes != null) stringResource(order.statusRes!!)
+                    else order.status.ifBlank { stringResource(R.string.common_unknown) },
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = statusColor
+                )
             }
             Spacer(Modifier.height(2.dp))
             Text(order.createDate ?: "", style = MaterialTheme.typography.bodySmall,
@@ -310,7 +316,7 @@ private fun OrderFooterContent(uiState: FeeServiceHallUiState, onLoadMore: () ->
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
             )
         } else if (uiState.orders.isNotEmpty()) {
- Text(pluralStringResource(R.plurals.fee_hall_order_all_loaded, uiState.orders.size),
+            Text(pluralStringResource(R.plurals.fee_hall_order_all_loaded, uiState.orders.size, uiState.orders.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

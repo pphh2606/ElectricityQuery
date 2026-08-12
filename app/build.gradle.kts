@@ -145,3 +145,47 @@ tasks.register("incrementVersionCode") {
 tasks.matching { it.name.startsWith("assemble") }.configureEach {
     finalizedBy("incrementVersionCode")
 }
+
+// ============================================================
+// 防回归：禁止在用户可见展示 API 中硬编码中文文案
+// ============================================================
+tasks.register("checkHardcodedStrings") {
+    doLast {
+        val sourceDir = file("src/main/java")
+        val displayPatterns = listOf(
+            "Text(", "text =", "title =", "label =", "hint =",
+            "placeholder =", "contentDescription =", "snackbar.show(",
+            "error =", "errorMessage =", "queryError =", "createOrderError =",
+            "searchError =", "profileError =", "loadError =", "snackbarEvent =",
+            "appendLine(", "EXTRA_SUBJECT", "ClipData.newPlainText",
+        )
+        val han = Regex("[\\u4e00-\\u9fff]")
+        val failures = mutableListOf<String>()
+
+        sourceDir.walkTopDown().filter { it.isFile && it.extension == "kt" }.forEach { file ->
+            file.readLines().forEachIndexed { index, raw ->
+                var line = raw.replace(Regex("//.*$"), "").trim()
+                if (line.isBlank() || line.startsWith("*") || line.startsWith("/*")) return@forEachIndexed
+                if (line.contains("Log.")) return@forEachIndexed
+                if (!displayPatterns.any { line.contains(it) }) return@forEachIndexed
+
+                Regex("\"[^\"]*\"").findAll(line).forEach { match ->
+                    if (han.containsMatchIn(match.value)) {
+                        failures += "${file.path}:${index + 1}: ${match.value}"
+                    }
+                }
+            }
+        }
+
+        if (failures.isNotEmpty()) {
+            throw GradleException(
+                "Hardcoded Chinese text found in user-visible strings:\n" +
+                    failures.joinToString("\n")
+            )
+        }
+    }
+}
+
+tasks.named("check").configure {
+    dependsOn("checkHardcodedStrings")
+}

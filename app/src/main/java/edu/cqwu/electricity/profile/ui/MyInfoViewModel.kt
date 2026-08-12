@@ -1,8 +1,10 @@
 package edu.cqwu.electricity.profile.ui
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.profile.data.StudentInfo
 import edu.cqwu.electricity.profile.data.CampusphereApi
 import edu.cqwu.electricity.profile.data.MenuCategory
@@ -23,7 +25,7 @@ data class MyInfoUiState(
     val needsLogin: Boolean = false,
 )
 
-class MyInfoViewModel : ViewModel() {
+class MyInfoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val api = CampusphereApi()
 
@@ -74,7 +76,7 @@ class MyInfoViewModel : ViewModel() {
                             it.copy(
                                 isLoading = false,
                                 isRefreshing = false,
-                                error = e.message ?: "加载失败",
+                                error = e.message ?: getApplication<Application>().getString(R.string.common_load_failed),
                                 needsLogin = needsLogin,
                             )
                         }

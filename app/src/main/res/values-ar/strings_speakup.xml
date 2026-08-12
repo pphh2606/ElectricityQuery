@@ -15,4 +15,14 @@
     <string name="speakup_score_unit">نقطة</string>
     <string name="speakup_message_label">رسالة</string>
     <string name="speakup_reply_label">رد</string>
+
+    <string name="speakup_error_setup_role">فشل تعيين الدور: %1$s</string>
+
+    <string name="speakup_error_no_active_role">لم يتم العثور على دور نشط</string>
+
+    <string name="speakup_error_fetch_areas">فشل الحصول على قائمة مناطق الاستشارة: %1$s</string>
+
+    <string name="speakup_error_fetch_messages">فشل الحصول على قائمة الرسائل: %1$s</string>
+
+    <string name="speakup_error_fetch_detail">فشل الحصول على تفاصيل الرسالة: %1$s</string>
 </resources>

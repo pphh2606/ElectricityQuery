@@ -123,4 +123,64 @@
     <string name="storage_clear_success">اكتمل المسح</string>
     <string name="storage_clear_nothing_selected">يرجى تحديد عنصر واحد على الأقل</string>
     <string name="storage_clear_zero_size">0 B</string>
+
+    <string name="about_source_github">GitHub Actions</string>
+
+    <string name="settings_night_mode_system">اتباع النظام</string>
+
+    <string name="about_commit_hash">تجزئة الالتزام: %1$s</string>
+
+    <string name="settings_topbar_surface_container_high">تمييز غامق</string>
+
+    <string name="settings_reduce_motion_off">دائمًا تشغيل</string>
+
+    <string name="settings_page_transition_fade">تلاشي</string>
+
+    <string name="settings_language_ar">العربية</string>
+
+    <string name="settings_page_transition_none">بدون حركة</string>
+
+    <string name="settings_topbar_surface_container_lowest">تمييز فاتح جدًا</string>
+
+    <string name="about_build_time">وقت البناء: %1$s</string>
+
+    <string name="about_source">المصدر: %1$s</string>
+
+    <string name="about_source_local">بناء محلي</string>
+
+    <string name="settings_topbar_surface">لون الخلفية</string>
+
+    <string name="settings_night_mode_dark">الوضع الداكن</string>
+
+    <string name="settings_language_en">الإنجليزية</string>
+
+    <string name="settings_topbar_surface_container_highest">أغمق تمييز</string>
+
+    <string name="settings_topbar_surface_variant">لون متغير</string>
+
+    <string name="settings_topbar_surface_container">تمييز متوسط</string>
+
+    <string name="settings_reduce_motion_on">تقليل الحركة دائمًا</string>
+
+    <string name="settings_page_transition_slide_vertical">انزلاق عمودي</string>
+
+    <string name="settings_reduce_motion_system">اتباع النظام</string>
+
+    <string name="settings_page_transition_cupertino">Cupertino</string>
+
+    <string name="settings_language_zh">الصينية المبسطة</string>
+
+    <string name="settings_night_mode_light">الوضع الفاتح</string>
+
+    <string name="settings_page_transition_slide">انزلاق أفقي</string>
+
+    <string name="settings_language_fr">الفرنسية</string>
+
+    <string name="settings_language_zh_tw">الصينية التقليدية</string>
+
+    <string name="settings_language_ja">اليابانية</string>
+
+    <string name="settings_topbar_surface_container_low">تمييز فاتح</string>
+
+    <string name="settings_page_transition_fade_scale">تلاشي مع تكبير</string>
 </resources>

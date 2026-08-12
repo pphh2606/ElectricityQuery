@@ -382,7 +382,7 @@ fun HomePageContent(
                             // 搜索结果标题
                             item(key = "search_header") {
                                 Text(
- text = pluralStringResource(R.plurals.home_search_result, filteredApps.size),
+            text = pluralStringResource(R.plurals.home_search_result, filteredApps.size, filteredApps.size),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface,

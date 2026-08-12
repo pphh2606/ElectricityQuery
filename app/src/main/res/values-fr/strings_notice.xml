@@ -26,4 +26,6 @@
     <string name="notice_load_failed">Échec du chargement</string>
     <string name="notice_no_content">Aucun contenu</string>
     <string name="notice_no_more">— Fin de la liste —</string>
+
+    <string name="notice_list_load_failed">Échec du chargement des notifications</string>
 </resources>

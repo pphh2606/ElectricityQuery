@@ -69,6 +69,7 @@ import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -258,7 +259,7 @@ fun ElectricityMainScreen(
                                     leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                     onClick = {
                                         showMyRoomMenu = false
-                                        val text = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
+                                        val text = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance, resources)
                                         copyToClipboard(context, text, resources.getString(R.string.dashboard_title), snackbar)
                                     }
                                 )
@@ -267,7 +268,7 @@ fun ElectricityMainScreen(
                                     leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                     onClick = {
                                         showMyRoomMenu = false
-                                        pendingExportText = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance)
+                                        pendingExportText = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance, resources)
                                         pendingExportLabel = resources.getString(R.string.dashboard_title)
                                         saveFileLauncher.launch("electricity_dashboard.txt")
                                     }
@@ -479,11 +480,12 @@ private fun MyRoomDashboardTab(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
+    val resources = LocalResources.current
 
     // 收集错误事件
     LaunchedEffect(Unit) {
         viewModel.errorEvent.collect { errorMsg ->
-            snackbar.show(errorMsg, ToastUtils.Type.ERROR)
+            snackbar.show(errorMsg.resolve(resources), ToastUtils.Type.ERROR)
         }
     }
 

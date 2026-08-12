@@ -202,6 +202,8 @@ fun HallPageContent(
                             uiState = uiState,
                             onQueryChange = { hallViewModel.setSearchQuery(it) },
                             onSearch = { hallViewModel.performSearch() },
+                            onReLogin = { nav.navigate(Routes.LOGIN) },
+                            onRetry = { hallViewModel.loadSearchData() },
                             onRoleSelect = { hallViewModel.selectRoleLabel(it) },
                             onCategorySelect = { hallViewModel.selectCategoryLabel(it) },
                             onItemClick = { item ->
@@ -225,6 +227,8 @@ private fun HallSearchTab(
     uiState: HallUiState,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
+    onReLogin: () -> Unit,
+    onRetry: () -> Unit,
     onRoleSelect: (String?) -> Unit,
     onCategorySelect: (String?) -> Unit,
     onItemClick: (HallItem) -> Unit,
@@ -254,6 +258,14 @@ private fun HallSearchTab(
                 .weight(1f),
         ) {
             when {
+                uiState.requiresReLogin -> {
+                    ReLoginContent(
+                        errorMessage = null,
+                        requiresReLogin = true,
+                        onReLogin = onReLogin,
+                        onRetry = onRetry,
+                    )
+                }
                 uiState.isSearchLoading -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()

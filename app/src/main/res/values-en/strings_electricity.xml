@@ -71,4 +71,62 @@
     <string name="electricity_myroom_querying">Fetching dorm info…</string>
     <string name="electricity_bind_account">Bind Account</string>
     <string name="electricity_unbind_account">Unbind Account</string>
+
+    <string name="detail_export_usage">Usage (kWh)</string>
+
+    <string name="electricity_export_room_id">Room ID: %1$s</string>
+
+    <string name="detail_export_time">Time</string>
+
+    <string name="electricity_user_not_registered">Failed to get user info, please register on the electricity platform first</string>
+
+    <string name="electricity_export_usage_info">Electricity usage</string>
+
+    <string name="detail_export_section_current">Current</string>
+
+    <string name="electricity_export_cash_balance">Cash balance: %1$s CNY</string>
+
+    <string name="electricity_no_room_bound">No rooms are bound to this account</string>
+
+    <string name="electricity_export_subsidy_balance">Subsidy balance: %1$s CNY</string>
+
+    <string name="electricity_export_base_balance">Base balance: %1$s CNY</string>
+
+    <string name="electricity_timeout_retry">Request timed out, please retry</string>
+
+    <string name="electricity_export_room_info">Room information</string>
+
+    <string name="electricity_export_online_payment">Online payment: %1$s</string>
+
+    <string name="detail_export_no_meter_data">No meter data available</string>
+
+    <string name="electricity_fetch_campuses_failed">Failed to fetch campus list: %1$s</string>
+
+    <string name="electricity_export_remain_electricity">Remaining electricity: %1$s kWh</string>
+
+    <string name="electricity_export_account_balance">Account balance</string>
+
+    <string name="electricity_export_payment_status">Payment status</string>
+
+    <string name="detail_export_section_power">Current power / cumulative value</string>
+
+    <string name="electricity_balance_query_failed">Failed to query balance: %1$s</string>
+
+    <string name="electricity_export_title">Electricity query result</string>
+
+    <string name="electricity_export_balance_not_loaded">Balance data not loaded yet</string>
+
+    <string name="detail_export_section_power_status">Power status</string>
+
+    <string name="detail_export_cost">Cost (CNY)</string>
+
+    <string name="detail_room_not_selected">No room selected</string>
+
+    <string name="detail_query_failed">Query failed: %1$s</string>
+
+    <string name="detail_month_unit">month</string>
+
+    <string name="electricity_export_room_name">Room name/number: %1$s</string>
+
+    <string name="detail_export_section_voltage">Voltage</string>
 </resources>

@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.cardcenter.data
 
+import androidx.annotation.StringRes
+import edu.cqwu.electricity.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -40,6 +42,7 @@ data class BillRecord(
     val paymentMethod: String = "",     // 付款方式，如 "现金"
     val status: String = "",            // 状态文字，如 "交易成功"
     val statusCssClass: String = "",    // 状态 CSS class，如 "label-success"
+    @StringRes val statusRes: Int? = null,
     val detailUrl: String = ""          // 详情页相对路径
 )
 
@@ -122,13 +125,13 @@ data class H5BillItem(
         val fmtDate = dateFmt.format(date)
         val fmtTime = timeFmt.format(date)
 
-        val (statusText, cssClass) = when (status) {
-            1 -> (if (tradedirect == 2) "等待对方付款" else "等待付款") to "label-warning"
-            2 -> "交易成功" to "label-success"
-            3 -> "交易取消" to "label-default"
-            4 -> "交易终止" to "label-danger"
-            5 -> "交易失败" to "label-danger"
-            else -> "未知" to ""
+        val (statusRes, cssClass) = when (status) {
+            1 -> (if (tradedirect == 2) R.string.card_bill_status_waiting_other_pay else R.string.card_bill_status_waiting_pay) to "label-warning"
+            2 -> R.string.card_bill_status_success to "label-success"
+            3 -> R.string.card_bill_status_canceled to "label-default"
+            4 -> R.string.card_bill_status_terminated to "label-danger"
+            5 -> R.string.card_bill_status_failed to "label-danger"
+            else -> R.string.card_bill_status_unknown to ""
         }
 
         return BillRecord(
@@ -139,8 +142,9 @@ data class H5BillItem(
             merchant = shopname.ifBlank { buyername },
             amount = String.format(Locale.US, "%.2f", amount),
             paymentMethod = "",
-            status = statusText,
+            status = "",
             statusCssClass = cssClass,
+            statusRes = statusRes,
             detailUrl = "/epay/consume/tradedetail?billno=$refno"
         )
     }

@@ -3,10 +3,12 @@ package edu.cqwu.electricity.electricity.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.electricity.data.ElectricityApi
+import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +21,7 @@ import kotlinx.coroutines.launch
 sealed class FloorRoomLoadState {
     data object Loading : FloorRoomLoadState()
     data class Success(val rooms: List<BuildingNode>) : FloorRoomLoadState()
-    data class Error(val message: String) : FloorRoomLoadState()
+    data class Error(val message: UiMessage) : FloorRoomLoadState()
 }
 
 /**
@@ -33,7 +35,7 @@ data class ElectricityUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,         // 下拉刷新中（建筑选择页）
     val isBalanceRefreshing: Boolean = false,  // 下拉刷新中（仪表盘页）
-    val error: String? = null,
+    val error: UiMessage? = null,
     val currentStep: SelectionStep = SelectionStep.AREA,
 
     // 校区展开式选择中已展开的校区 ID 集合
@@ -89,7 +91,7 @@ class ElectricityViewModel(
                     _uiState.update { it.onSuccess(data) }
                 }
                 .onFailure { e ->
-                    _uiState.update { it.onError(e.localizedMessage ?: "未知错误") }
+                    _uiState.update { it.onError(e.localizedMessage ?: "") }
                 }
         }
     }
@@ -126,7 +128,7 @@ class ElectricityViewModel(
         onSuccess = { areas ->
             copy(isLoading = false, isRefreshing = false, areas = areas, currentStep = SelectionStep.AREA)
         },
-        onError = { msg -> copy(isLoading = false, isRefreshing = false, error = "获取校区列表失败: $msg") },
+        onError = { msg -> copy(isLoading = false, isRefreshing = false, error = UiMessage(R.string.electricity_fetch_campuses_failed, listOf(msg))) },
         request = { api.getAreas() }
     )
 
@@ -141,7 +143,7 @@ class ElectricityViewModel(
                 balance = null,
                 currentStep = SelectionStep.ROOM_GRID,
                 floorRoomsMap = emptyMap(),
-                error = if (floors.isEmpty()) "该楼栋下无楼层数据" else null
+                error = if (floors.isEmpty()) UiMessage(R.string.building_no_floors) else null
             )
         }
     }
@@ -159,9 +161,9 @@ class ElectricityViewModel(
                 _uiState.update { it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Success(rooms))) }
             }.onFailure { e ->
                 val msg = if (e is kotlinx.coroutines.TimeoutCancellationException) {
-                    "请求超时，请重试"
+                    UiMessage(R.string.electricity_timeout_retry)
                 } else {
-                    e.message ?: "加载失败"
+                    UiMessage(R.string.common_load_failed)
                 }
                 _uiState.update { it.copy(floorRoomsMap = it.floorRoomsMap + (floor.id to FloorRoomLoadState.Error(msg))) }
             }
@@ -186,7 +188,7 @@ class ElectricityViewModel(
                     _uiState.update { it.copy(isLoading = false, isBalanceRefreshing = false, balance = balance) }
                 }
                 .onFailure { e ->
-                    _uiState.update { it.copy(isLoading = false, isBalanceRefreshing = false, error = "查询余额失败: ${e.localizedMessage}") }
+                    _uiState.update { it.copy(isLoading = false, isBalanceRefreshing = false, error = UiMessage(R.string.electricity_balance_query_failed, listOf(e.localizedMessage ?: ""))) }
                 }
         }
     }
@@ -225,7 +227,7 @@ class ElectricityViewModel(
     fun refreshAreas() = launchRequest(
         onStart = { copy(isRefreshing = true) },
         onSuccess = { areas -> copy(isRefreshing = false, areas = areas) },
-        onError = { msg -> copy(isRefreshing = false, error = "刷新失败: $msg") },
+        onError = { msg -> copy(isRefreshing = false, error = UiMessage(R.string.common_refresh_failed, listOf(msg))) },
         request = { api.getAreas() }
     )
 
@@ -245,7 +247,7 @@ class ElectricityViewModel(
         launchRequest(
             onStart = { copy(isBalanceRefreshing = true) },
             onSuccess = { balance -> copy(isBalanceRefreshing = false, balance = balance) },
-            onError = { msg -> copy(isBalanceRefreshing = false, error = "刷新失败: $msg") },
+            onError = { msg -> copy(isBalanceRefreshing = false, error = UiMessage(R.string.common_refresh_failed, listOf(msg))) },
             request = { api.queryBalance(roomId) }
         )
     }

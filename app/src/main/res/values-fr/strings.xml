@@ -56,4 +56,16 @@
     <string name="common_disabled">Désactivé</string>
     <string name="common_re_query">Re-consulter</string>
     <string name="common_copied_to_clipboard">Copié dans le presse-papiers</string>
+    <string name="common_refresh_failed">Échec de l\'actualisation</string>
+    <string name="common_network_error">Erreur réseau, vérifiez votre connexion</string>
+    <string name="common_query_failed">Échec de la requête</string>
+    <string name="common_favorite_added">Ajouté aux favoris</string>
+    <string name="common_favorite_removed">Retiré des favoris</string>
+    <string name="common_favorite_toggle_failed">Échec de la mise à jour des favoris</string>
+    <string name="common_clearing">Nettoyage…</string>
+    <string name="common_clear_failed">Échec du nettoyage : %1$s</string>
+    <string name="common_share_failed">Échec du partage</string>
+    <string name="common_no_mail_app">Aucune application de messagerie trouvée</string>
+
+    <string name="common_unknown">Inconnu</string>
 </resources>

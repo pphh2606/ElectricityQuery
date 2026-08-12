@@ -7,7 +7,6 @@
     <string name="qrcode_display_scan_hint">請將 QR 碼對準掃碼裝置</string>
     <string name="qrcode_display_auto_refresh">自動重新整理</string>
     <string name="qrcode_display_balance">剩餘 %1$s ￥</string>
-    <string name="qrcode_login_expired">登入已過期，請重新登入</string>
     <string name="qrcode_fetch_failed">取得 QR 碼失敗</string>
     <string name="qrcode_refresh_failed">重新整理失敗</string>
     <string name="qrcode_decode_failed">QR 碼解碼失敗</string>

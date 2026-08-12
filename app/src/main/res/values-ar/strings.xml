@@ -56,4 +56,16 @@
     <string name="common_disabled">معطّل</string>
     <string name="common_re_query">إعادة الاستعلام</string>
     <string name="common_copied_to_clipboard">تم النسخ إلى الحافظة</string>
+    <string name="common_refresh_failed">فشل التحديث</string>
+    <string name="common_network_error">خطأ في الشبكة، تحقق من الاتصال</string>
+    <string name="common_query_failed">فشل الاستعلام</string>
+    <string name="common_favorite_added">تمت الإضافة إلى المفضلة</string>
+    <string name="common_favorite_removed">تمت الإزالة من المفضلة</string>
+    <string name="common_favorite_toggle_failed">فشل تغيير المفضلة</string>
+    <string name="common_clearing">جارٍ المسح…</string>
+    <string name="common_clear_failed">فشل المسح: %1$s</string>
+    <string name="common_share_failed">فشل المشاركة</string>
+    <string name="common_no_mail_app">لم يتم العثور على تطبيق بريد، يرجى تثبيته</string>
+
+    <string name="common_unknown">غير معروف</string>
 </resources>

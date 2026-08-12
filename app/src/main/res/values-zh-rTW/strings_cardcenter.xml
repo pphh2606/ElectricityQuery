@@ -69,7 +69,6 @@
     <string name="card_lost_success">掛失成功</string>
     <string name="card_lost_request_error">請求異常</string>
     <string name="card_lost_fetch_error">取得卡片資訊失敗</string>
-    <string name="card_lost_login_expired">登入已過期，請重新登入</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  校園卡加值                                 -->
@@ -84,4 +83,28 @@
     <string name="card_recharge_title_for_user">為 %1$s 加值</string>
     <string name="card_recharge_record">充值記錄</string>
     <string name="card_recharge_consume_record">消費記錄</string>
+
+    <string name="bill_html_structure_changed">帳單頁面結構已變更，請更新 App</string>
+
+    <string name="bill_load_failed">載入帳單失敗</string>
+
+    <string name="login_required_auth">未登入，請先完成認證</string>
+
+    <string name="card_bill_status_unknown">未知</string>
+
+    <string name="login_required_open_web">未登入，請先開啟原網頁完成認證</string>
+
+    <string name="card_bill_status_terminated">交易終止</string>
+
+    <string name="card_bill_status_waiting_pay">等待付款</string>
+
+    <string name="card_bill_status_failed">交易失敗</string>
+
+    <string name="card_bill_status_canceled">交易取消</string>
+
+    <string name="card_bill_status_waiting_other_pay">等待對方付款</string>
+
+    <string name="card_bill_status_success">交易成功</string>
+
+    <string name="card_account_info_fetch_failed">取得帳戶資訊失敗</string>
 </resources>

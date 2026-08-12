@@ -22,4 +22,6 @@
     <string name="notice_load_failed">載入詳情失敗</string>
     <string name="notice_no_content">暫無內容</string>
     <string name="notice_no_more">— 沒有更多了 —</string>
+
+    <string name="notice_list_load_failed">載入通知公告失敗</string>
 </resources>

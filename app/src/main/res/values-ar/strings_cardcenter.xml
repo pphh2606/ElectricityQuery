@@ -79,7 +79,6 @@
     <string name="card_lost_success">تم الإبلاغ بنجاح</string>
     <string name="card_lost_request_error">خطأ في الطلب</string>
     <string name="card_lost_fetch_error">فشل جلب معلومات البطاقة</string>
-    <string name="card_lost_login_expired">انتهت الجلسة، يرجى إعادة تسجيل الدخول</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  شحن بطاقة الحرم الجامعي                   -->
@@ -94,4 +93,28 @@
     <string name="card_recharge_title_for_user">شحن لـ %1$s</string>
     <string name="card_recharge_record">سجلات الشحن</string>
     <string name="card_recharge_consume_record">سجلات الإنفاق</string>
+
+    <string name="bill_html_structure_changed">تغير هيكل صفحة الفاتورة، يرجى تحديث التطبيق</string>
+
+    <string name="bill_load_failed">فشل تحميل الفاتورة</string>
+
+    <string name="login_required_auth">لم تقم بتسجيل الدخول، يرجى إكمال التحقق أولاً</string>
+
+    <string name="card_bill_status_unknown">غير معروف</string>
+
+    <string name="login_required_open_web">لم تقم بتسجيل الدخول، يرجى فتح الصفحة الأصلية لإكمال التحقق</string>
+
+    <string name="card_bill_status_terminated">تم إنهاء المعاملة</string>
+
+    <string name="card_bill_status_waiting_pay">بانتظار الدفع</string>
+
+    <string name="card_bill_status_failed">فشلت المعاملة</string>
+
+    <string name="card_bill_status_canceled">تم إلغاء المعاملة</string>
+
+    <string name="card_bill_status_waiting_other_pay">بانتظار دفع الطرف الآخر</string>
+
+    <string name="card_bill_status_success">تمت المعاملة بنجاح</string>
+
+    <string name="card_account_info_fetch_failed">فشل جلب معلومات الحساب</string>
 </resources>

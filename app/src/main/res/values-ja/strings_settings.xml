@@ -123,4 +123,64 @@
     <string name="storage_clear_success">クリア完了</string>
     <string name="storage_clear_nothing_selected">少なくとも1つ選択してください</string>
     <string name="storage_clear_zero_size">0 B</string>
+
+    <string name="about_source_github">GitHub Actions</string>
+
+    <string name="settings_night_mode_system">システムに従う</string>
+
+    <string name="about_commit_hash">コミットハッシュ: %1$s</string>
+
+    <string name="settings_topbar_surface_container_high">濃いアクセント</string>
+
+    <string name="settings_reduce_motion_off">常に有効にする</string>
+
+    <string name="settings_page_transition_fade">フェード</string>
+
+    <string name="settings_language_ar">アラビア語</string>
+
+    <string name="settings_page_transition_none">アニメーションなし</string>
+
+    <string name="settings_topbar_surface_container_lowest">非常に薄いアクセント</string>
+
+    <string name="about_build_time">ビルド時刻: %1$s</string>
+
+    <string name="about_source">ソース: %1$s</string>
+
+    <string name="about_source_local">ローカルビルド</string>
+
+    <string name="settings_topbar_surface">背景色</string>
+
+    <string name="settings_night_mode_dark">ダークモード</string>
+
+    <string name="settings_language_en">英語</string>
+
+    <string name="settings_topbar_surface_container_highest">最も濃いアクセント</string>
+
+    <string name="settings_topbar_surface_variant">バリアント色</string>
+
+    <string name="settings_topbar_surface_container">中間アクセント</string>
+
+    <string name="settings_reduce_motion_on">常に動きを減らす</string>
+
+    <string name="settings_page_transition_slide_vertical">垂直スライド</string>
+
+    <string name="settings_reduce_motion_system">システムに従う</string>
+
+    <string name="settings_page_transition_cupertino">Cupertino</string>
+
+    <string name="settings_language_zh">簡体中文</string>
+
+    <string name="settings_night_mode_light">ライトモード</string>
+
+    <string name="settings_page_transition_slide">水平スライド</string>
+
+    <string name="settings_language_fr">フランス語</string>
+
+    <string name="settings_language_zh_tw">繁体中文</string>
+
+    <string name="settings_language_ja">日本語</string>
+
+    <string name="settings_topbar_surface_container_low">薄いアクセント</string>
+
+    <string name="settings_page_transition_fade_scale">フェードとスケール</string>
 </resources>

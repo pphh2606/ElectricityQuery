@@ -2,10 +2,12 @@ package edu.cqwu.electricity.cardcenter.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.data.BillFilter
 import edu.cqwu.electricity.cardcenter.data.BillPageInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -30,7 +32,7 @@ data class BillUiState(
     val isLoadingMore: Boolean = false,
     /** 当前正在加载更多的是哪个 Tab（null 表示没有加载更多请求在运行） */
     val loadingMoreTab: Int? = null,
-    val errorMessage: String? = null,
+    val errorMessage: UiMessage? = null,
     val requiresReLogin: Boolean = false,
     val billPageInfo: BillPageInfo? = null,
 
@@ -55,7 +57,7 @@ data class BillUiState(
     /** 各 Tab 已加载的秒数 */
     val perTabElapsed: Map<Int, Long> = emptyMap(),
     /** 各 Tab 加载失败时的错误信息（key=tabNo, null=无错误） */
-    val perTabError: Map<Int, String?> = emptyMap(),
+    val perTabError: Map<Int, UiMessage?> = emptyMap(),
 
     // ── 筛选条件（暂存，仅面板内编辑，应用前不触发请求） ──
     val tempSearchQuery: String = "",
@@ -94,7 +96,7 @@ class BillViewModel : ViewModel() {
     val scrollToTop = _scrollToTop.receiveAsFlow()
 
     /** 显示 Snackbar 消息（如分页加载失败） */
-    private val _snackbarMessage = Channel<String>(Channel.BUFFERED)
+    private val _snackbarMessage = Channel<UiMessage>(Channel.BUFFERED)
     val snackbarMessage = _snackbarMessage.receiveAsFlow()
 
     // ==================== per-tab 缓存 ====================
@@ -160,11 +162,7 @@ class BillViewModel : ViewModel() {
                 isLoading = false,
                 isRefreshing = false,
                 requiresReLogin = error is SessionExpiredException,
-                errorMessage = if (error is SessionExpiredException) {
-                    "登录已过期，请重新登录"
-                } else {
-                    error.message ?: "获取账单失败"
-                }
+                errorMessage = if (error is SessionExpiredException) null else UiMessage(R.string.bill_load_failed)
             )
         }
     }
@@ -290,7 +288,7 @@ class BillViewModel : ViewModel() {
                         // 对尚未缓存的 Tab 记录逐 Tab 错误状态
                         val failedTabs = uncachedTabs.filter { !tabCache.containsKey(it) }
                         if (failedTabs.isNotEmpty()) {
-                            val errorMsg = error.message ?: "获取账单失败"
+                            val errorMsg = UiMessage(R.string.bill_load_failed)
                             _uiState.update {
                                 it.copy(
                                     perTabError = it.perTabError + failedTabs.associateWith { errorMsg }
@@ -390,7 +388,7 @@ class BillViewModel : ViewModel() {
                         if (error is SessionExpiredException) {
                             handleBillError(error)
                         } else {
-                            _snackbarMessage.trySend("加载失败")
+                            _snackbarMessage.trySend(UiMessage(R.string.common_load_failed))
                         }
                     }
                 } else {
@@ -428,7 +426,7 @@ class BillViewModel : ViewModel() {
                         if (error is SessionExpiredException) {
                             handleBillError(error)
                         } else {
-                            _snackbarMessage.trySend("加载失败")
+                            _snackbarMessage.trySend(UiMessage(R.string.common_load_failed))
                         }
                     }
                 }

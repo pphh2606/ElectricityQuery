@@ -3,6 +3,7 @@ package edu.cqwu.electricity.feedback.util
 import android.content.Context
 import android.os.Build
 import android.os.Process
+import edu.cqwu.electricity.R
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -136,53 +137,53 @@ class CrashHandler private constructor(
     private fun buildCrashContent(thread: Thread, throwable: Throwable): String {
         return buildString {
             appendLine("==========================================")
-            appendLine("         应用崩溃报告")
+            appendLine(appContext.getString(R.string.crash_report_title))
             appendLine("==========================================")
             appendLine()
 
             // ── 时间信息 ──
-            appendLine("--- 基本信息 ---")
-            appendLine("崩溃时间: ${formatNow(LOG_DATE_FORMAT)}")
+            appendLine(appContext.getString(R.string.crash_report_basic_info))
+            appendLine(appContext.getString(R.string.crash_report_time, formatNow(LOG_DATE_FORMAT)))
             appendLine()
 
             // ── 应用信息 ──
-            appendLine("包名: ${appContext.packageName}")
+            appendLine(appContext.getString(R.string.crash_report_package, appContext.packageName))
             try {
                 val pkgInfo = appContext.packageManager.getPackageInfo(
                     appContext.packageName, 0
                 )
-                appendLine("版本名: ${pkgInfo.versionName ?: "未知"}")
+                appendLine(appContext.getString(R.string.crash_report_version_name, pkgInfo.versionName ?: appContext.getString(R.string.common_unknown)))
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    appendLine("版本号: ${pkgInfo.longVersionCode}")
+                    appendLine(appContext.getString(R.string.crash_report_version_code, pkgInfo.longVersionCode.toString()))
                 } else {
                     @Suppress("DEPRECATION")
-                    appendLine("版本号: ${pkgInfo.versionCode}")
+                    appendLine(appContext.getString(R.string.crash_report_version_code, pkgInfo.versionCode.toString()))
                 }
             } catch (_: Exception) {
-                appendLine("版本信息: 获取失败")
+                appendLine(appContext.getString(R.string.crash_report_version_info_failed))
             }
             appendLine()
 
             // ── 设备信息 ──
-            appendLine("设备型号: ${Build.MODEL}")
-            appendLine("制造商: ${Build.MANUFACTURER}")
-            appendLine("品牌: ${Build.BRAND}")
-            appendLine("系统: Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
-            appendLine("ABI: ${Build.SUPPORTED_ABIS?.joinToString(", ") ?: "未知"}")
+            appendLine(appContext.getString(R.string.crash_report_device, Build.MODEL))
+            appendLine(appContext.getString(R.string.crash_report_manufacturer, Build.MANUFACTURER))
+            appendLine(appContext.getString(R.string.crash_report_brand, Build.BRAND))
+            appendLine(appContext.getString(R.string.crash_report_system, Build.VERSION.RELEASE, Build.VERSION.SDK_INT))
+            appendLine(appContext.getString(R.string.crash_report_abi, Build.SUPPORTED_ABIS?.joinToString(", ") ?: appContext.getString(R.string.common_unknown)))
             appendLine()
 
             // ── 进程 / 线程信息 ──
-            appendLine("进程 PID: ${Process.myPid()}")
-            appendLine("线程名: ${thread.name}")
+            appendLine(appContext.getString(R.string.crash_report_pid, Process.myPid().toString()))
+            appendLine(appContext.getString(R.string.crash_report_thread_name, thread.name))
             @Suppress("DEPRECATION")
-            appendLine("线程 ID: ${thread.id}")
-            appendLine("是否主线程: ${thread === appContext.mainLooper.thread}")
-            appendLine("线程优先级: ${thread.priority}")
-            appendLine("线程组: ${thread.threadGroup?.name ?: "未知"}")
+            appendLine(appContext.getString(R.string.crash_report_thread_id, thread.id.toString()))
+            appendLine(appContext.getString(R.string.crash_report_is_main_thread, (thread === appContext.mainLooper.thread).toString()))
+            appendLine(appContext.getString(R.string.crash_report_thread_priority, thread.priority.toString()))
+            appendLine(appContext.getString(R.string.crash_report_thread_group, thread.threadGroup?.name ?: appContext.getString(R.string.common_unknown)))
             appendLine()
 
             // ── 崩溃堆栈 ──
-            appendLine("--- 崩溃堆栈 ---")
+            appendLine(appContext.getString(R.string.crash_report_stack))
             appendLine(stackTraceToString(throwable))
 
             // 同时打印 cause 链，确保不遗漏
@@ -279,7 +280,7 @@ class CrashHandler private constructor(
                     val fileTime = SimpleDateFormat(LOG_DATE_FORMAT, Locale.getDefault())
                         .run { format(Date(file.lastModified())) }
                     appendLine("╔══════════════════════════════════════════════")
-                    appendLine("║ 崩溃记录 #${index + 1}  ($fileTime)")
+                    appendLine(appContext.getString(R.string.crash_report_record, index + 1, fileTime))
                     appendLine("╚══════════════════════════════════════════════")
                     appendLine()
                     try {
@@ -288,7 +289,7 @@ class CrashHandler private constructor(
                         val content = bytes.decodeToString()
                         append(content)
                     } catch (e: Exception) {
-                        appendLine("[读取崩溃文件失败: ${e.message}]")
+                        appendLine(appContext.getString(R.string.crash_report_read_failed, e.message ?: ""))
                     }
                     appendLine()
                     appendLine()

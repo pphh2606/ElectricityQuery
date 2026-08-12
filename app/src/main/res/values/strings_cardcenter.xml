@@ -69,7 +69,6 @@
     <string name="card_lost_success">挂失成功</string>
     <string name="card_lost_request_error">请求异常</string>
     <string name="card_lost_fetch_error">获取卡信息失败</string>
-    <string name="card_lost_login_expired">登录已过期，请重新登录</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  校园卡充值页面                             -->
@@ -84,4 +83,16 @@
     <string name="card_recharge_title_for_user">为 %1$s 充值</string>
     <string name="card_recharge_record">充值记录</string>
     <string name="card_recharge_consume_record">消费记录</string>
+    <string name="card_account_info_fetch_failed">获取账户信息失败</string>
+    <string name="bill_load_failed">获取账单失败</string>
+    <string name="bill_html_structure_changed">账单页面结构已变更，请更新 App</string>
+    <string name="card_bill_status_waiting_pay">等待付款</string>
+    <string name="card_bill_status_waiting_other_pay">等待对方付款</string>
+    <string name="card_bill_status_success">交易成功</string>
+    <string name="card_bill_status_canceled">交易取消</string>
+    <string name="card_bill_status_terminated">交易终止</string>
+    <string name="card_bill_status_failed">交易失败</string>
+    <string name="card_bill_status_unknown">未知</string>
+    <string name="login_required_open_web">未登录，请先打开原网页完成认证</string>
+    <string name="login_required_auth">未登录，请先完成认证</string>
 </resources>

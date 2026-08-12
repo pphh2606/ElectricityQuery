@@ -72,4 +72,62 @@
     <string name="electricity_myroom_querying">Récupération des infos du dortoir…</string>
     <string name="electricity_bind_account">Lier le compte</string>
     <string name="electricity_unbind_account">Dissocier le compte</string>
+
+    <string name="detail_export_usage">Consommation (kWh)</string>
+
+    <string name="electricity_export_room_id">ID de la chambre : %1$s</string>
+
+    <string name="detail_export_time">Heure</string>
+
+    <string name="electricity_user_not_registered">Échec de la récupération des informations utilisateur, veuillez d\'abord vous inscrire</string>
+
+    <string name="electricity_export_usage_info">Consommation d\'électricité</string>
+
+    <string name="detail_export_section_current">Courant</string>
+
+    <string name="electricity_export_cash_balance">Solde en espèces : %1$s CNY</string>
+
+    <string name="electricity_no_room_bound">Aucune chambre n\'est associée à ce compte</string>
+
+    <string name="electricity_export_subsidy_balance">Solde de subvention : %1$s CNY</string>
+
+    <string name="electricity_export_base_balance">Solde de base : %1$s CNY</string>
+
+    <string name="electricity_timeout_retry">Délai de requête dépassé, veuillez réessayer</string>
+
+    <string name="electricity_export_room_info">Informations sur la chambre</string>
+
+    <string name="electricity_export_online_payment">Paiement en ligne : %1$s</string>
+
+    <string name="detail_export_no_meter_data">Aucune donnée du compteur</string>
+
+    <string name="electricity_fetch_campuses_failed">Échec de la récupération de la liste des campus : %1$s</string>
+
+    <string name="electricity_export_remain_electricity">Électricité restante : %1$s kWh</string>
+
+    <string name="electricity_export_account_balance">Solde du compte</string>
+
+    <string name="electricity_export_payment_status">Statut du paiement</string>
+
+    <string name="detail_export_section_power">Puissance / valeur cumulée</string>
+
+    <string name="electricity_balance_query_failed">Échec de la requête du solde : %1$s</string>
+
+    <string name="electricity_export_title">Résultat de la requête d\'électricité</string>
+
+    <string name="electricity_export_balance_not_loaded">Données de solde non chargées</string>
+
+    <string name="detail_export_section_power_status">État de l\'alimentation</string>
+
+    <string name="detail_export_cost">Coût (CNY)</string>
+
+    <string name="detail_room_not_selected">Aucune chambre sélectionnée</string>
+
+    <string name="detail_query_failed">Échec de la requête : %1$s</string>
+
+    <string name="detail_month_unit">mois</string>
+
+    <string name="electricity_export_room_name">Nom/numéro de la chambre : %1$s</string>
+
+    <string name="detail_export_section_voltage">Tension</string>
 </resources>
