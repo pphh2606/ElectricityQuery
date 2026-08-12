@@ -40,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -73,6 +74,8 @@ fun PersonalizationScreen(
     onBack: () -> Unit,
     currentNightMode: NightMode,
     onNightModeChange: (NightMode) -> Unit,
+    currentPureBlack: Boolean,
+    onPureBlackChange: (Boolean) -> Unit,
     currentColorSource: ThemeColorSource,
     onColorSourceChange: (ThemeColorSource) -> Unit,
     currentPageTransition: PageTransition,
@@ -120,11 +123,48 @@ fun PersonalizationScreen(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
-                SettingRow(
-                    icon = Icons.Outlined.Contrast, title = stringResource(R.string.personalization_night_mode),
-                    subtitle = stringResource(currentNightMode.labelRes),
-                    onClick = { showNightModeDialog = true },
-                )
+                Column {
+                    SettingRow(
+                        icon = Icons.Outlined.Contrast, title = stringResource(R.string.personalization_night_mode),
+                        subtitle = stringResource(currentNightMode.labelRes),
+                        onClick = { showNightModeDialog = true },
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Outlined.DarkMode,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.personalization_pure_black),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = stringResource(R.string.personalization_pure_black_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Switch(
+                            checked = currentPureBlack,
+                            onCheckedChange = onPureBlackChange,
+                        )
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(24.dp))
 

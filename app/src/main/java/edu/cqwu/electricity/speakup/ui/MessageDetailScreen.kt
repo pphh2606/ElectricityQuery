@@ -50,8 +50,10 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
+import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,7 +71,10 @@ class MessageDetailViewModel(
     sealed class UiState {
         data object Loading : UiState()
         data class Success(val message: ConsultationMessage) : UiState()
-        data class Error(val message: String) : UiState()
+        data class Error(
+            val message: String,
+            val requiresReLogin: Boolean = false,
+        ) : UiState()
     }
 
     private val api = SpeakUpApi()
@@ -93,7 +98,10 @@ class MessageDetailViewModel(
                     _uiState.value = UiState.Success(message)
                 },
                 onFailure = { error ->
-                    _uiState.value = UiState.Error(error.message ?: "")
+                    _uiState.value = UiState.Error(
+                        message = error.message ?: "",
+                        requiresReLogin = error is SessionExpiredException,
+                    )
                 }
             )
         }
@@ -121,6 +129,7 @@ class MessageDetailViewModel(
 fun MessageDetailScreen(
     wid: String,
     onBack: () -> Unit,
+    onReLogin: () -> Unit = {},
     viewModel: MessageDetailViewModel = viewModel(
         factory = MessageDetailViewModel.Factory(wid)
     ),
@@ -179,22 +188,12 @@ fun MessageDetailScreen(
                 is MessageDetailViewModel.UiState.Loading -> {}
 
                 is MessageDetailViewModel.UiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = state.message,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = { viewModel.loadDetailDirect() }) {
-                                Text(stringResource(R.string.common_retry))
-                            }
-                        }
-                    }
+                    ReLoginContent(
+                        errorMessage = state.message,
+                        requiresReLogin = state.requiresReLogin,
+                        onReLogin = onReLogin,
+                        onRetry = { viewModel.loadDetailDirect() },
+                    )
                 }
 
                 is MessageDetailViewModel.UiState.Success -> {

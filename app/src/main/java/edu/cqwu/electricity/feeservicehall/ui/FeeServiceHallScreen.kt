@@ -76,6 +76,7 @@ import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
@@ -103,6 +104,7 @@ private data class FeeHallSection(
 fun FeeServiceHallScreen(
     onBack: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
+    onReLogin: () -> Unit = {},
     viewModel: FeeServiceHallViewModel = viewModel(),
     initialTab: Int = 0,
 ) {
@@ -231,6 +233,7 @@ fun FeeServiceHallScreen(
                     onEndDateChange = { viewModel.setOrderFilterEndDate(it) },
                     onApplyFilter = { viewModel.applyOrderFilter() },
                     onResetFilter = { viewModel.resetOrderFilter() },
+                    onReLogin = onReLogin,
                 )
                 2 -> FeeServiceHallProfileTab(
                     uiState = uiState,
@@ -315,10 +318,12 @@ private fun FeeServiceHallHomeTab(
                     }
                 }
                 uiState.errorMessage != null && uiState.categories.isEmpty() -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""), style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error)
-                    }
+                    ReLoginContent(
+                        errorMessage = stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""),
+                        requiresReLogin = false,
+                        onReLogin = {},
+                        onRetry = onRefresh,
+                    )
                 }
                 uiState.categories.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

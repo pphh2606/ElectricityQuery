@@ -206,7 +206,7 @@ fun CardLostScreen(
                         }
                     }
 
-                    errorMessage != null -> {
+                    errorMessage != null || requiresReLogin -> {
                         ReLoginContent(
                             errorMessage = errorMessage,
                             requiresReLogin = requiresReLogin,

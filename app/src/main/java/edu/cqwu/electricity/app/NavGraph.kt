@@ -114,6 +114,8 @@ object Routes {
 
     /** 本地登录页面 */
     const val LOGIN = "login"
+    /** 从内置浏览器进入的本地登录页面（返回时同时关闭 WebView） */
+    const val WEBVIEW_LOGIN = "webview_login"
     /** 添加新账号（空白表单） */
     const val NEW_ACCOUNT_LOGIN = "new_account_login"
 
@@ -331,7 +333,7 @@ fun AppNavGraph(
     val cardRechargeViewModel: CardRechargeViewModel = viewModel()
     val myRoomViewModel: MyRoomViewModel = viewModel()
     val noticeViewModel: NoticeViewModel = viewModel()
-    var skipNextCasRedirect by rememberSaveable { mutableStateOf(false) }
+    var webViewReloadAfterLogin by rememberSaveable { mutableStateOf(false) }
     val nightModeState = LocalNightModeState.current
     val colorSourceState = LocalColorSourceState.current
     val animationSettings = LocalAnimationSettings.current
@@ -410,6 +412,7 @@ fun AppNavGraph(
             FeeServiceHallScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
             )
         }
 
@@ -418,6 +421,7 @@ fun AppNavGraph(
             FeeServiceHallScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
                 initialTab = 1,
             )
         }
@@ -525,8 +529,19 @@ fun AppNavGraph(
                 url = url,
                 initialTitle = title.ifBlank { "" },
                 onClose = { navController.popBackStack() },
-                skipNextCasRedirect = skipNextCasRedirect,
-                onSkipConsumed = { skipNextCasRedirect = false },
+                reloadAfterLogin = webViewReloadAfterLogin,
+                onReloadConsumed = { webViewReloadAfterLogin = false },
+            )
+        }
+
+        // WebView 专用本地登录：返回时同时关闭登录页和 WebView，登录成功后刷新 WebView
+        animatedComposable(settings = animationSettings, route = Routes.WEBVIEW_LOGIN) {
+            LoginScreen(
+                onBack = { navController.popBackStack(Routes.UNIFIED_WEBVIEW, true) },
+                onLoginSuccess = {
+                    webViewReloadAfterLogin = true
+                    navController.popBackStack()
+                },
             )
         }
 
@@ -608,7 +623,7 @@ fun AppNavGraph(
         // 本地登录页面（通用入口，自动填充最近账号）
         animatedComposable(settings = animationSettings, route = Routes.LOGIN) {
             LoginScreen(
-                onBack = { skipNextCasRedirect = true; navController.popBackStack() },
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -616,7 +631,7 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.NEW_ACCOUNT_LOGIN) {
             LoginScreen(
                 clearForm = true,
-                onBack = { skipNextCasRedirect = true; navController.popBackStack() },
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -633,7 +648,7 @@ fun AppNavGraph(
             popExitTransition = exitAnim(animationSettings),
         ) {
             LoginScreen(
-                onBack = { skipNextCasRedirect = true; navController.popBackStack() },
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -711,6 +726,8 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() },
                 currentNightMode = nightModeState.nightMode,
                 onNightModeChange = { mode -> nightModeState.onNightModeChange(mode) },
+                currentPureBlack = nightModeState.pureBlack,
+                onPureBlackChange = { enabled -> nightModeState.onPureBlackChange(enabled) },
                 currentColorSource = colorSourceState.colorSource,
                 onColorSourceChange = { source -> colorSourceState.onColorSourceChange(source) },
                 currentPageTransition = animationSettings.pageTransition,
@@ -760,6 +777,7 @@ fun AppNavGraph(
         animatedComposable(settings = animationSettings, route = Routes.SPEAK_UP) {
             SpeakUpScreen(
                 onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
                 onNavigateToWebView = { url, title ->
                     navController.navigate(Routes.unifiedWebViewRoute(url, title))
                 },
@@ -784,6 +802,7 @@ fun AppNavGraph(
                 areaCode = areaCode,
                 areaName = areaName,
                 onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
                 onMessageClick = { wid ->
                     navController.navigate(Routes.speakUpDetailRoute(wid))
                 },
@@ -802,6 +821,7 @@ fun AppNavGraph(
             MessageDetailScreen(
                 wid = wid,
                 onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
             )
         }
     }

@@ -29,6 +29,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="hall_title">القاعة</string>
     <string name="hall_no_favorites">لا توجد تطبيقات مفضلة</string>
+    <string name="hall_no_search_results">لا توجد نتائج</string>
     <string name="hall_tab_all">الكل</string>
     <string name="hall_tab_favorites">المفضلة</string>
     <string name="hall_favorited">مُفضّل</string>

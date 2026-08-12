@@ -48,6 +48,15 @@ object WebViewUrlUtil {
         url.startsWith("https://${DOMAIN_AUTHSERVER}.cqwu.edu.cn/authserver/login?service=")
 
     /**
+     * 判断是否应跳转本地登录。
+     *
+     * 只有最终停留 CAS 登录页且主框架没有加载错误时才跳转，
+     * 避免断网/DNS 失败时把网络错误误判为未登录。
+     */
+    fun shouldOpenLocalLogin(url: String?, hasMainFrameError: Boolean): Boolean =
+        url != null && !hasMainFrameError && isCasLoginUrl(url)
+
+    /**
      * 判断指定 scheme 是否为非 http/https 的自定义协议。
      *
      * 自定义协议包括：weixin://, alipays://, intent://, tel://, mamp:// 等。

@@ -122,6 +122,14 @@ class SettingsPreferences(context: Context) {
         prefs.edit().putString(KEY_NIGHT_MODE, mode.value).apply()
     }
 
+    fun getPureBlack(): Boolean {
+        return prefs.getBoolean(KEY_PURE_BLACK, false)
+    }
+
+    fun setPureBlack(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_PURE_BLACK, enabled).apply()
+    }
+
     // ── 主题颜色源 ──
 
     /** "dynamic" 或 "custom" */
@@ -328,6 +336,7 @@ class SettingsPreferences(context: Context) {
         private const val KEY_APP_LANGUAGE = "app_language"
         private const val KEY_WEBVPN_ENABLED = "webvpn_enabled"
         private const val KEY_NIGHT_MODE = "night_mode"
+        private const val KEY_PURE_BLACK = "pure_black"
         private const val KEY_COLOR_SOURCE = "color_source"
         private const val KEY_SEED_COLOR = "seed_color"
         private const val KEY_PAGE_TRANSITION = "page_transition"

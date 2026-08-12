@@ -304,14 +304,17 @@ fun BillScreen(
                                verticalArrangement = Arrangement.spacedBy(0.dp)
                            ) {
                                when {
-                                   // 逐 Tab 错误状态（后台 Tab 加载失败时的轻量提示）
-                                   uiState.perTabError[pageTabNo] != null -> {
-                                       item(key = "tab_error") {
-                                           BillTabErrorContent(uiState.perTabError[pageTabNo]?.resolve(resources) ?: stringResource(R.string.common_load_failed))
-                                       }
-                                   }
+                                    // 逐 Tab 错误状态（后台 Tab 加载失败时的轻量提示）
+                                    uiState.perTabError[pageTabNo] != null -> {
+                                        item(key = "tab_error") {
+                                            BillTabErrorContent(
+                                                errorMessage = uiState.perTabError[pageTabNo]?.resolve(resources) ?: stringResource(R.string.common_load_failed),
+                                                onRetry = { viewModel.loadBills() },
+                                            )
+                                        }
+                                    }
                                    // 错误状态仅当前活跃 Tab 显示
-                                   uiState.errorMessage != null && pageTabNo == uiState.activeTab -> {
+                                   (uiState.errorMessage != null || uiState.requiresReLogin) && pageTabNo == uiState.activeTab -> {
                                        item(key = "error") {
                                            ReLoginContent(
                                                errorMessage = uiState.errorMessage?.resolve(resources),
@@ -571,22 +574,20 @@ private fun BillEmptyDataContent() {
 }
 
 @Composable
-private fun BillTabErrorContent(errorMessage: String) {
-    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 64.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "⚠ $errorMessage",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.common_please_retry),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-            )
-        }
-    }
+private fun BillTabErrorContent(
+    errorMessage: String,
+    onRetry: () -> Unit,
+) {
+    ReLoginContent(
+        errorMessage = errorMessage,
+        requiresReLogin = false,
+        onReLogin = {},
+        onRetry = onRetry,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp)
+            .padding(vertical = 16.dp),
+    )
 }
 
 @Composable

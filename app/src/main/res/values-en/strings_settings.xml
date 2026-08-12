@@ -19,6 +19,8 @@
     <string name="personalization_title">Personalization</string>
     <string name="personalization_display">Display</string>
     <string name="personalization_night_mode">Night Mode</string>
+    <string name="personalization_pure_black">Pure Black Background</string>
+    <string name="personalization_pure_black_desc">Use a pure black background in dark mode</string>
     <string name="personalization_theme_color">Theme Color</string>
     <string name="personalization_dynamic_color">Dynamic Color</string>
     <string name="personalization_dynamic_color_supported">Extract theme color from system wallpaper</string>

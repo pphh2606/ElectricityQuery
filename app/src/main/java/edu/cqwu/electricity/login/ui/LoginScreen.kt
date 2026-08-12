@@ -108,6 +108,7 @@ import kotlinx.coroutines.flow.catch
 @Composable
 fun LoginScreen(
     onBack: () -> Unit,
+    onLoginSuccess: () -> Unit = onBack,
     clearForm: Boolean = false,
     loginViewModel: LoginViewModel = viewModel()
 ) {
@@ -150,8 +151,12 @@ fun LoginScreen(
 
     // 拦截系统返回（包括侧滑手势和物理返回键）
     // 加载中拦截，防止登录请求中误触退出导致状态丢失
-    BackHandler(enabled = uiState.isLoading) {
-        snackbar.show(resources.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
+    BackHandler {
+        if (uiState.isLoading) {
+            snackbar.show(resources.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
+        } else {
+            onBack()
+        }
     }
 
     // 收集一次性事件（替代 LaunchedEffect(uiState.error/loginResult/autoLoginResult)）
@@ -165,7 +170,7 @@ fun LoginScreen(
                 is LoginEvent.LoginSuccess -> {
                     snackbar.show(resources.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
                     delay(1500)
-                    onBack()
+                    onLoginSuccess()
                 }
                 is LoginEvent.ExportSuccess -> {
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)

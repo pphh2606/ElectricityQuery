@@ -64,6 +64,7 @@ import edu.cqwu.electricity.theme.ui.LocalQrCodeSettings
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.QrCodeView
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
@@ -473,23 +474,12 @@ fun QrLoginScreen(
                     }
 
                     is QrLoginUiState.Error -> {
-                        Column(
-                            modifier = Modifier.padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text = state.message,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error,
-                                textAlign = TextAlign.Center,
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(R.string.common_pull_to_retry),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                        ReLoginContent(
+                            errorMessage = state.message,
+                            requiresReLogin = false,
+                            onReLogin = {},
+                            onRetry = { startQrLogin() },
+                        )
                     }
                 }
             }

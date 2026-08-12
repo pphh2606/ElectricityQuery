@@ -66,6 +66,7 @@ import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.electricity.data.displayName
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.ui.UiMessage
 import edu.cqwu.electricity.app.Routes
@@ -283,35 +284,16 @@ private fun ErrorStateCard(
     message: String,
     onRetry: () -> Unit
 ) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Info,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(48.dp)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onRetry) {
-                Text(stringResource(R.string.common_re_query))
-            }
-        }
-    }
+    ReLoginContent(
+        errorMessage = message,
+        requiresReLogin = false,
+        onReLogin = {},
+        onRetry = onRetry,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp)
+            .padding(vertical = 16.dp),
+    )
 }
 
 /**

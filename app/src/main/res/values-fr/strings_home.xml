@@ -26,6 +26,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="hall_title">Hall</string>
     <string name="hall_no_favorites">Aucun favori</string>
+    <string name="hall_no_search_results">Aucun résultat</string>
     <string name="hall_tab_all">Tout</string>
     <string name="hall_tab_favorites">Favoris</string>
     <string name="hall_favorited">Favori</string>

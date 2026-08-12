@@ -72,13 +72,19 @@ class MainActivity : ComponentActivity() {
 
             // ── 夜间模式状态 ──
             var nightMode by remember { mutableStateOf(settingsPrefs.getNightMode()) }
-            val nightModeState = remember(nightMode) {
+            var pureBlack by remember { mutableStateOf(settingsPrefs.getPureBlack()) }
+            val nightModeState = remember(nightMode, pureBlack) {
                 NightModeState(
                     nightMode = nightMode,
                     onNightModeChange = { mode ->
                         nightMode = mode
                         settingsPrefs.setNightMode(mode)
-                    }
+                    },
+                    pureBlack = pureBlack,
+                    onPureBlackChange = { enabled ->
+                        pureBlack = enabled
+                        settingsPrefs.setPureBlack(enabled)
+                    },
                 )
             }
 
@@ -173,6 +179,7 @@ class MainActivity : ComponentActivity() {
                 电费查询Theme(
                     nightMode = nightMode,
                     colorSource = colorSource,
+                    pureBlack = pureBlack,
                 ) {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         val navController = rememberNavController()

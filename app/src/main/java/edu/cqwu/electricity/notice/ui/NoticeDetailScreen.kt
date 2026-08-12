@@ -63,6 +63,7 @@ import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
 import edu.cqwu.electricity.theme.ui.LocalNightModeState
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import kotlinx.coroutines.Dispatchers
@@ -246,29 +247,13 @@ fun NoticeDetailScreen(
                     }
                 }
                 errorMessage != null && detail == null -> {
-                    val screenH = screenHeightDp.dp
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .heightIn(min = screenH),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = errorMessage ?: "",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(32.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.common_pull_to_retry),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                    }
+                    ReLoginContent(
+                        errorMessage = errorMessage,
+                        requiresReLogin = false,
+                        onReLogin = {},
+                        onRetry = { loadDetail(isRefresh = true) },
+                        modifier = Modifier.heightIn(min = screenHeightDp.dp),
+                    )
                 }
                 detail != null -> {
                     val isDarkMode = when (LocalNightModeState.current.nightMode) {

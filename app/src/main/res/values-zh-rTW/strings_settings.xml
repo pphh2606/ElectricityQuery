@@ -19,6 +19,8 @@
     <string name="personalization_title">個人化</string>
     <string name="personalization_display">顯示設定</string>
     <string name="personalization_night_mode">夜間模式</string>
+    <string name="personalization_pure_black">純黑背景</string>
+    <string name="personalization_pure_black_desc">深色模式下使用純黑背景</string>
     <string name="personalization_theme_color">主題色彩</string>
     <string name="personalization_dynamic_color">動態取色</string>
     <string name="personalization_dynamic_color_supported">跟隨系統桌布自動擷取主題色</string>

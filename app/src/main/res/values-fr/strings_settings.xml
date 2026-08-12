@@ -19,6 +19,8 @@
     <string name="personalization_title">Personnalisation</string>
     <string name="personalization_display">Affichage</string>
     <string name="personalization_night_mode">Mode nuit</string>
+    <string name="personalization_pure_black">Fond noir pur</string>
+    <string name="personalization_pure_black_desc">Utiliser un fond noir pur en mode sombre</string>
     <string name="personalization_theme_color">Couleur du thème</string>
     <string name="personalization_dynamic_color">Couleur dynamique</string>
     <string name="personalization_dynamic_color_supported">Extraire la couleur du thème depuis le fond d\'écran</string>

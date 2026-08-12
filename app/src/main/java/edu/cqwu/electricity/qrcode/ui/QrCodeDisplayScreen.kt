@@ -365,7 +365,7 @@ fun QrCodeDisplayScreen(
                         )
                     }
                 }
-                errorMessage != null && qrCodeContent == null -> {
+                (errorMessage != null || requiresReLogin) && qrCodeContent == null -> {
                     // 错误状态：Session 过期显示重新登录，否则显示下拉重试
                     if (requiresReLogin) {
                         ReLoginContent(
@@ -390,27 +390,17 @@ fun QrCodeDisplayScreen(
                             },
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState()),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        text = errorMessage ?: stringResource(R.string.webview_error_load_failed),
-                                        color = MaterialTheme.colorScheme.error,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        textAlign = TextAlign.Center
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Text(
-                                        text = stringResource(R.string.common_pull_to_retry),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-                            }
+                            ReLoginContent(
+                                errorMessage = errorMessage ?: stringResource(R.string.webview_error_load_failed),
+                                requiresReLogin = false,
+                                onReLogin = {},
+                                onRetry = {
+                                    isRefreshing = true
+                                    errorMessage = null
+                                    isLoading = true
+                                    fetchQrCode()
+                                },
+                            )
                         }
                     }
                 }

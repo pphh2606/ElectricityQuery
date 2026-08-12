@@ -53,6 +53,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationArea
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import kotlinx.coroutines.launch
 
@@ -79,6 +80,7 @@ fun SpeakUpScreen(
     onBack: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
     onNavigateToMessages: (areaCode: String, areaName: String) -> Unit = { _, _ -> },
+    onReLogin: () -> Unit = {},
     viewModel: SpeakUpViewModel = viewModel(),
 ) {
     val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
@@ -120,22 +122,12 @@ fun SpeakUpScreen(
                 }
 
                 is SpeakUpViewModel.UiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = state.message,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = { viewModel.refresh() }) {
-                                Text(stringResource(R.string.common_retry))
-                            }
-                        }
-                    }
+                    ReLoginContent(
+                        errorMessage = state.message,
+                        requiresReLogin = state.requiresReLogin,
+                        onReLogin = onReLogin,
+                        onRetry = { viewModel.refresh() },
+                    )
                 }
 
                 is SpeakUpViewModel.UiState.Success -> {

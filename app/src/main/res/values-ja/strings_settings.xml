@@ -19,6 +19,8 @@
     <string name="personalization_title">個人設定</string>
     <string name="personalization_display">表示設定</string>
     <string name="personalization_night_mode">ダークモード</string>
+    <string name="personalization_pure_black">純黒背景</string>
+    <string name="personalization_pure_black_desc">ダークモードで純黒背景を使用</string>
     <string name="personalization_theme_color">テーマカラー</string>
     <string name="personalization_dynamic_color">ダイナミックカラー</string>
     <string name="personalization_dynamic_color_supported">システム壁紙に合わせてテーマカラーを自動抽出</string>

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.speakup.data.ConsultationArea
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
+import edu.cqwu.electricity.login.data.SessionExpiredException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +26,10 @@ class SpeakUpViewModel : ViewModel() {
         data class Success(val areas: List<ConsultationArea>) : UiState()
 
         /** 加载失败 */
-        data class Error(val message: String) : UiState()
+        data class Error(
+            val message: String,
+            val requiresReLogin: Boolean = false,
+        ) : UiState()
     }
 
     private val api = SpeakUpApi()
@@ -47,7 +51,10 @@ class SpeakUpViewModel : ViewModel() {
                     _uiState.value = UiState.Success(areas)
                 },
                 onFailure = { error ->
-                    _uiState.value = UiState.Error(error.message ?: "")
+                    _uiState.value = UiState.Error(
+                        message = error.message ?: "",
+                        requiresReLogin = error is SessionExpiredException,
+                    )
                 }
             )
         }

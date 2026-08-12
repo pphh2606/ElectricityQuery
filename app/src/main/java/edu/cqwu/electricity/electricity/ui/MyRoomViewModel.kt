@@ -7,6 +7,7 @@ import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.electricity.data.ElectricityApi
+import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,8 @@ data class MyRoomUiState(
     val balance: BalanceResponse? = null,
     val isBalanceRefreshing: Boolean = false,
     val error: UiMessage? = null,
+    val queryError: UiMessage? = null,
+    val requiresReLogin: Boolean = false,
 )
 
 /**
@@ -59,7 +62,9 @@ class MyRoomViewModel(
                     isMyRoomQuerying = true,
                     selectedRoom = null,
                     balance = null,
-                    error = null
+                    error = null,
+                    queryError = null,
+                    requiresReLogin = false,
                 )
             }
 
@@ -67,8 +72,12 @@ class MyRoomViewModel(
             val userIdResult = api.queryUseridByStudentId(loggedInStudentId)
             val wechatUser = userIdResult.getOrNull()
             if (wechatUser == null || wechatUser.id.isBlank()) {
-                _uiState.update { it.copy(isMyRoomQuerying = false) }
-                _errorEvent.trySend(UiMessage(R.string.electricity_user_not_registered))
+                _uiState.update {
+                    it.copy(
+                        isMyRoomQuerying = false,
+                        queryError = UiMessage(R.string.electricity_user_not_registered),
+                    )
+                }
                 return@launch
             }
 
@@ -77,8 +86,12 @@ class MyRoomViewModel(
             roomsResult
                 .onSuccess { rooms ->
                     if (rooms.isEmpty()) {
-                        _uiState.update { it.copy(isMyRoomQuerying = false) }
-                        _errorEvent.trySend(UiMessage(R.string.electricity_no_room_bound))
+                        _uiState.update {
+                            it.copy(
+                                isMyRoomQuerying = false,
+                                queryError = UiMessage(R.string.electricity_no_room_bound),
+                            )
+                        }
                     } else {
                         val buildingNode = BuildingNode(
                             id = rooms[0].roomId,
@@ -91,6 +104,8 @@ class MyRoomViewModel(
                                 myRoomList = rooms,
                                 isBalanceRefreshing = true,
                                 error = null,
+                                queryError = null,
+                                requiresReLogin = false,
                                 selectedRoom = buildingNode,
                                 balance = null,
                             )
@@ -106,8 +121,13 @@ class MyRoomViewModel(
                     }
                 }
                 .onFailure { e ->
-                    _uiState.update { it.copy(isMyRoomQuerying = false) }
-                    _errorEvent.trySend(UiMessage(R.string.common_query_failed, listOf(e.localizedMessage ?: "")))
+                    _uiState.update {
+                        it.copy(
+                            isMyRoomQuerying = false,
+                            queryError = UiMessage(R.string.common_query_failed, listOf(e.localizedMessage ?: "")),
+                            requiresReLogin = e is SessionExpiredException,
+                        )
+                    }
                 }
         }
     }
@@ -127,6 +147,8 @@ class MyRoomViewModel(
                 it.copy(
                     isBalanceRefreshing = true,
                     error = null,
+                    queryError = null,
+                    requiresReLogin = false,
                     selectedRoom = buildingNode,
                     balance = null
                 )

@@ -46,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -246,31 +247,18 @@ fun NoticeScreen(
             }
 
             viewModel.errorMessage != null && viewModel.items.isEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = viewModel.errorMessage ?: "",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(32.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = {
-                            scope.launch {
-                                val keyword = viewModel.searchKeyword.ifBlank { null }
-                                viewModel.loadPage(0, keyword = keyword)
-                            }
-                        }) {
-                            Text(stringResource(R.string.common_retry))
+                ReLoginContent(
+                    errorMessage = viewModel.errorMessage,
+                    requiresReLogin = false,
+                    onReLogin = {},
+                    onRetry = {
+                        scope.launch {
+                            val keyword = viewModel.searchKeyword.ifBlank { null }
+                            viewModel.loadPage(0, keyword = keyword)
                         }
-                    }
-                }
+                    },
+                    modifier = Modifier.padding(paddingValues),
+                )
             }
 
             else -> {

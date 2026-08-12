@@ -19,6 +19,8 @@
     <string name="personalization_title">التخصيص</string>
     <string name="personalization_display">إعدادات العرض</string>
     <string name="personalization_night_mode">الوضع الليلي</string>
+    <string name="personalization_pure_black">خلفية سوداء نقية</string>
+    <string name="personalization_pure_black_desc">استخدم خلفية سوداء نقية في الوضع الداكن</string>
     <string name="personalization_theme_color">لون السمة</string>
     <string name="personalization_dynamic_color">لون ديناميكي</string>
     <string name="personalization_dynamic_color_supported">استخراج لون السمة من خلفية النظام</string>

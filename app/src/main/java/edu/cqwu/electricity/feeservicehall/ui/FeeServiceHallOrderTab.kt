@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 
 /**
  * 订单 Tab 内容
@@ -77,6 +78,7 @@ internal fun FeeServiceHallOrderTab(
     onEndDateChange: (String) -> Unit,
     onApplyFilter: () -> Unit,
     onResetFilter: () -> Unit,
+    onReLogin: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -110,11 +112,12 @@ internal fun FeeServiceHallOrderTab(
                     }
                 }
                 uiState.orderErrorMessage != null && uiState.orders.isEmpty() -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.fee_hall_load_failed, uiState.orderErrorMessage ?: ""),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error)
-                    }
+                    ReLoginContent(
+                        errorMessage = stringResource(R.string.fee_hall_load_failed, uiState.orderErrorMessage ?: ""),
+                        requiresReLogin = uiState.orderRequiresReLogin,
+                        onReLogin = onReLogin,
+                        onRetry = onRefresh,
+                    )
                 }
                 uiState.orders.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

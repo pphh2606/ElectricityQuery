@@ -91,8 +91,8 @@ fun UnifiedWebViewScreen(
     url: String,
     initialTitle: String = "",
     onClose: () -> Unit,
-    skipNextCasRedirect: Boolean = false,
-    onSkipConsumed: () -> Unit = {}
+    reloadAfterLogin: Boolean = false,
+    onReloadConsumed: () -> Unit = {}
 ) {
     val nav = LocalNavController.current
     // Campusphere 提醒：只弹一次
@@ -142,12 +142,11 @@ fun UnifiedWebViewScreen(
 
     // WebView 引用，用于 WebView 操作（返回、刷新、复制链接等）
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
-    // 标记：从本地登录返回后需要自动刷新 WebView，加载网页版登录
+    // 标记：本地登录成功后需要自动刷新 WebView 当前页
     var needsReloadAfterReturn by remember { mutableStateOf(false) }
 
     // ═══ CAS 登录检测状态 ═══
     var pendingLoginNavigation by remember { mutableStateOf(false) }
-    var lastCheckedCasUrl by remember { mutableStateOf<String?>(null) }
 
     // ═══ 系统返回键：仅在 WebView 有历史记录时拦截 ═══
     // 当 WebView 已到首页时，enabled=false 让系统接管返回手势，
@@ -167,12 +166,12 @@ fun UnifiedWebViewScreen(
         if (pendingLoginNavigation) {
             Log.d("WebView_DIAG", ">>> CAS登录检测触发，准备跳转到本地登录")
             pendingLoginNavigation = false
-            nav.navigate(Routes.LOGIN)
+            nav.navigate(Routes.WEBVIEW_LOGIN)
         }
     }
 
-    LaunchedEffect(skipNextCasRedirect) {
-        if (skipNextCasRedirect) {
+    LaunchedEffect(reloadAfterLogin) {
+        if (reloadAfterLogin) {
             needsReloadAfterReturn = true
         }
     }
@@ -358,6 +357,14 @@ fun UnifiedWebViewScreen(
                             settings.displayZoomControls = true
                             settings.userAgentString = edu.cqwu.electricity.login.data.UserAgentProvider.getActiveUserAgent()
 
+                            fun maybeRedirectToLocalLogin(view: WebView?, url: String?) {
+                                if (!WebViewUrlUtil.shouldOpenLocalLogin(url, webErrorState != null)) return
+                                if (pendingLoginNavigation) return
+                                pendingLoginNavigation = true
+                                Log.d("WebView_DIAG", ">>> 检测到CAS登录页已提交，准备跳转到本地登录")
+                                view?.stopLoading()
+                            }
+
                             webViewClient = object : WebViewClient() {
                                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                                     super.onPageStarted(view, url, favicon)
@@ -393,23 +400,11 @@ fun UnifiedWebViewScreen(
                                             )
                                         }
                                     }
+                                }
 
-                                    if (url != null && WebViewUrlUtil.isCasLoginUrl(url)) {
-                                        if (skipNextCasRedirect) {
-                                            onSkipConsumed()
-                                            lastCheckedCasUrl = url
-                                            return
-                                        }
-                                        if (url != lastCheckedCasUrl) {
-                                            lastCheckedCasUrl = url
-                                            Log.d("WebView_DIAG", ">>> onPageStarted 检测到CAS登录页，用户未登录")
-                                            view?.stopLoading()
-                                            pendingLoginNavigation = true
-                                        }
-                                        return
-                                    } else if (url != null) {
-                                        lastCheckedCasUrl = null
-                                    }
+                                override fun onPageCommitVisible(view: WebView?, url: String?) {
+                                    super.onPageCommitVisible(view, url)
+                                    maybeRedirectToLocalLogin(view, url)
                                 }
 
                                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -417,6 +412,9 @@ fun UnifiedWebViewScreen(
                                     Log.d("WebView_DIAG", "onPageFinished: $url")
                                     isLoading = false
                                     canGoBack = view?.canGoBack() == true
+                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                                        maybeRedirectToLocalLogin(view, url)
+                                    }
 
                                     // 注入 JS 强制启用缩放：
                                     // 1. 移除页面的 user-scalable=no 限制
@@ -602,6 +600,7 @@ fun UnifiedWebViewScreen(
                     // 从本地登录返回后自动刷新
                     if (needsReloadAfterReturn) {
                         needsReloadAfterReturn = false
+                        onReloadConsumed()
                         webView?.reload()
                     }
                 }

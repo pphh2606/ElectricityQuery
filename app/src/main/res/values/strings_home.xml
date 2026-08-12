@@ -24,6 +24,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="hall_title">大厅</string>
     <string name="hall_no_favorites">暂无收藏的应用</string>
+    <string name="hall_no_search_results">暂无搜索结果</string>
     <string name="hall_tab_all">全部</string>
     <string name="hall_tab_favorites">收藏</string>
     <string name="hall_favorited">已收藏</string>

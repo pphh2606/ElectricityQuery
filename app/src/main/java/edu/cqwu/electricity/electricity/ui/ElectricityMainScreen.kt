@@ -68,6 +68,7 @@ import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
@@ -333,6 +334,7 @@ fun ElectricityMainScreen(
                     MyRoomDashboardTab(
                         viewModel = myRoomViewModel,
                         loggedInStudentId = loggedInStudentId,
+                        onReLogin = { nav.navigate(Routes.LOGIN) },
                     )
                 }
             }
@@ -477,6 +479,7 @@ fun ElectricityMainScreen(
 private fun MyRoomDashboardTab(
     viewModel: MyRoomViewModel,
     loggedInStudentId: String?,
+    onReLogin: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -514,15 +517,20 @@ private fun MyRoomDashboardTab(
                 )
             }
         }
+    } else if (loggedInStudentId == null || uiState.requiresReLogin) {
+        ReLoginContent(
+            errorMessage = null,
+            requiresReLogin = true,
+            onReLogin = onReLogin,
+            onRetry = { if (loggedInStudentId != null) viewModel.fastQueryMyRoom(loggedInStudentId) },
+        )
     } else if (uiState.selectedRoom == null) {
-        // 查询失败或未登录
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                stringResource(R.string.common_no_room_data),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        ReLoginContent(
+            errorMessage = uiState.queryError?.resolve(resources) ?: stringResource(R.string.common_no_room_data),
+            requiresReLogin = false,
+            onReLogin = onReLogin,
+            onRetry = { viewModel.fastQueryMyRoom(loggedInStudentId) },
+        )
     } else {
         // 已有房间数据，显示 Dashboard
         DashboardScreen(

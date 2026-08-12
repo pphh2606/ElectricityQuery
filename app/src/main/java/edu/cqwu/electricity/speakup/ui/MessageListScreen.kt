@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
@@ -56,6 +60,7 @@ fun MessageListScreen(
     areaName: String,
     onBack: () -> Unit,
     onMessageClick: (String) -> Unit,
+    onReLogin: () -> Unit = {},
     viewModel: MessageListViewModel = viewModel(
         factory = MessageListViewModel.Factory(areaCode, areaName)
     ),
@@ -109,22 +114,12 @@ fun MessageListScreen(
                 }
 
                 is MessageListViewModel.UiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = state.message,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = { viewModel.refresh() }) {
-                                Text(stringResource(R.string.common_retry))
-                            }
-                        }
-                    }
+                    ReLoginContent(
+                        errorMessage = state.message,
+                        requiresReLogin = state.requiresReLogin,
+                        onReLogin = onReLogin,
+                        onRetry = { viewModel.refresh() },
+                    )
                 }
 
                 is MessageListViewModel.UiState.Success -> {
@@ -164,11 +159,18 @@ fun MessageListScreen(
                                             .padding(16.dp),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text(
-                                            text = stringResource(R.string.speakup_loading_more),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(20.dp),
+                                                strokeWidth = 2.dp,
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = stringResource(R.string.speakup_loading_more),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 }
                             }

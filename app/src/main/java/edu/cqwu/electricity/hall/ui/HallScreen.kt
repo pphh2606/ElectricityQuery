@@ -272,20 +272,28 @@ private fun HallSearchTab(
                     }
                 }
                 uiState.searchError != null -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = uiState.searchError,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                    ReLoginContent(
+                        errorMessage = uiState.searchError,
+                        requiresReLogin = false,
+                        onReLogin = onReLogin,
+                        onRetry = onRetry,
+                    )
                 }
                 else -> {
-                    FlatAppsList(
-                        items = uiState.searchResults,
-                        onItemClick = onItemClick,
-                    )
+                    if (uiState.searchResults.isEmpty()) {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = stringResource(R.string.hall_no_search_results),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    } else {
+                        FlatAppsList(
+                            items = uiState.searchResults,
+                            onItemClick = onItemClick,
+                        )
+                    }
                 }
             }
         }
@@ -582,24 +590,12 @@ private fun FavoriteAppsContent(
             )
         }
         errorMessage != null && items.isEmpty() -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(
-                    text = errorMessage,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.error,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                TextButton(onClick = onRetry) {
-                    Text(stringResource(R.string.common_retry))
-                }
-            }
+            ReLoginContent(
+                errorMessage = errorMessage,
+                requiresReLogin = false,
+                onReLogin = onReLogin,
+                onRetry = onRetry,
+            )
         }
         items.isEmpty() -> {
             Box(

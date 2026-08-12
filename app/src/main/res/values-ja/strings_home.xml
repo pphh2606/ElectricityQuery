@@ -24,6 +24,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="hall_title">ホール</string>
     <string name="hall_no_favorites">お気に入りのアプリがありません</string>
+    <string name="hall_no_search_results">検索結果がありません</string>
     <string name="hall_tab_all">すべて</string>
     <string name="hall_tab_favorites">お気に入り</string>
     <string name="hall_favorited">お気に入り済み</string>

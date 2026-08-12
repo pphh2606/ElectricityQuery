@@ -42,6 +42,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.payment.data.PaymentMethod
 import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalTopBarState
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
@@ -323,25 +324,16 @@ fun PaymentConfirmScreen(
                         }
                     } else if (errorMessage != null) {
                         // ── 订单创建失败 ──
-                        Spacer(modifier = Modifier.height(48.dp))
-                        Text(
-                            text = stringResource(R.string.payment_order_failed),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.error
+                        ReLoginContent(
+                            errorMessage = stringResource(R.string.payment_order_failed) + "\n" + errorMessage,
+                            requiresReLogin = false,
+                            onReLogin = {},
+                            onRetry = onRetry,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(280.dp)
+                                .padding(vertical = 16.dp),
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = errorMessage,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Button(
-                            onClick = onRetry,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(stringResource(R.string.common_retry))
-                        }
                     }
                 }
 

@@ -7,6 +7,7 @@ import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.CookieParser
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.login.data.HtmlFormParser
+import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.network.ManualCasFlowTag
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
@@ -236,7 +237,7 @@ class FeeServiceHallApi {
             Log.d("FeeServiceHallApi", "Token 不存在，自动获取后重试")
             val tokenResult = obtainPayToken()
             if (tokenResult.isFailure) {
-                return Result.failure(Exception("未登录，请先打开原网页完成认证"))
+                return Result.failure(SessionExpiredException("未登录，请先打开原网页完成认证"))
             }
             return block()
         }

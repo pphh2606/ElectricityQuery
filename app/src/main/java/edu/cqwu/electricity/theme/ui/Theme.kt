@@ -15,6 +15,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.compose.ui.platform.LocalView
@@ -38,6 +39,8 @@ private val LightColorScheme = lightColorScheme(
 data class NightModeState(
     val nightMode: NightMode,
     val onNightModeChange: (NightMode) -> Unit,
+    val pureBlack: Boolean,
+    val onPureBlackChange: (Boolean) -> Unit,
 )
 
 val LocalNightModeState = staticCompositionLocalOf<NightModeState> {
@@ -131,6 +134,7 @@ fun TopBarStyle.toTopAppBarColors(colorScheme: ColorScheme): TopAppBarColors {
 fun 电费查询Theme(
     nightMode: NightMode = NightMode.SYSTEM,
     colorSource: ThemeColorSource = ThemeColorSource.SystemDynamic,
+    pureBlack: Boolean = false,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
@@ -154,6 +158,21 @@ fun 电费查询Theme(
         }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }.let { base ->
+        if (darkTheme && pureBlack) {
+            base.copy(
+                background = Color.Black,
+                surface = Color.Black,
+                surfaceContainerLowest = Color.Black,
+                surfaceContainerLow = Color(0xFF0A0A0A),
+                surfaceContainer = Color(0xFF121212),
+                surfaceContainerHigh = Color(0xFF1A1A1A),
+                surfaceContainerHighest = Color(0xFF242424),
+                surfaceVariant = Color(0xFF1C1C1C),
+            )
+        } else {
+            base
+        }
     }
 
     // 根据 darkTheme 动态更新系统状态栏和导航栏图标颜色

@@ -6,6 +6,7 @@ import edu.cqwu.electricity.feeservicehall.data.FeeCategory
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 import edu.cqwu.electricity.feeservicehall.data.UserProfile
+import edu.cqwu.electricity.login.data.SessionExpiredException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +32,7 @@ data class FeeServiceHallUiState(
     val orderTotalPages: Int = 1,
     val orderHasMore: Boolean = false,
     val orderErrorMessage: String? = null,
+    val orderRequiresReLogin: Boolean = false,
     val showOrderFilter: Boolean = false,
     val filterProjectName: String = "",
     val filterStartDate: String = "",
@@ -117,7 +119,7 @@ class FeeServiceHallViewModel : ViewModel() {
         viewModelScope.launch {
             val s = _uiState.value
             _uiState.update {
-                it.copy(isOrdersRefreshing = true, orderErrorMessage = null)
+                it.copy(isOrdersRefreshing = true, orderErrorMessage = null, orderRequiresReLogin = false)
             }
             api.fetchOrders(1, 10, s.filterProjectName, "", s.filterStartDate, s.filterEndDate)
                 .onSuccess { page ->
@@ -130,7 +132,14 @@ class FeeServiceHallViewModel : ViewModel() {
                         )
                     }
                 }.onFailure { e ->
-                    _uiState.update { it.copy(isOrdersLoading = false, isOrdersRefreshing = false, orderErrorMessage = e.message) }
+                    _uiState.update {
+                        it.copy(
+                            isOrdersLoading = false,
+                            isOrdersRefreshing = false,
+                            orderErrorMessage = e.message,
+                            orderRequiresReLogin = e is SessionExpiredException,
+                        )
+                    }
                 }
         }
     }
