@@ -37,7 +37,7 @@
 
     <string name="crash_report_brand">品牌: %1$s</string>
 
-    <string name="feedback_log_section_process">═══ 目前程序日誌（logcat --pid）═══</string>
+    <string name="feedback_log_section_process">═══ 目前應用程式日誌 ═══</string>
 
     <string name="crash_report_thread_priority">執行緒優先順序: %1$s</string>
 

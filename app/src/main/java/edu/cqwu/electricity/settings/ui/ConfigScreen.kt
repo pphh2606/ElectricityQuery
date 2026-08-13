@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.CleaningServices
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material.icons.outlined.VpnKey
@@ -42,8 +45,6 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.AppLanguage
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.theme.ui.LanguageSwitchSheet
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * 配置页 — 包含浏览器标识和语言切换设置。
@@ -56,11 +57,12 @@ fun ConfigScreen(
     onNavigateToStorageClear: () -> Unit = {},
     onNavigateToWebVpn: () -> Unit,
 ) {
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val context = LocalContext.current
     val settingsPrefs = remember { SettingsPreferences(context) }
 
     var showLanguageSheet by remember { mutableStateOf(false) }
+    var showLogLevelSheet by remember { mutableStateOf(false) }
     val currentLanguage by remember { mutableStateOf(settingsPrefs.getAppLanguage()) }
 
     Scaffold(
@@ -119,6 +121,14 @@ fun ConfigScreen(
                         onClick = { showLanguageSheet = true },
                     )
 
+                    // ── 日志等级 ──
+                    ConfigEntry(
+                        icon = Icons.Outlined.Info,
+                        title = stringResource(R.string.config_log_level),
+                        subtitle = stringResource(R.string.config_log_level_desc),
+                        onClick = { showLogLevelSheet = true },
+                    )
+
                     // ── 清除存储空间 ──
                     ConfigEntry(
                         icon = Icons.Outlined.CleaningServices,
@@ -133,6 +143,7 @@ fun ConfigScreen(
 
     // ── 语言选择 BottomSheet（复用 LanguageSwitchSheet）──
     LanguageSwitchSheet(showSheet = showLanguageSheet, onDismiss = { showLanguageSheet = false })
+    LogLevelSheet(showSheet = showLogLevelSheet, onDismiss = { showLogLevelSheet = false })
 }
 
 /**

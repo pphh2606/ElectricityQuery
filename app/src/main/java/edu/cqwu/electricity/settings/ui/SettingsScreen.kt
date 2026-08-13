@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,8 +33,6 @@ import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,7 +48,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
 ) {
     val nav = LocalNavController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     Scaffold(
         topBar = {

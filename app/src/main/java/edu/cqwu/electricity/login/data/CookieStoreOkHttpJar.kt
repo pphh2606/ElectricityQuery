@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.login.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager
 import okhttp3.Cookie
 import okhttp3.CookieJar
@@ -45,7 +45,7 @@ internal class CookieJarBridge(
                     }
                     .build()
             } catch (e: Exception) {
-                Log.w("CookieJarBridge", "解析 Cookie 失败: $name=****", e)
+                AppLog.w("CookieJarBridge", "解析 Cookie 失败: $name=****", e)
                 null
             }
         }

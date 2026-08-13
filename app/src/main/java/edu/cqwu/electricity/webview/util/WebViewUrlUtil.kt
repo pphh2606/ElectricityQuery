@@ -4,7 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 
 /**
  * WebView URL 判断工具类
@@ -93,10 +93,10 @@ object WebViewUrlUtil {
         val scheme = uri.scheme
         if (!isCustomScheme(scheme)) return false
 
-        Log.d(tag, "拦截到自定义协议: scheme=$scheme, url=${url.take(200)}...")
+        AppLog.d(tag, "拦截到自定义协议: scheme=$scheme, url=${url.take(200)}...")
         return try {
             val intent: Intent = if (scheme == "intent") {
-                Log.d(tag, ">>> 使用 Intent.parseUri 解析 intent:// URL")
+                AppLog.d(tag, ">>> 使用 Intent.parseUri 解析 intent:// URL")
                 Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
             } else {
                 Intent(Intent.ACTION_VIEW, uri)
@@ -104,19 +104,19 @@ object WebViewUrlUtil {
             val pm = context.packageManager
             val resolveInfo = pm.resolveActivity(intent, 0)
             if (resolveInfo == null) {
-                Log.d(tag, "resolveActivity 未找到处理方，仍尝试 startActivity...")
+                AppLog.d(tag, "resolveActivity 未找到处理方，仍尝试 startActivity...")
             } else {
-                Log.d(tag, ">>> 找到可处理 Intent 的应用: ${resolveInfo.loadLabel(pm)}")
+                AppLog.d(tag, ">>> 找到可处理 Intent 的应用: ${resolveInfo.loadLabel(pm)}")
             }
             context.startActivity(intent)
             true
         } catch (e: ActivityNotFoundException) {
-            Log.e(tag, "未安装可处理 $scheme 的应用: ${e.message}")
+            AppLog.e(tag, "未安装可处理 $scheme 的应用: ${e.message}")
             // intent:// 降级方案：从 fragment 提取实际 scheme
             if (scheme == "intent") {
                 val actualScheme = extractSchemeFromIntentUrl(url)
                 if (actualScheme != null) {
-                    Log.d(tag, ">>> 降级方案: 提取到实际 scheme=$actualScheme")
+                    AppLog.d(tag, ">>> 降级方案: 提取到实际 scheme=$actualScheme")
                     val fallbackIntent = Intent(
                         Intent.ACTION_VIEW,
                         Uri.parse("$actualScheme://${uri.authority}${uri.path}?${uri.query}")
@@ -125,13 +125,13 @@ object WebViewUrlUtil {
                         context.startActivity(fallbackIntent)
                         return true
                     } catch (e2: ActivityNotFoundException) {
-                        Log.e(tag, "降级方案也失败: ${e2.message}")
+                        AppLog.e(tag, "降级方案也失败: ${e2.message}")
                     }
                 }
             }
             false
         } catch (e: Exception) {
-            Log.e(tag, "启动外部应用失败: ${e.javaClass.simpleName}: ${e.message}")
+            AppLog.e(tag, "启动外部应用失败: ${e.javaClass.simpleName}: ${e.message}")
             false
         }
     }
@@ -147,7 +147,7 @@ object WebViewUrlUtil {
      */
     fun extractSchemeFromIntentUrl(intentUrl: String): String? {
         val fragment = intentUrl.substringAfter("#Intent;", "").substringBefore(";end")
-        Log.d(tag, ">>> extractSchemeFromIntentUrl: fragment=$fragment")
+        AppLog.d(tag, ">>> extractSchemeFromIntentUrl: fragment=$fragment")
         for (part in fragment.split(";")) {
             val trimmed = part.trim()
             if (trimmed.startsWith("scheme=")) {

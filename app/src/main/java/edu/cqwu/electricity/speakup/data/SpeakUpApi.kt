@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.speakup.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.login.data.ServiceLoginManager
 import edu.cqwu.electricity.login.data.SessionExpiredException
@@ -61,9 +61,9 @@ class SpeakUpApi {
         withContext(Dispatchers.IO) {
             try {
                 // 步骤 1：确保 ehall session 已初始化
-                Log.d(TAG, "[fetchConsultationAreas] 开始，初始化 ehall session")
+                AppLog.d(TAG, "[fetchConsultationAreas] 开始，初始化 ehall session")
                 ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_URL)
-                Log.d(TAG, "[fetchConsultationAreas] ehall session 初始化完成")
+                AppLog.d(TAG, "[fetchConsultationAreas] ehall session 初始化完成")
 
                 // 步骤 2：POST getZxq.do
                 val formBody = FormBody.Builder()
@@ -84,10 +84,10 @@ class SpeakUpApi {
                     )
                     .build()
 
-                Log.d(TAG, "[fetchConsultationAreas] POST $GET_ZXQ_URL")
+                AppLog.d(TAG, "[fetchConsultationAreas] POST $GET_ZXQ_URL")
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
-                Log.d(TAG, "[fetchConsultationAreas] 响应长度=${body.length}")
+                AppLog.d(TAG, "[fetchConsultationAreas] 响应长度=${body.length}")
 
                 val result = gson.fromJson(body, ConsultationAreaResponse::class.java)
 
@@ -95,13 +95,13 @@ class SpeakUpApi {
                     throw RuntimeException("获取咨询区列表失败：${result.msg}")
                 }
 
-                Log.d(TAG, "[fetchConsultationAreas] 成功，共 ${result.data.size} 个咨询区")
+                AppLog.d(TAG, "[fetchConsultationAreas] 成功，共 ${result.data.size} 个咨询区")
                 Result.success(result.data)
             } catch (e: SessionExpiredException) {
-                Log.w(TAG, "[fetchConsultationAreas] Session 过期: ${e.message}")
+                AppLog.w(TAG, "[fetchConsultationAreas] Session 过期: ${e.message}")
                 Result.failure(e)
             } catch (e: Exception) {
-                Log.e(TAG, "[fetchConsultationAreas] 异常", e)
+                AppLog.e(TAG, "[fetchConsultationAreas] 异常", e)
                 Result.failure(e)
             }
         }
@@ -119,7 +119,7 @@ class SpeakUpApi {
      */
     suspend fun preSetupEhallRole(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "[preSetupEhallRole] 开始")
+            AppLog.d(TAG, "[preSetupEhallRole] 开始")
             ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_URL)
 
             // 步骤 1：获取用户角色
@@ -139,10 +139,10 @@ class SpeakUpApi {
 
             val roleId = rolesJson.data?.firstOrNull { it.active }?.id
             if (roleId.isNullOrBlank()) {
-                Log.w(TAG, "[preSetupEhallRole] 未找到活跃角色")
+                AppLog.w(TAG, "[preSetupEhallRole] 未找到活跃角色")
                 return@withContext Result.failure(RuntimeException("未找到活跃角色"))
             }
-            Log.d(TAG, "[preSetupEhallRole] 获取到角色: $roleId")
+            AppLog.d(TAG, "[preSetupEhallRole] 获取到角色: $roleId")
 
             // 步骤 2：设置角色
             val setupBody = FormBody.Builder()
@@ -160,17 +160,17 @@ class SpeakUpApi {
             val setupResult = gson.fromJson(setupResponse.body.string(), ConsultationAreaResponse::class.java)
 
             if (setupResult.code != "0") {
-                Log.w(TAG, "[preSetupEhallRole] 设置角色失败: ${setupResult.msg}")
+                AppLog.w(TAG, "[preSetupEhallRole] 设置角色失败: ${setupResult.msg}")
                 return@withContext Result.failure(RuntimeException("设置角色失败：${setupResult.msg}"))
             }
 
-            Log.d(TAG, "[preSetupEhallRole] 角色设置成功")
+            AppLog.d(TAG, "[preSetupEhallRole] 角色设置成功")
             Result.success(Unit)
         } catch (e: SessionExpiredException) {
-            Log.w(TAG, "[preSetupEhallRole] Session 过期: ${e.message}")
+            AppLog.w(TAG, "[preSetupEhallRole] Session 过期: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e(TAG, "[preSetupEhallRole] 异常", e)
+            AppLog.e(TAG, "[preSetupEhallRole] 异常", e)
             Result.failure(e)
         }
     }
@@ -204,7 +204,7 @@ class SpeakUpApi {
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
-            Log.d(TAG, "[fetchMessages] POST $GET_ZXXX_URL (area=$areaCode, page=$pageNumber)")
+            AppLog.d(TAG, "[fetchMessages] POST $GET_ZXXX_URL (area=$areaCode, page=$pageNumber)")
             val response = client.newCall(request).execute()
             val body = response.body.string()
 
@@ -213,13 +213,13 @@ class SpeakUpApi {
                 throw RuntimeException("获取留言列表失败：${result.msg}")
             }
 
-            Log.d(TAG, "[fetchMessages] 成功，共 ${result.data.size} 条留言")
+            AppLog.d(TAG, "[fetchMessages] 成功，共 ${result.data.size} 条留言")
             Result.success(result.data)
         } catch (e: SessionExpiredException) {
-            Log.w(TAG, "[fetchMessages] Session 过期: ${e.message}")
+            AppLog.w(TAG, "[fetchMessages] Session 过期: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e(TAG, "[fetchMessages] 异常", e)
+            AppLog.e(TAG, "[fetchMessages] 异常", e)
             Result.failure(e)
         }
     }
@@ -247,7 +247,7 @@ class SpeakUpApi {
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
-            Log.d(TAG, "[fetchMessageDetail] POST $GET_ZXXX_URL (WID=$wid)")
+            AppLog.d(TAG, "[fetchMessageDetail] POST $GET_ZXXX_URL (WID=$wid)")
             val response = client.newCall(request).execute()
             val body = response.body.string()
 
@@ -257,23 +257,23 @@ class SpeakUpApi {
             }
 
             val msg = result.data.first()
-            Log.d(TAG, "[fetchMessageDetail] 成功, zxImageList.size=${msg.zxImageList.size}, hfImagesList.size=${msg.hfImagesList.size}")
+            AppLog.d(TAG, "[fetchMessageDetail] 成功, zxImageList.size=${msg.zxImageList.size}, hfImagesList.size=${msg.hfImagesList.size}")
             if (msg.zxImageList.isNotEmpty()) {
                 msg.zxImageList.forEachIndexed { idx, img ->
-                    Log.d(TAG, "[fetchMessageDetail] zxImage[$idx]: id=${img.id}, name=${img.name}, middleUrlFull=${img.middleUrlFull}")
+                    AppLog.d(TAG, "[fetchMessageDetail] zxImage[$idx]: id=${img.id}, name=${img.name}, middleUrlFull=${img.middleUrlFull}")
                 }
             }
             if (msg.hfImagesList.isNotEmpty()) {
                 msg.hfImagesList.forEachIndexed { idx, img ->
-                    Log.d(TAG, "[fetchMessageDetail] hfImage[$idx]: id=${img.id}, name=${img.name}, middleUrlFull=${img.middleUrlFull}")
+                    AppLog.d(TAG, "[fetchMessageDetail] hfImage[$idx]: id=${img.id}, name=${img.name}, middleUrlFull=${img.middleUrlFull}")
                 }
             }
             Result.success(msg)
         } catch (e: SessionExpiredException) {
-            Log.w(TAG, "[fetchMessageDetail] Session 过期: ${e.message}")
+            AppLog.w(TAG, "[fetchMessageDetail] Session 过期: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e(TAG, "[fetchMessageDetail] 异常", e)
+            AppLog.e(TAG, "[fetchMessageDetail] 异常", e)
             Result.failure(e)
         }
     }

@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.cardcenter.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalResources
 import edu.cqwu.electricity.R
@@ -38,8 +40,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -114,7 +114,7 @@ fun AccountInfoScreen(
         loadAccountInfo()
     }
 
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     Scaffold(
         topBar = {
             TopAppBar(

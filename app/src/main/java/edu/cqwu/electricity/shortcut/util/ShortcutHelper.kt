@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -81,7 +81,7 @@ object ShortcutHelper {
     ): CreateResult {
         // 前置检查：桌面是否支持固定快捷方式
         if (!isSupported(context)) {
-            Log.w(TAG, "当前桌面不支持固定快捷方式")
+            AppLog.w(TAG, "当前桌面不支持固定快捷方式")
             return CreateResult.NotSupported
         }
 
@@ -112,14 +112,14 @@ object ShortcutHelper {
 
             val success = ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
             if (success) {
-                Log.d(TAG, "快捷方式创建请求已提交: id=$shortcutId, label=$label")
+                AppLog.d(TAG, "快捷方式创建请求已提交: id=$shortcutId, label=$label")
                 CreateResult.Success
             } else {
-                Log.w(TAG, "Launcher 拒绝了快捷方式创建请求: id=$shortcutId")
+                AppLog.w(TAG, "Launcher 拒绝了快捷方式创建请求: id=$shortcutId")
                 CreateResult.NotSupported
             }
         } catch (e: Exception) {
-            Log.e(TAG, "创建快捷方式失败", e)
+            AppLog.e(TAG, "创建快捷方式失败", e)
             CreateResult.Failed(e)
         }
     }
@@ -158,7 +158,7 @@ object ShortcutHelper {
             }
             IconCompat.createWithBitmap(bitmap)
         } catch (e: Exception) {
-            Log.w(TAG, "从 URL 加载图标失败: $iconUrl", e)
+            AppLog.w(TAG, "从 URL 加载图标失败: $iconUrl", e)
             null
         }
     }

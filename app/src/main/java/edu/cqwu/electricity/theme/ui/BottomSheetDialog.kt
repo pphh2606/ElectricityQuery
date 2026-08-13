@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,11 +32,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -48,6 +52,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 // ================================================================
 //  通用底部弹窗包装器
@@ -167,10 +173,32 @@ fun BottomSheetDialog(
         }
     }
 
+    val sheetVisibilityState = LocalSheetVisibilityState.current
+    DisposableEffect(visible, isHiding, sheetVisibilityState) {
+        val shouldBeOpen = visible || isHiding
+        if (shouldBeOpen) {
+            sheetVisibilityState.open()
+        }
+        onDispose {
+            if (shouldBeOpen) {
+                sheetVisibilityState.close()
+            }
+        }
+    }
+
+    LaunchedEffect(sheetState, sheetVisibilityState) {
+        snapshotFlow { sheetState.targetValue == SheetValue.Hidden }
+            .distinctUntilChanged()
+            .collect { isHiddenTarget ->
+                sheetVisibilityState.blurProgress = if (isHiddenTarget) 0f else 1f
+            }
+    }
+
     // visible 或 isHiding 任一为 true 时渲染 ModalBottomSheet
     if (visible || isHiding) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
+            modifier = Modifier,
             sheetState = sheetState,
             sheetGesturesEnabled = sheetGesturesEnabled,
             dragHandle = {
@@ -203,6 +231,7 @@ fun BottomSheetDialog(
                 }
             },
             containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = 2.dp,
             contentWindowInsets = { WindowInsets.systemBars.union(WindowInsets.ime) }
         ) {
@@ -281,7 +310,7 @@ fun BottomSheetItem(
         enabled = enabled,
         shape = RoundedCornerShape(16.dp),
         color = containerColor ?: when {
-            selected -> MaterialTheme.colorScheme.secondaryContainer
+            selected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
             enabled -> MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
             else -> MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.2f)
         }
@@ -302,7 +331,7 @@ fun BottomSheetItem(
                         .clip(RoundedCornerShape(10.dp))
                         .background(
                             if (selected) {
-                                MaterialTheme.colorScheme.primaryContainer
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
                             } else {
                                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
                             }
@@ -330,7 +359,7 @@ fun BottomSheetItem(
                         .clip(RoundedCornerShape(10.dp))
                         .background(
                             if (selected) {
-                                MaterialTheme.colorScheme.primaryContainer
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
                             } else {
                                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
                             }
@@ -340,11 +369,28 @@ fun BottomSheetItem(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = if (enabled) {
+                        tint = if (selected) {
+                            MaterialTheme.colorScheme.primary
+                        } else if (enabled) {
                             MaterialTheme.colorScheme.onPrimaryContainer
                         } else {
                             MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.38f)
                         },
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            } else if (selected) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                 }

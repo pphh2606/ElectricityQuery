@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.network
 
 import android.content.Context
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager
 import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.AccountStore
@@ -12,7 +12,6 @@ import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
 import edu.cqwu.electricity.login.data.RedirectChainFollower
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.SessionExpiryReason
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import okhttp3.CookieJar
 import java.io.IOException
@@ -147,7 +146,7 @@ object WebVpnSessionManager {
                 SessionExpiryReason.LOGIN_REJECTED,
             )
         val ticketUrl = RedirectChainFollower.resolve(loginUrl, location)
-        Log.d(TAG, "CAS 登录成功，跟踪 ticket 回调: ${LogRedactor.url(ticketUrl)}")
+        AppLog.url(TAG, "CAS 登录成功，跟踪 ticket 回调: ${ticketUrl}")
         val finalPage = try {
             RedirectChainFollower.followToCasLoginPage(
                 client = client,
@@ -168,7 +167,7 @@ object WebVpnSessionManager {
             )
         }
 
-        Log.d(TAG, "WebVPN CAS 自动登录完成")
+        AppLog.d(TAG, "WebVPN CAS 自动登录完成")
         persistWebVpnCookies(cookieJar)
     }
 
@@ -183,7 +182,7 @@ object WebVpnSessionManager {
         parsed.forEach { (name, value) ->
             store.setCookie(WebVpnEncoder.PROXY_BASE, "$name=$value")
         }
-        Log.d(TAG, "WebVPN 自动登录完成，已同步 clientvpn Cookie: ${parsed.keys.sorted()}")
+        AppLog.d(TAG, "WebVPN 自动登录完成，已同步 clientvpn Cookie: ${parsed.keys.sorted()}")
     }
 
     private fun resolveSavedAccount(context: Context): Pair<String, String>? {

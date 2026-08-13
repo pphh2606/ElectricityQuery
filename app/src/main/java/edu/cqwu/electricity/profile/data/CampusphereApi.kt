@@ -1,9 +1,8 @@
 package edu.cqwu.electricity.profile.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.login.data.HtmlFormParser
@@ -89,7 +88,7 @@ class CampusphereApi {
             if (BuildConfig.DEBUG) {
                 val campusCookie = cookieReader(BASE)
                 val authCookie = cookieReader(AUTH_SERVER)
-                Log.d(TAG,
+                AppLog.d(TAG,
                     "activeUser=${AccountManager.getActiveUser()}, " +
                     "campusphere=${campusCookie != null}(len=${campusCookie?.length ?: 0}), " +
                     "auth=${authCookie != null}(len=${authCookie?.length ?: 0})")
@@ -102,7 +101,7 @@ class CampusphereApi {
             // ── 如果失败原因是未登录 → 执行 CAS ticket 交换 ──
             val cause = result.exceptionOrNull()
             if (cause is NotLoggedInException) {
-                Log.d(TAG, "未登录，执行 CAS ticket 交换后重试")
+                AppLog.d(TAG, "未登录，执行 CAS ticket 交换后重试")
                 doCasTicketExchange()
                 // ── 第 2 次请求（重试） ──
                 result = doFetchStudentInfo(client)
@@ -112,12 +111,12 @@ class CampusphereApi {
             // 最终失败
             result
         } catch (e: SessionExpiredException) {
-            Log.e(TAG, "会话已过期", e)
+            AppLog.e(TAG, "会话已过期", e)
             Result.failure(e)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.e(TAG, "获取学生信息失败", e)
+            AppLog.e(TAG, "获取学生信息失败", e)
             Result.failure(e)
         }
     }
@@ -138,11 +137,11 @@ class CampusphereApi {
             val info = client.newCall(request).execute().use { response ->
                 val responseBody = response.body.string()
 
-                Log.d(TAG, "API 响应(前200): ${LogRedactor.body(responseBody)}")
+                AppLog.body(TAG, "API 响应(前200): $responseBody")
 
                 // ⚠️ 检查未登录响应（body 是 JSON，不是 HTML，不能用 SessionChecker）
                 if (isNotLoggedIn(responseBody)) {
-                    Log.w(TAG, "API 返回 WEC-HASLOGIN:false，未登录")
+                    AppLog.w(TAG, "API 返回 WEC-HASLOGIN:false，未登录")
                     throw NotLoggedInException()
                 }
 
@@ -167,9 +166,9 @@ class CampusphereApi {
                     ?: throw Exception("学生信息为空")
             }
 
-            Log.d(
+            AppLog.d(
                 TAG,
-                "学生信息获取成功: ${LogRedactor.mask(info.userName)}(${LogRedactor.mask(info.userId)})",
+                "学生信息获取成功: userName=${info.userName}, userId=${info.userId}",
             )
             Result.success(info)
         } catch (e: NotLoggedInException) {
@@ -226,7 +225,7 @@ class CampusphereApi {
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.e(TAG, "获取菜单列表失败", e)
+            AppLog.e(TAG, "获取菜单列表失败", e)
             Result.failure(e)
         }
     }

@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.speakup.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,9 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * 留言列表页面。
@@ -65,7 +65,7 @@ fun MessageListScreen(
         factory = MessageListViewModel.Factory(areaCode, areaName)
     ),
 ) {
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val uiState by viewModel.uiState.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val listState = rememberLazyListState()

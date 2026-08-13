@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.qrcode.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import android.app.Activity
 import android.view.WindowManager
 import androidx.compose.foundation.background
@@ -66,13 +68,11 @@ import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.qrcode.data.QrCodeApi
 import edu.cqwu.electricity.qrcode.data.QrCodeType
 import edu.cqwu.electricity.settings.data.QrCodeColorMode
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalQrCodeSettings
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.QrCodeView
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -100,16 +100,16 @@ fun QrCodeDisplayScreen(
     var qrCodeContent by rememberSaveable { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     val nav = LocalNavController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
-    val qrCodeSettings = LocalQrCodeSettings.current
+    val topBarColors = currentTopBarColors()
+    val appSettings = LocalAppSettingsState.current
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
     // 深色模式下背景强制白色（确保扫码可读），前景色遵循用户设置
-    val qrPrimaryColor = when (qrCodeSettings.colorMode) {
+    val qrPrimaryColor = when (appSettings.qrCodeColorMode) {
         QrCodeColorMode.THEME_SNAKE -> MaterialTheme.colorScheme.primary
         QrCodeColorMode.MONOCHROME -> Color.Black
     }
     // 深色模式下 MD3 primary 偏浅（为深色背景设计），在白色背景上需加深
-    val qrEffectivePrimaryColor = if (isDarkTheme && qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE) {
+    val qrEffectivePrimaryColor = if (isDarkTheme && appSettings.qrCodeColorMode == QrCodeColorMode.THEME_SNAKE) {
         val darkenFactor = 0.45f
         Color(
             qrPrimaryColor.red * darkenFactor,
@@ -119,7 +119,7 @@ fun QrCodeDisplayScreen(
         qrPrimaryColor
     }
     val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
-    val qrCornerFraction = qrCodeSettings.cornerRadius / 100f
+    val qrCornerFraction = appSettings.qrCodeCornerRadius / 100f
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var requiresReLogin by rememberSaveable { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
@@ -144,7 +144,7 @@ fun QrCodeDisplayScreen(
 
     // 窗口亮度控制：根据设置决定是否调高屏幕亮度
     val window = remember(context) { (context as? Activity)?.window }
-    val isScreenBrightnessEnabled = qrCodeSettings.screenBrightnessEnabled
+    val isScreenBrightnessEnabled = appSettings.qrScreenBrightnessEnabled
     DisposableEffect(isScreenBrightnessEnabled) {
         if (isScreenBrightnessEnabled) {
             window?.let { win ->

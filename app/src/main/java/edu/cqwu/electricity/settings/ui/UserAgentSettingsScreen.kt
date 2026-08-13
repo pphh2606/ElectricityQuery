@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,8 +46,6 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.UserAgentEntry
 import edu.cqwu.electricity.login.data.UserAgentProvider
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * 浏览器标识设置页 — 列表展示所有条目，支持选择和删除。
@@ -56,7 +56,7 @@ fun UserAgentSettingsScreen(
     onBack: () -> Unit,
     onNavigateToEdit: (entryId: String) -> Unit,
 ) {
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     var entries by remember { mutableStateOf(UserAgentProvider.getAllEntries()) }
     var selectedId by remember { mutableStateOf(UserAgentProvider.getSelectedId()) }
     var deleteTarget by remember { mutableStateOf<UserAgentEntry?>(null) }

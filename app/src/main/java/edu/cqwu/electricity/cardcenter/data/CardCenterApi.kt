@@ -1,8 +1,7 @@
 package edu.cqwu.electricity.cardcenter.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.payment.data.HttpClientFactory
@@ -61,7 +60,7 @@ class CardCenterApi {
         try {
             val t0 = System.currentTimeMillis()
             val url = "$EPAY_THIRDAPP/balance"
-            Log.d("CardCenterApi", "获取账户信息: GET $url")
+            AppLog.d("CardCenterApi", "获取账户信息: GET $url")
 
             val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
@@ -78,14 +77,14 @@ class CardCenterApi {
             // 解析 HTML 提取字段
             val accountInfo = parseAccountInfoHtml(html)
             val elapsed = System.currentTimeMillis() - t0
-            Log.d("CardCenterApi", "获取账户信息成功: 耗时=${elapsed}ms, $accountInfo")
+            AppLog.d("CardCenterApi", "获取账户信息成功: 耗时=${elapsed}ms, $accountInfo")
             Result.success(accountInfo)
         } catch (e: CancellationException) {
             throw e
         } catch (e: SessionExpiredException) {
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("CardCenterApi", "获取账户信息失败", e)
+            AppLog.e("CardCenterApi", "获取账户信息失败", e)
             Result.failure(e)
         }
     }
@@ -143,7 +142,7 @@ class CardCenterApi {
     suspend fun fetchCardLostInfo(): Result<CardLostInfo> = withContext(Dispatchers.IO) {
         try {
             val url = "$EPAY_THIRDAPP/cardlost"
-            Log.d("CardCenterApi", "获取卡挂失信息: GET $url")
+            AppLog.d("CardCenterApi", "获取卡挂失信息: GET $url")
 
             val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
@@ -157,12 +156,12 @@ class CardCenterApi {
             HtmlFormParser.checkAndThrow(html)
 
             val cardInfo = parseCardLostInfoHtml(html)
-            Log.d("CardCenterApi", "卡挂失信息: $cardInfo")
+            AppLog.d("CardCenterApi", "卡挂失信息: $cardInfo")
             Result.success(cardInfo)
         } catch (e: SessionExpiredException) {
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("CardCenterApi", "获取卡挂失信息失败", e)
+            AppLog.e("CardCenterApi", "获取卡挂失信息失败", e)
             Result.failure(e)
         }
     }
@@ -180,7 +179,7 @@ class CardCenterApi {
     suspend fun doCardLost(): Result<CardLostResponse> = withContext(Dispatchers.IO) {
         try {
             val url = "$EPAY_THIRDAPP/docardlost.json"
-            Log.d("CardCenterApi", "执行卡挂失: POST $url")
+            AppLog.d("CardCenterApi", "执行卡挂失: POST $url")
 
             val jsonBody = "{}"
             val requestBody =
@@ -196,12 +195,12 @@ class CardCenterApi {
 
             val body = response.body.string()
 
-            Log.d("CardCenterApi", "卡挂失响应: ${LogRedactor.body(body)}")
+            AppLog.body("CardCenterApi", "卡挂失响应: $body")
 
             val cardLostResponse = gson.fromJson(body, CardLostResponse::class.java)
             Result.success(cardLostResponse)
         } catch (e: Exception) {
-            Log.e("CardCenterApi", "执行卡挂失失败", e)
+            AppLog.e("CardCenterApi", "执行卡挂失失败", e)
             Result.failure(e)
         }
     }
@@ -243,13 +242,13 @@ class CardCenterApi {
                 val html = postBillQuery(filter)
                 HtmlFormParser.checkAndThrow(html)
                 val allZones = parseAllZones(html)
-                Log.d("CardCenterApi", "四区解析完成: zone数量=${allZones.size}")
+                AppLog.d("CardCenterApi", "四区解析完成: zone数量=${allZones.size}")
                 Result.success(allZones)
             } catch (e: SessionExpiredException) {
                 Result.failure(e)
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                Log.e("CardCenterApi", "获取账单失败", e)
+                AppLog.e("CardCenterApi", "获取账单失败", e)
                 Result.failure(e)
             }
         }
@@ -280,7 +279,7 @@ class CardCenterApi {
 
         val requestBody = formBuilder.build()
 
-        Log.d("CardCenterApi", "获取账单: POST $BILL_QUERY_URL, filter=$filter")
+        AppLog.d("CardCenterApi", "获取账单: POST $BILL_QUERY_URL, filter=$filter")
 
         val response = billHtmlClient.newCall(
             Request.Builder()
@@ -313,7 +312,7 @@ class CardCenterApi {
                 .add("pageno", pageNo.toString())
                 .build()
 
-            Log.d("CardCenterApi", "H5获取账单: POST $H5_BILL_API, pageno=$pageNo")
+            AppLog.d("CardCenterApi", "H5获取账单: POST $H5_BILL_API, pageno=$pageNo")
 
             val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
@@ -337,7 +336,7 @@ class CardCenterApi {
                     h5Response.retmsg ?: "H5 账单接口错误 (retcode=${h5Response.retcode})"
                 )
             }
-            Log.d(
+            AppLog.d(
                 "CardCenterApi", "H5账单解析完成: ${h5Response.dtls?.size ?: 0}条, " +
                         "页码=${h5Response.pageno}/${h5Response.totalpage}, retcode=${h5Response.retcode}"
             )
@@ -346,7 +345,7 @@ class CardCenterApi {
             Result.failure(e)
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            Log.e("CardCenterApi", "H5获取账单失败", e)
+            AppLog.e("CardCenterApi", "H5获取账单失败", e)
             Result.failure(e)
         }
     }
@@ -411,7 +410,7 @@ class CardCenterApi {
                 (it.groupValues[1].toIntOrNull() ?: 1) to (it.groupValues[2].toIntOrNull() ?: 1)
             } ?: (1 to 1)
 
-            Log.d("CardCenterApi", "解析 zone[$zoneId]: ${records.size}条, 第${currentPage}/${totalPages}页")
+            AppLog.d("CardCenterApi", "解析 zone[$zoneId]: ${records.size}条, 第${currentPage}/${totalPages}页")
 
             result[tabNo] = BillPageInfo(
                 records = records,
@@ -509,7 +508,7 @@ class CardCenterApi {
                 detailUrl = detailUrl
             )
         } catch (e: Exception) {
-            Log.w("CardCenterApi", "解析账单行失败", e)
+            AppLog.w("CardCenterApi", "解析账单行失败", e)
             return null
         }
     }

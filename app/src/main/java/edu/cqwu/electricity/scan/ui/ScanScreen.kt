@@ -14,7 +14,7 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.net.Uri
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.webkit.URLUtil
@@ -274,10 +274,10 @@ private fun decodeQrFromUri(context: Context, uri: Uri): String? {
         val result = MultiFormatReader().decode(binaryBitmap)
         result.text
     } catch (e: NotFoundException) {
-        Log.w(TAG, "decodeQrFromUri: no QR found in image")
+        AppLog.w(TAG, "decodeQrFromUri: no QR found in image")
         null
     } catch (e: Exception) {
-        Log.e(TAG, "decodeQrFromUri failed", e)
+        AppLog.e(TAG, "decodeQrFromUri failed", e)
         null
     }
 }
@@ -486,7 +486,7 @@ fun ScanScreen(
                     )
                     camera = cam
                 } catch (e: Exception) {
-                    Log.e(TAG, "Camera bind failed", e)
+                    AppLog.e(TAG, "Camera bind failed", e)
                     snackbar.show(resources.getString(R.string.qrcode_camera_failed))
                 }
             }, executor)

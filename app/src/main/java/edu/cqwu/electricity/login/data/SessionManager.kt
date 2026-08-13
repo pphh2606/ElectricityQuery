@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.login.data
 
-import android.util.Log
-import edu.cqwu.electricity.feedback.util.LogRedactor
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -56,7 +55,7 @@ object SessionManager {
             if (syncFromSystem) {
                 val existingCookie = userStore.getCookie("https://authserver.cqwu.edu.cn")
                 if (existingCookie.isNullOrBlank()) {
-                    Log.d("SessionManager", "UserCookieStore 为空，从系统 CookieManager 兜底导入")
+                    AppLog.d("SessionManager", "UserCookieStore 为空，从系统 CookieManager 兜底导入")
                     userStore.syncFromCookieManager()
                 }
             }
@@ -75,32 +74,32 @@ object SessionManager {
             val html = response.body.string()
 
             if (HtmlFormParser.isCasLoginPage(html)) {
-                Log.d("SessionManager", "Cookie 无效：响应为 CAS 登录页")
+                AppLog.d("SessionManager", "Cookie 无效：响应为 CAS 登录页")
                 return@withContext SessionValidationResult.Invalid
             }
 
             val username = HtmlFormParser.extractUsername(html)
                 ?: run {
-                    Log.w("SessionManager", "无法从 index.do 提取学号，HTML长度=${html.length}")
+                    AppLog.w("SessionManager", "无法从 index.do 提取学号，HTML长度=${html.length}")
                     return@withContext SessionValidationResult.Invalid
                 }
 
             val realName = HtmlFormParser.extractRealName(html) ?: ""
 
-            Log.d(
+            AppLog.d(
                 "SessionManager",
-                "Cookie 有效！学号=${LogRedactor.mask(username)}, 实名=${LogRedactor.mask(realName)}",
+                "Cookie 有效！学号=${username}, 实名=${realName}",
             )
 
             SessionValidationResult.Valid
         } catch (e: SocketTimeoutException) {
-            Log.w("SessionManager", "验证 Cookie 网络超时", e)
+            AppLog.w("SessionManager", "验证 Cookie 网络超时", e)
             SessionValidationResult.NetworkError("网络超时，请检查网络连接")
         } catch (e: UnknownHostException) {
-            Log.w("SessionManager", "验证 Cookie DNS 解析失败", e)
+            AppLog.w("SessionManager", "验证 Cookie DNS 解析失败", e)
             SessionValidationResult.NetworkError("无法连接服务器，请检查网络")
         } catch (e: Exception) {
-            Log.w("SessionManager", "验证 Cookie 时发生异常", e)
+            AppLog.w("SessionManager", "验证 Cookie 时发生异常", e)
             SessionValidationResult.NetworkError("网络异常: ${e.message}")
         }
     }

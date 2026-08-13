@@ -44,12 +44,12 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.QrCodeColorMode
 import edu.cqwu.electricity.theme.ui.QrCodeView
-import edu.cqwu.electricity.theme.ui.LocalQrCodeSettings
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import kotlin.math.roundToInt
 
-/** 圆角滑块固定点位 */
-private val CORNER_RADIUS_STEPS = listOf(0, 10, 20, 30, 40, 50)
+/** Corner radius slider range: 0..50 in 1% steps. */
+private val CORNER_RADIUS_RANGE = 0..50
 
 /**
  * 二维码设置页面
@@ -64,17 +64,17 @@ private val CORNER_RADIUS_STEPS = listOf(0, 10, 20, 30, 40, 50)
 fun QrCodeSettingsScreen(
     onBack: () -> Unit,
 ) {
-    val qrCodeSettings = LocalQrCodeSettings.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val appSettings = LocalAppSettingsState.current
+    val topBarColors = currentTopBarColors()
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     // 深色模式下背景强制白色（确保扫码可读），前景色遵循用户设置
-    val primaryColor = when (qrCodeSettings.colorMode) {
+    val primaryColor = when (appSettings.qrCodeColorMode) {
         QrCodeColorMode.THEME_SNAKE -> MaterialTheme.colorScheme.primary
         QrCodeColorMode.MONOCHROME -> Color.Black
     }
     // 深色模式下 MD3 primary 偏浅（为深色背景设计），在白色背景上需加深
-    val effectivePrimaryColor = if (isDarkTheme && qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE) {
+    val effectivePrimaryColor = if (isDarkTheme && appSettings.qrCodeColorMode == QrCodeColorMode.THEME_SNAKE) {
         val darkenFactor = 0.45f
         Color(
             primaryColor.red * darkenFactor,
@@ -85,7 +85,7 @@ fun QrCodeSettingsScreen(
     val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
 
     // 圆角分数（0~50 int → 0.0f~0.5f float）
-    val cornerFraction = qrCodeSettings.cornerRadius / 100f
+    val cornerFraction = appSettings.qrCodeCornerRadius / 100f
 
     Scaffold(
         topBar = {
@@ -146,15 +146,15 @@ fun QrCodeSettingsScreen(
                     ColorModeRow(
                         title = stringResource(R.string.qrcode_settings_md3_theme),
                         subtitle = stringResource(R.string.qrcode_settings_md3_theme_desc),
-                        selected = qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE,
-                        onClick = { qrCodeSettings.onColorModeChange(QrCodeColorMode.THEME_SNAKE) },
+                        selected = appSettings.qrCodeColorMode == QrCodeColorMode.THEME_SNAKE,
+                        onClick = { appSettings.updateQrCodeColorMode(QrCodeColorMode.THEME_SNAKE) },
                         colorPreview = MaterialTheme.colorScheme.primary,
                     )
                     ColorModeRow(
                         title = stringResource(R.string.qrcode_settings_black),
                         subtitle = stringResource(R.string.qrcode_settings_black_desc),
-                        selected = qrCodeSettings.colorMode == QrCodeColorMode.MONOCHROME,
-                        onClick = { qrCodeSettings.onColorModeChange(QrCodeColorMode.MONOCHROME) },
+                        selected = appSettings.qrCodeColorMode == QrCodeColorMode.MONOCHROME,
+                        onClick = { appSettings.updateQrCodeColorMode(QrCodeColorMode.MONOCHROME) },
                         colorPreview = if (isDarkTheme) Color.White else Color.Black,
                     )
                 }
@@ -177,7 +177,7 @@ fun QrCodeSettingsScreen(
                 ) {
                     // 当前值显示
                     Text(
-                        text = "${qrCodeSettings.cornerRadius}%",
+                        text = "${appSettings.qrCodeCornerRadius}%",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -189,16 +189,14 @@ fun QrCodeSettingsScreen(
 
                     // 滑块（steps = 4 表示中间 4 个 tick，加上两端共 6 个整数点位：0,10,20,30,40,50）
                     Slider(
-                        value = qrCodeSettings.cornerRadius.toFloat(),
+                        value = appSettings.qrCodeCornerRadius.toFloat(),
                         onValueChange = { newValue ->
-                            // 吸附到最近的固定点位
-                            val snapped = CORNER_RADIUS_STEPS.minByOrNull {
-                                kotlin.math.abs(it - newValue)
-                            } ?: newValue.toInt()
-                            qrCodeSettings.onCornerRadiusChange(snapped)
+                            val snapped = newValue.roundToInt()
+                                .coerceIn(CORNER_RADIUS_RANGE.first, CORNER_RADIUS_RANGE.last)
+                            appSettings.updateQrCodeCornerRadius(snapped)
                         },
-                        valueRange = 0f..50f,
-                        steps = 4,
+                        valueRange = CORNER_RADIUS_RANGE.first.toFloat()..CORNER_RADIUS_RANGE.last.toFloat(),
+                        steps = CORNER_RADIUS_RANGE.last - CORNER_RADIUS_RANGE.first - 1,
                         modifier = Modifier.fillMaxWidth(),
                         colors = SliderDefaults.colors(
                             thumbColor = MaterialTheme.colorScheme.primary,
@@ -214,13 +212,16 @@ fun QrCodeSettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        CORNER_RADIUS_STEPS.forEach { step ->
-                            Text(
-                                text = "$step",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                        Text(
+                            text = "${CORNER_RADIUS_RANGE.first}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = "${CORNER_RADIUS_RANGE.last}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }
@@ -261,10 +262,10 @@ fun QrCodeSettingsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    Switch(
-                        checked = qrCodeSettings.screenBrightnessEnabled,
-                        onCheckedChange = qrCodeSettings.onScreenBrightnessEnabledChange,
-                    )
+                        Switch(
+                            checked = appSettings.qrScreenBrightnessEnabled,
+                            onCheckedChange = appSettings::updateQrScreenBrightnessEnabled,
+                        )
                 }
             }
         }

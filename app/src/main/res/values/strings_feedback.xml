@@ -25,7 +25,7 @@
     <string name="feedback_email_title_suffix">：%1$s</string>
     <string name="feedback_share_log">分享日志</string>
     <string name="feedback_log_section_crash">═══ 崩溃记录 ═══</string>
-    <string name="feedback_log_section_process">═══ 当前进程日志 (logcat --pid) ═══</string>
+    <string name="feedback_log_section_process">═══ 当前应用日志 ═══</string>
     <string name="feedback_log_section_crash_buffer">═══ crash 缓冲区日志 (logcat -b crash) ═══</string>
     <string name="crash_report_title">应用崩溃报告</string>
     <string name="crash_report_basic_info">--- 基本信息 ---</string>

@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.hall.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.hall.data.HallServiceCenterApi.Companion.GET_USER_CATEGORY_APP_LIST_URL
 import edu.cqwu.electricity.login.data.SessionExpiredException
@@ -50,7 +50,7 @@ class HallServiceCenterApi {
                 .header("Referer", "https://ehall.cqwu.edu.cn/new/index.html")
                 .build()
 
-            Log.d("HallServiceCenterApi", "GET $url")
+            AppLog.d("HallServiceCenterApi", "GET $url")
             val response = client.newCall(request).execute()
             val body = response.body.string()
 
@@ -59,18 +59,18 @@ class HallServiceCenterApi {
 
             // ═══ 修复：检查 hasLogin 字段，未登录时不使用服务端数据 ═══
             if (!result.hasLogin) {
-                Log.w("HallServiceCenterApi", "用户未登录（hasLogin=false），拒绝使用服务端数据")
+                AppLog.w("HallServiceCenterApi", "用户未登录（hasLogin=false），拒绝使用服务端数据")
                 throw SessionExpiredException("用户未登录")
             }
 
             val items = result.extractCategories()
-            Log.d("HallServiceCenterApi", "服务数据获取成功，分类数: ${items.size}")
+            AppLog.d("HallServiceCenterApi", "服务数据获取成功，分类数: ${items.size}")
             Result.success(items)
         } catch (e: SessionExpiredException) {
-            Log.w("HallServiceCenterApi", "Session 过期: ${e.message}")
+            AppLog.w("HallServiceCenterApi", "Session 过期: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("HallServiceCenterApi", "获取服务数据失败", e)
+            AppLog.e("HallServiceCenterApi", "获取服务数据失败", e)
             Result.failure(e)
         }
     }

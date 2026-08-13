@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.profile.ui
 
 import android.app.Application
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
@@ -87,7 +87,7 @@ class MyInfoViewModel(application: Application) : AndroidViewModel(application) 
                         _uiState.update { it.copy(menuCategories = categories) }
                     }
                     .onFailure { e ->
-                        Log.w("MyInfoViewModel", "加载菜单列表失败", e)
+                        AppLog.w("MyInfoViewModel", "加载菜单列表失败", e)
                     }
             }
         }

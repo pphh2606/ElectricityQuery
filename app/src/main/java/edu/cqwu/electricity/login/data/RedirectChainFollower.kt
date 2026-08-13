@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.login.data
 
-import android.util.Log
-import edu.cqwu.electricity.feedback.util.LogRedactor
+import edu.cqwu.electricity.logging.AppLog
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -36,7 +35,7 @@ object RedirectChainFollower {
         var redirectCount = 0
 
         while (redirectCount < MAX_REDIRECTS) {
-            tag?.let { Log.d(it, "redirect ${redirectCount + 1}: ${LogRedactor.url(currentUrl)}") }
+            tag?.let { AppLog.url(it, "redirect ${redirectCount + 1}: ${currentUrl}") }
             val response = client.newCall(
                 Request.Builder()
                     .url(currentUrl)

@@ -21,6 +21,8 @@
     <string name="personalization_night_mode">夜间模式</string>
     <string name="personalization_pure_black">纯黑背景</string>
     <string name="personalization_pure_black_desc">深色模式下使用纯黑背景</string>
+    <string name="personalization_sheet_blur">弹窗背景模糊</string>
+    <string name="personalization_sheet_blur_desc">开启后底部弹窗背后的内容会模糊，Android 12 及以上生效</string>
     <string name="personalization_theme_color">主题颜色</string>
     <string name="personalization_dynamic_color">动态取色</string>
     <string name="personalization_dynamic_color_supported">跟随系统壁纸自动提取主题色</string>
@@ -155,4 +157,13 @@
     <string name="settings_night_mode_system">跟随系统</string>
     <string name="settings_night_mode_light">浅色模式</string>
     <string name="settings_night_mode_dark">深色模式</string>
+    <string name="config_log_level">日志等级</string>
+    <string name="config_log_level_desc">控制日志输出量与反馈附带的日志</string>
+    <string name="log_level_select">选择日志等级</string>
+    <string name="log_level_verbose">全部</string>
+    <string name="log_level_debug">调试</string>
+    <string name="log_level_info">信息</string>
+    <string name="log_level_warn">警告</string>
+    <string name="log_level_error">错误</string>
+    <string name="log_level_off">关闭</string>
 </resources>

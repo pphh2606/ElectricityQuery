@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.cardcenter.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -66,8 +68,6 @@ import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 
 /**
@@ -87,7 +87,7 @@ fun CardRechargeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val context = LocalContext.current
     val resources = LocalResources.current
     val nav = LocalNavController.current

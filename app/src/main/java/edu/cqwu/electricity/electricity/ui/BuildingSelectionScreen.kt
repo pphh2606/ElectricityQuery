@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.electricity.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
@@ -76,7 +77,7 @@ fun BuildingSelectionScreen(
 
     // 进入页面时加载校区列表
     LaunchedEffect(Unit) {
-        android.util.Log.d("DEBUG_expand", "BuildingSelectionScreen LaunchedEffect: areas.isEmpty=${uiState.areas.isEmpty()}, expandedAreaIds=${uiState.expandedAreaIds}, currentStep=${uiState.currentStep}")
+        AppLog.d("DEBUG_expand", "BuildingSelectionScreen LaunchedEffect: areas.isEmpty=${uiState.areas.isEmpty()}, expandedAreaIds=${uiState.expandedAreaIds}, currentStep=${uiState.currentStep}")
         if (uiState.areas.isEmpty()) {
             viewModel.loadAreas()
         }
@@ -140,7 +141,7 @@ private fun ContentArea(
                                     EmptyStateText(stringResource(R.string.building_no_campus))
                                 }
                             } else {
-                                android.util.Log.d("DEBUG_expand", "Rendering AREA step: areas=${uiState.areas.size}, expandedAreaIds=${uiState.expandedAreaIds}")
+                                AppLog.d("DEBUG_expand", "Rendering AREA step: areas=${uiState.areas.size}, expandedAreaIds=${uiState.expandedAreaIds}")
                                 items(uiState.areas, key = { it.id }) { area ->
                                     AreaBuildingGroup(
                                         area = area,

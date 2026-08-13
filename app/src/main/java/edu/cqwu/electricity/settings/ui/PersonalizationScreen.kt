@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Animation
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.BlurOn
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Colorize
@@ -66,34 +67,24 @@ import edu.cqwu.electricity.settings.data.TopBarStyle
 import edu.cqwu.electricity.settings.data.labelRes
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalizationScreen(
     onBack: () -> Unit,
-    currentNightMode: NightMode,
-    onNightModeChange: (NightMode) -> Unit,
-    currentPureBlack: Boolean,
-    onPureBlackChange: (Boolean) -> Unit,
-    currentColorSource: ThemeColorSource,
-    onColorSourceChange: (ThemeColorSource) -> Unit,
-    currentPageTransition: PageTransition,
-    onPageTransitionChange: (PageTransition) -> Unit,
-    currentReduceMotion: ReduceMotion,
-    onReduceMotionChange: (ReduceMotion) -> Unit,
-    currentTopBarStyle: TopBarStyle,
-    onTopBarStyleChange: (TopBarStyle) -> Unit,
     onNavigateToQrCodeSettings: () -> Unit = {},
     isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
 ) {
+    val appSettings = LocalAppSettingsState.current
     var showNightModeDialog by remember { mutableStateOf(false) }
     var showColorPicker by remember { mutableStateOf(false) }
     var showTopBarStyleDialog by remember { mutableStateOf(false) }
     var showPageTransitionDialog by remember { mutableStateOf(false) }
     var showReduceMotionDialog by remember { mutableStateOf(false) }
-    val customSeedColor = (currentColorSource as? ThemeColorSource.Custom)?.seedColor ?: Color(0xFF6750A4)
-    val topBarColors = currentTopBarStyle.toTopAppBarColors(MaterialTheme.colorScheme)
+    val customSeedColor = (appSettings.colorSource as? ThemeColorSource.Custom)?.seedColor ?: Color(0xFF6750A4)
+    val topBarColors = currentTopBarColors()
 
     Scaffold(
         topBar = {
@@ -126,7 +117,7 @@ fun PersonalizationScreen(
                 Column {
                     SettingRow(
                         icon = Icons.Outlined.Contrast, title = stringResource(R.string.personalization_night_mode),
-                        subtitle = stringResource(currentNightMode.labelRes),
+                        subtitle = stringResource(appSettings.nightMode.labelRes),
                         onClick = { showNightModeDialog = true },
                     )
                     Row(
@@ -160,8 +151,43 @@ fun PersonalizationScreen(
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Switch(
-                            checked = currentPureBlack,
-                            onCheckedChange = onPureBlackChange,
+                            checked = appSettings.pureBlack,
+                            onCheckedChange = appSettings::updatePureBlack,
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Outlined.BlurOn,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.personalization_sheet_blur),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = stringResource(R.string.personalization_sheet_blur_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Switch(
+                            checked = appSettings.sheetBlurEnabled,
+                            onCheckedChange = appSettings::updateSheetBlurEnabled,
                         )
                     }
                 }
@@ -180,21 +206,21 @@ fun PersonalizationScreen(
                     ThemeColorRow(
                         icon = Icons.Outlined.AutoAwesome, title = stringResource(R.string.personalization_dynamic_color),
                         subtitle = if (isDynamicColorSupported) stringResource(R.string.personalization_dynamic_color_supported) else stringResource(R.string.personalization_dynamic_color_unsupported),
-                        selected = currentColorSource is ThemeColorSource.SystemDynamic,
+                        selected = appSettings.colorSource is ThemeColorSource.SystemDynamic,
                         enabled = isDynamicColorSupported,
-                        onClick = { onColorSourceChange(ThemeColorSource.SystemDynamic) },
+                        onClick = { appSettings.updateColorSource(ThemeColorSource.SystemDynamic) },
                     )
                     ThemeColorRow(
                         icon = Icons.Outlined.Colorize, title = stringResource(R.string.personalization_custom_color),
                         subtitle = stringResource(R.string.personalization_custom_color_desc),
-                        selected = currentColorSource is ThemeColorSource.Custom,
+                        selected = appSettings.colorSource is ThemeColorSource.Custom,
                         onClick = {
                             showColorPicker = true
                         },
                     )
                     SettingRow(
                         icon = Icons.Outlined.FormatPaint, title = stringResource(R.string.personalization_topbar_color),
-                        subtitle = stringResource(currentTopBarStyle.labelRes),
+                        subtitle = stringResource(appSettings.topBarStyle.labelRes),
                         onClick = { showTopBarStyleDialog = true },
                     )
                 }
@@ -229,16 +255,16 @@ fun PersonalizationScreen(
                 Column {
                     SettingRow(
                         icon = Icons.Outlined.Animation, title = stringResource(R.string.personalization_page_transition),
-                        subtitle = if (currentReduceMotion == ReduceMotion.ON) {
-                            "${stringResource(currentPageTransition.labelRes)}${stringResource(R.string.personalization_reduce_motion_override)}"
+                        subtitle = if (appSettings.reduceMotion == ReduceMotion.ON) {
+                            "${stringResource(appSettings.pageTransition.labelRes)}${stringResource(R.string.personalization_reduce_motion_override)}"
                         } else {
-                            stringResource(currentPageTransition.labelRes)
+                            stringResource(appSettings.pageTransition.labelRes)
                         },
                         onClick = { showPageTransitionDialog = true },
                     )
                     SettingRow(
                         icon = Icons.Outlined.MotionPhotosAuto, title = stringResource(R.string.personalization_reduce_motion),
-                        subtitle = stringResource(currentReduceMotion.labelRes),
+                        subtitle = stringResource(appSettings.reduceMotion.labelRes),
                         onClick = { showReduceMotionDialog = true },
                     )
                 }
@@ -248,15 +274,16 @@ fun PersonalizationScreen(
 
     NightModeSelectionDialog(
         visible = showNightModeDialog,
-        onSelect = { mode -> onNightModeChange(mode); showNightModeDialog = false },
+        current = appSettings.nightMode,
+        onSelect = { mode -> appSettings.updateNightMode(mode); showNightModeDialog = false },
         onDismiss = { showNightModeDialog = false },
     )
     if (showColorPicker) {
         ColorPickerDialog(
             initialColor = customSeedColor,
-            onColorPreview = { color -> onColorSourceChange(ThemeColorSource.Custom(color)) },
+            onColorPreview = { color -> appSettings.updateColorSource(ThemeColorSource.Custom(color)) },
             onColorSelected = { color ->
-                onColorSourceChange(ThemeColorSource.Custom(color))
+                appSettings.updateColorSource(ThemeColorSource.Custom(color))
                 showColorPicker = false
             },
             onDismiss = { showColorPicker = false },
@@ -264,26 +291,26 @@ fun PersonalizationScreen(
     }
     SelectionDialog(
         visible = showTopBarStyleDialog,
-        title = stringResource(R.string.personalization_topbar_color), current = currentTopBarStyle,
+        title = stringResource(R.string.personalization_topbar_color), current = appSettings.topBarStyle,
         entries = TopBarStyle.entries,
         displayText = { stringResource(it.labelRes) },
-        onSelect = { onTopBarStyleChange(it); showTopBarStyleDialog = false },
+        onSelect = { appSettings.updateTopBarStyle(it); showTopBarStyleDialog = false },
         onDismiss = { showTopBarStyleDialog = false },
     )
     SelectionDialog(
         visible = showPageTransitionDialog,
-        title = stringResource(R.string.personalization_page_transition), current = currentPageTransition,
+        title = stringResource(R.string.personalization_page_transition), current = appSettings.pageTransition,
         entries = PageTransition.entries,
         displayText = { stringResource(it.labelRes) },
-        onSelect = { onPageTransitionChange(it); showPageTransitionDialog = false },
+        onSelect = { appSettings.updatePageTransition(it); showPageTransitionDialog = false },
         onDismiss = { showPageTransitionDialog = false },
     )
     SelectionDialog(
         visible = showReduceMotionDialog,
-        title = stringResource(R.string.personalization_reduce_motion), current = currentReduceMotion,
+        title = stringResource(R.string.personalization_reduce_motion), current = appSettings.reduceMotion,
         entries = ReduceMotion.entries,
         displayText = { stringResource(it.labelRes) },
-        onSelect = { onReduceMotionChange(it); showReduceMotionDialog = false },
+        onSelect = { appSettings.updateReduceMotion(it); showReduceMotionDialog = false },
         onDismiss = { showReduceMotionDialog = false },
     )
 }
@@ -363,7 +390,12 @@ private fun ThemeColorRow(icon: ImageVector, title: String, subtitle: String, se
 }
 
 @Composable
-private fun NightModeSelectionDialog(visible: Boolean = true, onSelect: (NightMode) -> Unit, onDismiss: () -> Unit) {
+private fun NightModeSelectionDialog(
+    visible: Boolean = true,
+    current: NightMode,
+    onSelect: (NightMode) -> Unit,
+    onDismiss: () -> Unit,
+) {
     BottomSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
@@ -377,6 +409,7 @@ private fun NightModeSelectionDialog(visible: Boolean = true, onSelect: (NightMo
                     NightMode.DARK -> Icons.Outlined.DarkMode
                 },
                 title = stringResource(mode.labelRes),
+                selected = mode == current,
                 onClick = {
                     onSelect(mode)
                     onDismiss()
@@ -459,6 +492,7 @@ private fun <T> SelectionDialog(
             BottomSheetItem(
                 icon = if (entry == current) Icons.Outlined.CheckCircle else null,
                 title = displayText(entry),
+                selected = entry == current,
                 onClick = {
                     onSelect(entry)
                     onDismiss()

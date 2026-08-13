@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.hall.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
@@ -98,7 +99,7 @@ fun HallPageContent(
 ) {
     val _hallPerfStart = System.currentTimeMillis()
     androidx.compose.runtime.SideEffect {
-        android.util.Log.d("TabPerf", "HallPageContent composition done, elapsed=${System.currentTimeMillis() - _hallPerfStart}ms")
+        AppLog.d("TabPerf", "HallPageContent composition done, elapsed=${System.currentTimeMillis() - _hallPerfStart}ms")
     }
     val uiState by hallViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()

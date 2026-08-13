@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.login.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -86,8 +88,6 @@ import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.delay
@@ -123,7 +123,7 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val nav = LocalNavController.current
 
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     // 三点菜单与凭据导入导出
     var showMenu by remember { mutableStateOf(false) }

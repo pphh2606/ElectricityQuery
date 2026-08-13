@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.webview.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -10,7 +12,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import android.view.ViewGroup
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -67,8 +69,6 @@ import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 import java.io.ByteArrayInputStream
@@ -112,7 +112,7 @@ fun UnifiedWebViewScreen(
     // 跟踪 WebView 历史栈状态，动态控制 BackHandler
     var canGoBack by remember { mutableStateOf(false) }
     var progress by remember { mutableIntStateOf(10) }
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val displayTitle = initialTitle.ifBlank { stringResource(R.string.webview_loading) }
     var pageTitle by remember { mutableStateOf(displayTitle) }
     val snackbar = LocalSnackbarController.current
@@ -164,7 +164,7 @@ fun UnifiedWebViewScreen(
     // ═══ CAS 登录检测 ═══
     LaunchedEffect(pendingLoginNavigation) {
         if (pendingLoginNavigation) {
-            Log.d("WebView_DIAG", ">>> CAS登录检测触发，准备跳转到本地登录")
+            AppLog.d("WebView_DIAG", ">>> CAS登录检测触发，准备跳转到本地登录")
             pendingLoginNavigation = false
             nav.navigate(Routes.WEBVIEW_LOGIN)
         }
@@ -303,7 +303,7 @@ fun UnifiedWebViewScreen(
                                     val toggledUrl = try {
                                         WebVpnEncoder.toggle(currentUrl)
                                     } catch (e: Exception) {
-                                        Log.e("WebView_DIAG", "URL 切换失败: ${e.message}")
+                                        AppLog.e("WebView_DIAG", "URL 切换失败: ${e.message}")
                                         snackbar.show(resources.getString(R.string.webview_url_change_failed), ToastUtils.Type.ERROR)
                                         null
                                     }
@@ -361,14 +361,14 @@ fun UnifiedWebViewScreen(
                                 if (!WebViewUrlUtil.shouldOpenLocalLogin(url, webErrorState != null)) return
                                 if (pendingLoginNavigation) return
                                 pendingLoginNavigation = true
-                                Log.d("WebView_DIAG", ">>> 检测到CAS登录页已提交，准备跳转到本地登录")
+                                AppLog.d("WebView_DIAG", ">>> 检测到CAS登录页已提交，准备跳转到本地登录")
                                 view?.stopLoading()
                             }
 
                             webViewClient = object : WebViewClient() {
                                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                                     super.onPageStarted(view, url, favicon)
-                                    Log.d("WebView_DIAG", "onPageStarted: $url")
+                                    AppLog.d("WebView_DIAG", "onPageStarted: $url")
                                     isLoading = true
                                     webErrorState = null  // 新页面开始加载时清除错误状态
                                     canGoBack = view?.canGoBack() == true
@@ -409,7 +409,7 @@ fun UnifiedWebViewScreen(
 
                                 override fun onPageFinished(view: WebView?, url: String?) {
                                     super.onPageFinished(view, url)
-                                    Log.d("WebView_DIAG", "onPageFinished: $url")
+                                    AppLog.d("WebView_DIAG", "onPageFinished: $url")
                                     isLoading = false
                                     canGoBack = view?.canGoBack() == true
                                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -456,7 +456,7 @@ fun UnifiedWebViewScreen(
                                             } else {
                                                 null
                                             } ?: context.getString(R.string.common_unknown_error)
-                                        Log.w("WebView_DIAG", ">>> 主框架加载错误: code=$code, desc=$desc")
+                                        AppLog.w("WebView_DIAG", ">>> 主框架加载错误: code=$code, desc=$desc")
                                         isLoading = false
                                         webErrorState = WebViewError(
                                             errorCode = code,
@@ -473,7 +473,7 @@ fun UnifiedWebViewScreen(
                                     super.onReceivedHttpError(view, request, errorResponse)
                                     val statusCode = errorResponse?.statusCode ?: 0
                                     if (request?.isForMainFrame == true && statusCode >= 400 && webErrorState == null) {
-                                        Log.w("WebView_DIAG", ">>> HTTP 错误: statusCode=$statusCode")
+                                        AppLog.w("WebView_DIAG", ">>> HTTP 错误: statusCode=$statusCode")
                                         isLoading = false
                                         webErrorState = WebViewError(
                                             errorCode = statusCode,
@@ -489,7 +489,7 @@ fun UnifiedWebViewScreen(
                                 ): WebResourceResponse? {
                                     val url = request?.url?.toString() ?: return null
                                     if (url.contains("campushoy")) {
-                                        Log.d("WebView_DIAG", ">>> 拦截 campushoy.js: $url")
+                                        AppLog.d("WebView_DIAG", ">>> 拦截 campushoy.js: $url")
                                         return WebResourceResponse(
                                             "application/javascript", "UTF-8",
                                             ByteArrayInputStream("".toByteArray())
@@ -503,7 +503,7 @@ fun UnifiedWebViewScreen(
                                     request: WebResourceRequest?
                                 ): Boolean {
                                     val url = request?.url?.toString() ?: return false
-                                    Log.d("WebView_DIAG", "shouldOverrideUrlLoading: $url")
+                                    AppLog.d("WebView_DIAG", "shouldOverrideUrlLoading: $url")
 
                                     return view?.context != null && WebViewUrlUtil.openCustomSchemeUrl(view.context, url, "WebView_DIAG")
                                 }
@@ -530,7 +530,7 @@ fun UnifiedWebViewScreen(
 
                             // ═══ 文件下载支持 ═══
                             setDownloadListener { downloadUrl, userAgent, contentDisposition, mimeType, contentLength ->
-                                Log.d("WebView_DIAG", "下载请求: $downloadUrl, mime=$mimeType")
+                                AppLog.d("WebView_DIAG", "下载请求: $downloadUrl, mime=$mimeType")
                                 try {
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
                                     context.startActivity(intent)
@@ -549,7 +549,7 @@ fun UnifiedWebViewScreen(
 
                                 override fun onReceivedTitle(view: WebView?, title: String?) {
                                     super.onReceivedTitle(view, title)
-                                    Log.d("WebView_DIAG", "onReceivedTitle: $title, url=${view?.url}")
+                                    AppLog.d("WebView_DIAG", "onReceivedTitle: $title, url=${view?.url}")
                                     if (!title.isNullOrBlank()) {
                                         pageTitle = title
                                     }
@@ -569,7 +569,7 @@ fun UnifiedWebViewScreen(
                                     filePathCallback: ValueCallback<Array<Uri>>?,
                                     fileChooserParams: FileChooserParams?
                                 ): Boolean {
-                                    Log.d("WebView_DIAG", "onShowFileChooser")
+                                    AppLog.d("WebView_DIAG", "onShowFileChooser")
                                     fileUploadCallback = filePathCallback
                                     // 始终用 */* 避免 WebView 传 .png 等扩展名导致崩溃
                                     fileUploadLauncher.launch("*/*")
@@ -633,7 +633,7 @@ fun UnifiedWebViewScreen(
                             val toggledUrl = try {
                                 WebVpnEncoder.toggle(currentUrl)
                             } catch (e: Exception) {
-                                Log.e("WebView_DIAG", "URL切换失败: ${e.message}")
+                                AppLog.e("WebView_DIAG", "URL切换失败: ${e.message}")
                                 null
                             }
                             if (toggledUrl != null) {

@@ -1,8 +1,7 @@
 package edu.cqwu.electricity.hall.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.EHALL_APP_SHOW_URL
 import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.FAVORITE_APPS_URL
 import edu.cqwu.electricity.login.data.ServiceLoginManager
@@ -63,9 +62,9 @@ class HallFavoriteApi {
     suspend fun fetchFavorites(): Result<List<HallItem>> = withContext(Dispatchers.IO) {
         try {
             // ═══ 步骤 1：确保 ehall session 已初始化（幂等） ═══
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 开始执行")
+            AppLog.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 开始执行")
             initEhallSession()
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] initEhallSession 通过")
+            AppLog.d("HallFavoriteApi_DEBUG", "[fetchFavorites] initEhallSession 通过")
 
             // ═══ 步骤 2：请求收藏 API ═══
             val url = "${FAVORITE_APPS_URL}?_=${System.currentTimeMillis()}"
@@ -77,33 +76,33 @@ class HallFavoriteApi {
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 步骤2: GET $url")
+            AppLog.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 步骤2: GET $url")
             val response = client.newCall(request).execute()
             val body = response.body.string()
 
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 收到响应，长度=${body.length}")
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 响应前200字: ${LogRedactor.body(body)}")
+            AppLog.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 收到响应，长度=${body.length}")
+            AppLog.body("HallFavoriteApi_DEBUG", "[fetchFavorites] 响应前200字: $body")
 
             // JSON API 响应直接反序列化，通过 hasLogin 字段判断登录态
             val result = gson.fromJson(body, UserFavoritesResponse::class.java)
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] Gson解析成功, hasLogin=${result.hasLogin}, searchResult.size=${result.searchResult.size}")
+            AppLog.d("HallFavoriteApi_DEBUG", "[fetchFavorites] Gson解析成功, hasLogin=${result.hasLogin}, searchResult.size=${result.searchResult.size}")
 
             // 检查 hasLogin 字段
             if (!result.hasLogin) {
-                Log.w("HallFavoriteApi_DEBUG", "[fetchFavorites] hasLogin=false，抛出SessionExpiredException")
+                AppLog.w("HallFavoriteApi_DEBUG", "[fetchFavorites] hasLogin=false，抛出SessionExpiredException")
                 throw SessionExpiredException("用户未登录")
             }
 
             // 筛选 favorite=true 的应用
             val favorites = result.searchResult.filter { it.favorite }
-            Log.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 筛选出favorite=true: ${favorites.size}个")
+            AppLog.d("HallFavoriteApi_DEBUG", "[fetchFavorites] 筛选出favorite=true: ${favorites.size}个")
             Result.success(favorites)
         } catch (e: SessionExpiredException) {
             // 用 e.message! 区分是 initEhallSession 还是 hasLogin 抛出的
-            Log.w("HallFavoriteApi_DEBUG", "[fetchFavorites] 捕获 SessionExpiredException: message='${e.message}'")
+            AppLog.w("HallFavoriteApi_DEBUG", "[fetchFavorites] 捕获 SessionExpiredException: message='${e.message}'")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("HallFavoriteApi_DEBUG", "[fetchFavorites] 捕获 Exception", e)
+            AppLog.e("HallFavoriteApi_DEBUG", "[fetchFavorites] 捕获 Exception", e)
             Result.failure(e)
         }
     }
@@ -140,11 +139,11 @@ class HallFavoriteApi {
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
-            Log.d("HallFavoriteApi", "toggleFavorite: GET $url")
+            AppLog.d("HallFavoriteApi", "toggleFavorite: GET $url")
             val response = client.newCall(request).execute()
             val body = response.body.string()
 
-            Log.d("HallFavoriteApi", "toggleFavorite 响应: ${LogRedactor.body(body)}")
+            AppLog.body("HallFavoriteApi", "toggleFavorite 响应: $body")
 
             // JSON API 响应直接反序列化，通过 hasLogin 字段判断登录态
             val result = gson.fromJson(body, FavoriteAppResponse::class.java)
@@ -157,13 +156,13 @@ class HallFavoriteApi {
                 throw RuntimeException("切换收藏失败：${result.result}")
             }
 
-            Log.d("HallFavoriteApi", "切换收藏成功: appId=$appId, addFavorite=$addFavorite")
+            AppLog.d("HallFavoriteApi", "切换收藏成功: appId=$appId, addFavorite=$addFavorite")
             Result.success(Unit)
         } catch (e: SessionExpiredException) {
-            Log.w("HallFavoriteApi", "Session 过期: ${e.message}")
+            AppLog.w("HallFavoriteApi", "Session 过期: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("HallFavoriteApi", "切换收藏失败", e)
+            AppLog.e("HallFavoriteApi", "切换收藏失败", e)
             Result.failure(e)
         }
     }

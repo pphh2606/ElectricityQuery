@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.feedback.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.layout.Column
@@ -50,8 +52,6 @@ import androidx.core.content.FileProvider
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
@@ -73,10 +73,10 @@ private const val FEEDBACK_EMAIL = "2606841932@qq.com"
  * - 内容输入框（必填）
  *
  * 发送方式：通过 Intent.ACTION_SENDTO 唤起系统邮件客户端，
- * 附带的日志通过持久化崩溃文件 + logcat 命令收集（零依赖，在 IO 协程中执行避免 ANR）。
+ * Logs come from the in-app buffer plus persisted crash reports (IO dispatcher avoids ANR).
  *
  * 优化：
- * - 预加载缓存：日志开关打开时自动预加载并缓存日志，避免预览和发送时重复执行 logcat
+ * - Preload cache: logs are cached once and reused when previewing or sending
  * - PackageInfo 合并为一次查询，减少重复调用
  * - 日志预览支持长按选择复制
  */
@@ -86,7 +86,7 @@ fun FeedbackScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val scope = rememberCoroutineScope()
 
@@ -99,7 +99,7 @@ fun FeedbackScreen(
     var hasCrashReports by remember { mutableStateOf(false) }
     var crashReportCount by remember { mutableIntStateOf(0) }
 
-    // 日志预加载缓存：避免预览和发送时重复执行 logcat
+    // 日志预加载缓存：避免预览和发送时重复读取日志缓冲
     var cachedLogs by remember { mutableStateOf<String?>(null) }
     var isLogsLoading by remember { mutableStateOf(false) }
 
@@ -231,14 +231,9 @@ fun FeedbackScreen(
     }
 
     fun loadLogPreview() {
-        if (cachedLogs != null) {
-            previewLogText = cachedLogs!!.ifBlank { context.getString(R.string.feedback_log_empty) }
-            showLogPreview = true
-        } else {
-            // 理论上缓存一定会存在（LaunchedEffect 中已加载），但兜底直接拉取
-            previewLogText = context.getString(R.string.feedback_log_loading)
-            showLogPreview = true
-        }
+        previewLogText = cachedLogs?.ifBlank { context.getString(R.string.feedback_log_empty) }
+            ?: context.getString(R.string.feedback_log_loading)
+        showLogPreview = true
     }
 
     // ── 日志预览弹窗（下滑或点击外部关闭） ──
@@ -247,18 +242,18 @@ fun FeedbackScreen(
         onDismissRequest = { showLogPreview = false },
         title = stringResource(R.string.feedback_log_preview),
     ) {
-            // 外层 BottomSheetDialog(fullscreen=true) 已包含 fillMaxHeight + 滚动，
-            // 内容只需 fillMaxWidth，不要固定高度和内层滚动，避免冲突
-            SelectionContainer {
-                Text(
-                    text = previewLogText,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                )
-            }
+        // 外层 BottomSheetDialog(fullscreen=true) 已包含 fillMaxHeight + 滚动，
+        // 内容只需 fillMaxWidth，不要固定高度和内层滚动，避免冲突
+        SelectionContainer {
+            Text(
+                text = previewLogText,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            )
         }
+    }
 
     Scaffold(
         topBar = {

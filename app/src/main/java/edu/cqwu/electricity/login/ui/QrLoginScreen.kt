@@ -1,5 +1,9 @@
 package edu.cqwu.electricity.login.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
+import edu.cqwu.electricity.logging.AppLog
+
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
@@ -60,12 +64,10 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.login.data.QrLoginApi
 import edu.cqwu.electricity.settings.data.QrCodeColorMode
-import edu.cqwu.electricity.theme.ui.LocalQrCodeSettings
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.QrCodeView
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -108,7 +110,7 @@ fun QrLoginScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val api = remember { QrLoginApi() }
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val snackbar = LocalSnackbarController.current
 
     var uiState by remember { mutableStateOf<QrLoginUiState>(QrLoginUiState.Initializing) }
@@ -117,13 +119,13 @@ fun QrLoginScreen(
     var qrCodeDecodedContent by remember { mutableStateOf<String?>(null) }
 
     // ── 二维码主题设置（与支付码页面一致）──
-    val qrCodeSettings = LocalQrCodeSettings.current
+    val appSettings = LocalAppSettingsState.current
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val qrPrimaryColor = when (qrCodeSettings.colorMode) {
+    val qrPrimaryColor = when (appSettings.qrCodeColorMode) {
         QrCodeColorMode.THEME_SNAKE -> MaterialTheme.colorScheme.primary
         QrCodeColorMode.MONOCHROME -> Color.Black
     }
-    val qrEffectivePrimaryColor = if (isDarkTheme && qrCodeSettings.colorMode == QrCodeColorMode.THEME_SNAKE) {
+    val qrEffectivePrimaryColor = if (isDarkTheme && appSettings.qrCodeColorMode == QrCodeColorMode.THEME_SNAKE) {
         Color(
             qrPrimaryColor.red * 0.45f, qrPrimaryColor.green * 0.45f,
             qrPrimaryColor.blue * 0.45f, qrPrimaryColor.alpha)
@@ -131,11 +133,11 @@ fun QrLoginScreen(
         qrPrimaryColor
     }
     val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
-    val qrCornerFraction = qrCodeSettings.cornerRadius / 100f
+    val qrCornerFraction = appSettings.qrCodeCornerRadius / 100f
 
     // 窗口亮度控制：根据设置决定是否调高屏幕亮度（与支付码页面一致）
     val window = remember(context) { (context as? Activity)?.window }
-    val isScreenBrightnessEnabled = qrCodeSettings.screenBrightnessEnabled
+    val isScreenBrightnessEnabled = appSettings.qrScreenBrightnessEnabled
     DisposableEffect(isScreenBrightnessEnabled) {
         if (isScreenBrightnessEnabled) {
             window?.let { win ->
@@ -223,7 +225,7 @@ fun QrLoginScreen(
                                         rememberPassword = true
                                     )
                                 } catch (e: Exception) {
-                                    android.util.Log.w("QrLoginScreen", "保存用户到 AccountStore 失败", e)
+                                    AppLog.w("QrLoginScreen", "保存用户到 AccountStore 失败", e)
                                 }
                             }
                             snackbar.show(resources.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
@@ -422,7 +424,7 @@ fun QrLoginScreen(
                                                 }
                                                 context.startActivity(Intent.createChooser(intent, null))
                                             } catch (e: Exception) {
-                                                android.util.Log.w("QrLoginScreen", "分享URL失败", e)
+                                                AppLog.w("QrLoginScreen", "分享URL失败", e)
                                             }
                                         }
                                     },
@@ -510,7 +512,7 @@ private fun generateQrCodeBitmap(content: String): Bitmap? {
         }
         Bitmap.createBitmap(pixels, w, h, Bitmap.Config.RGB_565)
     } catch (e: Exception) {
-        android.util.Log.w("QrLoginScreen", "生成二维码 Bitmap 失败", e)
+        AppLog.w("QrLoginScreen", "生成二维码 Bitmap 失败", e)
         null
     }
 }
@@ -550,7 +552,7 @@ private fun saveQrCodeToGallery(context: Context, content: String): Boolean {
         bitmap.recycle()
         true
     } catch (e: Exception) {
-        android.util.Log.w("QrLoginScreen", "保存二维码到相册失败", e)
+        AppLog.w("QrLoginScreen", "保存二维码到相册失败", e)
         false
     }
 }

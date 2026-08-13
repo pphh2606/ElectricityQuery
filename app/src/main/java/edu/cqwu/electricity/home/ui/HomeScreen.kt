@@ -2,6 +2,8 @@
 
 package edu.cqwu.electricity.home.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
@@ -9,7 +11,7 @@ import edu.cqwu.electricity.R
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -94,8 +96,6 @@ import edu.cqwu.electricity.theme.ui.CustomWebsiteDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 import kotlinx.coroutines.launch
@@ -114,7 +114,7 @@ fun HomeTopBar(
     onCloseSearch: () -> Unit,
 ) {
     val nav = LocalNavController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -294,21 +294,21 @@ fun HomePageContent(
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Log.w(TAG, "系统无法处理 $url (scheme=${Uri.parse(url).scheme}), 尝试降级...")
+            AppLog.w(TAG, "系统无法处理 $url (scheme=${Uri.parse(url).scheme}), 尝试降级...")
             // ── 降级方案 ──
             if (url.startsWith("mamp://")) {
                 try {
-                    Log.d(TAG, "降级: 尝试 campusnextins:// 打开今日校园App")
+                    AppLog.d(TAG, "降级: 尝试 campusnextins:// 打开今日校园App")
                     val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
                     context.startActivity(fallbackIntent)
                     return
                 } catch (e2: ActivityNotFoundException) {
-                    Log.w(TAG, "降级 campusnextins:// 也失败: ${e2.message}")
+                    AppLog.w(TAG, "降级 campusnextins:// 也失败: ${e2.message}")
                 }
             }
             snackbar.show(resources.getString(R.string.home_install_campus_app, appName), ToastUtils.Type.ERROR)
         } catch (e: Exception) {
-            Log.e(TAG, "打开外部应用异常: ${e.message}")
+            AppLog.e(TAG, "打开外部应用异常: ${e.message}")
             snackbar.show(resources.getString(R.string.home_open_failed, e.message ?: ""), ToastUtils.Type.ERROR)
         }
     }

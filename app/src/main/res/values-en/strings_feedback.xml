@@ -38,7 +38,7 @@
 
     <string name="crash_report_brand">Brand: %1$s</string>
 
-    <string name="feedback_log_section_process">═══ Current process logs (logcat --pid) ═══</string>
+    <string name="feedback_log_section_process">═══ Current app logs ═══</string>
 
     <string name="crash_report_thread_priority">Thread priority: %1$s</string>
 

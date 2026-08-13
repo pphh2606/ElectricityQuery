@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.login.data
 
-import android.util.Log
-import edu.cqwu.electricity.feedback.util.LogRedactor
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +75,7 @@ class CasAuthApi {
     ): Result<LoginResult> = withContext(Dispatchers.IO) {
         try {
             val t0 = System.currentTimeMillis()
-            Log.d("CasAuthApi", "开始CAS登录(user): GET $LOGIN_URL")
+            AppLog.d("CasAuthApi", "开始CAS登录(user): GET $LOGIN_URL")
 
             val outcome = CasLoginFlow.login(
                 client = client,
@@ -88,18 +87,18 @@ class CasAuthApi {
                 existingHtml = null,
             )
 
-            Log.d("CasAuthApi", "登录POST响应(user): code=${outcome.responseCode}, location=${LogRedactor.url(outcome.location)}")
+            AppLog.url("CasAuthApi", "登录POST响应(user): code=${outcome.responseCode}, location=${outcome.location}")
 
             val cookieString = cookieProvider(LOGIN_URL)
             val castgc = CookieParser.getValue(cookieString, "CASTGC")
 
             if (castgc == null) {
-                Log.e("CasAuthApi", "未获取到 CASTGC(user), 共有${cookieString.split(";").size}个Cookie")
+                AppLog.e("CasAuthApi", "未获取到 CASTGC(user), 共有${cookieString.split(";").size}个Cookie")
                 throw RuntimeException("登录失败：未能获取到 CASTGC Cookie，请检查账号或密码")
             }
 
             val t5 = System.currentTimeMillis()
-            Log.d("CasAuthApi", "登录总耗时(user): ${t5 - t0}ms, CASTGC=${LogRedactor.mask(castgc)}")
+            AppLog.d("CasAuthApi", "登录总耗时(user): ${t5 - t0}ms, CASTGC=${castgc}")
 
             Result.success(LoginResult(
                 username = username,
@@ -108,10 +107,10 @@ class CasAuthApi {
         } catch (e: CancellationException) {
             throw e
         } catch (e: SocketTimeoutException) {
-            Log.e("CasAuthApi", "登录失败(user)", e)
+            AppLog.e("CasAuthApi", "登录失败(user)", e)
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("CasAuthApi", "登录失败(user)", e)
+            AppLog.e("CasAuthApi", "登录失败(user)", e)
             Result.failure(e)
         }
     }

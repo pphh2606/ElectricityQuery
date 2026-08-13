@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.hall.ui
 
 import android.app.Application
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
@@ -98,13 +98,13 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     favoriteApi.initEhallSession()
                 } catch (e: SessionExpiredException) {
-                    Log.d("HallViewModel", "ehall session 初始化失败（未登录），保持本地 JSON")
+                    AppLog.d("HallViewModel", "ehall session 初始化失败（未登录），保持本地 JSON")
                 } catch (e: java.net.UnknownHostException) {
-                    Log.w("HallViewModel", "ehall 服务器不可达（无校园网？），保持本地 JSON")
+                    AppLog.w("HallViewModel", "ehall 服务器不可达（无校园网？），保持本地 JSON")
                 } catch (e: java.net.SocketTimeoutException) {
-                    Log.w("HallViewModel", "ehall 连接超时，保持本地 JSON")
+                    AppLog.w("HallViewModel", "ehall 连接超时，保持本地 JSON")
                 } catch (e: java.io.IOException) {
-                    Log.w("HallViewModel", "ehall session 初始化网络异常，保持本地 JSON")
+                    AppLog.w("HallViewModel", "ehall session 初始化网络异常，保持本地 JSON")
                 }
             }
 
@@ -132,9 +132,9 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
                     dataSource = HallDataSource.SERVER,
                 )
             }
-            Log.d("HallViewModel", "服务端数据加载成功，分类数: ${items.size}, isLoggedIn=true")
+            AppLog.d("HallViewModel", "服务端数据加载成功，分类数: ${items.size}, isLoggedIn=true")
         }.onFailure { error ->
-            Log.w("HallViewModel", "服务端数据加载失败: ${error.message}，使用本地 JSON 兜底")
+            AppLog.w("HallViewModel", "服务端数据加载失败: ${error.message}，使用本地 JSON 兜底")
         }
     }
 

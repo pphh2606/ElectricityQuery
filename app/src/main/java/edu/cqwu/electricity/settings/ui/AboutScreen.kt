@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -56,8 +58,6 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * 关于页面
@@ -73,7 +73,7 @@ fun AboutScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val appName = stringResource(id = R.string.app_name)
     var showContactSheet by remember { mutableStateOf(false) }
 
@@ -164,7 +164,7 @@ fun AboutScreen(
                     )
 
                     // 构建信息
-                    val isCiBuild = false
+                    val isCiBuild = BuildConfig.BUILD_SOURCE == "github-actions"
                     AboutEntry(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.about_build_info),
@@ -332,4 +332,3 @@ private fun AboutEntry(
         )
     }
 }
-

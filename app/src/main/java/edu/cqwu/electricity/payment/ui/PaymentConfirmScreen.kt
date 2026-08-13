@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.payment.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -41,9 +43,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.payment.data.PaymentMethod
 import edu.cqwu.electricity.theme.ui.LoadingDialog
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * 支付确认页面的三个阶段
@@ -102,7 +102,7 @@ fun PaymentConfirmScreen(
     onPaymentComplete: () -> Unit,
     startPolling: (String) -> Unit,
 ) {
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     // 当前阶段：选择 → 等待 → 成功
     var phase by remember { mutableStateOf(PaymentPhase.SELECT_METHOD) }

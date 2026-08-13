@@ -14,12 +14,16 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowInsetsControllerCompat
+import com.materialkolor.dynamicColorScheme
+import dev.chrisbanes.haze.HazeDefaults
 import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.settings.data.ThemeColorSource
 import edu.cqwu.electricity.settings.data.TopBarStyle
@@ -36,60 +40,32 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40
 )
 
-data class NightModeState(
-    val nightMode: NightMode,
-    val onNightModeChange: (NightMode) -> Unit,
-    val pureBlack: Boolean,
-    val onPureBlackChange: (Boolean) -> Unit,
-)
+@Stable
+class SheetVisibilityState {
+    private val openCount = mutableStateOf(0)
+    private val blurProgressState = mutableStateOf(0f)
 
-val LocalNightModeState = staticCompositionLocalOf<NightModeState> {
-    error("No NightModeState provided")
+    val active: Boolean get() = openCount.value > 0
+
+    var blurProgress: Float
+        get() = blurProgressState.value
+        set(value) {
+            blurProgressState.value = value.coerceIn(0f, 1f)
+        }
+
+    fun open() {
+        openCount.value++
+    }
+
+    fun close() {
+        openCount.value = (openCount.value - 1).coerceAtLeast(0)
+    }
 }
 
-data class ColorSourceState(
-    val colorSource: ThemeColorSource,
-    val onColorSourceChange: (ThemeColorSource) -> Unit,
-)
+val LocalSheetVisibilityState = staticCompositionLocalOf { SheetVisibilityState() }
 
-val LocalColorSourceState = staticCompositionLocalOf<ColorSourceState> {
-    error("No ColorSourceState provided")
-}
-
-/** 动画设置 */
-data class AnimationSettings(
-    val pageTransition: edu.cqwu.electricity.settings.data.PageTransition,
-    val onPageTransitionChange: (edu.cqwu.electricity.settings.data.PageTransition) -> Unit,
-    val reduceMotion: edu.cqwu.electricity.settings.data.ReduceMotion,
-    val onReduceMotionChange: (edu.cqwu.electricity.settings.data.ReduceMotion) -> Unit,
-)
-
-val LocalAnimationSettings = staticCompositionLocalOf<AnimationSettings> {
-    error("No AnimationSettings provided")
-}
-
-data class TopBarState(
-    val style: TopBarStyle,
-    val onStyleChange: (TopBarStyle) -> Unit,
-)
-
-val LocalTopBarState = staticCompositionLocalOf<TopBarState> {
-    error("No TopBarState provided")
-}
-
-/** 二维码设置 */
-data class QrCodeSettings(
-    val colorMode: edu.cqwu.electricity.settings.data.QrCodeColorMode,
-    val onColorModeChange: (edu.cqwu.electricity.settings.data.QrCodeColorMode) -> Unit,
-    val cornerRadius: Int,
-    val onCornerRadiusChange: (Int) -> Unit,
-    val screenBrightnessEnabled: Boolean,
-    val onScreenBrightnessEnabledChange: (Boolean) -> Unit,
-)
-
-val LocalQrCodeSettings = staticCompositionLocalOf<QrCodeSettings> {
-    error("No QrCodeSettings provided")
-}
+fun isHazeBlurSupported(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && HazeDefaults.blurEnabled()
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("No NavController provided")
@@ -131,6 +107,10 @@ fun TopBarStyle.toTopAppBarColors(colorScheme: ColorScheme): TopAppBarColors {
 }
 
 @Composable
+fun currentTopBarColors(): TopAppBarColors =
+    LocalAppSettingsState.current.topBarStyle.toTopAppBarColors(MaterialTheme.colorScheme)
+
+@Composable
 fun 电费查询Theme(
     nightMode: NightMode = NightMode.SYSTEM,
     colorSource: ThemeColorSource = ThemeColorSource.SystemDynamic,
@@ -151,9 +131,9 @@ fun 电费查询Theme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         colorSource is ThemeColorSource.Custom -> {
-            generateColorSchemeFromSeed(
+            dynamicColorScheme(
                 seedColor = colorSource.seedColor,
-                darkTheme = darkTheme
+                isDark = darkTheme
             )
         }
         darkTheme -> DarkColorScheme

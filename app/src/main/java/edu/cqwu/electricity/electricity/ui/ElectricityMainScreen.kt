@@ -1,5 +1,9 @@
 package edu.cqwu.electricity.electricity.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
+import edu.cqwu.electricity.logging.AppLog
+
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -71,8 +75,6 @@ import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.launch
 
@@ -131,7 +133,7 @@ fun ElectricityMainScreen(
     // ── 外部触发其他充值方式弹窗 ──
     var triggerOtherRecharge by remember { mutableStateOf(false) }
 
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     // 获取当前登录学号
     val loggedInStudentId = remember {
@@ -188,7 +190,7 @@ fun ElectricityMainScreen(
     val showQueryResult = pagerState.currentPage == 0
         && uiState.selectedRoom != null
         && uiState.currentStep == SelectionStep.DONE
-    android.util.Log.d("EMS_showQR",
+    AppLog.d("EMS_showQR",
         "page=${pagerState.currentPage}, " +
         "selectedRoom=${uiState.selectedRoom?.name}, " +
         "currentStep=${uiState.currentStep}, " +

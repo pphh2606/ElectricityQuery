@@ -6,9 +6,11 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import edu.cqwu.electricity.login.data.CookieStore
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.network.WebVpnSettings
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import edu.cqwu.electricity.feedback.util.CrashHandler
+import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 
 /**
@@ -22,7 +24,9 @@ class ElectricityApp : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
-        WebVpnSettings.enabled = SettingsPreferences(this).isWebVpnEnabled()
+        val settingsPrefs = SettingsPreferences(this)
+        WebVpnSettings.enabled = settingsPrefs.get(SettingsKeys.WEBVPN_ENABLED)
+        AppLog.setMinLevel(settingsPrefs.get(SettingsKeys.LOG_LEVEL))
         // 崩溃捕获必须在最前面注册，确保第三方 SDK 初始化前就已就绪
         CrashHandler.init(this)
         instance = this

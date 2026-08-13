@@ -1,9 +1,8 @@
 package edu.cqwu.electricity.electricity.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -180,7 +179,7 @@ class ElectricityApi {
                 "payFee" to String.format(Locale.US, "%.2f", amount)
             )
             val jsonBody = gson.toJson(payload)
-            Log.d("ElectricityApi", "充值请求 Body: ${LogRedactor.body(jsonBody)}")
+            AppLog.body("ElectricityApi", "充值请求 Body: $jsonBody")
 
             val requestBody = jsonBody.toRequestBody("application/json; charset=UTF-8".toMediaType())
             val requestBuilder = Request.Builder()
@@ -191,13 +190,13 @@ class ElectricityApi {
             requestBuilder.addHeader("Content-Type", "application/json; charset=UTF-8")
             requestBuilder.addHeader("X-Requested-With", "XMLHttpRequest")
 
-            Log.d("ElectricityApi", "充值请求 URL: $RECHARGE_API")
+            AppLog.d("ElectricityApi", "充值请求 URL: $RECHARGE_API")
             val response = client.newCall(requestBuilder.build()).execute()
             if (!response.isSuccessful) {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
             val body = response.body.string()
-            Log.d("ElectricityApi", "充值响应: ${LogRedactor.body(body)}")
+            AppLog.body("ElectricityApi", "充值响应: $body")
 
             val rechargeResponse = gson.fromJson(body, RechargeResponse::class.java)
             val payUrl = rechargeResponse.payUrl
@@ -293,13 +292,13 @@ class ElectricityApi {
         HEADERS.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
         extraHeaders.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
 
-        Log.d("ElectricityApi", "请求 URL: $url")
+        AppLog.d("ElectricityApi", "请求 URL: $url")
         val response = client.newCall(requestBuilder.build()).execute()
         if (!response.isSuccessful) {
             throw RuntimeException("HTTP ${response.code}: ${response.message}")
         }
         val body = response.body.string()
-        Log.d("ElectricityApi", "响应体原始内容: ${LogRedactor.body(body)}")
+        AppLog.body("ElectricityApi", "响应体原始内容: $body")
         return body
     }
 

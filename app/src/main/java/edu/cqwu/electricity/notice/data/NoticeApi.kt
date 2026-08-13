@@ -1,8 +1,7 @@
 package edu.cqwu.electricity.notice.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -45,7 +44,7 @@ class NoticeApi {
                 }
                 append("&sortType=1")
             }
-            Log.d(TAG, "请求通知公告: GET $url")
+            AppLog.d(TAG, "请求通知公告: GET $url")
 
             val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
@@ -62,17 +61,17 @@ class NoticeApi {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
 
-            Log.d(TAG, "通知公告响应: ${LogRedactor.body(body)}")
+            AppLog.body(TAG, "通知公告响应: $body")
 
             val noticeResponse = gson.fromJson(body, NoticeResponse::class.java)
             val qp = noticeResponse.qp
             val items = qp?.aList ?: emptyList()
             val totalItem = qp?.totalItem ?: 0
 
-            Log.d(TAG, "解析结果: 当前页${items.size}条, 总共${totalItem}条")
+            AppLog.d(TAG, "解析结果: 当前页${items.size}条, 总共${totalItem}条")
             Result.success(NoticePageResult(items = items, totalItem = totalItem))
         } catch (e: Exception) {
-            Log.e(TAG, "获取通知公告失败", e)
+            AppLog.e(TAG, "获取通知公告失败", e)
             Result.failure(e)
         }
     }
@@ -90,7 +89,7 @@ class NoticeApi {
     suspend fun fetchNoticeDetail(wid: String): Result<NoticeDetailQp> = withContext(Dispatchers.IO) {
         try {
             val url = "$NOTICE_DETAIL_URL?noticeId=$wid"
-            Log.d(TAG, "请求通知详情: GET $url")
+            AppLog.d(TAG, "请求通知详情: GET $url")
 
             val response = HttpClientFactory.shared.newCall(
                 Request.Builder()
@@ -107,16 +106,16 @@ class NoticeApi {
                 throw RuntimeException("HTTP ${response.code}: ${response.message}")
             }
 
-            Log.d(TAG, "通知详情响应: ${LogRedactor.body(body)}")
+            AppLog.body(TAG, "通知详情响应: $body")
 
             val detailResponse = gson.fromJson(body, NoticeDetailResponse::class.java)
             val detail = detailResponse.list?.firstOrNull()
                 ?: throw RuntimeException("通知详情数据为空")
 
-            Log.d(TAG, "解析详情: title=${detail.noticeTitle.take(30)}")
+            AppLog.d(TAG, "解析详情: title=${detail.noticeTitle.take(30)}")
             Result.success(detail)
         } catch (e: Exception) {
-            Log.e(TAG, "获取通知详情失败", e)
+            AppLog.e(TAG, "获取通知详情失败", e)
             Result.failure(e)
         }
     }

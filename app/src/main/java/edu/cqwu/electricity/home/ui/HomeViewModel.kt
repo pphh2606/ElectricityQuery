@@ -7,6 +7,7 @@ import coil.Coil
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.home.data.CustomServiceEntry
 import edu.cqwu.electricity.home.data.HomeApp
@@ -42,8 +43,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         // 先从持久化存储加载已收藏的服务 ID 和自定义服务列表
-        val savedIds = settingsPreferences.getMyServiceIds()
-        val savedCustomServices = settingsPreferences.getCustomServices()
+        val savedIds = settingsPreferences.get(SettingsKeys.MY_SERVICES)
+        val savedCustomServices = settingsPreferences.get(SettingsKeys.CUSTOM_SERVICES)
         // 先展示 Loading 状态，不阻塞主线程
         _uiState.value = HomeUiState(
             isLoading = true,
@@ -181,7 +182,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun exitEditMode() {
         val ids = _uiState.value.myServiceIds
-        settingsPreferences.setMyServiceIds(ids)
+        settingsPreferences.set(SettingsKeys.MY_SERVICES, ids)
         _uiState.update { it.copy(isEditMode = false) }
     }
 
@@ -215,7 +216,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
         // 持久化放到 IO 线程，不阻塞主线程
         viewModelScope.launch(Dispatchers.IO) {
-            settingsPreferences.setCustomServices(_uiState.value.customServices)
+            settingsPreferences.set(SettingsKeys.CUSTOM_SERVICES, _uiState.value.customServices)
         }
     }
 
@@ -227,7 +228,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             state.copy(customServices = state.customServices.filter { it.id != id })
         }
         viewModelScope.launch(Dispatchers.IO) {
-            settingsPreferences.setCustomServices(_uiState.value.customServices)
+            settingsPreferences.set(SettingsKeys.CUSTOM_SERVICES, _uiState.value.customServices)
         }
     }
 }

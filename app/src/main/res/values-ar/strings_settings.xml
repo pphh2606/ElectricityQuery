@@ -21,6 +21,8 @@
     <string name="personalization_night_mode">الوضع الليلي</string>
     <string name="personalization_pure_black">خلفية سوداء نقية</string>
     <string name="personalization_pure_black_desc">استخدم خلفية سوداء نقية في الوضع الداكن</string>
+    <string name="personalization_sheet_blur">ضبابية خلفية النافذة</string>
+    <string name="personalization_sheet_blur_desc">عند التفعيل، يتم ضبابية المحتوى خلف النافذة السفلية. متاح على أندرويد 12 وما فوق</string>
     <string name="personalization_theme_color">لون السمة</string>
     <string name="personalization_dynamic_color">لون ديناميكي</string>
     <string name="personalization_dynamic_color_supported">استخراج لون السمة من خلفية النظام</string>
@@ -185,4 +187,13 @@
     <string name="settings_topbar_surface_container_low">تمييز فاتح</string>
 
     <string name="settings_page_transition_fade_scale">تلاشي مع تكبير</string>
+    <string name="config_log_level">مستوى السجلات</string>
+    <string name="config_log_level_desc">التحكم في كمية تفاصيل السجلات والمرفقة بالملاحظات</string>
+    <string name="log_level_select">اختر مستوى السجلات</string>
+    <string name="log_level_verbose">الكل</string>
+    <string name="log_level_debug">تصحيح</string>
+    <string name="log_level_info">معلومات</string>
+    <string name="log_level_warn">تحذير</string>
+    <string name="log_level_error">خطأ</string>
+    <string name="log_level_off">إيقاف</string>
 </resources>

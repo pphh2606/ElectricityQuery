@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.notice.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import android.annotation.SuppressLint
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
@@ -62,10 +64,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
-import edu.cqwu.electricity.theme.ui.LocalNightModeState
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -84,7 +84,7 @@ fun NoticeDetailScreen(
     val scope = rememberCoroutineScope()
     var detail by remember { mutableStateOf<NoticeDetailQp?>(null) }
     var isLoading by remember { mutableStateOf(true) }
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     var isRefreshing by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -256,7 +256,7 @@ fun NoticeDetailScreen(
                     )
                 }
                 detail != null -> {
-                    val isDarkMode = when (LocalNightModeState.current.nightMode) {
+                    val isDarkMode = when (LocalAppSettingsState.current.nightMode) {
                         NightMode.SYSTEM -> isSystemInDarkTheme()
                         NightMode.LIGHT -> false
                         NightMode.DARK -> true

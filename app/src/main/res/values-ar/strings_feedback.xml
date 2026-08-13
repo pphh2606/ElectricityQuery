@@ -42,7 +42,7 @@
 
     <string name="crash_report_brand">العلامة التجارية: %1$s</string>
 
-    <string name="feedback_log_section_process">═══ سجل العملية الحالية (logcat --pid) ═══</string>
+    <string name="feedback_log_section_process">═══ سجلات التطبيق الحالية ═══</string>
 
     <string name="crash_report_thread_priority">أولوية الخيط: %1$s</string>
 

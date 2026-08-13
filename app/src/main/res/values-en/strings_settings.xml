@@ -21,6 +21,8 @@
     <string name="personalization_night_mode">Night Mode</string>
     <string name="personalization_pure_black">Pure Black Background</string>
     <string name="personalization_pure_black_desc">Use a pure black background in dark mode</string>
+    <string name="personalization_sheet_blur">Blur Sheet Background</string>
+    <string name="personalization_sheet_blur_desc">Blur the content behind bottom sheets. Available on Android 12 and above</string>
     <string name="personalization_theme_color">Theme Color</string>
     <string name="personalization_dynamic_color">Dynamic Color</string>
     <string name="personalization_dynamic_color_supported">Extract theme color from system wallpaper</string>
@@ -185,4 +187,13 @@
     <string name="settings_topbar_surface_container_low">Light accent</string>
 
     <string name="settings_page_transition_fade_scale">Fade and scale</string>
+    <string name="config_log_level">Log level</string>
+    <string name="config_log_level_desc">Controls log detail and the logs attached to feedback</string>
+    <string name="log_level_select">Select log level</string>
+    <string name="log_level_verbose">All</string>
+    <string name="log_level_debug">Debug</string>
+    <string name="log_level_info">Info</string>
+    <string name="log_level_warn">Warning</string>
+    <string name="log_level_error">Error</string>
+    <string name="log_level_off">Off</string>
 </resources>

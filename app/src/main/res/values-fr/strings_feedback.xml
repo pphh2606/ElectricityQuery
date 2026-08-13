@@ -17,7 +17,7 @@
 
     <string name="crash_report_thread_group">Groupe de threads : %1$s</string>
 
-    <string name="feedback_email_subject">Commentaires sur l\'application Electricity Query</string>
+    <string name="feedback_email_subject">Commentaires sur l’application Electricity Query</string>
 
     <string name="crash_report_basic_info">--- Informations de base ---</string>
 
@@ -29,7 +29,7 @@
 
     <string name="crash_report_record">║ Enregistrement de crash n°%1$d (%2$s)</string>
 
-    <string name="feedback_email_app_version">Version de l\'application : %1$s (%2$s)</string>
+    <string name="feedback_email_app_version">Version de l’application : %1$s (%2$s)</string>
 
     <string name="feedback_email_content_title">--- Contenu des commentaires ---</string>
 
@@ -39,7 +39,7 @@
 
     <string name="crash_report_brand">Marque : %1$s</string>
 
-    <string name="feedback_log_section_process">═══ Journaux du processus actuel (logcat --pid) ═══</string>
+    <string name="feedback_log_section_process">"═══ Journaux actuels de l'application ═══"</string>
 
     <string name="crash_report_thread_priority">Priorité du thread : %1$s</string>
 
@@ -65,7 +65,7 @@
 
     <string name="feedback_email_device_title">--- Informations sur l\'appareil ---</string>
 
-    <string name="crash_report_title">Rapport de plantage de l\'application</string>
+    <string name="crash_report_title">Rapport de plantage de l’application</string>
 
     <string name="crash_report_thread_id">ID du thread : %1$s</string>
 

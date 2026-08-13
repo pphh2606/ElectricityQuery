@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.feedback.util
+import edu.cqwu.electricity.logging.AppLog
 
 import android.content.Context
 import android.os.Build
@@ -78,12 +79,6 @@ class CrashHandler private constructor(
         }
 
         /**
-         * 获取 [CrashHandler] 实例，供 [LogCapture] 读取崩溃文件使用。
-         * 未初始化时返回 null。
-         */
-        fun getInstance(): CrashHandler? = instance
-
-        /**
          * 是否有崩溃记录文件。
          */
         fun hasCrashReports(): Boolean = instance?.hasCrashReports() == true
@@ -126,7 +121,7 @@ class CrashHandler private constructor(
             try {
                 file.writeText(content)
             } catch (e: Exception) {
-                android.util.Log.e(TAG, "写入崩溃文件失败", e)
+                AppLog.e(TAG, "写入崩溃文件失败", e)
             }
         }
     }
@@ -184,7 +179,7 @@ class CrashHandler private constructor(
 
             // ── 崩溃堆栈 ──
             appendLine(appContext.getString(R.string.crash_report_stack))
-            appendLine(stackTraceToString(throwable))
+            appendLine(LogRedactor.sanitize(stackTraceToString(throwable)))
 
             // 同时打印 cause 链，确保不遗漏
             var cause = throwable.cause
@@ -192,7 +187,7 @@ class CrashHandler private constructor(
             while (cause != null && level <= 10) {
                 appendLine()
                 appendLine("Caused by (level $level):")
-                appendLine(stackTraceToString(cause))
+                appendLine(LogRedactor.sanitize(stackTraceToString(cause)))
                 cause = cause.cause
                 level++
             }
@@ -225,7 +220,7 @@ class CrashHandler private constructor(
             val fileName = "crash_${formatNow(DATE_FORMAT)}.txt"
             File(dir, fileName)
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "创建崩溃文件失败", e)
+            AppLog.e(TAG, "创建崩溃文件失败", e)
             null
         }
     }
@@ -249,10 +244,10 @@ class CrashHandler private constructor(
                 }
             }
             if (deletedCount > 0) {
-                android.util.Log.d(TAG, "已清理 $deletedCount 个过期崩溃文件")
+                AppLog.d(TAG, "已清理 $deletedCount 个过期崩溃文件")
             }
         } catch (e: Exception) {
-            android.util.Log.w(TAG, "清理过期崩溃文件失败", e)
+            AppLog.w(TAG, "清理过期崩溃文件失败", e)
         }
     }
 
@@ -263,14 +258,9 @@ class CrashHandler private constructor(
      * @param maxFiles 最多返回的文件数
      */
     fun getCrashReports(maxFiles: Int = 10): String {
+        val files = crashFiles()
+        if (files.isEmpty()) return ""
         return try {
-            if (!dir.exists() || !dir.isDirectory) return ""
-
-            val files = dir.listFiles { file -> file.isFile && file.name.startsWith("crash_") }
-                ?: return ""
-
-            if (files.isEmpty()) return ""
-
             val sortedFiles = files
                 .sortedByDescending { it.lastModified() }
                 .take(maxFiles)
@@ -303,26 +293,21 @@ class CrashHandler private constructor(
     /**
      * 是否有崩溃记录文件。
      */
-    fun hasCrashReports(): Boolean {
-        return try {
-            if (!dir.exists() || !dir.isDirectory) return false
-            dir.listFiles { file -> file.isFile && file.name.startsWith("crash_") }
-                ?.isNotEmpty() == true
-        } catch (_: Exception) {
-            false
-        }
-    }
+    fun hasCrashReports(): Boolean = crashFiles().isNotEmpty()
 
     /**
      * 获取崩溃记录数量。
      */
-    fun crashReportCount(): Int {
+    fun crashReportCount(): Int = crashFiles().size
+
+    private fun crashFiles(): List<File> {
         return try {
-            if (!dir.exists() || !dir.isDirectory) return 0
+            if (!dir.exists() || !dir.isDirectory) return emptyList()
             dir.listFiles { file -> file.isFile && file.name.startsWith("crash_") }
-                ?.size ?: 0
+                ?.toList()
+                ?: emptyList()
         } catch (_: Exception) {
-            0
+            emptyList()
         }
     }
 

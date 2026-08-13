@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.speakup.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,9 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationArea
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import kotlinx.coroutines.launch
 
 /**
@@ -83,7 +83,7 @@ fun SpeakUpScreen(
     onReLogin: () -> Unit = {},
     viewModel: SpeakUpViewModel = viewModel(),
 ) {
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
 

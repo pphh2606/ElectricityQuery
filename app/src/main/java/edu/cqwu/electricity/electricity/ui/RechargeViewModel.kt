@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.electricity.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -220,7 +221,7 @@ class RechargeViewModel(application: Application) : AndroidViewModel(application
                 val result = payApi.queryOrderStatus(id)
                 val data = result.getOrNull()
                 val status = data?.status
-                android.util.Log.d("RechargeVM", "轮询订单状态: orderId=$id, status=$status")
+                AppLog.d("RechargeVM", "轮询订单状态: orderId=$id, status=$status")
                 status
             },
         )
@@ -282,7 +283,7 @@ class RechargeViewModel(application: Application) : AndroidViewModel(application
         val userResult = electricityApi.queryUseridByStudentId(input)
         val userData = userResult.getOrNull()
         return if (userData == null || userData.id.isBlank()) {
-            android.util.Log.d("RechargeVM", "学号查询无结果，尝试将输入 [$input] 作为 userId 直接查询房间列表")
+            AppLog.d("RechargeVM", "学号查询无结果，尝试将输入 [$input] 作为 userId 直接查询房间列表")
             input
         } else {
             userData.id
@@ -401,11 +402,11 @@ class RechargeViewModel(application: Application) : AndroidViewModel(application
      */
     fun autoFillFromLogin(loggedInStudentId: String?) {
         if (loggedInStudentId.isNullOrBlank()) {
-            android.util.Log.d("RechargeVM", "autoFillFromLogin: 未登录，跳过自动填充")
+            AppLog.d("RechargeVM", "autoFillFromLogin: 未登录，跳过自动填充")
             return
         }
         if (_uiState.value.studentId.isBlank()) {
-            android.util.Log.d("RechargeVM", "autoFillFromLogin: 自动填充学号 [$loggedInStudentId]")
+            AppLog.d("RechargeVM", "autoFillFromLogin: 自动填充学号 [$loggedInStudentId]")
             setAccountStudentId(loggedInStudentId)
             queryAccountRoomList()
         }

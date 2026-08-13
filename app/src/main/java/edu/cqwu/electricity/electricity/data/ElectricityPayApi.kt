@@ -1,8 +1,7 @@
 package edu.cqwu.electricity.electricity.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.annotations.SerializedName
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.feeservicehall.data.ApiBusinessException
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.payment.data.ApiResponse
@@ -49,7 +48,7 @@ class ElectricityPayApi : PayApiBase() {
     suspend fun fetchShowselectHtml(payUrl: String): Result<ShowselectPageData> = autoRetry {
         withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "加载 showselect 页面: ${payUrl.take(100)}...")
+                AppLog.d(TAG, "加载 showselect 页面: ${payUrl.take(100)}...")
                 val request = Request.Builder()
                     .url(payUrl)
                     .get()
@@ -57,13 +56,13 @@ class ElectricityPayApi : PayApiBase() {
                     .build()
                 val response = client.newCall(request).execute()
                 val html = response.body.string()
-                Log.d(TAG, "showselect HTML 长度: ${html.length}")
+                AppLog.d(TAG, "showselect HTML 长度: ${html.length}")
 
                 val data = parseShowselectHtml(html)
-                Log.d(TAG, "解析结果: orderNo=${data.orderNo}, orderId=${data.orderId}")
+                AppLog.d(TAG, "解析结果: orderNo=${data.orderNo}, orderId=${data.orderId}")
                 Result.success(data)
             } catch (e: Exception) {
-                Log.e(TAG, "加载 showselect 页面失败", e)
+                AppLog.e(TAG, "加载 showselect 页面失败", e)
                 Result.failure(e)
             }
         }
@@ -90,7 +89,7 @@ class ElectricityPayApi : PayApiBase() {
         withContext(Dispatchers.IO) {
             try {
                 val url = "$PAY_DOMAIN/pay/cashier/gotToPay"
-                Log.d(TAG, "gotToPay: orderNo=$orderNo, payType=$payType")
+                AppLog.d(TAG, "gotToPay: orderNo=$orderNo, payType=$payType")
 
                 // 使用 FormBody（form-urlencoded），不同于校园卡的 JSON body
                 val formBody = FormBody.Builder()
@@ -110,7 +109,7 @@ class ElectricityPayApi : PayApiBase() {
 
                 val response = client.newCall(request).execute()
                 val body = response.body.string()
-            Log.d(TAG, "gotToPay 响应: ${LogRedactor.body(body)}...")
+            AppLog.body(TAG, "gotToPay 响应: $body...")
 
                 val parsed: ApiResponse<GotToPayResponseData> = parseApiResponse(body, GotToPayResponseData::class.java)
                 if (parsed.messageCode == "0" && parsed.data != null) {
@@ -128,7 +127,7 @@ class ElectricityPayApi : PayApiBase() {
                     Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "gotToPay 失败", e)
+                AppLog.e(TAG, "gotToPay 失败", e)
                 Result.failure(e)
             }
         }
@@ -145,7 +144,7 @@ class ElectricityPayApi : PayApiBase() {
         withContext(Dispatchers.IO) {
             try {
                 val url = "$PAY_DOMAIN/pay/cashier/getOrderById/$orderId"
-                Log.d(TAG, "查询订单状态: $url")
+                AppLog.d(TAG, "查询订单状态: $url")
 
                 val request = buildBaseRequest(url)
                     .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -156,7 +155,7 @@ class ElectricityPayApi : PayApiBase() {
                     throw RuntimeException("HTTP ${response.code}: ${response.message}")
                 }
                 val body = response.body.string()
-            Log.d(TAG, "订单状态响应: ${LogRedactor.body(body)}...")
+            AppLog.body(TAG, "订单状态响应: $body...")
 
                 val parsed: ApiResponse<OrderStatusData> = parseApiResponse(body, OrderStatusData::class.java)
                 if (parsed.messageCode == "0" && parsed.data != null) {
@@ -165,7 +164,7 @@ class ElectricityPayApi : PayApiBase() {
                     Result.failure(Exception(parsed.message))
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "查询订单状态失败", e)
+                AppLog.e(TAG, "查询订单状态失败", e)
                 Result.failure(e)
             }
         }

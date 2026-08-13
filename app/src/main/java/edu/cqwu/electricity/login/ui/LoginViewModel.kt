@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.login.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -78,7 +79,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      * @param clearForm true 时显示空白表单（"添加账号"场景），false 时自动填充最近账号。
      */
     fun resetState(clearForm: Boolean = false) {
-        android.util.Log.d("LoginVM", "resetState: clearForm=$clearForm")
+        AppLog.d("LoginVM", "resetState: clearForm=$clearForm")
         if (clearForm) {
             _uiState.value = LoginUiState()
         } else {
@@ -174,7 +175,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         _events.send(LoginEvent.Error(errorMsg))
                     }
             } catch (e: Exception) {
-                android.util.Log.e("LoginViewModel", "登录异常", e)
+                AppLog.e("LoginViewModel", "登录异常", e)
                 _uiState.update { it.copy(isLoading = false) }
                 _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_exception, e.message ?: "")))
             }

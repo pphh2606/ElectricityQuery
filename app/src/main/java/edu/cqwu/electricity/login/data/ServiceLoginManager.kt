@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.login.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 
 /**
@@ -15,7 +15,7 @@ object ServiceLoginManager {
         serviceDomain: String? = null,
         expectedCookie: String? = null,
     ) {
-        Log.d(TAG, ">>> ensure service login: $protectedUrl")
+        AppLog.d(TAG, ">>> ensure service login: $protectedUrl")
 
         val client = HttpClientFactory.create(
             cookieJar = CookieStoreOkHttpJar,
@@ -28,17 +28,17 @@ object ServiceLoginManager {
             tag = TAG,
         )
         if (loginPage != null) {
-            Log.w(TAG, "CAS login page detected, CASTGC is invalid")
+            AppLog.w(TAG, "CAS login page detected, CASTGC is invalid")
             throw SessionExpiredException("会话已过期，请重新登录")
         }
 
         if (serviceDomain != null && expectedCookie != null) {
             val cookies = CookieStore.getCookie(serviceDomain)
             val hasCookie = cookies?.contains("$expectedCookie=") == true
-            Log.d(TAG, "Cookie check: $expectedCookie=$hasCookie")
+            AppLog.d(TAG, "Cookie check: $expectedCookie=$hasCookie")
 
             if (!hasCookie) {
-                Log.w(TAG, "service authorization failed: $serviceDomain missing $expectedCookie")
+                AppLog.w(TAG, "service authorization failed: $serviceDomain missing $expectedCookie")
                 throw SessionExpiredException("服务授权失败，请重新登录")
             }
         }

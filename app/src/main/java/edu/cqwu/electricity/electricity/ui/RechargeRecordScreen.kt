@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.electricity.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 // 三点菜单
 
 // 剪贴板与文件导出
@@ -74,8 +76,6 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 
 /**
@@ -97,7 +97,7 @@ fun RechargeRecordScreen(
     onBack: () -> Unit
 ) {
     val recordState by viewModel.recordState.collectAsState()
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     // 下拉菜单状态
     var dropdownExpanded by remember { mutableStateOf(false) }

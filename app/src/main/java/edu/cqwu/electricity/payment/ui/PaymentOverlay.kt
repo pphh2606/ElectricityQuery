@@ -3,7 +3,7 @@ package edu.cqwu.electricity.payment.ui
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Build
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -284,7 +284,7 @@ fun PaymentOverlay(
         LaunchedEffect(Unit) {
             delay(timeoutMs)
             if (!paymentDetected) {
-                Log.e(TAG, ">>> 支付确认超时（${timeoutMs / 1000}s），自动返回")
+                AppLog.e(TAG, ">>> 支付确认超时（${timeoutMs / 1000}s），自动返回")
                 if (orderId.isNotBlank()) {
                     startPolling(orderId)
                 }
@@ -301,7 +301,7 @@ fun PaymentOverlay(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME && sentToExternalApp && !paymentDetected) {
-                Log.d(TAG, ">>> 从外部应用返回，开始轮询订单状态")
+                AppLog.d(TAG, ">>> 从外部应用返回，开始轮询订单状态")
                 if (orderId.isNotBlank()) {
                     startPolling(orderId)
                 }
@@ -425,11 +425,11 @@ fun PaymentOverlay(
                                         request: WebResourceRequest?
                                     ): Boolean {
                                         val url = request?.url?.toString() ?: return false
-                                        Log.d(TAG, "WebView 导航: $url")
+                                        AppLog.d(TAG, "WebView 导航: $url")
 
                                         // 非 http/https 协议 → 外部 App
                                         if (view?.context != null && WebViewUrlUtil.openCustomSchemeUrl(view.context, url, TAG)) {
-                                            Log.d(TAG, "自定义 scheme 已处理: $url")
+                                            AppLog.d(TAG, "自定义 scheme 已处理: $url")
                                             sentToExternalApp = true
                                             return true
                                         }
@@ -437,7 +437,7 @@ fun PaymentOverlay(
                                         // 检测支付成功回调
                                         if (isSuccessUrl(url)) {
                                             if (!paymentDetected) {
-                                                Log.d(TAG, ">>> 检测到支付成功回调！")
+                                                AppLog.d(TAG, ">>> 检测到支付成功回调！")
                                                 paymentDetected = true
                                                 onPaymentComplete()
                                             }
@@ -459,12 +459,12 @@ fun PaymentOverlay(
 
                                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                                         super.onPageStarted(view, url, favicon)
-                                        Log.d(TAG, "页面开始加载: $url")
+                                        AppLog.d(TAG, "页面开始加载: $url")
                                     }
 
                                     override fun onPageFinished(view: WebView?, url: String?) {
                                         super.onPageFinished(view, url)
-                                        Log.d(TAG, "页面加载完成: $url")
+                                        AppLog.d(TAG, "页面加载完成: $url")
                                     }
 
                                     override fun onReceivedError(
@@ -475,7 +475,7 @@ fun PaymentOverlay(
                                         super.onReceivedError(view, request, error)
                                         val description =
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) error?.description else null
-                                        Log.e(TAG, "WebView 错误: $description @ ${request?.url}")
+                                        AppLog.e(TAG, "WebView 错误: $description @ ${request?.url}")
                                     }
                                 }
 

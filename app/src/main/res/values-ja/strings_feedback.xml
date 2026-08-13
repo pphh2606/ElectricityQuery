@@ -37,7 +37,7 @@
 
     <string name="crash_report_brand">ブランド: %1$s</string>
 
-    <string name="feedback_log_section_process">═══ 現在のプロセスログ (logcat --pid) ═══</string>
+    <string name="feedback_log_section_process">═══ 現在のアプリログ ═══</string>
 
     <string name="crash_report_thread_priority">スレッド優先度: %1$s</string>
 

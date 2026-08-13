@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.notice.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
@@ -45,9 +47,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -84,7 +84,7 @@ fun NoticeScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     var searchText by remember { mutableStateOf("") }
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     // 每次从首页进入时刷新；从详情返回时不刷新
     // 同时清除上次的搜索状态，避免搜索残留

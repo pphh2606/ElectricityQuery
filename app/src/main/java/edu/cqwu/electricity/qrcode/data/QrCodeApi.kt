@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.qrcode.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.payment.data.HttpClientFactory
@@ -52,7 +52,7 @@ class QrCodeApi {
                 QrCodeType.BUS -> BUS_TARGET_URL
             }
 
-            Log.d("QrCodeApi", "GET $url")
+            AppLog.d("QrCodeApi", "GET $url")
             // 使用 HttpClientFactory.shared 的同一个 OkHttpClient 实例
             // 该 client 包含登录后的 CASTGC Cookie（由 CookieStoreOkHttpJar 桥接系统 CookieManager），
             // 首次请求 epay 时通过 followRedirects 自动完成 ticket 交换获取 JSESSIONID
@@ -65,7 +65,7 @@ class QrCodeApi {
 
             val html = response.body.string()
             val tHttp = System.currentTimeMillis()
-            Log.d("QrCodeApi_DEBUG", "fetchQrCode 网络耗时: ${tHttp - t0}ms, 响应状态=${response.code}, HTML长度=${html.length}")
+            AppLog.d("QrCodeApi_DEBUG", "fetchQrCode 网络耗时: ${tHttp - t0}ms, 响应状态=${response.code}, HTML长度=${html.length}")
 
             // 检查是否被重定向到 CAS 登录页（Cookie 过期）
             HtmlFormParser.checkAndThrow(html)
@@ -74,16 +74,16 @@ class QrCodeApi {
             val value = extractInputValueById(html)
                 ?: throw RuntimeException("获取二维码失败：页面中未找到二维码数据")
             val tParse = System.currentTimeMillis()
-            Log.d("QrCodeApi_DEBUG", "fetchQrCode 解析耗时: ${tParse - tHttp}ms")
-            Log.d("QrCodeApi_DEBUG", "fetchQrCode 总耗时: ${tParse - t0}ms, 类型=${type.name}")
+            AppLog.d("QrCodeApi_DEBUG", "fetchQrCode 解析耗时: ${tParse - tHttp}ms")
+            AppLog.d("QrCodeApi_DEBUG", "fetchQrCode 总耗时: ${tParse - t0}ms, 类型=${type.name}")
 
-            Log.d("QrCodeApi", "二维码字符串: $value")
+            AppLog.d("QrCodeApi", "二维码字符串: $value")
             Result.success(value)
         } catch (e: SessionExpiredException) {
-            Log.w("QrCodeApi", "Session 过期: ${e.message}")
+            AppLog.w("QrCodeApi", "Session 过期: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("QrCodeApi", "获取二维码失败", e)
+            AppLog.e("QrCodeApi", "获取二维码失败", e)
             Result.failure(e)
         }
     }

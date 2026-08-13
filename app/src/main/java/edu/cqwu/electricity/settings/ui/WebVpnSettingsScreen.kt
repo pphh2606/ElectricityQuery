@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,9 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.network.WebVpnSettings
+import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * WebVPN 设置页 — 提供 WebVPN 代理开关。
@@ -40,10 +41,10 @@ import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 fun WebVpnSettingsScreen(
     onBack: () -> Unit,
 ) {
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val context = LocalContext.current
     val settingsPrefs = remember { SettingsPreferences(context) }
-    var webVpnEnabled by remember { mutableStateOf(settingsPrefs.isWebVpnEnabled()) }
+    var webVpnEnabled by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.WEBVPN_ENABLED)) }
 
     Scaffold(
         topBar = {
@@ -84,7 +85,7 @@ fun WebVpnSettingsScreen(
                     checked = webVpnEnabled,
                     onCheckedChange = { enabled ->
                         webVpnEnabled = enabled
-                        settingsPrefs.setWebVpnEnabled(enabled)
+                        settingsPrefs.set(SettingsKeys.WEBVPN_ENABLED, enabled)
                         WebVpnSettings.enabled = enabled
                     },
                 )

@@ -18,6 +18,7 @@ zxing = "3.5.4"
 materialKolor = "3.0.1"
 camerax = "1.4.2"
 securityCrypto = "1.1.0"
+haze = "1.6.10"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 material-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialKolor" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax" }
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }

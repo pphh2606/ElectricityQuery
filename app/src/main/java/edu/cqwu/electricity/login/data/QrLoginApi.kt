@@ -1,12 +1,11 @@
 package edu.cqwu.electricity.login.data
 
 import android.graphics.BitmapFactory
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -148,10 +147,10 @@ class QrLoginApi {
                 throw RuntimeException("二维码解码结果为空")
             }
 
-            Log.d("QrLoginApi", "二维码解码成功: ${LogRedactor.url(decodedText)}")
+            AppLog.url("QrLoginApi", "二维码解码成功: ${decodedText}")
             Result.success(decodedText)
         } catch (e: Exception) {
-            Log.e("QrLoginApi", "下载并解码二维码失败", e)
+            AppLog.e("QrLoginApi", "下载并解码二维码失败", e)
             Result.failure(e)
         }
     }
@@ -223,7 +222,7 @@ class QrLoginApi {
 
             // CAS 服务器返回 302 重定向，同时设置 CASTGC Cookie
             val location = response.header("Location") ?: ""
-            Log.d("QrLoginApi", "提交认证响应: code=${response.code}, Location=${LogRedactor.url(location)}")
+            AppLog.url("QrLoginApi", "提交认证响应: code=${response.code}, Location=${location}")
 
             // 从独立 cookieStore 中提取 CASTGC（由 UserAwareCookieJar 自动从 Set-Cookie 保存到 store）
             val castgc = cookieStore.getCookieValue(
@@ -251,9 +250,9 @@ class QrLoginApi {
                 if (extracted != null) {
                     username = extracted
                     val realName = HtmlFormParser.extractRealName(html) ?: ""
-                    Log.d(
+                    AppLog.d(
                         "QrLoginApi",
-                        "扫码登录: 学号=${LogRedactor.mask(username)}, 实名=${LogRedactor.mask(realName)}",
+                        "扫码登录: 学号=${username}, 实名=${realName}",
                     )
 
                     // 使用统一的提交方法，将临时 CookieStore 迁移到持久存储
@@ -261,7 +260,7 @@ class QrLoginApi {
                     committed = true
                 }
             } catch (e: Exception) {
-                Log.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
+                AppLog.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
             }
 
             if (!committed) {
@@ -269,9 +268,9 @@ class QrLoginApi {
             }
 
             val cookieString = cookieStore.getCookie("https://authserver.cqwu.edu.cn") ?: ""
-            Log.d(
+            AppLog.d(
                 "QrLoginApi",
-                "扫码登录成功! CASTGC=${LogRedactor.mask(castgc)}, username=${LogRedactor.mask(username)}",
+                "扫码登录成功! CASTGC=${castgc}, username=${username}",
             )
 
             Result.success(
@@ -281,7 +280,7 @@ class QrLoginApi {
                 )
             )
         } catch (e: Exception) {
-            Log.e("QrLoginApi", "扫码登录失败", e)
+            AppLog.e("QrLoginApi", "扫码登录失败", e)
             Result.failure(e)
         }
     }

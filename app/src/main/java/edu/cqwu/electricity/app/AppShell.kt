@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.app
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,17 +18,30 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.hazeEffect
 import edu.cqwu.electricity.theme.ui.CustomSnackbarVisuals
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
+import edu.cqwu.electricity.theme.ui.SheetVisibilityState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.SnackbarController
 import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.isHazeBlurSupported
 import edu.cqwu.electricity.theme.util.ToastUtils
+
+private val BackdropBlurStyle = HazeStyle(
+    blurRadius = 20.dp,
+    noiseFactor = 0f,
+    tints = emptyList(),
+)
 
 /**
  * 应用外壳
@@ -47,18 +62,40 @@ fun AppShell(
     modifier: Modifier = Modifier,
 ) {
     val snackbarController = remember { SnackbarController() }
+    val sheetVisibilityState = remember { SheetVisibilityState() }
+    val blurProgress by animateFloatAsState(
+        targetValue = if (sheetVisibilityState.active) sheetVisibilityState.blurProgress else 0f,
+        animationSpec = tween(durationMillis = 300),
+    )
+    val useForegroundBlur =
+        LocalAppSettingsState.current.sheetBlurEnabled &&
+            isHazeBlurSupported() &&
+            (sheetVisibilityState.active || blurProgress > 0.001f)
 
     CompositionLocalProvider(
         LocalSnackbarController provides snackbarController,
         LocalNavController provides navController,
+        LocalSheetVisibilityState provides sheetVisibilityState,
     ) {
-        Box(modifier = modifier.fillMaxSize()) {
+        Box(
+            modifier = modifier.fillMaxSize()
+        ) {
             // AppNavGraph 使用独立的 fillMaxSize()，避免外部 modifier 中的 padding 叠加影响布局
             AppNavGraph(
                 navController = navController,
                 shortcutAppInfo = shortcutAppInfo,
                 shortcutLaunchId = shortcutLaunchId,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (useForegroundBlur) {
+                            Modifier.hazeEffect(style = BackdropBlurStyle) {
+                                blurRadius = 20.dp * blurProgress
+                            }
+                        } else {
+                            Modifier
+                        }
+                    ),
             )
 
             // 全局 Snackbar 覆盖层——位于 NavHost 之上

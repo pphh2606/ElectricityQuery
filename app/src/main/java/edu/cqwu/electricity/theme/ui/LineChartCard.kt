@@ -163,7 +163,6 @@ fun ElectricityLineChartCard(
                 // ── 绘制水平网格线（5 条） ──
                 val gridLines = 4
                 for (i in 0..gridLines) {
-                    i.toFloat() / gridLines.toFloat()
                     val yValue = yMin + (yMax - yMin) * (gridLines - i).toDouble() / gridLines.toDouble()
                     val y = yToPixel(yValue)
 
@@ -293,7 +292,6 @@ fun ElectricityLineChartCard(
  */
 private fun formatAxisLabel(value: Double): String = when {
     value >= 100  -> "%.0f".format(value)
-    value >= 10   -> "%.1f".format(value)
     value >= 1    -> "%.1f".format(value)
     value >= 0.01 -> "%.2f".format(value)
     else          -> "%.3f".format(value)

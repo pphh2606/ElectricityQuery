@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.cardcenter.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.annotations.SerializedName
 import edu.cqwu.electricity.payment.data.ApiResponse
 import edu.cqwu.electricity.payment.data.PayApiBase
@@ -55,7 +55,7 @@ class CardRechargeApi : PayApiBase() {
                     Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "queryBasicInfo 失败", e)
+                AppLog.e(TAG, "queryBasicInfo 失败", e)
                 Result.failure(e)
             }
         }
@@ -97,7 +97,7 @@ class CardRechargeApi : PayApiBase() {
                     Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "createOrder 失败", e)
+                AppLog.e(TAG, "createOrder 失败", e)
                 Result.failure(e)
             }
         }
@@ -138,7 +138,7 @@ class CardRechargeApi : PayApiBase() {
                     Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "toPayOrderTrade 失败", e)
+                AppLog.e(TAG, "toPayOrderTrade 失败", e)
                 Result.failure(e)
             }
         }
@@ -161,7 +161,7 @@ class CardRechargeApi : PayApiBase() {
                     Result.failure(ApiBusinessException(parsed.message))
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "queryOrderStatus 失败", e)
+                AppLog.e(TAG, "queryOrderStatus 失败", e)
                 Result.failure(e)
             }
         }

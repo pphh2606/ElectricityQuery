@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.app
+import edu.cqwu.electricity.logging.AppLog
 
 import android.os.Build
 import androidx.compose.animation.AnimatedContentScope
@@ -82,12 +83,9 @@ import edu.cqwu.electricity.shortcut.ui.AddShortcutScreen
 import edu.cqwu.electricity.speakup.ui.MessageDetailScreen
 import edu.cqwu.electricity.speakup.ui.MessageListScreen
 import edu.cqwu.electricity.speakup.ui.SpeakUpScreen
-import edu.cqwu.electricity.theme.ui.AnimationSettings
-import edu.cqwu.electricity.theme.ui.LocalAnimationSettings
-import edu.cqwu.electricity.theme.ui.LocalColorSourceState
-import edu.cqwu.electricity.theme.ui.LocalNightModeState
+import edu.cqwu.electricity.theme.ui.AppSettingsState
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.ui.UnifiedWebViewScreen
 
@@ -237,7 +235,7 @@ object Routes {
 }
 
 /** 从动画设置生成过渡 EnterTransition */
-private fun enterAnim(settings: AnimationSettings): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? {
+private fun enterAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? {
     if (settings.reduceMotion == ReduceMotion.ON) return { EnterTransition.None }
     val d = 300
     return {
@@ -252,7 +250,7 @@ private fun enterAnim(settings: AnimationSettings): AnimatedContentTransitionSco
     }
 }
 
-private fun exitAnim(settings: AnimationSettings): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? {
+private fun exitAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? {
     if (settings.reduceMotion == ReduceMotion.ON) return { ExitTransition.None }
     val d = 300
     return {
@@ -267,7 +265,7 @@ private fun exitAnim(settings: AnimationSettings): AnimatedContentTransitionScop
     }
 }
 
-private fun popEnterAnim(settings: AnimationSettings): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? {
+private fun popEnterAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? {
     if (settings.reduceMotion == ReduceMotion.ON) return { EnterTransition.None }
     val d = 300
     return {
@@ -282,7 +280,7 @@ private fun popEnterAnim(settings: AnimationSettings): AnimatedContentTransition
     }
 }
 
-private fun popExitAnim(settings: AnimationSettings): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? {
+private fun popExitAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? {
     if (settings.reduceMotion == ReduceMotion.ON) return { ExitTransition.None }
     val d = 300
     return {
@@ -299,10 +297,10 @@ private fun popExitAnim(settings: AnimationSettings): AnimatedContentTransitionS
 
 /**
  * 动画路由——自动附加页面过渡动画。
- * 调用方在 [AppNavGraph] 中通过 [LocalAnimationSettings] 获取设置后传入。
+ * 调用方在 [AppNavGraph] 中通过 [LocalAppSettingsState] 获取设置后传入。
  */
 private fun NavGraphBuilder.animatedComposable(
-    settings: AnimationSettings,
+    settings: AppSettingsState,
     route: String,
     arguments: List<NamedNavArgument> = emptyList(),
     deepLinks: List<NavDeepLink> = emptyList(),
@@ -334,10 +332,7 @@ fun AppNavGraph(
     val myRoomViewModel: MyRoomViewModel = viewModel()
     val noticeViewModel: NoticeViewModel = viewModel()
     var webViewReloadAfterLogin by rememberSaveable { mutableStateOf(false) }
-    val nightModeState = LocalNightModeState.current
-    val colorSourceState = LocalColorSourceState.current
-    val animationSettings = LocalAnimationSettings.current
-    val topBarState = LocalTopBarState.current
+    val appSettings = LocalAppSettingsState.current
 
     val snackbar = LocalSnackbarController.current
 
@@ -349,14 +344,14 @@ fun AppNavGraph(
             val store = UserCookieStore() // 空 store，validate 内部会从系统 CookieManager 兜底
             when (val result = SessionManager.validateCookie(store)) {
                 is SessionValidationResult.Valid -> {
-                    android.util.Log.d("NavGraph", "启动 Cookie 验证：有效")
+                    AppLog.d("NavGraph", "启动 Cookie 验证：有效")
                 }
                 is SessionValidationResult.Invalid -> {
-                    android.util.Log.d("NavGraph", "启动 Cookie 验证：失效，跳转登录页")
+                    AppLog.d("NavGraph", "启动 Cookie 验证：失效，跳转登录页")
                     navController.navigate(Routes.COOKIE_EXPIRED_LOGIN)
                 }
                 is SessionValidationResult.NetworkError -> {
-                    android.util.Log.w("NavGraph", "启动 Cookie 验证：网络错误 - ${result.message}")
+                    AppLog.w("NavGraph", "启动 Cookie 验证：网络错误 - ${result.message}")
                     snackbar.show(resources.getString(R.string.common_network_error), ToastUtils.Type.ERROR)
                 }
             }
@@ -401,14 +396,12 @@ fun AppNavGraph(
         modifier = modifier,
     ) {
         // 主页 Tab 容器（HorizontalPager：首页 + 我的）
-        animatedComposable(settings = animationSettings, route = Routes.MAIN_TABS) {
-            MainTabScreen(
-                animationSettings = animationSettings,
-            )
+        animatedComposable(settings = appSettings, route = Routes.MAIN_TABS) {
+            MainTabScreen()
         }
 
         // 缴费服务大厅
-        animatedComposable(settings = animationSettings, route = Routes.FEE_SERVICE_HALL) {
+        animatedComposable(settings = appSettings, route = Routes.FEE_SERVICE_HALL) {
             FeeServiceHallScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
@@ -417,7 +410,7 @@ fun AppNavGraph(
         }
 
         // 缴费服务大厅 — 订单 tab
-        animatedComposable(settings = animationSettings, route = Routes.FEE_SERVICE_HALL_ORDERS) {
+        animatedComposable(settings = appSettings, route = Routes.FEE_SERVICE_HALL_ORDERS) {
             FeeServiceHallScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
@@ -427,7 +420,7 @@ fun AppNavGraph(
         }
 
         // 我的信息（原生页面） */
-        animatedComposable(settings = animationSettings, route = Routes.MY_INFO) {
+        animatedComposable(settings = appSettings, route = Routes.MY_INFO) {
             MyInfoScreen(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.LOGIN) },
@@ -436,7 +429,7 @@ fun AppNavGraph(
         }
 
         // 卡中心
-        animatedComposable(settings = animationSettings, route = Routes.CARD_CENTER) {
+        animatedComposable(settings = appSettings, route = Routes.CARD_CENTER) {
             CardCenterScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToQrCode = { type -> navController.navigate(Routes.qrCodeRoute(type)) },
@@ -445,7 +438,7 @@ fun AppNavGraph(
         }
 
         // 校园卡充值 — 学号输入+金额选择
-        animatedComposable(settings = animationSettings, route = Routes.CARD_RECHARGE) {
+        animatedComposable(settings = appSettings, route = Routes.CARD_RECHARGE) {
             CardRechargeScreen(
                 viewModel = cardRechargeViewModel,
                 onBack = { navController.popBackStack() },
@@ -454,7 +447,7 @@ fun AppNavGraph(
         }
 
         // 校园卡充值 — 支付执行（使用 AppNavGraph 级别的共享 ViewModel）
-        animatedComposable(settings = animationSettings, route = Routes.CARD_PAYMENT) {
+        animatedComposable(settings = appSettings, route = Routes.CARD_PAYMENT) {
             CardPaymentScreen(
                 viewModel = cardRechargeViewModel,
                 onBack = { navController.popBackStack() },
@@ -462,7 +455,7 @@ fun AppNavGraph(
         }
 
         // 账户信息
-        animatedComposable(settings = animationSettings, route = Routes.ACCOUNT_INFO) {
+        animatedComposable(settings = appSettings, route = Routes.ACCOUNT_INFO) {
             AccountInfoScreen(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.LOGIN) },
@@ -470,7 +463,7 @@ fun AppNavGraph(
         }
 
         // 卡挂失
-        animatedComposable(settings = animationSettings, route = Routes.CARD_LOST) {
+        animatedComposable(settings = appSettings, route = Routes.CARD_LOST) {
             CardLostScreen(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.LOGIN) },
@@ -478,7 +471,7 @@ fun AppNavGraph(
         }
 
         // 账单
-        animatedComposable(settings = animationSettings, route = Routes.BILL) {
+        animatedComposable(settings = appSettings, route = Routes.BILL) {
             val billViewModel: BillViewModel = viewModel()
             BillScreen(
                 viewModel = billViewModel,
@@ -489,7 +482,7 @@ fun AppNavGraph(
         }
 
         // 通知公告
-        animatedComposable(settings = animationSettings, route = Routes.NOTICE) {
+        animatedComposable(settings = appSettings, route = Routes.NOTICE) {
             NoticeScreen(
                 viewModel = noticeViewModel,
                 onBack = { noticeViewModel.listRefreshEnabled = true; navController.popBackStack() },
@@ -499,7 +492,7 @@ fun AppNavGraph(
 
         // 通知公告详情
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.NOTICE_DETAIL,
             arguments = listOf(navArgument("wid") { type = NavType.StringType }),
         ) { backStackEntry ->
@@ -516,7 +509,7 @@ fun AppNavGraph(
 
         // 通用内置浏览器
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.UNIFIED_WEBVIEW,
             arguments = listOf(
                 navArgument("url") { type = NavType.StringType },
@@ -535,7 +528,7 @@ fun AppNavGraph(
         }
 
         // WebView 专用本地登录：返回时同时关闭登录页和 WebView，登录成功后刷新 WebView
-        animatedComposable(settings = animationSettings, route = Routes.WEBVIEW_LOGIN) {
+        animatedComposable(settings = appSettings, route = Routes.WEBVIEW_LOGIN) {
             LoginScreen(
                 onBack = { navController.popBackStack(Routes.UNIFIED_WEBVIEW, true) },
                 onLoginSuccess = {
@@ -545,7 +538,7 @@ fun AppNavGraph(
             )
         }
 
-        animatedComposable(settings = animationSettings, route = Routes.ELECTRICITY_MAIN) {
+        animatedComposable(settings = appSettings, route = Routes.ELECTRICITY_MAIN) {
             ElectricityMainScreen(
                 viewModel = viewModel,
                 rechargeViewModel = rechargeViewModel,
@@ -555,7 +548,7 @@ fun AppNavGraph(
         }
 
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.DETAIL,
             arguments = listOf(
                 navArgument("detailType") { type = NavType.StringType },
@@ -576,7 +569,7 @@ fun AppNavGraph(
         }
 
 
-        animatedComposable(settings = animationSettings, route = Routes.PAYMENT_SELECTION) {
+        animatedComposable(settings = appSettings, route = Routes.PAYMENT_SELECTION) {
             PaymentSelectionScreen(
                 viewModel = rechargeViewModel,
                 onBack = { navController.popBackStack() },
@@ -585,7 +578,7 @@ fun AppNavGraph(
         }
 
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.RECHARGE_RECORD,
             arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
         ) { backStackEntry ->
@@ -598,7 +591,7 @@ fun AppNavGraph(
         }
 
         // H5 WebView 路由
-        animatedComposable(settings = animationSettings, route = Routes.RECHARGE_H5_WEBVIEW) {
+        animatedComposable(settings = appSettings, route = Routes.RECHARGE_H5_WEBVIEW) {
             UnifiedWebViewScreen(
                 url = Routes.H5_RECHARGE_URL,
                 onClose = { navController.popBackStack(Routes.ELECTRICITY_MAIN, false) },
@@ -607,7 +600,7 @@ fun AppNavGraph(
 
         // 二维码显示页面
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.QR_CODE,
             arguments = listOf(navArgument("qrCodeType") { type = NavType.StringType }),
         ) { backStackEntry ->
@@ -621,14 +614,14 @@ fun AppNavGraph(
         }
 
         // 本地登录页面（通用入口，自动填充最近账号）
-        animatedComposable(settings = animationSettings, route = Routes.LOGIN) {
+        animatedComposable(settings = appSettings, route = Routes.LOGIN) {
             LoginScreen(
                 onBack = { navController.popBackStack() },
             )
         }
 
         // 添加新账号（空白表单）
-        animatedComposable(settings = animationSettings, route = Routes.NEW_ACCOUNT_LOGIN) {
+        animatedComposable(settings = appSettings, route = Routes.NEW_ACCOUNT_LOGIN) {
             LoginScreen(
                 clearForm = true,
                 onBack = { navController.popBackStack() },
@@ -644,8 +637,8 @@ fun AppNavGraph(
                     initialOffsetY = { it }
                 ) + fadeIn(tween(200))
             },
-            exitTransition = exitAnim(animationSettings),
-            popExitTransition = exitAnim(animationSettings),
+            exitTransition = exitAnim(appSettings),
+            popExitTransition = exitAnim(appSettings),
         ) {
             LoginScreen(
                 onBack = { navController.popBackStack() },
@@ -653,7 +646,7 @@ fun AppNavGraph(
         }
 
         // 扫码登录页面
-        animatedComposable(settings = animationSettings, route = Routes.QR_LOGIN) {
+        animatedComposable(settings = appSettings, route = Routes.QR_LOGIN) {
             QrLoginScreen(
                 onBack = { navController.popBackStack() },
                 onLoginSuccess = { navController.popBackStack() },
@@ -662,21 +655,21 @@ fun AppNavGraph(
         }
 
         // 设置页面
-        animatedComposable(settings = animationSettings, route = Routes.SETTINGS) {
+        animatedComposable(settings = appSettings, route = Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
             )
         }
 
         // 关于页面
-        animatedComposable(settings = animationSettings, route = Routes.ABOUT) {
+        animatedComposable(settings = appSettings, route = Routes.ABOUT) {
             AboutScreen(
                 onBack = { navController.popBackStack() },
             )
         }
 
         // 配置页
-        animatedComposable(settings = animationSettings, route = Routes.CONFIG) {
+        animatedComposable(settings = appSettings, route = Routes.CONFIG) {
             ConfigScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToUserAgent = { navController.navigate(Routes.USER_AGENT_SETTINGS) },
@@ -686,21 +679,21 @@ fun AppNavGraph(
         }
 
         // WebVPN 设置页
-        animatedComposable(settings = animationSettings, route = Routes.WEBVPN_SETTINGS) {
+        animatedComposable(settings = appSettings, route = Routes.WEBVPN_SETTINGS) {
             WebVpnSettingsScreen(
                 onBack = { navController.popBackStack() },
             )
         }
 
         // 清除存储空间页
-        animatedComposable(settings = animationSettings, route = Routes.STORAGE_CLEAR) {
+        animatedComposable(settings = appSettings, route = Routes.STORAGE_CLEAR) {
             StorageClearScreen(
                 onBack = { navController.popBackStack() },
             )
         }
 
         // 浏览器标识设置页
-        animatedComposable(settings = animationSettings, route = Routes.USER_AGENT_SETTINGS) {
+        animatedComposable(settings = appSettings, route = Routes.USER_AGENT_SETTINGS) {
             UserAgentSettingsScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToEdit = { entryId -> navController.navigate(Routes.userAgentEditRoute(entryId)) },
@@ -709,7 +702,7 @@ fun AppNavGraph(
 
         // 编辑/添加浏览器标识页
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.USER_AGENT_EDIT,
             arguments = listOf(navArgument("entryId") { type = NavType.StringType }),
         ) { backStackEntry ->
@@ -721,28 +714,16 @@ fun AppNavGraph(
         }
 
         // 个性化设置页面
-        animatedComposable(settings = animationSettings, route = Routes.PERSONALIZATION) {
+        animatedComposable(settings = appSettings, route = Routes.PERSONALIZATION) {
             PersonalizationScreen(
                 onBack = { navController.popBackStack() },
-                currentNightMode = nightModeState.nightMode,
-                onNightModeChange = { mode -> nightModeState.onNightModeChange(mode) },
-                currentPureBlack = nightModeState.pureBlack,
-                onPureBlackChange = { enabled -> nightModeState.onPureBlackChange(enabled) },
-                currentColorSource = colorSourceState.colorSource,
-                onColorSourceChange = { source -> colorSourceState.onColorSourceChange(source) },
-                currentPageTransition = animationSettings.pageTransition,
-                onPageTransitionChange = { mode -> animationSettings.onPageTransitionChange(mode) },
-                currentReduceMotion = animationSettings.reduceMotion,
-                onReduceMotionChange = { mode -> animationSettings.onReduceMotionChange(mode) },
-                currentTopBarStyle = topBarState.style,
-                onTopBarStyleChange = { style -> topBarState.onStyleChange(style) },
                 onNavigateToQrCodeSettings = { navController.navigate(Routes.QR_CODE_SETTINGS) },
                 isDynamicColorSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
             )
         }
 
         // 二维码设置页面
-        animatedComposable(settings = animationSettings, route = Routes.QR_CODE_SETTINGS) {
+        animatedComposable(settings = appSettings, route = Routes.QR_CODE_SETTINGS) {
             QrCodeSettingsScreen(
                 onBack = { navController.popBackStack() },
             )
@@ -750,7 +731,7 @@ fun AppNavGraph(
 
         // 意见反馈页面
         // 扫码页面
-        animatedComposable(settings = animationSettings, route = Routes.SCAN) {
+        animatedComposable(settings = appSettings, route = Routes.SCAN) {
             ScanScreen(
                 onBack = { navController.popBackStack() },
                 onOpenUrl = { url ->
@@ -760,21 +741,21 @@ fun AppNavGraph(
             )
         }
 
-        animatedComposable(settings = animationSettings, route = Routes.FEEDBACK) {
+        animatedComposable(settings = appSettings, route = Routes.FEEDBACK) {
             FeedbackScreen(
                 onBack = { navController.popBackStack() },
             )
         }
 
         // 添加快捷方式页面
-        animatedComposable(settings = animationSettings, route = Routes.ADD_SHORTCUT) {
+        animatedComposable(settings = appSettings, route = Routes.ADD_SHORTCUT) {
             AddShortcutScreen(
                 onBack = { navController.popBackStack() },
             )
         }
 
         // 有话要说 — 咨询区列表
-        animatedComposable(settings = animationSettings, route = Routes.SPEAK_UP) {
+        animatedComposable(settings = appSettings, route = Routes.SPEAK_UP) {
             SpeakUpScreen(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.LOGIN) },
@@ -789,7 +770,7 @@ fun AppNavGraph(
 
         // 有话要说 — 留言列表
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.SPEAK_UP_MESSAGES,
             arguments = listOf(
                 navArgument("areaCode") { type = NavType.StringType },
@@ -811,7 +792,7 @@ fun AppNavGraph(
 
         // 有话要说 — 留言详情
         animatedComposable(
-            settings = animationSettings,
+            settings = appSettings,
             route = Routes.SPEAK_UP_DETAIL,
             arguments = listOf(
                 navArgument("wid") { type = NavType.StringType },

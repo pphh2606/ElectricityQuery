@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.cardcenter.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -224,7 +225,7 @@ class BillViewModel : ViewModel() {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                android.util.Log.w("BillViewModel", "H5 API 失败，等待 HTML API 兜底: ${e.message}")
+                AppLog.w("BillViewModel", "H5 API 失败，等待 HTML API 兜底: ${e.message}")
             } finally {
                 markTabLoaded(1)
             }
@@ -300,7 +301,7 @@ class BillViewModel : ViewModel() {
                         if (!hasAnyCache) {
                             handleBillError(error)
                         } else {
-                            android.util.Log.w("BillViewModel", "HTML API 失败，但已有缓存数据: ${error.message}")
+                            AppLog.w("BillViewModel", "HTML API 失败，但已有缓存数据: ${error.message}")
                         }
                     }
                 }

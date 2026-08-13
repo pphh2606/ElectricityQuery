@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.cardcenter.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -74,8 +76,6 @@ import edu.cqwu.electricity.theme.ui.DatePickerField
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.flow.collectLatest
@@ -109,7 +109,7 @@ fun BillScreen(
     // ── 提示弹窗状态 ──
     var showHintDialog by remember { mutableStateOf(false) }
 
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     // 网页版账单 URL（在原生实现出问题时作为降级方案）
     val webBillUrl = "http://218.194.176.214:8382/epay/thirdapp/bill"

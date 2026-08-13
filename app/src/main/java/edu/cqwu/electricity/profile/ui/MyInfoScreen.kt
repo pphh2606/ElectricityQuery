@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.profile.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -60,8 +62,6 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.profile.data.StudentInfo
 import edu.cqwu.electricity.profile.data.MenuCategory
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +72,7 @@ fun MyInfoScreen(
     viewModel: MyInfoViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     LaunchedEffect(Unit) {
         viewModel.loadIfNeeded()

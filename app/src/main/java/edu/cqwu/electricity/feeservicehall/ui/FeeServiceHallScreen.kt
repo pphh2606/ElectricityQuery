@@ -2,6 +2,8 @@
 
 package edu.cqwu.electricity.feeservicehall.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -78,8 +80,6 @@ import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import kotlinx.coroutines.launch
 
 private const val ORIGINAL_WEB_URL = "https://pay.cqwu.edu.cn/casLogin/"
@@ -112,7 +112,7 @@ fun FeeServiceHallScreen(
     val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(initialPage = initialTab, pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     var selectedOrder by remember { mutableStateOf<OrderRecord?>(null) }
     val snackbar = LocalSnackbarController.current
 

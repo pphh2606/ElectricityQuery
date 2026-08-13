@@ -1,9 +1,8 @@
 package edu.cqwu.electricity.feeservicehall.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import edu.cqwu.electricity.feedback.util.LogRedactor
 import edu.cqwu.electricity.login.data.CookieParser
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.login.data.HtmlFormParser
@@ -126,7 +125,7 @@ class FeeServiceHallApi {
             getXToken()?.let { return@withLock Result.success(it) }
             withContext(Dispatchers.IO) {
                 try {
-                    Log.d("FeeServiceHallApi", ">>> 自动获取 pay JWT Token 开始")
+                    AppLog.d("FeeServiceHallApi", ">>> 自动获取 pay JWT Token 开始")
                     val tokenRegex = Regex("""token=([^&]+)""")
                     val shared = HttpClientFactory.shared
 
@@ -137,11 +136,11 @@ class FeeServiceHallApi {
                             .build(),
                     ).execute()
                     val step1Html = step1Resp.body.string()
-                    Log.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
+                    AppLog.d("FeeServiceHallApi", "步骤1: /casLogin/ 响应码=${step1Resp.code}, HTML长度=${step1Html.length}")
 
                     val firstRedirect = HtmlFormParser.extractJsRedirect(step1Html)
                         ?: return@withContext Result.failure(Exception("无法从 /casLogin/ 解析重定向地址"))
-                    Log.d("FeeServiceHallApi", "步骤1: 解析到重定向地址=${LogRedactor.url(firstRedirect)}")
+                    AppLog.url("FeeServiceHallApi", "步骤1: 解析到重定向地址=${firstRedirect}")
 
                     // ── 步骤2: 仅在需要 CAS 认证时跟随 authserver ──
                     val dlyscasUrl = if (firstRedirect.contains("/authserver/")) {
@@ -156,7 +155,7 @@ class FeeServiceHallApi {
                         ).execute()
                         val casHtml = casResp.body.string()
                         val finalUrl = casResp.request.url.toString()
-                        Log.d(
+                        AppLog.d(
                             "FeeServiceHallApi",
                             "步骤2: CAS认证完成, 响应码=${casResp.code}, HTML长度=${casHtml.length}, finalUrl=$finalUrl",
                         )
@@ -170,7 +169,7 @@ class FeeServiceHallApi {
                     } else {
                         firstRedirect
                     }
-                    Log.d("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=${LogRedactor.url(dlyscasUrl)}")
+                    AppLog.url("FeeServiceHallApi", "步骤2: 解析到 dlyscas 地址=${dlyscasUrl}")
 
                     // ── 步骤3: 访问 dlyscas，获取 JWT Token ──
                     val step3Client = shared.newBuilder()
@@ -183,19 +182,19 @@ class FeeServiceHallApi {
                             .build(),
                     ).execute()
                     val location = step3Resp.header("Location") ?: ""
-                    Log.d(
+                    AppLog.d(
                         "FeeServiceHallApi",
-                        "步骤3: dlyscas 响应码=${step3Resp.code}, Location=${LogRedactor.url(location)}",
+                        "步骤3: dlyscas 响应码=${step3Resp.code}, Location=${location}",
                     )
 
                     val token = tokenRegex.find(location)?.groupValues?.getOrNull(1)
                         ?: return@withContext Result.failure(Exception("无法从 dlyscas 响应中提取 JWT Token"))
                     storePayToken(token)
                 } catch (e: SocketTimeoutException) {
-                    Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 超时", e)
+                    AppLog.e("FeeServiceHallApi", ">>> 获取 JWT Token 超时", e)
                     Result.failure(Exception("获取 Token 超时，请检查网络连接", e))
                 } catch (e: Exception) {
-                    Log.e("FeeServiceHallApi", ">>> 获取 JWT Token 失败", e)
+                    AppLog.e("FeeServiceHallApi", ">>> 获取 JWT Token 失败", e)
                     Result.failure(e)
                 }
             }
@@ -203,7 +202,7 @@ class FeeServiceHallApi {
 
         private fun storePayToken(token: String): Result<String> {
             val decodedToken = URLDecoder.decode(token, "UTF-8")
-            Log.d("FeeServiceHallApi", ">>> JWT Token 获取成功, 长度=${decodedToken.length}")
+            AppLog.d("FeeServiceHallApi", ">>> JWT Token 获取成功, 长度=${decodedToken.length}")
             CookieStore.setCookie(PAY_DOMAIN, "$XTOKEN_COOKIE_NAME=$decodedToken")
             CookieStore.setCookie("$PAY_DOMAIN/", "$XTOKEN_COOKIE_NAME=$decodedToken")
             CookieStore.setCookie("$PAY_DOMAIN/casLogin/", "$XTOKEN_COOKIE_NAME=$decodedToken")
@@ -234,7 +233,7 @@ class FeeServiceHallApi {
     private suspend fun <T> autoRetry(block: suspend () -> Result<T>): Result<T> {
         val result = block()
         if (result.isFailure && getXToken().isNullOrBlank()) {
-            Log.d("FeeServiceHallApi", "Token 不存在，自动获取后重试")
+            AppLog.d("FeeServiceHallApi", "Token 不存在，自动获取后重试")
             val tokenResult = obtainPayToken()
             if (tokenResult.isFailure) {
                 return Result.failure(SessionExpiredException("未登录，请先打开原网页完成认证"))

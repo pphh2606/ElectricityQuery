@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.profile.ui
 
-import android.util.Log
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
+import edu.cqwu.electricity.logging.AppLog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,11 +66,9 @@ import edu.cqwu.electricity.login.data.AccountStore
 import edu.cqwu.electricity.login.ui.AccountManagerSheet
 import edu.cqwu.electricity.network.WebVpnEncoder
 import edu.cqwu.electricity.settings.data.NightMode
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalNightModeState
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.OpenUrlDialog
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 
 /**
  * 「我的」页面 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
@@ -77,7 +77,7 @@ import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 @Composable
 fun ProfileTopBar() {
     val nav = LocalNavController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
 
     TopAppBar(
         title = {
@@ -87,15 +87,15 @@ fun ProfileTopBar() {
             )
         },
         actions = {
-            val nightModeState = LocalNightModeState.current
+            val appSettings = LocalAppSettingsState.current
 
             IconButton(onClick = {
                 val modes = NightMode.entries
-                val nextIndex = (nightModeState.nightMode.ordinal + 1) % modes.size
-                nightModeState.onNightModeChange(modes[nextIndex])
+                val nextIndex = (appSettings.nightMode.ordinal + 1) % modes.size
+                appSettings.updateNightMode(modes[nextIndex])
             }) {
                 val modes = NightMode.entries
-                val nextIndex = (nightModeState.nightMode.ordinal + 1) % modes.size
+                val nextIndex = (appSettings.nightMode.ordinal + 1) % modes.size
                 val nextMode = modes[nextIndex]
                 val icon = when (nextMode) {
                     NightMode.SYSTEM -> Icons.Outlined.BrightnessAuto
@@ -131,7 +131,7 @@ fun ProfilePageContent(
 ) {
     val _profilePerfStart = System.currentTimeMillis()
     androidx.compose.runtime.SideEffect {
-        Log.d("TabPerf", "ProfilePageContent composition done, elapsed=${System.currentTimeMillis() - _profilePerfStart}ms")
+        AppLog.d("TabPerf", "ProfilePageContent composition done, elapsed=${System.currentTimeMillis() - _profilePerfStart}ms")
     }
     val nav = LocalNavController.current
     val context = LocalContext.current
@@ -156,7 +156,7 @@ fun ProfilePageContent(
         val t0 = System.currentTimeMillis()
         val result = AccountManager.getActiveUser()
             ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
-        Log.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
+        AppLog.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
         result
     }
 
@@ -326,7 +326,7 @@ fun ProfilePageContent(
                 try {
                     WebVpnEncoder.transform(url)
                 } catch (e: Exception) {
-                    Log.w("ProfileScreen", "WebVpnEncoder.transform failed for: $url", e)
+                    AppLog.w("ProfileScreen", "WebVpnEncoder.transform failed for: $url", e)
                     url
                 }
             } else {

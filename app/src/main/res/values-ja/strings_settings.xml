@@ -21,6 +21,8 @@
     <string name="personalization_night_mode">ダークモード</string>
     <string name="personalization_pure_black">純黒背景</string>
     <string name="personalization_pure_black_desc">ダークモードで純黒背景を使用</string>
+    <string name="personalization_sheet_blur">シート背景のぼかし</string>
+    <string name="personalization_sheet_blur_desc">有効にすると下部シートの背後がぼやけます。Android 12 以降で利用できます</string>
     <string name="personalization_theme_color">テーマカラー</string>
     <string name="personalization_dynamic_color">ダイナミックカラー</string>
     <string name="personalization_dynamic_color_supported">システム壁紙に合わせてテーマカラーを自動抽出</string>
@@ -185,4 +187,13 @@
     <string name="settings_topbar_surface_container_low">薄いアクセント</string>
 
     <string name="settings_page_transition_fade_scale">フェードとスケール</string>
+    <string name="config_log_level">ログレベル</string>
+    <string name="config_log_level_desc">ログの詳細量とフィードバック添付ログを制御します</string>
+    <string name="log_level_select">ログレベルを選択</string>
+    <string name="log_level_verbose">すべて</string>
+    <string name="log_level_debug">デバッグ</string>
+    <string name="log_level_info">情報</string>
+    <string name="log_level_warn">警告</string>
+    <string name="log_level_error">エラー</string>
+    <string name="log_level_off">オフ</string>
 </resources>

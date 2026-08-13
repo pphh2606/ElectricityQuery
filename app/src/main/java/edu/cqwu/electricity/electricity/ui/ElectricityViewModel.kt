@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.electricity.ui
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
@@ -107,7 +107,7 @@ class ElectricityViewModel(
             } else {
                 it.expandedAreaIds + areaId
             }
-            Log.d("DEBUG_expand", "toggleArea: ${it.expandedAreaIds} → $newSet")
+            AppLog.d("DEBUG_expand", "toggleArea: ${it.expandedAreaIds} → $newSet")
             it.copy(expandedAreaIds = newSet)
         }
     }
@@ -135,7 +135,7 @@ class ElectricityViewModel(
     fun selectBuilding(building: BuildingNode) {
         val floors = building.children ?: emptyList()
         _uiState.update {
-            Log.d("DEBUG_expand", "selectBuilding BEFORE: expandedAreaIds=${it.expandedAreaIds}")
+            AppLog.d("DEBUG_expand", "selectBuilding BEFORE: expandedAreaIds=${it.expandedAreaIds}")
             it.copy(
                 selectedBuilding = building,
                 floors = floors,
@@ -172,7 +172,7 @@ class ElectricityViewModel(
 
     fun selectRoom(room: BuildingNode) {
         _uiState.update {
-            Log.d("DEBUG_expand", "selectRoom: expandedAreaIds=${it.expandedAreaIds}")
+            AppLog.d("DEBUG_expand", "selectRoom: expandedAreaIds=${it.expandedAreaIds}")
             it.copy(
                 isLoading = true,
                 isBalanceRefreshing = true,
@@ -211,7 +211,7 @@ class ElectricityViewModel(
 
     fun onReturnedFromDashboard() {
         _uiState.update {
-            Log.d("DEBUG_expand", "onReturnedFromDashboard: expandedAreaIds=${it.expandedAreaIds}, selectedBuilding=${it.selectedBuilding?.name}")
+            AppLog.d("DEBUG_expand", "onReturnedFromDashboard: expandedAreaIds=${it.expandedAreaIds}, selectedBuilding=${it.selectedBuilding?.name}")
             it.copy(
                 currentStep = if (it.selectedBuilding != null) SelectionStep.ROOM_GRID else SelectionStep.AREA,
                 selectedRoom = null,

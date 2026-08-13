@@ -33,7 +33,7 @@ import edu.cqwu.electricity.home.ui.HomeTopBar
 import edu.cqwu.electricity.home.ui.HomeViewModel
 import edu.cqwu.electricity.profile.ui.ProfilePageContent
 import edu.cqwu.electricity.profile.ui.ProfileTopBar
-import edu.cqwu.electricity.theme.ui.AnimationSettings
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
 import kotlinx.coroutines.launch
@@ -50,7 +50,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainTabScreen(
-    animationSettings: AnimationSettings,
     modifier: Modifier = Modifier,
 ) {
     val pagerState = rememberPagerState(pageCount = { bottomNavTabs.size })
@@ -63,7 +62,7 @@ fun MainTabScreen(
     var halfScreenUrl by remember { mutableStateOf<String?>(null) }
     var halfScreenTitle by remember { mutableStateOf("") }
 
-    val userScrollEnabled = animationSettings.reduceMotion != ReduceMotion.ON
+    val userScrollEnabled = LocalAppSettingsState.current.reduceMotion != ReduceMotion.ON
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

@@ -3,6 +3,7 @@ package edu.cqwu.electricity.login.data
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import edu.cqwu.electricity.app.ElectricityApp
+import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -48,7 +49,7 @@ object UserAgentProvider {
      * 兜底返回"默认"预设。
      */
     fun getActiveUserAgent(): String {
-        val selectedId = prefs.getSelectedUaId()
+        val selectedId = prefs.get(SettingsKeys.UA_SELECTED_ID)
         return getEntryById(selectedId)?.userAgent
             ?: BUILTIN_PRESETS.first { it.id == "preset_default" }.userAgent
     }
@@ -70,20 +71,20 @@ object UserAgentProvider {
     /**
      * 获取当前选中的条目 ID。
      */
-    fun getSelectedId(): String = prefs.getSelectedUaId()
+    fun getSelectedId(): String = prefs.get(SettingsKeys.UA_SELECTED_ID)
 
     /**
      * 设置当前选中的条目 ID。
      */
     fun setSelectedId(id: String) {
-        prefs.setSelectedUaId(id)
+        prefs.set(SettingsKeys.UA_SELECTED_ID, id)
     }
 
     /**
      * 获取当前选中条目的显示名称。
      */
     fun getSelectedName(): String {
-        val id = prefs.getSelectedUaId()
+        val id = prefs.get(SettingsKeys.UA_SELECTED_ID)
         return getEntryById(id)?.name ?: "默认"
     }
 
@@ -95,7 +96,7 @@ object UserAgentProvider {
      * 获取用户自定义条目列表。
      */
     fun getCustomEntries(): List<UserAgentEntry> {
-        val json = prefs.getCustomUaList()
+        val json = prefs.get(SettingsKeys.UA_CUSTOM_LIST)
         if (json.isBlank() || json == "[]") return emptyList()
         return try {
             val type = object : TypeToken<List<UserAgentEntry>>() {}.type
@@ -109,7 +110,7 @@ object UserAgentProvider {
      * 保存自定义条目列表。
      */
     private fun saveCustomEntries(entries: List<UserAgentEntry>) {
-        prefs.setCustomUaList(gson.toJson(entries))
+        prefs.set(SettingsKeys.UA_CUSTOM_LIST, gson.toJson(entries))
     }
 
     /**
@@ -143,8 +144,8 @@ object UserAgentProvider {
         saveCustomEntries(entries)
 
         // 如果当前选中项被删除，回退到默认
-        if (prefs.getSelectedUaId() == id) {
-            prefs.setSelectedUaId("preset_default")
+        if (prefs.get(SettingsKeys.UA_SELECTED_ID) == id) {
+            prefs.set(SettingsKeys.UA_SELECTED_ID, "preset_default")
         }
     }
 }

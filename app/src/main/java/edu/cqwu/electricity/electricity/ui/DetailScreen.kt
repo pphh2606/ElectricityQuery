@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.electricity.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 import android.content.res.Resources
@@ -70,8 +72,6 @@ import edu.cqwu.electricity.electricity.data.UsageResponse
 import edu.cqwu.electricity.theme.ui.ElectricityLineChartCard
 import edu.cqwu.electricity.theme.ui.LineData
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 
 /**
@@ -137,7 +137,7 @@ fun DetailScreen(
         }
     }
 
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     // 2.8: 移除冗余的 Box 包裹
     Scaffold(
         topBar = {

@@ -1,6 +1,6 @@
 package edu.cqwu.electricity.hall.data
 
-import android.util.Log
+import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.payment.data.HttpClientFactory
@@ -48,22 +48,22 @@ class HallSearchApi {
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
-            Log.d("HallSearchApi", "GET $url")
+            AppLog.d("HallSearchApi", "GET $url")
             val response = client.newCall(request).execute()
             val body = response.body.string()
             val result = gson.fromJson(body, ServiceCenterSearchResponse::class.java)
 
             if (!result.hasLogin) {
-                Log.w("HallSearchApi", "用户未登录（hasLogin=false）")
+                AppLog.w("HallSearchApi", "用户未登录（hasLogin=false）")
                 throw SessionExpiredException("用户未登录")
             }
 
             Result.success(result)
         } catch (e: SessionExpiredException) {
-            Log.w("HallSearchApi", "Session 过期: ${e.message}")
+            AppLog.w("HallSearchApi", "Session 过期: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("HallSearchApi", "搜索接口请求失败", e)
+            AppLog.e("HallSearchApi", "搜索接口请求失败", e)
             Result.failure(e)
         }
     }

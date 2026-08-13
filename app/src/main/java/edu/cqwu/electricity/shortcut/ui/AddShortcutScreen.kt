@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.shortcut.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,8 +64,6 @@ import edu.cqwu.electricity.home.data.HomeJsonLoader
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
@@ -86,7 +86,7 @@ fun AddShortcutScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val scope = rememberCoroutineScope()
 
     var categories by remember { mutableStateOf<List<HomeCategory>>(emptyList()) }
@@ -347,7 +347,7 @@ fun AddShortcutScreen(
                             selected = selectedApp?.appId == app.appId,
                             iconUrl = app.iconUrl.ifBlank { null },
                             containerColor = if (selectedApp?.appId == app.appId) {
-                                MaterialTheme.colorScheme.secondaryContainer
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
                             } else {
                                 androidx.compose.ui.graphics.Color.Transparent
                             },

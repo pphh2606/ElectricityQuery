@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.speakup.ui
 
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+
 import android.content.ClipData
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,9 +54,7 @@ import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LocalTopBarState
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.toTopAppBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -136,7 +136,7 @@ fun MessageDetailScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = LocalTopBarState.current.style.toTopAppBarColors(MaterialTheme.colorScheme)
+    val topBarColors = currentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val uiState by viewModel.uiState.collectAsState()
 
