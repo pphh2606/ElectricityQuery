@@ -133,7 +133,7 @@ dependencies {
 // ============================================================
 // Auto-increment versionCode on every build (post-build task)
 // ============================================================
-// 每次编译都会自动加一，无需备份 version.properties
+// 每次编译都会自动加一，无需恢复 version.properties
 tasks.register("incrementVersionCode") {
     doLast {
         val newVersionCode = currentVersionCode + 1

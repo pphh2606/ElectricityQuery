@@ -46,10 +46,9 @@ import edu.cqwu.electricity.settings.data.QrCodeColorMode
 import edu.cqwu.electricity.theme.ui.QrCodeView
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
-import kotlin.math.roundToInt
 
 /** Corner radius slider range: 0..50 in 1% steps. */
-private val CORNER_RADIUS_RANGE = 0..50
+private val CORNER_RADIUS_RANGE = 0f..50f
 
 /**
  * 二维码设置页面
@@ -177,7 +176,7 @@ fun QrCodeSettingsScreen(
                 ) {
                     // 当前值显示
                     Text(
-                        text = "${appSettings.qrCodeCornerRadius}%",
+                        text = "${"%.1f".format(appSettings.qrCodeCornerRadius)}%",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -189,14 +188,9 @@ fun QrCodeSettingsScreen(
 
                     // 滑块（steps = 4 表示中间 4 个 tick，加上两端共 6 个整数点位：0,10,20,30,40,50）
                     Slider(
-                        value = appSettings.qrCodeCornerRadius.toFloat(),
-                        onValueChange = { newValue ->
-                            val snapped = newValue.roundToInt()
-                                .coerceIn(CORNER_RADIUS_RANGE.first, CORNER_RADIUS_RANGE.last)
-                            appSettings.updateQrCodeCornerRadius(snapped)
-                        },
-                        valueRange = CORNER_RADIUS_RANGE.first.toFloat()..CORNER_RADIUS_RANGE.last.toFloat(),
-                        steps = CORNER_RADIUS_RANGE.last - CORNER_RADIUS_RANGE.first - 1,
+                        value = appSettings.qrCodeCornerRadius,
+                        onValueChange = appSettings::updateQrCodeCornerRadius,
+                        valueRange = CORNER_RADIUS_RANGE,
                         modifier = Modifier.fillMaxWidth(),
                         colors = SliderDefaults.colors(
                             thumbColor = MaterialTheme.colorScheme.primary,
@@ -213,12 +207,12 @@ fun QrCodeSettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = "${CORNER_RADIUS_RANGE.first}",
+                            text = "${CORNER_RADIUS_RANGE.start}",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = "${CORNER_RADIUS_RANGE.last}",
+                            text = "${CORNER_RADIUS_RANGE.endInclusive}",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

@@ -18,6 +18,11 @@ import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.settings.data.ThemeColorSource
 import edu.cqwu.electricity.settings.data.TopBarStyle
 
+const val MIN_SHEET_BLUR_RADIUS = 0f
+const val MAX_SHEET_BLUR_RADIUS = 40f
+const val MIN_QR_CORNER_RADIUS = 0f
+const val MAX_QR_CORNER_RADIUS = 50f
+
 @Stable
 class AppSettingsState(
     private val prefs: SettingsPreferences,
@@ -46,13 +51,21 @@ class AppSettingsState(
     var qrCodeColorMode by mutableStateOf(prefs.get(SettingsKeys.QR_CODE_COLOR_MODE))
         private set
 
-    var qrCodeCornerRadius by mutableStateOf(prefs.get(SettingsKeys.QR_CODE_CORNER_RADIUS))
+    var qrCodeCornerRadius by mutableStateOf(
+        prefs.get(SettingsKeys.QR_CODE_CORNER_RADIUS)
+            .coerceIn(MIN_QR_CORNER_RADIUS, MAX_QR_CORNER_RADIUS)
+    )
         private set
 
     var qrScreenBrightnessEnabled by mutableStateOf(prefs.get(SettingsKeys.QR_SCREEN_BRIGHTNESS))
         private set
 
     var sheetBlurEnabled by mutableStateOf(prefs.get(SettingsKeys.SHEET_BLUR_ENABLED))
+        private set
+
+    var sheetBlurRadius by mutableStateOf(
+        prefs.get(SettingsKeys.SHEET_BLUR_RADIUS).coerceIn(MIN_SHEET_BLUR_RADIUS, MAX_SHEET_BLUR_RADIUS)
+    )
         private set
 
     fun updateNightMode(value: NightMode) {
@@ -102,9 +115,10 @@ class AppSettingsState(
         prefs.set(SettingsKeys.QR_CODE_COLOR_MODE, value)
     }
 
-    fun updateQrCodeCornerRadius(value: Int) {
-        qrCodeCornerRadius = value
-        prefs.set(SettingsKeys.QR_CODE_CORNER_RADIUS, value)
+    fun updateQrCodeCornerRadius(value: Float) {
+        val clamped = value.coerceIn(MIN_QR_CORNER_RADIUS, MAX_QR_CORNER_RADIUS)
+        qrCodeCornerRadius = clamped
+        prefs.set(SettingsKeys.QR_CODE_CORNER_RADIUS, clamped)
     }
 
     fun updateQrScreenBrightnessEnabled(enabled: Boolean) {
@@ -115,6 +129,12 @@ class AppSettingsState(
     fun updateSheetBlurEnabled(enabled: Boolean) {
         sheetBlurEnabled = enabled
         prefs.set(SettingsKeys.SHEET_BLUR_ENABLED, enabled)
+    }
+
+    fun updateSheetBlurRadius(value: Float) {
+        val clamped = value.coerceIn(MIN_SHEET_BLUR_RADIUS, MAX_SHEET_BLUR_RADIUS)
+        sheetBlurRadius = clamped
+        prefs.set(SettingsKeys.SHEET_BLUR_RADIUS, clamped)
     }
 
     private fun loadColorSource(): ThemeColorSource {

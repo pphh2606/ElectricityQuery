@@ -23,6 +23,8 @@
     <string name="personalization_pure_black_desc">استخدم خلفية سوداء نقية في الوضع الداكن</string>
     <string name="personalization_sheet_blur">ضبابية خلفية النافذة</string>
     <string name="personalization_sheet_blur_desc">عند التفعيل، يتم ضبابية المحتوى خلف النافذة السفلية. متاح على أندرويد 12 وما فوق</string>
+    <string name="personalization_sheet_blur_strength">قوة الضبابية</string>
+    <string name="personalization_sheet_blur_radius_value">%1$.1fdp</string>
     <string name="personalization_theme_color">لون السمة</string>
     <string name="personalization_dynamic_color">لون ديناميكي</string>
     <string name="personalization_dynamic_color_supported">استخراج لون السمة من خلفية النظام</string>

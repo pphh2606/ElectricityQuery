@@ -23,6 +23,8 @@
     <string name="personalization_pure_black_desc">ダークモードで純黒背景を使用</string>
     <string name="personalization_sheet_blur">シート背景のぼかし</string>
     <string name="personalization_sheet_blur_desc">有効にすると下部シートの背後がぼやけます。Android 12 以降で利用できます</string>
+    <string name="personalization_sheet_blur_strength">ぼかしの強さ</string>
+    <string name="personalization_sheet_blur_radius_value">%1$.1fdp</string>
     <string name="personalization_theme_color">テーマカラー</string>
     <string name="personalization_dynamic_color">ダイナミックカラー</string>
     <string name="personalization_dynamic_color_supported">システム壁紙に合わせてテーマカラーを自動抽出</string>

@@ -6,7 +6,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.os.SystemClock
+import android.view.MotionEvent
 import android.view.ViewGroup
+import android.view.VelocityTracker
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -16,38 +19,38 @@ import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -55,48 +58,43 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.UserAgentProvider
+import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 private const val TAG = "WebViewBottomSheet"
 
 /**
- * 半屏 WebView 弹窗（自定义实现）
+ * 半屏 WebView 弹窗，基于 Material3 ModalBottomSheet 实现。
  *
- * 完全自定义的 Bottom Sheet，不依赖 ModalBottomSheet，三条约束同时满足：
- * 1. 拖拽手柄改变弹窗高度（pointerInput 实时更新 sheetHeight）
- * 2. WebView 内上下滚动（原生 View 触摸，不经过 Compose 手势系统）
- * 3. 拖拽跟手（onDrag 中实时更新高度，无 AnchoredDraggable 吸附）
- *
- * 手柄区域用 Compose pointerInput，WebView 用原生 View.onTouchEvent()，
- * 两者在 Android 事件分发层面完全分离，物理空间不重叠，手势零冲突。
- *
- * @param visible 控制弹窗显隐
- * @param onDismissRequest 弹窗关闭回调
- * @param url 要加载的 URL
- * @param title 初始标题（加载中显示）
+ * 与普通带拖拽手柄弹窗使用同一套窗口、scrim、模糊与返回键机制，
+ * 背景模糊/压暗由 AppShell + SheetVisibilityState 统一驱动。
  */
 @SuppressLint("SetJavaScriptEnabled")
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WebViewBottomSheet(
     visible: Boolean,
@@ -107,23 +105,11 @@ fun WebViewBottomSheet(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
+    val sheetVisibilityState = LocalSheetVisibilityState.current
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
-
-    // ── 尺寸计算（统一 Dp）──
     val screenHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
-    val halfHeight = screenHeight * 0.5f
-    val dismissThreshold = screenHeight * 0.4f  // 低于此高度松手 → 关闭
-    val handleBarHeight = 44.dp
 
-    // ── 高度状态（初始为 0，由打开动画从 0 到 minHeight）──
-    val heightAnimatable = remember { Animatable(0f) }
-    var sheetHeight by remember { mutableStateOf(0.dp) }
-
-    // ── isHiding 模式（退出动画）──
-    var isHiding by remember { mutableStateOf(false) }
-
-    // ── 其他状态 ──
     var canGoBack by remember { mutableStateOf(false) }
     var progress by remember { mutableIntStateOf(10) }
     var pageTitle by remember { mutableStateOf(title.ifBlank { resources.getString(R.string.webview_loading) }) }
@@ -135,38 +121,74 @@ fun WebViewBottomSheet(
     val fileUploadLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         fileUploadCallback?.let { cb -> cb.onReceiveValue(if (uri != null) arrayOf(uri) else null); fileUploadCallback = null }
     }
+    data class WebViewTouchState(
+        var lastRawY: Float = 0f,
+        var trackingDown: Boolean = false,
+        var downTime: Long = 0L,
+        var handedToSheet: Boolean = false,
+        var sheetDragDelta: Float = 0f,
+        var velocityTracker: VelocityTracker? = null,
+    )
+    val webViewTouchState = remember { WebViewTouchState() }
 
-    // ── 打开动画 ──
-    var hasAppeared by remember { mutableStateOf(false) }
-    LaunchedEffect(visible) {
-        if (visible) {
-            hasAppeared = true
-            isHiding = false
-            heightAnimatable.snapTo(0f)
-            heightAnimatable.animateTo(halfHeight.value, tween(300)) { sheetHeight = value.dp }
-        }
-    }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+    val nestedScrollDispatcher = remember { NestedScrollDispatcher() }
+    val webViewNestedScrollConnection = remember { object : NestedScrollConnection {} }
 
-    // ── 关闭：在组合阶段同步检测 visible → false，立即设 isHiding = true ──
-    // 这样同一帧内 if (visible || isHiding) 为 true，弹窗不会从组合树移除
-    if (!visible && hasAppeared && !isHiding) {
+    var isHiding by remember { mutableStateOf(false) }
+    var previousVisible by remember { mutableStateOf(visible) }
+
+    if (previousVisible && !visible && !isHiding) {
         isHiding = true
     }
+    if (visible && isHiding) {
+        isHiding = false
+    }
+    previousVisible = visible
 
-    // ── isHiding → 关闭动画 ──
     LaunchedEffect(isHiding) {
         if (isHiding) {
             webViewRef.value?.stopLoading()
-            heightAnimatable.snapTo(sheetHeight.value)
-            heightAnimatable.animateTo(0f, tween(250)) { sheetHeight = value.dp }
-            // 动画结束后通知父组件关闭，确保 visible=false → 整个组件从组合树移除（含 Scrim）
-            isHiding = false
-            hasAppeared = false
-            onDismissRequest()
+            try {
+                if (sheetState.isVisible) {
+                    sheetState.hide()
+                }
+            } finally {
+                isHiding = false
+                onDismissRequest()
+            }
         }
     }
 
-    // ── BackHandler（合并为单一）──
+    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    LaunchedEffect(isKeyboardVisible) {
+        if (isKeyboardVisible && !isHiding && sheetState.currentValue == SheetValue.PartiallyExpanded) {
+            sheetState.expand()
+        }
+    }
+
+    DisposableEffect(visible, isHiding, sheetVisibilityState) {
+        val shouldBeOpen = visible || isHiding
+        if (shouldBeOpen) {
+            sheetVisibilityState.open()
+        }
+        onDispose {
+            if (shouldBeOpen) {
+                sheetVisibilityState.close()
+            }
+        }
+    }
+
+    LaunchedEffect(sheetState, sheetVisibilityState) {
+        snapshotFlow { sheetState.targetValue == SheetValue.Hidden }
+            .distinctUntilChanged()
+            .collect { isHiddenTarget ->
+                sheetVisibilityState.blurProgress = if (isHiddenTarget) 0f else 1f
+            }
+    }
+
     BackHandler(enabled = visible && !isHiding) {
         if (canGoBack) {
             webViewRef.value?.goBack()
@@ -175,262 +197,379 @@ fun WebViewBottomSheet(
         }
     }
 
-    // ── Scrim 透明度 ──
-    val fraction = ((sheetHeight - halfHeight) / (screenHeight - halfHeight)).coerceIn(0f, 1f)
-    val scrimAlpha = lerp(fraction)
-
-    // ── 渲染 ──
     if (visible || isHiding) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Scrim（detectTapGestures 只响应轻触，不拦截拖拽）
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = scrimAlpha))
-                    .pointerInput(Unit) {
-                        detectTapGestures(onTap = { onDismissRequest() })
+        ModalBottomSheet(
+            onDismissRequest = onDismissRequest,
+            sheetState = sheetState,
+            sheetGesturesEnabled = true,
+            dragHandle = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        IconButton(
+                            onClick = { webViewRef.value?.goBack() },
+                            enabled = canGoBack,
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Outlined.ArrowBack,
+                                stringResource(R.string.common_back),
+                                tint = if (canGoBack) {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                                },
+                            )
+                        }
                     }
-            )
-
-            // Sheet 容器
-            Box(
+                    Box(contentAlignment = Alignment.Center) {
+                        BottomSheetDefaults.DragHandle()
+                    }
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.CenterEnd,
+                    ) {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                Icons.Outlined.MoreVert,
+                                stringResource(R.string.common_more_options),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.common_close)) },
+                                leadingIcon = { Icon(Icons.Outlined.Close, null) },
+                                onClick = { showMenu = false; onDismissRequest() },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.common_refresh)) },
+                                leadingIcon = { Icon(Icons.Outlined.Refresh, null) },
+                                onClick = { showMenu = false; webViewRef.value?.reload() },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.webview_open_in_browser)) },
+                                leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, null) },
+                                onClick = {
+                                    showMenu = false
+                                    try {
+                                        context.startActivity(
+                                            Intent(Intent.ACTION_VIEW, Uri.parse(webViewRef.value?.url ?: url))
+                                        )
+                                    } catch (_: ActivityNotFoundException) {
+                                        snackbar.show(
+                                            resources.getString(R.string.common_no_browser),
+                                            ToastUtils.Type.ERROR,
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            tonalElevation = 2.dp,
+            contentWindowInsets = { WindowInsets.systemBars.union(WindowInsets.ime) },
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .heightIn(min = 0.dp, max = screenHeight)
-                    .height(sheetHeight)
-                    .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                    .height(screenHeight * 0.7f),
             ) {
-                Column(Modifier.fillMaxSize()) {
-                    // ── 手柄区域 ──
-                    // 两层布局：底层可拖拽 Box 覆盖整行，上层按钮叠在上面
-                    // 按钮区域外（中间 + 空白区域）都可以上下拖拽
-                    val haptic = LocalHapticFeedback.current
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(handleBarHeight)
-                    ) {
-                        // 底层：整行可拖拽 + 点击水波纹（DragHandle 居中显示）
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clickable(onClick = {})  // 水波纹视觉反馈
-                                .pointerInput(Unit) {
-                                    detectDragGestures(
-                                        onDragStart = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        },
-                                        onDrag = { change, dragAmount ->
-                                            change.consume()
-                                            with(density) {
-                                                sheetHeight = (sheetHeight - dragAmount.y.toDp())
-                                                    .coerceIn(screenHeight * 0.2f, screenHeight)
-                                            }
-                                        },
-                                        onDragEnd = {
-                                            when {
-                                                // 低于关闭阈值 → 统一走 isHiding 关闭流程
-                                                sheetHeight < dismissThreshold -> {
-                                                    isHiding = true
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .nestedScroll(
+                            connection = webViewNestedScrollConnection,
+                            dispatcher = nestedScrollDispatcher,
+                        ),
+                ) {
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = { ctx ->
+                            WebView(ctx).apply {
+                                layoutParams = ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                )
+                                settings.javaScriptEnabled = true
+                                settings.javaScriptCanOpenWindowsAutomatically = true
+                                settings.domStorageEnabled = true
+                                settings.useWideViewPort = true
+                                settings.loadWithOverviewMode = true
+                                settings.setSupportZoom(true)
+                                settings.builtInZoomControls = true
+                                settings.displayZoomControls = false
+                                settings.userAgentString = UserAgentProvider.getActiveUserAgent()
+
+                                webViewClient = object : WebViewClient() {
+                                    override fun onPageStarted(view: WebView?, pageUrl: String?, favicon: Bitmap?) {
+                                        super.onPageStarted(view, pageUrl, favicon)
+                                        webErrorState = null; canGoBack = view?.canGoBack() == true
+                                    }
+                                    override fun onPageFinished(view: WebView?, pageUrl: String?) {
+                                        super.onPageFinished(view, pageUrl)
+                                        canGoBack = view?.canGoBack() == true
+                                    }
+                                    override fun onReceivedError(
+                                        view: WebView?,
+                                        request: WebResourceRequest?,
+                                        error: WebResourceError?,
+                                    ) {
+                                        super.onReceivedError(view, request, error)
+                                        if (request?.isForMainFrame == true && webErrorState == null) {
+                                            val code =
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                    error?.errorCode ?: -1
+                                                } else {
+                                                    -1
                                                 }
-                                                // 低于半屏 → 回弹到半屏
-                                                sheetHeight < halfHeight -> {
-                                                    scope.launch {
-                                                        heightAnimatable.snapTo(sheetHeight.value)
-                                                        heightAnimatable.animateTo(halfHeight.value, tween(250)) {
-                                                            sheetHeight = value.dp
-                                                        }
+                                            val description =
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                    error?.description?.toString()
+                                                } else {
+                                                    null
+                                                } ?: ctx.getString(R.string.common_unknown_error)
+                                            webErrorState = WebViewErrorState(code, description)
+                                        }
+                                    }
+                                    override fun shouldOverrideUrlLoading(
+                                        view: WebView?,
+                                        request: WebResourceRequest?,
+                                    ): Boolean {
+                                        val pageUrl = request?.url?.toString() ?: return false
+                                        return view?.context != null &&
+                                            WebViewUrlUtil.openCustomSchemeUrl(view.context, pageUrl, TAG)
+                                    }
+                                    override fun doUpdateVisitedHistory(
+                                        view: WebView?,
+                                        pageUrl: String?,
+                                        isReload: Boolean,
+                                    ) {
+                                        super.doUpdateVisitedHistory(view, pageUrl, isReload)
+                                        canGoBack = view?.canGoBack() == true
+                                    }
+                                    @Deprecated("Deprecated in Java")
+                                    @Suppress("DEPRECATION")
+                                    override fun shouldOverrideUrlLoading(view: WebView?, pageUrl: String?): Boolean {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) return false
+                                        return pageUrl != null &&
+                                            view?.context != null &&
+                                            WebViewUrlUtil.openCustomSchemeUrl(view.context, pageUrl, TAG)
+                                    }
+                                }
+
+                                setDownloadListener { downloadUrl, _, _, _, _ ->
+                                    try {
+                                        ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)))
+                                    } catch (_: ActivityNotFoundException) {
+                                        snackbar.show(
+                                            ctx.getString(R.string.webview_no_download_tool),
+                                            ToastUtils.Type.ERROR,
+                                        )
+                                    }
+                                }
+
+                                webChromeClient = object : WebChromeClient() {
+                                    override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                                        progress = newProgress
+                                    }
+                                    override fun onReceivedTitle(view: WebView?, t: String?) {
+                                        super.onReceivedTitle(view, t)
+                                        if (!t.isNullOrBlank()) pageTitle = t
+                                    }
+                                    override fun onShowFileChooser(
+                                        wv: WebView?,
+                                        filePathCallback: ValueCallback<Array<Uri>>?,
+                                        params: FileChooserParams?,
+                                    ): Boolean {
+                                        fileUploadCallback = filePathCallback
+                                        fileUploadLauncher.launch("*/*")
+                                        return true
+                                    }
+                                }
+
+                                webViewRef.value = this
+                                val headers = HashMap<String, String>()
+                                headers["Referer"] =
+                                    "https://${try { Uri.parse(url).host } catch (_: Exception) { "" }}/"
+                                loadUrl(url, headers)
+                            }
+                        },
+                        update = { webView ->
+                            fun VelocityTracker?.addRawMovement(event: MotionEvent) {
+                                this ?: return
+                                val rawEvent = MotionEvent.obtain(event)
+                                rawEvent.offsetLocation(0f, event.rawY - event.y)
+                                addMovement(rawEvent)
+                                rawEvent.recycle()
+                            }
+                            webView.setOnTouchListener { _, event ->
+                                when (event.actionMasked) {
+                                    android.view.MotionEvent.ACTION_DOWN -> {
+                                        // Keep the sheet from stealing MOVE events before WebView gets them.
+                                        webView.requestDisallowInterceptTouchEvent(true)
+                                        webViewTouchState.velocityTracker?.recycle()
+                                        webViewTouchState.velocityTracker =
+                                            VelocityTracker.obtain().apply { addRawMovement(event) }
+                                        webViewTouchState.lastRawY = event.rawY
+                                        webViewTouchState.trackingDown = false
+                                        webViewTouchState.downTime = event.downTime
+                                        webViewTouchState.handedToSheet = false
+                                        webViewTouchState.sheetDragDelta = 0f
+                                        false
+                                    }
+                                    android.view.MotionEvent.ACTION_MOVE -> {
+                                        webViewTouchState.velocityTracker?.addRawMovement(event)
+                                        val dy = event.rawY - webViewTouchState.lastRawY
+                                        webViewTouchState.lastRawY = event.rawY
+                                        if (webViewTouchState.trackingDown) {
+                                            val moveDelta =
+                                                if (dy < 0f) {
+                                                    maxOf(dy, -webViewTouchState.sheetDragDelta)
+                                                } else {
+                                                    dy
+                                                }
+                                            if (moveDelta != 0f) {
+                                                val parentsConsumed =
+                                                    nestedScrollDispatcher.dispatchPreScroll(
+                                                        available = Offset(0f, moveDelta),
+                                                        source = NestedScrollSource.UserInput,
+                                                    )
+                                                val left = moveDelta - parentsConsumed.y
+                                                if (left != 0f) {
+                                                    nestedScrollDispatcher.dispatchPostScroll(
+                                                        consumed = parentsConsumed,
+                                                        available = Offset(0f, left),
+                                                        source = NestedScrollSource.UserInput,
+                                                    )
+                                                }
+                                                webViewTouchState.sheetDragDelta += moveDelta
+                                                if (dy < 0f && webViewTouchState.sheetDragDelta <= 0f) {
+                                                    webViewTouchState.trackingDown = false
+                                                }
+                                                true
+                                            } else {
+                                                if (dy < 0f) {
+                                                    webViewTouchState.trackingDown = false
+                                                    false
+                                                } else {
+                                                    true
+                                                }
+                                            }
+                                        } else if (
+                                            webView.scrollY == 0 &&
+                                            dy > 0f &&
+                                            !webView.canScrollVertically(-1)
+                                        ) {
+                                            // At the page top, hand downward drags to the sheet.
+                                            webViewTouchState.trackingDown = true
+                                            webViewTouchState.sheetDragDelta = dy
+                                            if (!webViewTouchState.handedToSheet) {
+                                                webViewTouchState.handedToSheet = true
+                                                webView.cancelLongPress()
+                                                val downTime = event.downTime
+                                                val x = event.x
+                                                val y = event.y
+                                                webView.post {
+                                                    if (webViewTouchState.downTime == downTime) {
+                                                        val cancelEvent = MotionEvent.obtain(
+                                                            downTime,
+                                                            SystemClock.uptimeMillis(),
+                                                            MotionEvent.ACTION_CANCEL,
+                                                            x,
+                                                            y,
+                                                            0,
+                                                        )
+                                                        webView.onTouchEvent(cancelEvent)
+                                                        cancelEvent.recycle()
                                                     }
                                                 }
-                                                // ≥50% → 停在当前位置（自由移动，无吸附）
                                             }
+                                            val parentsConsumed = nestedScrollDispatcher.dispatchPreScroll(
+                                                available = Offset(0f, dy),
+                                                source = NestedScrollSource.UserInput,
+                                            )
+                                            val left = dy - parentsConsumed.y
+                                            if (left > 0f) {
+                                                nestedScrollDispatcher.dispatchPostScroll(
+                                                    consumed = parentsConsumed,
+                                                    available = Offset(0f, left),
+                                                    source = NestedScrollSource.UserInput,
+                                                )
+                                            }
+                                            true
+                                        } else {
+                                            webViewTouchState.trackingDown = false
+                                            false
                                         }
-                                    )
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // 自定义 DragHandle（无内部 padding，适配 44dp 容器）
-                            Box(
-                                modifier = Modifier
-                                    .size(width = 32.dp, height = 4.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
-                                        shape = RoundedCornerShape(percent = 50)
-                                    )
-                            )
-                        }
-                        // 上层：按钮 Row（叠在可拖拽层上方，Compose 事件分发中上层优先接收点击）
-                        Row(
+                                    }
+                                    android.view.MotionEvent.ACTION_UP -> {
+                                        webViewTouchState.velocityTracker?.addRawMovement(event)
+                                        webViewTouchState.velocityTracker?.computeCurrentVelocity(1000)
+                                        val velocity = webViewTouchState.velocityTracker?.yVelocity ?: 0f
+                                        webViewTouchState.velocityTracker?.recycle()
+                                        webViewTouchState.velocityTracker = null
+                                        webView.requestDisallowInterceptTouchEvent(false)
+                                        if (webViewTouchState.trackingDown) {
+                                            scope.launch {
+                                                nestedScrollDispatcher.dispatchPostFling(
+                                                    consumed = Velocity.Zero,
+                                                    available = Velocity(0f, velocity),
+                                                )
+                                            }
+                                            webViewTouchState.trackingDown = false
+                                            true
+                                        } else {
+                                            false
+                                        }
+                                    }
+                                    android.view.MotionEvent.ACTION_CANCEL -> {
+                                        webViewTouchState.velocityTracker?.recycle()
+                                        webViewTouchState.velocityTracker = null
+                                        webView.requestDisallowInterceptTouchEvent(false)
+                                        webViewTouchState.trackingDown = false
+                                        false
+                                    }
+                                    else -> false
+                                }
+                            }
+                        },
+                        onRelease = { webView ->
+                            webView.stopLoading(); webView.loadUrl("about:blank")
+                            webView.clearHistory(); webView.removeAllViews(); webView.destroy()
+                        },
+                    )
+
+                    if (progress < 100) {
+                        LinearProgressIndicator(
+                            progress = { progress / 100f },
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // 左侧：返回按钮（仅用于 WebView 历史返回，无历史时禁用）
-                            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
-                                IconButton(
-                                    onClick = { webViewRef.value?.goBack() },
-                                    enabled = canGoBack
-                                ) {
-                                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.common_back),
-                                        tint = if (canGoBack) MaterialTheme.colorScheme.onSurfaceVariant
-                                               else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f))
-                                }
-                            }
-                            // 中间留空（DragHandle 在底层 Box 中显示）
-                            Spacer(Modifier.weight(1f))
-                            // 右侧：更多菜单
-                            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                                IconButton(onClick = { showMenu = true }) {
-                                    Icon(Icons.Outlined.MoreVert, stringResource(R.string.common_more_options),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                                DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                                    DropdownMenuItem(
-                                        text = { Text(stringResource(R.string.common_close)) },
-                                        leadingIcon = { Icon(Icons.Outlined.Close, null) },
-                                        onClick = { showMenu = false; onDismissRequest() }
-                                    )
-                                    DropdownMenuItem(
-                                        text = { Text(stringResource(R.string.common_refresh)) },
-                                        leadingIcon = { Icon(Icons.Outlined.Refresh, null) },
-                                        onClick = { showMenu = false; webViewRef.value?.reload() }
-                                    )
-                                    DropdownMenuItem(
-                                        text = { Text(stringResource(R.string.webview_open_in_browser)) },
-                                        leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, null) },
-                                        onClick = {
-                                            showMenu = false
-                                            try {
-                                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(webViewRef.value?.url ?: url)))
-                                            } catch (_: ActivityNotFoundException) {
-                                                snackbar.show(resources.getString(R.string.common_no_browser), ToastUtils.Type.ERROR)
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                        }
+                                .fillMaxWidth()
+                                .align(Alignment.TopCenter),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
                     }
 
-                    // ── WebView 内容区 ──
-                    Box(Modifier.fillMaxSize()) {
-                        AndroidView(
-                            modifier = Modifier.fillMaxSize(),
-                            factory = { ctx ->
-                                WebView(ctx).apply {
-                                    layoutParams = ViewGroup.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.MATCH_PARENT
-                                    )
-                                    settings.javaScriptEnabled = true
-                                    settings.javaScriptCanOpenWindowsAutomatically = true
-                                    settings.domStorageEnabled = true
-                                    settings.useWideViewPort = true
-                                    settings.loadWithOverviewMode = true
-                                    settings.setSupportZoom(true)
-                                    settings.builtInZoomControls = true
-                                    settings.displayZoomControls = false
-                                    settings.userAgentString = UserAgentProvider.getActiveUserAgent()
-
-                                    webViewClient = object : WebViewClient() {
-                                        override fun onPageStarted(view: WebView?, pageUrl: String?, favicon: Bitmap?) {
-                                            super.onPageStarted(view, pageUrl, favicon)
-                                            webErrorState = null; canGoBack = view?.canGoBack() == true
-                                        }
-                                        override fun onPageFinished(view: WebView?, pageUrl: String?) {
-                                            super.onPageFinished(view, pageUrl)
-                                            canGoBack = view?.canGoBack() == true
-                                        }
-                                        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
-                                            super.onReceivedError(view, request, error)
-                                            if (request?.isForMainFrame == true && webErrorState == null) {
-                                                val code =
-                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                        error?.errorCode ?: -1
-                                                    } else {
-                                                        -1
-                                                    }
-                                                val description =
-                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                        error?.description?.toString()
-                                                    } else {
-                                                        null
-                                                    } ?: ctx.getString(R.string.common_unknown_error)
-                                                webErrorState = WebViewErrorState(code, description)
-                                            }
-                                        }
-                                        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                                            val pageUrl = request?.url?.toString() ?: return false
-                                            return view?.context != null && WebViewUrlUtil.openCustomSchemeUrl(view.context, pageUrl, TAG)
-                                        }
-                                        override fun doUpdateVisitedHistory(view: WebView?, pageUrl: String?, isReload: Boolean) {
-                                            super.doUpdateVisitedHistory(view, pageUrl, isReload); canGoBack = view?.canGoBack() == true
-                                        }
-                                        @Deprecated("Deprecated in Java") @Suppress("DEPRECATION")
-                                        override fun shouldOverrideUrlLoading(view: WebView?, pageUrl: String?): Boolean {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) return false
-                                            return pageUrl != null && view?.context != null && WebViewUrlUtil.openCustomSchemeUrl(view.context, pageUrl, TAG)
-                                        }
-                                    }
-
-                                    setDownloadListener { downloadUrl, _, _, _, _ ->
-                                        try { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))) }
-                                        catch (_: ActivityNotFoundException) { snackbar.show(ctx.getString(R.string.webview_no_download_tool), ToastUtils.Type.ERROR) }
-                                    }
-
-                                    webChromeClient = object : WebChromeClient() {
-                                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                                            progress = newProgress
-                                        }
-                                        override fun onReceivedTitle(view: WebView?, t: String?) {
-                                            super.onReceivedTitle(view, t); if (!t.isNullOrBlank()) pageTitle = t
-                                        }
-                                        override fun onShowFileChooser(wv: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, params: FileChooserParams?): Boolean {
-                                            fileUploadCallback = filePathCallback; fileUploadLauncher.launch("*/*"); return true
-                                        }
-                                    }
-
-                                    webViewRef.value = this
-                                    val headers = HashMap<String, String>()
-                                    headers["Referer"] = "https://${try { Uri.parse(url).host } catch (_: Exception) { "" }}/"
-                                    loadUrl(url, headers)
-                                }
-                            },
-                            update = {},
-                            onRelease = { webView ->
-                                webView.stopLoading(); webView.loadUrl("about:blank")
-                                webView.clearHistory(); webView.removeAllViews(); webView.destroy()
-                            }
+                    webErrorState?.let { error ->
+                        WebViewErrorOverlay(
+                            errorCode = error.errorCode,
+                            description = error.description,
+                            isHttpError = error.isHttpError,
+                            onRetry = { webErrorState = null; webViewRef.value?.reload() },
                         )
-
-                        // 进度条
-                        if (progress < 100) {
-                            LinearProgressIndicator(
-                                progress = { progress / 100f },
-                                modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
-                                color = MaterialTheme.colorScheme.primary,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                            )
-                        }
-
-                        // 错误叠加层
-                        webErrorState?.let { error ->
-                            WebViewErrorOverlay(
-                                errorCode = error.errorCode,
-                                description = error.description,
-                                isHttpError = error.isHttpError,
-                                onRetry = { webErrorState = null; webViewRef.value?.reload() }
-                            )
-                        }
                     }
                 }
             }
         }
     }
 }
-
-// lerp 辅助
-private fun lerp(fraction: Float): Float = 0.32f + (0.5f - 0.32f) * fraction.coerceIn(0f, 1f)

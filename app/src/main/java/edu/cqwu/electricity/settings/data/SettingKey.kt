@@ -47,6 +47,16 @@ fun intSetting(
     write = { putInt(name, it) },
 )
 
+fun floatSetting(
+    name: String,
+    default: Float,
+): SettingKey<Float> = SettingKey(
+    name = name,
+    default = default,
+    read = { getFloat(name, default) },
+    write = { putFloat(name, it) },
+)
+
 fun stringSetSetting(
     name: String,
     default: Set<String>,
@@ -149,9 +159,9 @@ object SettingsKeys {
         encode = { it.value },
     )
 
-    val QR_CODE_CORNER_RADIUS = intSetting(
+    val QR_CODE_CORNER_RADIUS = floatSetting(
         name = "qr_code_corner_radius",
-        default = 30,
+        default = 30f,
     )
 
     val QR_SCREEN_BRIGHTNESS = booleanSetting(
@@ -162,6 +172,11 @@ object SettingsKeys {
     val SHEET_BLUR_ENABLED = booleanSetting(
         name = "sheet_blur_enabled",
         default = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+    )
+
+    val SHEET_BLUR_RADIUS = floatSetting(
+        name = "sheet_blur_radius",
+        default = 20f,
     )
 
     val WEBVPN_ENABLED = booleanSetting(

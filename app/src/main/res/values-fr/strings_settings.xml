@@ -23,6 +23,8 @@
     <string name="personalization_pure_black_desc">Utiliser un fond noir pur en mode sombre</string>
     <string name="personalization_sheet_blur">Flou d\'arrière-plan</string>
     <string name="personalization_sheet_blur_desc">Floute le contenu derrière les feuilles inférieures. Disponible sur Android 12 et plus</string>
+    <string name="personalization_sheet_blur_strength">Intensité du flou</string>
+    <string name="personalization_sheet_blur_radius_value">%1$.1fdp</string>
     <string name="personalization_theme_color">Couleur du thème</string>
     <string name="personalization_dynamic_color">Couleur dynamique</string>
     <string name="personalization_dynamic_color_supported">Extraire la couleur du thème depuis le fond d\'écran</string>

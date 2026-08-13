@@ -37,12 +37,6 @@ import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.isHazeBlurSupported
 import edu.cqwu.electricity.theme.util.ToastUtils
 
-private val BackdropBlurStyle = HazeStyle(
-    blurRadius = 20.dp,
-    noiseFactor = 0f,
-    tints = emptyList(),
-)
-
 /**
  * 应用外壳
  *
@@ -61,6 +55,15 @@ fun AppShell(
     shortcutLaunchId: Int = 0,
     modifier: Modifier = Modifier,
 ) {
+    val appSettings = LocalAppSettingsState.current
+    val blurRadiusDp = appSettings.sheetBlurRadius.dp
+    val backdropBlurStyle = remember(blurRadiusDp) {
+        HazeStyle(
+            blurRadius = blurRadiusDp,
+            noiseFactor = 0f,
+            tints = emptyList(),
+        )
+    }
     val snackbarController = remember { SnackbarController() }
     val sheetVisibilityState = remember { SheetVisibilityState() }
     val blurProgress by animateFloatAsState(
@@ -68,7 +71,7 @@ fun AppShell(
         animationSpec = tween(durationMillis = 300),
     )
     val useForegroundBlur =
-        LocalAppSettingsState.current.sheetBlurEnabled &&
+        appSettings.sheetBlurEnabled &&
             isHazeBlurSupported() &&
             (sheetVisibilityState.active || blurProgress > 0.001f)
 
@@ -89,8 +92,8 @@ fun AppShell(
                     .fillMaxSize()
                     .then(
                         if (useForegroundBlur) {
-                            Modifier.hazeEffect(style = BackdropBlurStyle) {
-                                blurRadius = 20.dp * blurProgress
+                            Modifier.hazeEffect(style = backdropBlurStyle) {
+                                blurRadius = blurRadiusDp * blurProgress
                             }
                         } else {
                             Modifier

@@ -40,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -65,6 +66,8 @@ import edu.cqwu.electricity.settings.data.ReduceMotion
 import edu.cqwu.electricity.settings.data.ThemeColorSource
 import edu.cqwu.electricity.settings.data.TopBarStyle
 import edu.cqwu.electricity.settings.data.labelRes
+import edu.cqwu.electricity.theme.ui.MAX_SHEET_BLUR_RADIUS
+import edu.cqwu.electricity.theme.ui.MIN_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
@@ -188,6 +191,38 @@ fun PersonalizationScreen(
                         Switch(
                             checked = appSettings.sheetBlurEnabled,
                             onCheckedChange = appSettings::updateSheetBlurEnabled,
+                        )
+                    }
+                    if (appSettings.sheetBlurEnabled) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.personalization_sheet_blur_strength),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.personalization_sheet_blur_radius_value,
+                                    appSettings.sheetBlurRadius
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                        Slider(
+                            value = appSettings.sheetBlurRadius,
+                            onValueChange = appSettings::updateSheetBlurRadius,
+                            valueRange = MIN_SHEET_BLUR_RADIUS..MAX_SHEET_BLUR_RADIUS,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
                         )
                     }
                 }
