@@ -1,9 +1,6 @@
 package edu.cqwu.electricity.speakup.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
-
 import android.content.ClipData
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +18,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,11 +46,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
-import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

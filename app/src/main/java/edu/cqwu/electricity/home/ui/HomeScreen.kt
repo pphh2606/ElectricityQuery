@@ -483,6 +483,7 @@ fun HomePageContent(
         onDismissRequest = { pendingExternalIntent = null },
         title = stringResource(R.string.home_external_app_title),
         icon = Icons.Outlined.OpenInBrowser,
+        fullscreen = false,
         leadingButton = {
             TextButton(onClick = { pendingExternalIntent = null }) {
                 Text(stringResource(R.string.common_cancel))

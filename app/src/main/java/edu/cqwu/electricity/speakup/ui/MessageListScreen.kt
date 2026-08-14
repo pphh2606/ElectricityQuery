@@ -1,7 +1,5 @@
 package edu.cqwu.electricity.speakup.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 /**
  * 留言列表页面。

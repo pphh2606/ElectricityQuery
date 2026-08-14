@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
@@ -45,7 +43,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // 启用边到边绘制（内容延伸到系统栏后方）
         // 系统栏图标颜色由 Compose 层的 Theme.kt 中的 SideEffect 动态管理
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            WindowCompat.enableEdgeToEdge(window)
+            window.isNavigationBarContrastEnforced = false
+        } else {
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+        }
         setContent {
             // 首次启动时从 intent 提取快捷方式信息
             val initialInfo = remember { ShortcutHelper.extractShortcutAppInfo(intent) }

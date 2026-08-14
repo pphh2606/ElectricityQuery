@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.electricity.ui
 
+import android.content.res.Resources
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -26,11 +27,9 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -48,7 +47,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import android.content.res.Resources
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,19 +57,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import java.util.Locale
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.electricity.data.displayName
+import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.ui.UiMessage
-import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.util.ToastUtils
+import java.util.Locale
 
 /**
  * 仪表盘页面 — 纯 UI 组件，不绑定任何 ViewModel。
