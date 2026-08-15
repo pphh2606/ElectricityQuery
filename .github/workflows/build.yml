@@ -94,7 +94,7 @@ jobs:
             --min "${{ steps.apk-info.outputs.min-sdk-version }}" \
             --compile "${{ steps.apk-info.outputs.compile-sdk-version }}" \
             --package-size "${{ steps.apk-info.outputs.file-size }}" \
-            --link "https://cdn.jsdelivr.net/gh/pphh2606/ElectricityQuery-assets@main/app-release-ci.apk" \
+            --link "https://github.com/pphh2606/ElectricityQuery-assets/blob/main/app-release-ci.apk" \
             --note-file commit-message.txt
           cd assets
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -157,7 +157,7 @@ jobs:
             --min "${{ steps.apk-info.outputs.min-sdk-version }}" \
             --compile "${{ steps.apk-info.outputs.compile-sdk-version }}" \
             --package-size "${{ steps.apk-info.outputs.file-size }}" \
-            --link "https://cdn.jsdelivr.net/gh/pphh2606/ElectricityQuery-assets@main/app-release-stable.apk" \
+            --link "https://github.com/pphh2606/ElectricityQuery-assets/blob/main/app-release-stable.apk" \
             --note-file "${{ github.workspace }}/stable-body.txt"
           cd assets
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"

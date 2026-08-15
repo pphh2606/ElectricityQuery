@@ -18,7 +18,7 @@ sealed interface UpdateCheckResult {
 class UpdateCheckCoordinator(context: Context) {
     private val settingsPrefs = SettingsPreferences(context.applicationContext)
 
-    suspend fun check(): UpdateCheckResult {
+    suspend fun check(respectSkipped: Boolean = false): UpdateCheckResult {
         val channel = if (settingsPrefs.get(SettingsKeys.CHECK_CI_UPDATES)) {
             UpdateChannel.CI
         } else {
@@ -28,11 +28,26 @@ class UpdateCheckCoordinator(context: Context) {
             timeoutMs = settingsPrefs.get(SettingsKeys.UPDATE_TIMEOUT_MS).toLong(),
         )
         val info = repository.check(channel)
-        return toUpdateCheckResult(
+        val result = toUpdateCheckResult(
             info = info,
             channel = channel,
             needsUpdate = info?.let { repository.needsUpdate(it) } == true,
         )
+        if (respectSkipped && result is UpdateCheckResult.Found && isSkipped(result.info)) {
+            return UpdateCheckResult.NoUpdate
+        }
+        return result
+    }
+
+    fun isSkipped(info: UpdateInfo): Boolean =
+        settingsPrefs.get(SettingsKeys.SKIPPED_UPDATE_VERSION) >= info.app.versionCode
+
+    fun setSkipped(versionCode: Long, skipped: Boolean) {
+        if (skipped) {
+            settingsPrefs.set(SettingsKeys.SKIPPED_UPDATE_VERSION, versionCode)
+        } else if (settingsPrefs.get(SettingsKeys.SKIPPED_UPDATE_VERSION) == versionCode) {
+            settingsPrefs.set(SettingsKeys.SKIPPED_UPDATE_VERSION, 0L)
+        }
     }
 }
 

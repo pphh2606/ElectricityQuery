@@ -317,6 +317,10 @@ fun AboutScreen(
         UpdateFoundSheet(
             info = foundState.info,
             channel = foundState.channel,
+            isSkipped = updateCoordinator.isSkipped(foundState.info),
+            onSkipChange = { skipped ->
+                updateCoordinator.setSkipped(foundState.info.app.versionCode, skipped)
+            },
             onDismiss = { updateState = UpdateCheckState.Idle },
         )
     }

@@ -218,12 +218,11 @@
     <string name="update_changes_title">Nouveautés</string>
     <string name="update_download">Télécharger la mise à jour</string>
     <string name="update_download_source_title">Choisir une méthode de téléchargement</string>
-    <string name="update_download_source_github_raw">GitHub Raw</string>
-    <string name="update_download_source_original">jsdelivr.net</string>
-    <string name="update_download_source_ghproxy">gh-proxy.org</string>
-    <string name="update_download_source_fastgit">fastgit.cc</string>
     <string name="update_checking">Vérification des mises à jour</string>
     <string name="update_latest">Vous disposez de la dernière version</string>
     <string name="update_check_failed">Échec de la vérification des mises à jour, réessayez plus tard</string>
     <string name="update_no_content">Aucune note de version</string>
+    <string name="update_skip_version">Ne plus afficher cette version</string>
+    <string name="update_download_latency">%1$d ms</string>
+    <string name="update_download_probe_failed">Échec de connexion</string>
 </resources>

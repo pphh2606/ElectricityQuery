@@ -218,12 +218,11 @@
     <string name="update_changes_title">ما الجديد</string>
     <string name="update_download">تنزيل التحديث</string>
     <string name="update_download_source_title">اختر طريقة التنزيل</string>
-    <string name="update_download_source_github_raw">GitHub Raw</string>
-    <string name="update_download_source_original">jsdelivr.net</string>
-    <string name="update_download_source_ghproxy">gh-proxy.org</string>
-    <string name="update_download_source_fastgit">fastgit.cc</string>
     <string name="update_checking">جارٍ التحقق من التحديثات</string>
     <string name="update_latest">أنت تستخدم أحدث إصدار</string>
     <string name="update_check_failed">فشل التحقق من التحديثات، حاول مرة أخرى لاحقًا</string>
     <string name="update_no_content">لا توجد ملاحظات إصدار</string>
+    <string name="update_skip_version">لا تعرض هذا الإصدار مرة أخرى</string>
+    <string name="update_download_latency">%1$d ms</string>
+    <string name="update_download_probe_failed">فشل الاتصال</string>
 </resources>

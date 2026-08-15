@@ -90,7 +90,7 @@ fun AppShell(
 
     LaunchedEffect(Unit) {
         if (settingsPrefs.get(SettingsKeys.AUTO_UPDATE_ENABLED)) {
-            autoUpdateResult = updateCheckCoordinator.check()
+            autoUpdateResult = updateCheckCoordinator.check(respectSkipped = true)
         }
     }
 
@@ -175,6 +175,10 @@ fun AppShell(
                 UpdateFoundSheet(
                     info = foundUpdate.info,
                     channel = foundUpdate.channel,
+                    isSkipped = updateCheckCoordinator.isSkipped(foundUpdate.info),
+                    onSkipChange = { skipped ->
+                        updateCheckCoordinator.setSkipped(foundUpdate.info.app.versionCode, skipped)
+                    },
                     onDismiss = { autoUpdateResult = null },
                 )
             }

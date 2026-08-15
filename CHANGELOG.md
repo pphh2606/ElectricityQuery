@@ -1,15 +1,15 @@
 ## 新增功能
-- 应用启动后会自动检查是否有新版本，发现更新时直接弹出升级提示。`AppShell` 在 `LaunchedEffect` 中根据 `SettingsKeys.AUTO_UPDATE_ENABLED` 调用 `UpdateCheckCoordinator.check()`，将 `UpdateCheckResult.Found` 渲染为 `UpdateFoundSheet`。
-- 设置页新增“更新设置”区域，可以开关自动检查更新、切换 CI/稳定版更新通道并调整检查超时时间。`ConfigScreen` 新增自动更新、检查 CI 版本和 1 到 10 秒超时滑块三个控件，选项通过 `SettingsKeys.AUTO_UPDATE_ENABLED`、`CHECK_CI_UPDATES`、`UPDATE_TIMEOUT_MS` 持久化。
-- 发现新版本后可以在弹窗中选择下载源，包括 GitHub Raw、原始 jsDelivr 链接、gh-proxy 与 fastgit 镜像。`UpdateFoundSheet` 配合 `UpdateDownloadLinks.create()` 生成多个下载地址，打开失败时通过 Snackbar 提示没有可用浏览器。
-- 关于页“检查更新”不再要求每次手动选择通道，改为跟随设置页里的通道偏好。`AboutScreen` 改用 `UpdateCheckCoordinator` 统一处理检查，结果以 `Found / NoUpdate / Failed` 状态机驱动界面。
-- 关于页的“开发者”行改为打开联系方式弹窗，移除了独立的“联系方式”入口和对应文案。
+- 下载源列表会先检测各镜像的连通性和延迟，用户在选择前就能看到可用状态。`UpdateFoundSheet` 通过新增的 `UpdateDownloadProbe` 并发发送 HTTP Range 请求并采样 256KB 数据，逐项展示延迟毫秒数或连接失败提示。
+- 更新弹窗新增“不再提示此版本”开关，自动检查更新时会记住被跳过的版本号。`UpdateCheckCoordinator.check(respectSkipped = true)` 依据持久化的 `SKIPPED_UPDATE_VERSION` 过滤已跳过版本，手动检查仍可查看并取消跳过。
+- 下载源扩充为 GitHub Raw、gh-proxy.org、fastgit.cc、ghfast.top、gh.chjina.com、github.boki.moe 六个镜像，替代原有 jsDelivr 链接，提高国内环境下获取 APK 的成功率。
+## Bug 修复
+- 更新说明较长时弹窗内容可独立滚动，不再被底部按钮遮挡。`BottomSheetDialog` 在启用 `bottomBar` 后拆分为固定标题、`weight(1f)` 滚动内容区和底部操作栏。
+- 弹窗默认模糊强度由 20 调低到 10，避免更新弹窗打开时背景过度虚化影响正文辨识。`SettingsKeys.SHEET_BLUR_RADIUS` 的默认值同步调整。
 ## 架构改进
-- 更新检查改为并发请求全部镜像源，并选取版本号最高的有效元数据。`UpdateRepository.check()` 使用 `coroutineScope`、`async` 与 `awaitAll()` 并行拉取 GitHub raw、jsDelivr、gh-proxy 和 fastgit，`selectLatest()` 按 `versionCode` 选择最新结果，单个镜像超时不再阻塞整个检查。
-- 更新检查逻辑集中到 `UpdateCheckCoordinator`，把读取设置、选择通道、拉取元数据和判断是否需要更新收敛为统一的 `UpdateCheckResult`。`UpdateRepository` 支持通过 `timeoutMs` 配置连接、读写超时，并保留 `CancellationException` 的向上传播。
-- 新增共享更新弹窗组件 `UpdateFoundSheet`，同时供启动自动检查和关于页手动检查复用，避免两套更新界面重复维护。
-- 更新设置新增 `AUTO_UPDATE_ENABLED`、`CHECK_CI_UPDATES`、`UPDATE_TIMEOUT_MS` 三个 `SettingsKeys` 配置项，默认自动更新开启、检查 CI 通道、超时 3 秒。
-## 本地化资源
-- 为更新设置、自动更新和下载源新增多语言文案，并清理不再使用的旧文案。简体中文、繁体中文、英文、法语、日语和阿拉伯语六套 `strings_settings.xml` 同步新增 `config_update_settings`、`update_settings_*`、`update_download_source_*` 资源，删除 `update_channel_title`、`update_copy_link` 与 `about_contact`。
+- 镜像地址统一收敛到新增的 `UpdateMirrorSources`，更新元数据和 APK 下载链接共用同一套来源配置。`UpdateDownloadLinks.create()` 与 `UpdateRepository.endpointUrls()` 改为委托该组件生成地址，消除两处硬编码。
+- 通用弹窗组件增加 `fixedHeader` 与 `bottomBar` 支持，更新弹窗改为固定标题、滚动内容和底部操作区布局。`BottomSheetDialog` 同时按全屏状态区分系统栏与导航栏边距。
 ## 工程配置
-- 应用构建版本号自动递增到 1566。`app/version.properties` 的 `VERSION_CODE` 由 1545 更新为 1566。
+- CI 生成的更新说明中，APK 链接从 jsDelivr CDN 改为 GitHub 官方 blob 地址。`.github/workflows/build.yml` 同步更新 CI 包和稳定包的 `--link` 参数。
+## 本地化资源
+- 为“不再提示此版本”、下载延迟和连接失败等新文案补齐。
+- 移除不再使用的 `update_download_source_github_raw`、`update_download_source_original`、`update_download_source_ghproxy`、`update_download_source_fastgit` 文案。

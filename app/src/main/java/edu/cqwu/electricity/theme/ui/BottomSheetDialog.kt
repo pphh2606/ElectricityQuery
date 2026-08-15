@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.rememberScrollState
@@ -122,6 +124,8 @@ fun BottomSheetDialog(
     contentModifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
     contentArrangement: Arrangement.Vertical = Arrangement.spacedBy(4.dp),
+    fixedHeader: Boolean = false,
+    bottomBar: @Composable (() -> Unit)? = null,
     onHideStarted: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -141,7 +145,7 @@ fun BottomSheetDialog(
     if (visible || isHiding) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
-            modifier = Modifier,
+            modifier = if (fullscreen) Modifier.statusBarsPadding() else Modifier,
             sheetState = sheetState,
             sheetGesturesEnabled = sheetGesturesEnabled,
             dragHandle = {
@@ -178,20 +182,60 @@ fun BottomSheetDialog(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = 2.dp,
-            contentWindowInsets = { WindowInsets.systemBars.union(WindowInsets.ime) }
+            contentWindowInsets = {
+                val bars = if (fullscreen) {
+                    WindowInsets.navigationBars
+                } else {
+                    WindowInsets.systemBars
+                }
+                bars.union(WindowInsets.ime)
+            }
         ) {
             ProvideAppScaledDensity(appDensity) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
-                        .padding(contentPadding)
-                        .then(if (fullscreen) Modifier.verticalScroll(rememberScrollState()) else Modifier)
-                        .then(contentModifier),
-                    verticalArrangement = contentArrangement
-                ) {
-                    BottomSheetHeader(title = title, icon = icon)
-                    content()
+                if (bottomBar != null) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
+                            .then(contentModifier)
+                    ) {
+                        if (fixedHeader && title != null) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                BottomSheetHeader(title = title, icon = icon)
+                            }
+                        }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(contentPadding)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = contentArrangement
+                        ) {
+                            if (!fixedHeader) {
+                                BottomSheetHeader(title = title, icon = icon)
+                            }
+                            content()
+                        }
+                        bottomBar()
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
+                            .padding(contentPadding)
+                            .then(if (fullscreen) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+                            .then(contentModifier),
+                        verticalArrangement = contentArrangement
+                    ) {
+                        BottomSheetHeader(title = title, icon = icon)
+                        content()
+                    }
                 }
             }
         }

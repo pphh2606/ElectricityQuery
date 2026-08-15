@@ -218,12 +218,11 @@
     <string name="update_changes_title">更新內容</string>
     <string name="update_download">下載更新</string>
     <string name="update_download_source_title">選擇下載方式</string>
-    <string name="update_download_source_github_raw">GitHub Raw</string>
-    <string name="update_download_source_original">jsdelivr.net</string>
-    <string name="update_download_source_ghproxy">gh-proxy.org</string>
-    <string name="update_download_source_fastgit">fastgit.cc</string>
     <string name="update_checking">正在檢查更新</string>
     <string name="update_latest">已是最新版本</string>
     <string name="update_check_failed">檢查更新失敗，請稍後重試</string>
     <string name="update_no_content">暫無更新說明</string>
+    <string name="update_skip_version">不再提示此版本</string>
+    <string name="update_download_latency">%1$d ms</string>
+    <string name="update_download_probe_failed">連接失敗</string>
 </resources>

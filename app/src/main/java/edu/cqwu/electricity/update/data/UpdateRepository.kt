@@ -37,12 +37,8 @@ class UpdateRepository(
     fun needsUpdate(remote: UpdateInfo, localVersionCode: Int = BuildConfig.VERSION_CODE): Boolean =
         remote.app.versionCode > localVersionCode
 
-    internal fun endpointUrls(channel: UpdateChannel): List<String> = listOf(
-        "https://raw.githubusercontent.com/$ASSETS_OWNER/$ASSETS_REPO/$ASSETS_BRANCH/${channel.fileName}.json",
-        "https://cdn.jsdelivr.net/gh/$ASSETS_OWNER/$ASSETS_REPO@$ASSETS_BRANCH/${channel.fileName}.json",
-        "https://gh-proxy.org/https://github.com/$ASSETS_OWNER/$ASSETS_REPO/blob/$ASSETS_BRANCH/${channel.fileName}.json",
-        "https://fastgit.cc/https://github.com/$ASSETS_OWNER/$ASSETS_REPO/blob/$ASSETS_BRANCH/${channel.fileName}.json",
-    )
+    internal fun endpointUrls(channel: UpdateChannel): List<String> =
+        UpdateMirrorSources.metadataUrls("${channel.fileName}.json")
 
     internal fun selectLatest(candidates: List<UpdateInfo?>): UpdateInfo? {
         var latest: UpdateInfo? = null
@@ -76,11 +72,6 @@ class UpdateRepository(
         null
     }
 
-    private companion object {
-        const val ASSETS_OWNER = "pphh2606"
-        const val ASSETS_REPO = "ElectricityQuery-assets"
-        const val ASSETS_BRANCH = "main"
-    }
 }
 
 private const val DEFAULT_UPDATE_TIMEOUT_MS = 3000L

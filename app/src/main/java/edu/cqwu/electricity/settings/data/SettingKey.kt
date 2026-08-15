@@ -47,6 +47,16 @@ fun intSetting(
     write = { putInt(name, it) },
 )
 
+fun longSetting(
+    name: String,
+    default: Long,
+): SettingKey<Long> = SettingKey(
+    name = name,
+    default = default,
+    read = { getLong(name, default) },
+    write = { putLong(name, it) },
+)
+
 fun floatSetting(
     name: String,
     default: Float,
@@ -176,7 +186,7 @@ object SettingsKeys {
 
     val SHEET_BLUR_RADIUS = floatSetting(
         name = "sheet_blur_radius",
-        default = 20f,
+        default = 10f,
     )
 
     val FONT_SCALE = floatSetting(
@@ -223,6 +233,11 @@ object SettingsKeys {
     val UPDATE_TIMEOUT_MS = intSetting(
         name = "update_timeout_ms",
         default = 3000,
+    )
+
+    val SKIPPED_UPDATE_VERSION = longSetting(
+        name = "skipped_update_version",
+        default = 0L,
     )
 }
 
