@@ -21,6 +21,9 @@
     <string name="personalization_night_mode">الوضع الليلي</string>
     <string name="personalization_pure_black">خلفية سوداء نقية</string>
     <string name="personalization_pure_black_desc">استخدم خلفية سوداء نقية في الوضع الداكن</string>
+    <string name="personalization_font_scale">حجم الخط</string>
+    <string name="personalization_font_scale_value">%1$d%%</string>
+    <string name="personalization_font_scale_default">افتراضي</string>
     <string name="personalization_sheet_blur">ضبابية خلفية النافذة</string>
     <string name="personalization_sheet_blur_desc">عند التفعيل، يتم ضبابية المحتوى خلف النافذة السفلية. متاح على أندرويد 12 وما فوق</string>
     <string name="personalization_sheet_blur_strength">قوة الضبابية</string>
@@ -198,4 +201,20 @@
     <string name="log_level_warn">تحذير</string>
     <string name="log_level_error">خطأ</string>
     <string name="log_level_off">إيقاف</string>
+    <string name="about_check_update">التحقق من التحديثات</string>
+    <string name="update_channel_title">اختيار قناة التحديث</string>
+    <string name="update_channel_ci">الإصدار التجريبي</string>
+    <string name="update_channel_stable">الإصدار المستقر</string>
+    <string name="update_channel_label">القناة</string>
+    <string name="update_available_title">يتوفر تحديث جديد</string>
+    <string name="update_current_version">الإصدار الحالي</string>
+    <string name="update_new_version">الإصدار الجديد</string>
+    <string name="update_size">حجم التحديث</string>
+    <string name="update_changes_title">ما الجديد</string>
+    <string name="update_download">تنزيل التحديث</string>
+    <string name="update_copy_link">نسخ الرابط</string>
+    <string name="update_checking">جارٍ التحقق من التحديثات</string>
+    <string name="update_latest">أنت تستخدم أحدث إصدار</string>
+    <string name="update_check_failed">فشل التحقق من التحديثات، حاول مرة أخرى لاحقًا</string>
+    <string name="update_no_content">لا توجد ملاحظات إصدار</string>
 </resources>

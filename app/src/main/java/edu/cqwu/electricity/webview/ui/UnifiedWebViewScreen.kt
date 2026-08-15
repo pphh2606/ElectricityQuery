@@ -39,7 +39,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.DropdownMenu
+import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -249,7 +249,7 @@ fun UnifiedWebViewScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        DropdownMenu(
+                        AppScaledDropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {

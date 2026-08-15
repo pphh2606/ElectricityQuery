@@ -8,7 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.AlertDialog
+import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +50,7 @@ fun ExportCredentialDialog(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    AlertDialog(
+    AppScaledAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.login_export_credential_title), fontWeight = FontWeight.Bold) },
         text = {

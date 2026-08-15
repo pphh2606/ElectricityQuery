@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
@@ -44,6 +45,7 @@ fun DatePickerField(
     modifier: Modifier = Modifier
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val appDensity = LocalDensity.current
     val datePickerState = rememberDatePickerState()
 
     // 打开弹窗时同步当前值到 DatePicker
@@ -84,23 +86,29 @@ fun DatePickerField(
         DatePickerDialog(
             onDismissRequest = { showDialog = false },
             confirmButton = {
-                TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let { millis ->
-                        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
-                            timeZone = java.util.TimeZone.getTimeZone("Asia/Shanghai")
+                ProvideAppScaledDensity(appDensity) {
+                    TextButton(onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+                                timeZone = java.util.TimeZone.getTimeZone("Asia/Shanghai")
+                            }
+                            onValueChanged(formatter.format(Date(millis)))
                         }
-                        onValueChanged(formatter.format(Date(millis)))
-                    }
-                    showDialog = false
-                }) { Text(stringResource(R.string.common_confirm)) }
+                        showDialog = false
+                    }) { Text(stringResource(R.string.common_confirm)) }
+                }
             },
             dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text(stringResource(R.string.common_cancel))
+                ProvideAppScaledDensity(appDensity) {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text(stringResource(R.string.common_cancel))
+                    }
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            ProvideAppScaledDensity(appDensity) {
+                DatePicker(state = datePickerState)
+            }
         }
     }
 }

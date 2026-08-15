@@ -22,6 +22,8 @@ const val MIN_SHEET_BLUR_RADIUS = 0f
 const val MAX_SHEET_BLUR_RADIUS = 40f
 const val MIN_QR_CORNER_RADIUS = 0f
 const val MAX_QR_CORNER_RADIUS = 50f
+const val MIN_FONT_SCALE = 0.8f
+const val MAX_FONT_SCALE = 1.5f
 
 @Stable
 class AppSettingsState(
@@ -65,6 +67,11 @@ class AppSettingsState(
 
     var sheetBlurRadius by mutableStateOf(
         prefs.get(SettingsKeys.SHEET_BLUR_RADIUS).coerceIn(MIN_SHEET_BLUR_RADIUS, MAX_SHEET_BLUR_RADIUS)
+    )
+        private set
+
+    var fontScale by mutableStateOf(
+        prefs.get(SettingsKeys.FONT_SCALE).coerceIn(MIN_FONT_SCALE, MAX_FONT_SCALE)
     )
         private set
 
@@ -135,6 +142,12 @@ class AppSettingsState(
         val clamped = value.coerceIn(MIN_SHEET_BLUR_RADIUS, MAX_SHEET_BLUR_RADIUS)
         sheetBlurRadius = clamped
         prefs.set(SettingsKeys.SHEET_BLUR_RADIUS, clamped)
+    }
+
+    fun updateFontScale(value: Float) {
+        val clamped = value.coerceIn(MIN_FONT_SCALE, MAX_FONT_SCALE)
+        fontScale = clamped
+        prefs.set(SettingsKeys.FONT_SCALE, clamped)
     }
 
     private fun loadColorSource(): ThemeColorSource {

@@ -5,26 +5,31 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  workflow_dispatch:  # 允许手动触发
+  release:
+    types: [ published ]
+  workflow_dispatch:
 
 jobs:
   build:
+    if: github.event_name != 'release'
     runs-on: ubuntu-latest
+    env:
+      CI_TEST_SIGNING: "true"
 
     steps:
-      - name: Checkout 代码
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 设置 JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 设置 Android SDK
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: 缓存 Gradle 依赖
+      - name: Cache Gradle dependencies
         uses: actions/cache@v4
         with:
           path: |
@@ -34,25 +39,129 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: 授予 Gradle Wrapper 执行权限
+      - name: Grant Gradle wrapper permission
         run: chmod +x gradlew
 
-      - name: 构建 Debug APK
+      - name: Build Debug APK
         run: ./gradlew assembleDebug
 
-      - name: 构建 Release APK（使用 debug 签名）
+      - name: Build Release APK (fixed test signing)
         run: ./gradlew assembleRelease
 
-      - name: 上传 Debug APK
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v7
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           archive: false
 
-      - name: 上传 Release APK
+      - name: Upload Release APK
         uses: actions/upload-artifact@v7
         with:
           name: app-release
           path: app/build/outputs/apk/release/app-release.apk
           archive: false
+
+      - name: Read release APK metadata
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: apk-info
+        uses: zhaobozhen/apk-info-action@v1.1.3
+        with:
+          apk-path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Checkout assets repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/checkout@v4
+        with:
+          repository: pphh2606/ElectricityQuery-assets
+          ref: main
+          path: assets
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Publish CI APK and metadata
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$COMMIT_MESSAGE" > commit-message.txt
+          cp -f app/build/outputs/apk/release/app-release.apk assets/app-release-ci.apk
+          python3 "${{ github.workspace }}/.github/scripts/write_assets_metadata.py" \
+            --output assets/ci.json \
+            --version "${{ steps.apk-info.outputs.version-name }}" \
+            --version-code "${{ steps.apk-info.outputs.version-code }}" \
+            --target "${{ steps.apk-info.outputs.target-sdk-version }}" \
+            --min "${{ steps.apk-info.outputs.min-sdk-version }}" \
+            --compile "${{ steps.apk-info.outputs.compile-sdk-version }}" \
+            --package-size "${{ steps.apk-info.outputs.file-size }}" \
+            --link "https://cdn.jsdelivr.net/gh/pphh2606/ElectricityQuery-assets@main/app-release-ci.apk" \
+            --note-file commit-message.txt
+          cd assets
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add ci.json app-release-ci.apk
+          git commit -m "Update CI metadata"
+          git push origin main
+
+  sync-stable:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Fetch latest release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/sync_latest_stable.py \
+            --repo pphh2606/ElectricityQuery \
+            --output-apk stable.apk \
+            --output-info stable-info.json \
+            --output-body stable-body.txt
+
+      - name: Read stable APK metadata
+        id: apk-info
+        uses: zhaobozhen/apk-info-action@v1.1.3
+        with:
+          apk-path: stable.apk
+
+      - name: Checkout assets repository
+        uses: actions/checkout@v4
+        with:
+          repository: pphh2606/ElectricityQuery-assets
+          ref: main
+          path: assets
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Publish stable APK and metadata
+        run: |
+          set -euo pipefail
+          cp -f stable.apk assets/app-release-stable.apk
+          python3 "${{ github.workspace }}/.github/scripts/write_assets_metadata.py" \
+            --output assets/stable.json \
+            --version "${{ steps.apk-info.outputs.version-name }}" \
+            --version-code "${{ steps.apk-info.outputs.version-code }}" \
+            --target "${{ steps.apk-info.outputs.target-sdk-version }}" \
+            --min "${{ steps.apk-info.outputs.min-sdk-version }}" \
+            --compile "${{ steps.apk-info.outputs.compile-sdk-version }}" \
+            --package-size "${{ steps.apk-info.outputs.file-size }}" \
+            --link "https://cdn.jsdelivr.net/gh/pphh2606/ElectricityQuery-assets@main/app-release-stable.apk" \
+            --note-file "${{ github.workspace }}/stable-body.txt"
+          cd assets
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add stable.json app-release-stable.apk
+          git commit -m "Update stable metadata"
+          git push origin main

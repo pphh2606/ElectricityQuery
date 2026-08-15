@@ -19,7 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.AlertDialog
+import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -183,7 +183,7 @@ fun UserAgentSettingsScreen(
     // ── 删除确认对话框 ──
     if (deleteTarget != null) {
         val target = deleteTarget!!
-        AlertDialog(
+        AppScaledAlertDialog(
             onDismissRequest = { deleteTarget = null },
             title = { Text(text = stringResource(R.string.ua_delete_title)) },
             text = {

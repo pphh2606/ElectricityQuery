@@ -127,6 +127,7 @@ fun BottomSheetDialog(
 ) {
     // 兼容 Android 7+ 的 sheet 状态行为。
     val computedSkip = skipPartiallyExpanded ?: !fullscreen
+    val appDensity = LocalDensity.current
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = computedSkip
     )
@@ -144,31 +145,33 @@ fun BottomSheetDialog(
             sheetState = sheetState,
             sheetGesturesEnabled = sheetGesturesEnabled,
             dragHandle = {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // 左侧按钮，weight 等分空间，确保手柄始终居中。
-                    Box(
-                        modifier = Modifier.weight(1f),
-                        contentAlignment = Alignment.CenterStart
+                ProvideAppScaledDensity(appDensity) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        leadingButton?.invoke()
-                    }
+                        // 左侧按钮，weight 等分空间，确保手柄始终居中。
+                        Box(
+                            modifier = Modifier.weight(1f),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            leadingButton?.invoke()
+                        }
 
-                    // 居中拖拽手柄，固定宽度并自然居中。
-                    Box(contentAlignment = Alignment.Center) {
-                        BottomSheetDefaults.DragHandle()
-                    }
+                        // 居中拖拽手柄，固定宽度并自然居中。
+                        Box(contentAlignment = Alignment.Center) {
+                            BottomSheetDefaults.DragHandle()
+                        }
 
-                    // 右侧按钮，weight 等分空间，确保手柄始终居中。
-                    Box(
-                        modifier = Modifier.weight(1f),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        trailingButton?.invoke()
+                        // 右侧按钮，weight 等分空间，确保手柄始终居中。
+                        Box(
+                            modifier = Modifier.weight(1f),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            trailingButton?.invoke()
+                        }
                     }
                 }
             },
@@ -177,17 +180,19 @@ fun BottomSheetDialog(
             tonalElevation = 2.dp,
             contentWindowInsets = { WindowInsets.systemBars.union(WindowInsets.ime) }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
-                    .padding(contentPadding)
-                    .then(if (fullscreen) Modifier.verticalScroll(rememberScrollState()) else Modifier)
-                    .then(contentModifier),
-                verticalArrangement = contentArrangement
-            ) {
-                BottomSheetHeader(title = title, icon = icon)
-                content()
+            ProvideAppScaledDensity(appDensity) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
+                        .padding(contentPadding)
+                        .then(if (fullscreen) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+                        .then(contentModifier),
+                    verticalArrangement = contentArrangement
+                ) {
+                    BottomSheetHeader(title = title, icon = icon)
+                    content()
+                }
             }
         }
     }

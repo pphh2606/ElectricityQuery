@@ -31,7 +31,7 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material3.DropdownMenu
+import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -40,6 +40,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import edu.cqwu.electricity.theme.ui.AppScaledExposedDropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -186,7 +187,7 @@ fun RechargeRecordScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        DropdownMenu(
+                        AppScaledDropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
@@ -260,7 +261,7 @@ fun RechargeRecordScreen(
                             )
                         )
 
-                        ExposedDropdownMenu(
+                        AppScaledExposedDropdownMenu(
                             expanded = dropdownExpanded,
                             onDismissRequest = { dropdownExpanded = false }
                         ) {
@@ -453,4 +454,3 @@ private fun getRechargeRecordTextContent(recordState: RechargeRecordState, resou
 
     return sb.toString()
 }
-

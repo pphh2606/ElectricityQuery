@@ -64,9 +64,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("fixedDebug") {
+            storeFile = rootProject.file("signing/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         debug {
-
+            if (System.getenv("CI_TEST_SIGNING") == "true") {
+                signingConfig = signingConfigs.getByName("fixedDebug")
+            }
         }
         release {
             isMinifyEnabled = true
@@ -75,7 +86,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("fixedDebug")
         }
     }
     bundle {

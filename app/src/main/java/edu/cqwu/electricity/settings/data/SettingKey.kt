@@ -179,6 +179,11 @@ object SettingsKeys {
         default = 20f,
     )
 
+    val FONT_SCALE = floatSetting(
+        name = "font_scale",
+        default = 1f,
+    )
+
     val WEBVPN_ENABLED = booleanSetting(
         name = "webvpn_enabled",
         default = false,

@@ -21,6 +21,9 @@
     <string name="personalization_night_mode">Night Mode</string>
     <string name="personalization_pure_black">Pure Black Background</string>
     <string name="personalization_pure_black_desc">Use a pure black background in dark mode</string>
+    <string name="personalization_font_scale">Font Size</string>
+    <string name="personalization_font_scale_value">%1$d%%</string>
+    <string name="personalization_font_scale_default">Default</string>
     <string name="personalization_sheet_blur">Blur Sheet Background</string>
     <string name="personalization_sheet_blur_desc">Blur the content behind bottom sheets. Available on Android 12 and above</string>
     <string name="personalization_sheet_blur_strength">Blur strength</string>
@@ -198,4 +201,20 @@
     <string name="log_level_warn">Warning</string>
     <string name="log_level_error">Error</string>
     <string name="log_level_off">Off</string>
+    <string name="about_check_update">Check for updates</string>
+    <string name="update_channel_title">Select update channel</string>
+    <string name="update_channel_ci">Beta</string>
+    <string name="update_channel_stable">Stable</string>
+    <string name="update_channel_label">Channel</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_current_version">Current version</string>
+    <string name="update_new_version">New version</string>
+    <string name="update_size">Update size</string>
+    <string name="update_changes_title">What\'s new</string>
+    <string name="update_download">Download update</string>
+    <string name="update_copy_link">Copy link</string>
+    <string name="update_checking">Checking for updates</string>
+    <string name="update_latest">You are up to date</string>
+    <string name="update_check_failed">Failed to check for updates. Try again later.</string>
+    <string name="update_no_content">No release notes</string>
 </resources>

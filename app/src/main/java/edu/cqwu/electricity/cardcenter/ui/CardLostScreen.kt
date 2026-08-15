@@ -23,7 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.CreditCardOff
-import androidx.compose.material3.AlertDialog
+import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
@@ -231,7 +231,7 @@ fun CardLostScreen(
 
     // ── 二次确认对话框 ──
     if (showConfirmDialog) {
-        AlertDialog(
+        AppScaledAlertDialog(
             onDismissRequest = { showConfirmDialog = false },
             title = { Text(stringResource(R.string.card_lost_confirm_title)) },
             text = { Text(stringResource(R.string.card_lost_confirm_text)) },

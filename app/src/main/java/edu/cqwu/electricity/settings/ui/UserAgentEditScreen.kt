@@ -14,7 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.AlertDialog
+import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -192,7 +192,7 @@ fun UserAgentEditScreen(
 
     // ── 删除确认对话框 ──
     if (showDeleteDialog && existingEntry != null) {
-        AlertDialog(
+        AppScaledAlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text(text = stringResource(R.string.ua_delete_title)) },
             text = {

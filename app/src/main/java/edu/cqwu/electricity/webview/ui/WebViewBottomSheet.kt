@@ -23,7 +23,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material3.DropdownMenu
+import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -287,7 +287,7 @@ fun WebViewBottomSheet(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+            AppScaledDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.common_close)) },
                     leadingIcon = { Icon(Icons.Outlined.Close, null) },

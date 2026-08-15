@@ -32,7 +32,7 @@ import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
+import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -199,7 +199,7 @@ fun DashboardMenuButton(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        DropdownMenu(
+        AppScaledDropdownMenu(
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {

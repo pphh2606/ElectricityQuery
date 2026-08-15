@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.settings.ui
 
 import android.os.Build
+import kotlin.math.roundToInt
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,9 +33,12 @@ import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FormatPaint
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.outlined.TextFields
+import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,7 +71,9 @@ import edu.cqwu.electricity.settings.data.ReduceMotion
 import edu.cqwu.electricity.settings.data.ThemeColorSource
 import edu.cqwu.electricity.settings.data.TopBarStyle
 import edu.cqwu.electricity.settings.data.labelRes
+import edu.cqwu.electricity.theme.ui.MAX_FONT_SCALE
 import edu.cqwu.electricity.theme.ui.MAX_SHEET_BLUR_RADIUS
+import edu.cqwu.electricity.theme.ui.MIN_FONT_SCALE
 import edu.cqwu.electricity.theme.ui.MIN_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
@@ -86,6 +93,9 @@ fun PersonalizationScreen(
     var showTopBarStyleDialog by remember { mutableStateOf(false) }
     var showPageTransitionDialog by remember { mutableStateOf(false) }
     var showReduceMotionDialog by remember { mutableStateOf(false) }
+    var showFontSizeSlider by remember { mutableStateOf(false) }
+    var draftFontScale by remember(appSettings.fontScale) { mutableStateOf(appSettings.fontScale) }
+    val displayedFontScale = if (showFontSizeSlider) draftFontScale else appSettings.fontScale
     val customSeedColor = (appSettings.colorSource as? ThemeColorSource.Custom)?.seedColor ?: Color(0xFF6750A4)
     val topBarColors = currentTopBarColors()
 
@@ -157,6 +167,81 @@ fun PersonalizationScreen(
                             checked = appSettings.pureBlack,
                             onCheckedChange = appSettings::updatePureBlack,
                         )
+                    }
+                    FontScaleRow(
+                        title = stringResource(R.string.personalization_font_scale),
+                        subtitle = stringResource(
+                            R.string.personalization_font_scale_value,
+                            (displayedFontScale * 100).roundToInt(),
+                        ),
+                        expanded = showFontSizeSlider,
+                        onClick = {
+                            showFontSizeSlider = !showFontSizeSlider
+                            if (showFontSizeSlider) {
+                                draftFontScale = appSettings.fontScale
+                            }
+                        },
+                    )
+                    AnimatedVisibility(visible = showFontSizeSlider) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 8.dp),
+                        ) {
+                            Slider(
+                                value = draftFontScale,
+                                onValueChange = { draftFontScale = it },
+                                valueRange = MIN_FONT_SCALE..MAX_FONT_SCALE,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.personalization_font_scale_value,
+                                        (MIN_FONT_SCALE * 100).toInt(),
+                                    ),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.personalization_font_scale_value,
+                                        (MAX_FONT_SCALE * 100).toInt(),
+                                    ),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 4.dp),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        draftFontScale = 1f
+                                        appSettings.updateFontScale(1f)
+                                    },
+                                ) {
+                                    Text(stringResource(R.string.personalization_font_scale_default))
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Button(
+                                    onClick = {
+                                        appSettings.updateFontScale(draftFontScale)
+                                        showFontSizeSlider = false
+                                    },
+                                ) {
+                                    Text(stringResource(R.string.common_confirm))
+                                }
+                            }
+                        }
                     }
                     Row(
                         modifier = Modifier
@@ -381,6 +466,59 @@ private fun SettingRow(icon: ImageVector, title: String, subtitle: String, onCli
 }
 
 @Composable
+private fun FontScaleRow(
+    title: String,
+    subtitle: String,
+    expanded: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = Icons.Outlined.TextFields,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp),
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = if (expanded) {
+                    Icons.Outlined.KeyboardArrowDown
+                } else {
+                    Icons.AutoMirrored.Outlined.KeyboardArrowRight
+                },
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.size(24.dp),
+            )
+        }
+    }
+}
+
+@Composable
 private fun ThemeColorRow(icon: ImageVector, title: String, subtitle: String, selected: Boolean, enabled: Boolean = true, onClick: () -> Unit, trailing: @Composable (() -> Unit)? = null) {
     val contentAlpha = if (enabled) 1f else 0.38f
     Row(
@@ -469,7 +607,7 @@ private fun ColorPickerDialog(
             Color(0xFF795548), Color(0xFF607D8B))
     }
     var selectedColor by remember(initialColor) { mutableStateOf(initialColor) }
-    AlertDialog(
+    AppScaledAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = stringResource(R.string.personalization_choose_color), style = MaterialTheme.typography.headlineSmall) },
         text = {

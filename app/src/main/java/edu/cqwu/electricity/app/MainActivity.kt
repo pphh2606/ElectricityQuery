@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
                     nightMode = appSettingsState.nightMode,
                     colorSource = appSettingsState.colorSource,
                     pureBlack = appSettingsState.pureBlack,
+                    fontScale = appSettingsState.fontScale,
                 ) {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         val navController = rememberNavController()

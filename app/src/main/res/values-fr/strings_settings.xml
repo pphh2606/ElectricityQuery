@@ -21,6 +21,9 @@
     <string name="personalization_night_mode">Mode nuit</string>
     <string name="personalization_pure_black">Fond noir pur</string>
     <string name="personalization_pure_black_desc">Utiliser un fond noir pur en mode sombre</string>
+    <string name="personalization_font_scale">Taille de police</string>
+    <string name="personalization_font_scale_value">%1$d%%</string>
+    <string name="personalization_font_scale_default">Défaut</string>
     <string name="personalization_sheet_blur">Flou d\'arrière-plan</string>
     <string name="personalization_sheet_blur_desc">Floute le contenu derrière les feuilles inférieures. Disponible sur Android 12 et plus</string>
     <string name="personalization_sheet_blur_strength">Intensité du flou</string>
@@ -198,4 +201,20 @@
     <string name="log_level_warn">Avertissements</string>
     <string name="log_level_error">Erreurs</string>
     <string name="log_level_off">Désactivé</string>
+    <string name="about_check_update">Vérifier les mises à jour</string>
+    <string name="update_channel_title">Choisir le canal de mise à jour</string>
+    <string name="update_channel_ci">Bêta</string>
+    <string name="update_channel_stable">Stable</string>
+    <string name="update_channel_label">Canal</string>
+    <string name="update_available_title">Mise à jour disponible</string>
+    <string name="update_current_version">Version actuelle</string>
+    <string name="update_new_version">Nouvelle version</string>
+    <string name="update_size">Taille de la mise à jour</string>
+    <string name="update_changes_title">Nouveautés</string>
+    <string name="update_download">Télécharger la mise à jour</string>
+    <string name="update_copy_link">Copier le lien</string>
+    <string name="update_checking">Vérification des mises à jour</string>
+    <string name="update_latest">Vous disposez de la dernière version</string>
+    <string name="update_check_failed">Échec de la vérification des mises à jour, réessayez plus tard</string>
+    <string name="update_no_content">Aucune note de version</string>
 </resources>

@@ -31,7 +31,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SyncAlt
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
+import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -253,7 +253,7 @@ fun ElectricityMainScreen(
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                            DropdownMenu(
+                            AppScaledDropdownMenu(
                                 expanded = showMyRoomMenu,
                                 onDismissRequest = { showMyRoomMenu = false }
                             ) {
