@@ -18,15 +18,22 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
+import edu.cqwu.electricity.settings.data.SettingsKeys
+import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.settings.ui.UpdateFoundSheet
 import edu.cqwu.electricity.theme.ui.CustomSnackbarVisuals
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
@@ -36,6 +43,8 @@ import edu.cqwu.electricity.theme.ui.SnackbarController
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.isHazeBlurSupported
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.update.data.UpdateCheckCoordinator
+import edu.cqwu.electricity.update.data.UpdateCheckResult
 
 /**
  * 应用外壳
@@ -56,6 +65,10 @@ fun AppShell(
     modifier: Modifier = Modifier,
 ) {
     val appSettings = LocalAppSettingsState.current
+    val context = LocalContext.current
+    val settingsPrefs = remember { SettingsPreferences(context) }
+    var autoUpdateResult by remember { mutableStateOf<UpdateCheckResult?>(null) }
+    val updateCheckCoordinator = remember { UpdateCheckCoordinator(context) }
     val blurRadiusDp = appSettings.sheetBlurRadius.dp
     val backdropBlurStyle = remember(blurRadiusDp) {
         HazeStyle(
@@ -74,6 +87,12 @@ fun AppShell(
         appSettings.sheetBlurEnabled &&
             isHazeBlurSupported() &&
             (sheetVisibilityState.active || blurProgress > 0.001f)
+
+    LaunchedEffect(Unit) {
+        if (settingsPrefs.get(SettingsKeys.AUTO_UPDATE_ENABLED)) {
+            autoUpdateResult = updateCheckCoordinator.check()
+        }
+    }
 
     CompositionLocalProvider(
         LocalSnackbarController provides snackbarController,
@@ -150,6 +169,15 @@ fun AppShell(
                     }
                 }
             )
+
+            val foundUpdate = autoUpdateResult as? UpdateCheckResult.Found
+            if (foundUpdate != null) {
+                UpdateFoundSheet(
+                    info = foundUpdate.info,
+                    channel = foundUpdate.channel,
+                    onDismiss = { autoUpdateResult = null },
+                )
+            }
         }
     }
 }

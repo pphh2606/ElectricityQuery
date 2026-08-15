@@ -90,7 +90,6 @@
     <string name="about_title">關於</string>
     <string name="about_project_home">專案首頁</string>
     <string name="about_developer">開發者</string>
-    <string name="about_contact">聯絡方式</string>
     <string name="about_build_info">構建資訊</string>
     <string name="about_ai_notice">本應用程式使用了 AI 技術</string>
     <string name="about_contact_title">聯絡方式</string>
@@ -202,9 +201,15 @@
     <string name="log_level_error">錯誤</string>
     <string name="log_level_off">關閉</string>
     <string name="about_check_update">檢查更新</string>
-    <string name="update_channel_title">選擇更新通道</string>
     <string name="update_channel_ci">測試版</string>
     <string name="update_channel_stable">穩定版</string>
+    <string name="config_update_settings">更新設定</string>
+    <string name="update_settings_auto_update">自動更新</string>
+    <string name="update_settings_auto_update_desc">自動檢查並安裝新版本</string>
+    <string name="update_settings_check_ci">檢查 CI 版本更新</string>
+    <string name="update_settings_check_ci_desc">關閉後自動檢查穩定版</string>
+    <string name="update_settings_timeout">檢查逾時時間</string>
+    <string name="update_settings_timeout_value">%1$.1f 秒</string>
     <string name="update_channel_label">更新通道</string>
     <string name="update_available_title">發現新版本</string>
     <string name="update_current_version">目前版本</string>
@@ -212,7 +217,11 @@
     <string name="update_size">更新包大小</string>
     <string name="update_changes_title">更新內容</string>
     <string name="update_download">下載更新</string>
-    <string name="update_copy_link">複製連結</string>
+    <string name="update_download_source_title">選擇下載方式</string>
+    <string name="update_download_source_github_raw">GitHub Raw</string>
+    <string name="update_download_source_original">jsdelivr.net</string>
+    <string name="update_download_source_ghproxy">gh-proxy.org</string>
+    <string name="update_download_source_fastgit">fastgit.cc</string>
     <string name="update_checking">正在檢查更新</string>
     <string name="update_latest">已是最新版本</string>
     <string name="update_check_failed">檢查更新失敗，請稍後重試</string>

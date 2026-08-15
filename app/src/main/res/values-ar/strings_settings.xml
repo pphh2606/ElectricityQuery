@@ -90,7 +90,6 @@
     <string name="about_title">حول</string>
     <string name="about_project_home">الصفحة الرئيسية للمشروع</string>
     <string name="about_developer">المطور</string>
-    <string name="about_contact">جهات الاتصال</string>
     <string name="about_build_info">معلومات البناء</string>
     <string name="about_ai_notice">يستخدم هذا التطبيق تقنية الذكاء الاصطناعي</string>
     <string name="about_contact_title">جهات الاتصال</string>
@@ -202,9 +201,15 @@
     <string name="log_level_error">خطأ</string>
     <string name="log_level_off">إيقاف</string>
     <string name="about_check_update">التحقق من التحديثات</string>
-    <string name="update_channel_title">اختيار قناة التحديث</string>
     <string name="update_channel_ci">الإصدار التجريبي</string>
     <string name="update_channel_stable">الإصدار المستقر</string>
+    <string name="config_update_settings">إعدادات التحديث</string>
+    <string name="update_settings_auto_update">التحديث التلقائي</string>
+    <string name="update_settings_auto_update_desc">التحقق من الإصدارات الجديدة وتثبيتها تلقائيًا</string>
+    <string name="update_settings_check_ci">التحقق من تحديثات إصدار CI</string>
+    <string name="update_settings_check_ci_desc">عند إيقاف التشغيل، تحقق من الإصدار المستقر</string>
+    <string name="update_settings_timeout">مهلة التحقق</string>
+    <string name="update_settings_timeout_value">%1$.1f ثانية</string>
     <string name="update_channel_label">القناة</string>
     <string name="update_available_title">يتوفر تحديث جديد</string>
     <string name="update_current_version">الإصدار الحالي</string>
@@ -212,7 +217,11 @@
     <string name="update_size">حجم التحديث</string>
     <string name="update_changes_title">ما الجديد</string>
     <string name="update_download">تنزيل التحديث</string>
-    <string name="update_copy_link">نسخ الرابط</string>
+    <string name="update_download_source_title">اختر طريقة التنزيل</string>
+    <string name="update_download_source_github_raw">GitHub Raw</string>
+    <string name="update_download_source_original">jsdelivr.net</string>
+    <string name="update_download_source_ghproxy">gh-proxy.org</string>
+    <string name="update_download_source_fastgit">fastgit.cc</string>
     <string name="update_checking">جارٍ التحقق من التحديثات</string>
     <string name="update_latest">أنت تستخدم أحدث إصدار</string>
     <string name="update_check_failed">فشل التحقق من التحديثات، حاول مرة أخرى لاحقًا</string>

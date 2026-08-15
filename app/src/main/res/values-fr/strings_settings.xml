@@ -90,7 +90,6 @@
     <string name="about_title">À propos</string>
     <string name="about_project_home">Page du projet</string>
     <string name="about_developer">Développeur</string>
-    <string name="about_contact">Contact</string>
     <string name="about_build_info">Infos de build</string>
     <string name="about_ai_notice">Cette application utilise l\'IA</string>
     <string name="about_contact_title">Contact</string>
@@ -202,9 +201,15 @@
     <string name="log_level_error">Erreurs</string>
     <string name="log_level_off">Désactivé</string>
     <string name="about_check_update">Vérifier les mises à jour</string>
-    <string name="update_channel_title">Choisir le canal de mise à jour</string>
     <string name="update_channel_ci">Bêta</string>
     <string name="update_channel_stable">Stable</string>
+    <string name="config_update_settings">Paramètres de mise à jour</string>
+    <string name="update_settings_auto_update">Mise à jour automatique</string>
+    <string name="update_settings_auto_update_desc">Vérifier et installer automatiquement les nouvelles versions</string>
+    <string name="update_settings_check_ci">Vérifier les mises à jour de la version CI</string>
+    <string name="update_settings_check_ci_desc">Vérifie les mises à jour stables lorsqu\'il est désactivé</string>
+    <string name="update_settings_timeout">Délai de vérification</string>
+    <string name="update_settings_timeout_value">%1$.1f s</string>
     <string name="update_channel_label">Canal</string>
     <string name="update_available_title">Mise à jour disponible</string>
     <string name="update_current_version">Version actuelle</string>
@@ -212,7 +217,11 @@
     <string name="update_size">Taille de la mise à jour</string>
     <string name="update_changes_title">Nouveautés</string>
     <string name="update_download">Télécharger la mise à jour</string>
-    <string name="update_copy_link">Copier le lien</string>
+    <string name="update_download_source_title">Choisir une méthode de téléchargement</string>
+    <string name="update_download_source_github_raw">GitHub Raw</string>
+    <string name="update_download_source_original">jsdelivr.net</string>
+    <string name="update_download_source_ghproxy">gh-proxy.org</string>
+    <string name="update_download_source_fastgit">fastgit.cc</string>
     <string name="update_checking">Vérification des mises à jour</string>
     <string name="update_latest">Vous disposez de la dernière version</string>
     <string name="update_check_failed">Échec de la vérification des mises à jour, réessayez plus tard</string>

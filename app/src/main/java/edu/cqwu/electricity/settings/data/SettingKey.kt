@@ -209,6 +209,21 @@ object SettingsKeys {
         default = emptyList<CustomServiceEntry>(),
         type = object : TypeToken<List<CustomServiceEntry>>() {}.type,
     )
+
+    val AUTO_UPDATE_ENABLED = booleanSetting(
+        name = "auto_update_enabled",
+        default = true,
+    )
+
+    val CHECK_CI_UPDATES = booleanSetting(
+        name = "check_ci_updates",
+        default = true,
+    )
+
+    val UPDATE_TIMEOUT_MS = intSetting(
+        name = "update_timeout_ms",
+        default = 3000,
+    )
 }
 
 private fun defaultLogLevel(): LogLevel =

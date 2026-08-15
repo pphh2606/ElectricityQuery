@@ -90,7 +90,6 @@
     <string name="about_title">About</string>
     <string name="about_project_home">Project Homepage</string>
     <string name="about_developer">Developer</string>
-    <string name="about_contact">Contact</string>
     <string name="about_build_info">Build Info</string>
     <string name="about_ai_notice">This app uses AI technology</string>
     <string name="about_contact_title">Contact</string>
@@ -202,9 +201,15 @@
     <string name="log_level_error">Error</string>
     <string name="log_level_off">Off</string>
     <string name="about_check_update">Check for updates</string>
-    <string name="update_channel_title">Select update channel</string>
     <string name="update_channel_ci">Beta</string>
     <string name="update_channel_stable">Stable</string>
+    <string name="config_update_settings">Update settings</string>
+    <string name="update_settings_auto_update">Auto update</string>
+    <string name="update_settings_auto_update_desc">Automatically check and install new versions</string>
+    <string name="update_settings_check_ci">Check CI version updates</string>
+    <string name="update_settings_check_ci_desc">Checks stable updates when off</string>
+    <string name="update_settings_timeout">Check timeout</string>
+    <string name="update_settings_timeout_value">%1$.1f s</string>
     <string name="update_channel_label">Channel</string>
     <string name="update_available_title">Update available</string>
     <string name="update_current_version">Current version</string>
@@ -212,7 +217,11 @@
     <string name="update_size">Update size</string>
     <string name="update_changes_title">What\'s new</string>
     <string name="update_download">Download update</string>
-    <string name="update_copy_link">Copy link</string>
+    <string name="update_download_source_title">Select download method</string>
+    <string name="update_download_source_github_raw">GitHub Raw</string>
+    <string name="update_download_source_original">jsdelivr.net</string>
+    <string name="update_download_source_ghproxy">gh-proxy.org</string>
+    <string name="update_download_source_fastgit">fastgit.cc</string>
     <string name="update_checking">Checking for updates</string>
     <string name="update_latest">You are up to date</string>
     <string name="update_check_failed">Failed to check for updates. Try again later.</string>

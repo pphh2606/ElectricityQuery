@@ -13,20 +13,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Smartphone
+import androidx.compose.material.icons.outlined.SystemUpdate
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -43,8 +49,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.AppLanguage
+import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.theme.ui.LanguageSwitchSheet
+import kotlin.math.roundToInt
+
+private const val MIN_UPDATE_TIMEOUT_MS = 1000
+private const val MAX_UPDATE_TIMEOUT_MS = 10000
+private val MIN_UPDATE_TIMEOUT_SECONDS = 1f
+private val MAX_UPDATE_TIMEOUT_SECONDS = 10f
 
 /**
  * 配置页 — 包含浏览器标识和语言切换设置。
@@ -64,6 +77,9 @@ fun ConfigScreen(
     var showLanguageSheet by remember { mutableStateOf(false) }
     var showLogLevelSheet by remember { mutableStateOf(false) }
     val currentLanguage by remember { mutableStateOf(settingsPrefs.getAppLanguage()) }
+    var autoUpdateEnabled by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.AUTO_UPDATE_ENABLED)) }
+    var checkCiUpdates by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.CHECK_CI_UPDATES)) }
+    var updateTimeoutMs by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.UPDATE_TIMEOUT_MS)) }
 
     Scaffold(
         topBar = {
@@ -85,6 +101,7 @@ fun ConfigScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             Surface(
@@ -136,6 +153,82 @@ fun ConfigScreen(
                         subtitle = stringResource(R.string.storage_clear_desc),
                         onClick = onNavigateToStorageClear,
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = stringResource(R.string.config_update_settings),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 4.dp),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                Column {
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.SystemUpdate,
+                        title = stringResource(R.string.update_settings_auto_update),
+                        subtitle = stringResource(R.string.update_settings_auto_update_desc),
+                        checked = autoUpdateEnabled,
+                        onCheckedChange = { enabled ->
+                            autoUpdateEnabled = enabled
+                            settingsPrefs.set(SettingsKeys.AUTO_UPDATE_ENABLED, enabled)
+                        },
+                    )
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.RocketLaunch,
+                        title = stringResource(R.string.update_settings_check_ci),
+                        subtitle = stringResource(R.string.update_settings_check_ci_desc),
+                        checked = checkCiUpdates,
+                        onCheckedChange = { enabled ->
+                            checkCiUpdates = enabled
+                            settingsPrefs.set(SettingsKeys.CHECK_CI_UPDATES, enabled)
+                        },
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.update_settings_timeout),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.update_settings_timeout_value,
+                                    updateTimeoutMs / 1000f,
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                        Slider(
+                            value = updateTimeoutMs / 1000f,
+                            onValueChange = { seconds ->
+                                val newMs = (seconds * 1000)
+                                    .roundToInt()
+                                    .coerceIn(MIN_UPDATE_TIMEOUT_MS, MAX_UPDATE_TIMEOUT_MS)
+                                updateTimeoutMs = newMs
+                                settingsPrefs.set(SettingsKeys.UPDATE_TIMEOUT_MS, newMs)
+                            },
+                            valueRange = MIN_UPDATE_TIMEOUT_SECONDS..MAX_UPDATE_TIMEOUT_SECONDS,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                 }
             }
         }
