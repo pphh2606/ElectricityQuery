@@ -22,11 +22,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Groups
-import androidx.compose.material.icons.outlined.LibraryBooks
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -242,7 +242,7 @@ private fun AccountInfoContent(
                     InfoRow(
                         label = stringResource(R.string.card_account_info_major),
                         value = info.major.ifBlank { "-" },
-                        icon = Icons.Outlined.LibraryBooks
+                        icon = Icons.AutoMirrored.Outlined.LibraryBooks
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     InfoRow(

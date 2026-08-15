@@ -26,8 +26,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.FilterList
-import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Search
@@ -194,7 +194,7 @@ fun BillScreen(
                 actions = {
                     IconButton(onClick = { showHintDialog = true }) {
                         Icon(
-                            imageVector = Icons.Outlined.HelpOutline,
+                            imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                             contentDescription = stringResource(R.string.bill_hint_title),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )

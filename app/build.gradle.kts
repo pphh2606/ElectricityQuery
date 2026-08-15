@@ -47,13 +47,16 @@ android {
         }
     }
 
+    androidResources {
+        localeFilters += listOf("zh", "zh-rCN", "zh-rTW", "en", "fr", "ja", "ar")
+    }
+
     defaultConfig {
         applicationId = "edu.cqwu.electricity"
         minSdk = 21
         targetSdk = 36
         versionCode = currentVersionCode
         versionName = "1.0"
-        resConfigs("zh", "zh-rCN", "zh-rTW", "en", "fr", "ja", "ar")
 
         buildConfigField("String", "BUILD_TIME",
             "\"${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}\"")
@@ -111,6 +114,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)

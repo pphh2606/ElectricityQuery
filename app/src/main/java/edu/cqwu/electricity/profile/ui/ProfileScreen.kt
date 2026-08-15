@@ -21,7 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.AddToHomeScreen
+import androidx.compose.material.icons.automirrored.outlined.AddToHomeScreen
 import androidx.compose.material.icons.outlined.BrightnessAuto
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Edit
@@ -288,7 +288,7 @@ fun ProfilePageContent(
                         onClick = { nav.navigate(Routes.FEEDBACK) },
                     )
                     ProfileEntry(
-                        icon = Icons.Outlined.AddToHomeScreen,
+                        icon = Icons.AutoMirrored.Outlined.AddToHomeScreen,
                         title = stringResource(R.string.profile_add_shortcut),
                         onClick = { nav.navigate(Routes.ADD_SHORTCUT) },
                     )
