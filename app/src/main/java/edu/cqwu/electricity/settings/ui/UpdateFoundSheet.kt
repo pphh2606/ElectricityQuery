@@ -65,6 +65,12 @@ fun UpdateFoundSheet(
     var showDownloadSourceSheet by remember { mutableStateOf(false) }
     var skipThisVersion by remember(info) { mutableStateOf(isSkipped) }
 
+    fun toggleSkipThisVersion() {
+        val newValue = !skipThisVersion
+        skipThisVersion = newValue
+        onSkipChange(newValue)
+    }
+
     BottomSheetDialog(
         visible = true,
         onDismissRequest = onDismiss,
@@ -82,15 +88,14 @@ fun UpdateFoundSheet(
                     .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { toggleSkipThisVersion() },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
                         checked = skipThisVersion,
-                        onCheckedChange = { checked ->
-                            skipThisVersion = checked
-                            onSkipChange(checked)
-                        },
+                        onCheckedChange = { toggleSkipThisVersion() },
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(

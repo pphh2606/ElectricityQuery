@@ -46,6 +46,8 @@ import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.update.data.UpdateCheckCoordinator
 import edu.cqwu.electricity.update.data.UpdateCheckResult
 
+private var startupUpdateCheckDone = false
+
 /**
  * 应用外壳
  *
@@ -89,8 +91,11 @@ fun AppShell(
             (sheetVisibilityState.active || blurProgress > 0.001f)
 
     LaunchedEffect(Unit) {
-        if (settingsPrefs.get(SettingsKeys.AUTO_UPDATE_ENABLED)) {
-            autoUpdateResult = updateCheckCoordinator.check(respectSkipped = true)
+        if (!startupUpdateCheckDone) {
+            startupUpdateCheckDone = true
+            if (settingsPrefs.get(SettingsKeys.AUTO_UPDATE_ENABLED)) {
+                autoUpdateResult = updateCheckCoordinator.check(respectSkipped = true)
+            }
         }
     }
 
