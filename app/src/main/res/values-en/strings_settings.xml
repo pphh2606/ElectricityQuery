@@ -43,6 +43,12 @@
     <string name="personalization_reduce_motion_override">(Overridden by Reduce Motion)</string>
     <string name="personalization_choose_color">Choose Theme Color</string>
     <string name="personalization_choose_color_desc">Select a color as the app theme color</string>
+    <string name="personalization_choose_color_hue">Hue</string>
+    <string name="personalization_choose_color_saturation">Saturation</string>
+    <string name="personalization_choose_color_value">Value</string>
+    <string name="personalization_choose_color_hex">HEX</string>
+    <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
+    <string name="personalization_choose_color_hex_error">Enter a valid HEX color</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  QR Code Settings                           -->

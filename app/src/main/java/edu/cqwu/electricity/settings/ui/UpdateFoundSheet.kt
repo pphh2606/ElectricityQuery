@@ -44,10 +44,10 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.update.data.UpdateChannel
-import edu.cqwu.electricity.update.data.UpdateDownloadLinks
 import edu.cqwu.electricity.update.data.UpdateDownloadProbe
 import edu.cqwu.electricity.update.data.UpdateDownloadProbeResult
 import edu.cqwu.electricity.update.data.UpdateInfo
+import edu.cqwu.electricity.update.data.UpdateMirrorSources
 
 @Composable
 fun UpdateFoundSheet(
@@ -176,7 +176,7 @@ fun UpdateFoundSheet(
         )
 
         val downloadLinks = remember(info) {
-            info.app.link?.let { UpdateDownloadLinks.create(it) }.orEmpty()
+            UpdateMirrorSources.downloadLinks(info.app.link.orEmpty())
         }
         if (downloadLinks.isNotEmpty()) {
             BottomSheetDialog(

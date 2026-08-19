@@ -43,6 +43,12 @@
     <string name="personalization_reduce_motion_override">（アニメーション減少により上書き）</string>
     <string name="personalization_choose_color">テーマカラーを選択</string>
     <string name="personalization_choose_color_desc">アプリのテーマカラーとして色を選択</string>
+    <string name="personalization_choose_color_hue">色相</string>
+    <string name="personalization_choose_color_saturation">彩度</string>
+    <string name="personalization_choose_color_value">明度</string>
+    <string name="personalization_choose_color_hex">HEX</string>
+    <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
+    <string name="personalization_choose_color_hex_error">有効な HEX カラーを入力してください</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  QRコード設定                               -->

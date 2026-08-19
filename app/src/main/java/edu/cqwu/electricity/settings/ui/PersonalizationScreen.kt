@@ -18,8 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -27,7 +27,6 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Animation
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.BlurOn
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Contrast
@@ -37,12 +36,12 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.TextFields
-import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -58,11 +57,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.NightMode
@@ -136,6 +136,9 @@ fun PersonalizationScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable {
+                                appSettings.updatePureBlack(!appSettings.pureBlack)
+                            }
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -246,6 +249,9 @@ fun PersonalizationScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable {
+                                appSettings.updateSheetBlurEnabled(!appSettings.sheetBlurEnabled)
+                            }
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -398,17 +404,12 @@ fun PersonalizationScreen(
         onSelect = { mode -> appSettings.updateNightMode(mode); showNightModeDialog = false },
         onDismiss = { showNightModeDialog = false },
     )
-    if (showColorPicker) {
-        ColorPickerDialog(
-            initialColor = customSeedColor,
-            onColorPreview = { color -> appSettings.updateColorSource(ThemeColorSource.Custom(color)) },
-            onColorSelected = { color ->
-                appSettings.updateColorSource(ThemeColorSource.Custom(color))
-                showColorPicker = false
-            },
-            onDismiss = { showColorPicker = false },
-        )
-    }
+    ColorPickerDialog(
+        visible = showColorPicker,
+        initialColor = customSeedColor,
+        onColorPreview = { color -> appSettings.updateColorSource(ThemeColorSource.Custom(color)) },
+        onDismiss = { showColorPicker = false },
+    )
     SelectionDialog(
         visible = showTopBarStyleDialog,
         title = stringResource(R.string.personalization_topbar_color), current = appSettings.topBarStyle,
@@ -594,53 +595,144 @@ private fun NightModeSelectionDialog(
 
 @Composable
 private fun ColorPickerDialog(
+    visible: Boolean,
     initialColor: Color,
     onColorPreview: (Color) -> Unit = {},
-    onColorSelected: (Color) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val presetColors = remember {
-        listOf(Color(0xFFF44336), Color(0xFFE91E63), Color(0xFF9C27B0), Color(0xFF673AB7),
-            Color(0xFF3F51B5), Color(0xFF2196F3), Color(0xFF03A9F4), Color(0xFF00BCD4),
-            Color(0xFF009688), Color(0xFF4CAF50), Color(0xFF8BC34A), Color(0xFFCDDC39),
-            Color(0xFFFFEB3B), Color(0xFFFFC107), Color(0xFFFF9800), Color(0xFFFF5722),
-            Color(0xFF795548), Color(0xFF607D8B))
+    val openedColor = remember(visible) { initialColor }
+    val initialHsv = remember(openedColor) { openedColor.toHsv() }
+    var hue by remember(openedColor) { mutableStateOf(initialHsv.hue) }
+    var saturation by remember(openedColor) { mutableStateOf(initialHsv.saturation) }
+    var value by remember(openedColor) { mutableStateOf(initialHsv.value) }
+    var selectedColor by remember(openedColor) { mutableStateOf(openedColor) }
+    var hexInput by remember(openedColor) { mutableStateOf(openedColor.toHex()) }
+    var hexError by remember { mutableStateOf(false) }
+
+    fun updateSelectedColor(color: Color) {
+        selectedColor = color
+        hexInput = color.toHex()
+        hexError = false
+        onColorPreview(color)
     }
-    var selectedColor by remember(initialColor) { mutableStateOf(initialColor) }
-    AppScaledAlertDialog(
+
+    fun applyHex(text: String) {
+        hexInput = text
+        val parsed = parseHexColor(text)
+        if (parsed == null) {
+            hexError = true
+        } else {
+            val hsv = parsed.toHsv()
+            hue = hsv.hue
+            saturation = hsv.saturation
+            value = hsv.value
+            updateSelectedColor(parsed)
+        }
+    }
+
+    BottomSheetDialog(
+        visible = visible,
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.personalization_choose_color), style = MaterialTheme.typography.headlineSmall) },
-        text = {
-            Column {
-                Text(text = stringResource(R.string.personalization_choose_color_desc), style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 16.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    presetColors.chunked(6).forEach { row ->
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            row.forEach { color ->
-                                val isSelected = selectedColor == color
-                                Box(
-                                    modifier = Modifier.size(40.dp).clip(CircleShape).background(color, CircleShape)
-                                        .border(width = if (isSelected) 3.dp else 1.dp,
-                                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                                            shape = CircleShape).clickable {
-                                                selectedColor = color
-                                                onColorPreview(color)  // ⭐ 即时预览
-                                            },
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    if (isSelected) Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
-                                }
-                            }
-                        }
-                    }
-                }
+        title = stringResource(R.string.personalization_choose_color),
+        fullscreen = false,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.personalization_choose_color_desc),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(selectedColor, RoundedCornerShape(12.dp))
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            shape = RoundedCornerShape(12.dp),
+                        ),
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                OutlinedTextField(
+                    value = hexInput,
+                    onValueChange = ::applyHex,
+                    modifier = Modifier.weight(1f),
+                    label = { Text(stringResource(R.string.personalization_choose_color_hex)) },
+                    placeholder = { Text(stringResource(R.string.personalization_choose_color_hex_placeholder)) },
+                    isError = hexError,
+                    supportingText = if (hexError) {
+                        { Text(stringResource(R.string.personalization_choose_color_hex_error)) }
+                    } else {
+                        null
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Ascii,
+                        imeAction = ImeAction.Done,
+                    ),
+                )
             }
-        },
-        confirmButton = { TextButton(onClick = { onColorSelected(selectedColor); onDismiss() }) { Text(stringResource(R.string.common_confirm)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-    )
+            Spacer(modifier = Modifier.height(4.dp))
+            HsvSliderRow(
+                label = stringResource(R.string.personalization_choose_color_hue),
+                value = hue,
+                valueRange = 0f..360f,
+                onValueChange = { newHue ->
+                    hue = newHue
+                    updateSelectedColor(Color.hsv(newHue, saturation, value))
+                },
+            )
+            HsvSliderRow(
+                label = stringResource(R.string.personalization_choose_color_saturation),
+                value = saturation,
+                valueRange = 0f..1f,
+                onValueChange = { newSaturation ->
+                    saturation = newSaturation
+                    updateSelectedColor(Color.hsv(hue, newSaturation, value))
+                },
+            )
+            HsvSliderRow(
+                label = stringResource(R.string.personalization_choose_color_value),
+                value = value,
+                valueRange = 0f..1f,
+                onValueChange = { newValue ->
+                    value = newValue
+                    updateSelectedColor(Color.hsv(hue, saturation, newValue))
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun HsvSliderRow(
+    label: String,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    onValueChange: (Float) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
 }
 
 /**

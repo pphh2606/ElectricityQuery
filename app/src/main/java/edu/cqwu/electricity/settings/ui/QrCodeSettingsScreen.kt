@@ -233,6 +233,11 @@ fun QrCodeSettingsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable {
+                            appSettings.updateQrScreenBrightnessEnabled(
+                                !appSettings.qrScreenBrightnessEnabled,
+                            )
+                        }
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {

@@ -1,13 +1,16 @@
 package edu.cqwu.electricity.theme.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.MaterialTheme
@@ -128,70 +131,76 @@ fun OpenUrlDialog(
             }
         },
     ) {
-        TextField(
-            value = urlInput,
-            onValueChange = {
-                urlInput = it
-                urlError = null
-            },
-            label = { Text(stringResource(R.string.open_url_label)) },
-            placeholder = { Text(stringResource(R.string.open_url_placeholder)) },
-            singleLine = true,
-            isError = urlError != null,
-            supportingText = urlError?.let {
-                { Text(it, color = MaterialTheme.colorScheme.error) }
-            },
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-            ),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Uri,
-                imeAction = ImeAction.Go
-            ),
-            keyboardActions = KeyboardActions(onGo = { doConfirm() }),
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { isInternal = !isInternal }
-                .padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .verticalScroll(rememberScrollState()),
         ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = stringResource(R.string.open_url_intranet),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
+            TextField(
+                value = urlInput,
+                onValueChange = {
+                    urlInput = it
+                    urlError = null
+                },
+                label = { Text(stringResource(R.string.open_url_label)) },
+                placeholder = { Text(stringResource(R.string.open_url_placeholder)) },
+                singleLine = true,
+                isError = urlError != null,
+                supportingText = urlError?.let {
+                    { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Uri,
+                    imeAction = ImeAction.Go
+                ),
+                keyboardActions = KeyboardActions(onGo = { doConfirm() }),
             )
-            Switch(
-                checked = isInternal,
-                onCheckedChange = { isInternal = it }
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { useHalfScreen = !useHalfScreen }
-                .padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = stringResource(R.string.open_url_half_screen),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Switch(
-                checked = useHalfScreen,
-                onCheckedChange = { useHalfScreen = it }
-            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isInternal = !isInternal }
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.open_url_intranet),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Switch(
+                    checked = isInternal,
+                    onCheckedChange = { isInternal = it }
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { useHalfScreen = !useHalfScreen }
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.open_url_half_screen),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Switch(
+                    checked = useHalfScreen,
+                    onCheckedChange = { useHalfScreen = it }
+                )
+            }
         }
     }
 }

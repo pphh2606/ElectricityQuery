@@ -56,8 +56,6 @@ import kotlin.math.roundToInt
 
 private const val MIN_UPDATE_TIMEOUT_MS = 1000
 private const val MAX_UPDATE_TIMEOUT_MS = 10000
-private val MIN_UPDATE_TIMEOUT_SECONDS = 1f
-private val MAX_UPDATE_TIMEOUT_SECONDS = 10f
 
 /**
  * 配置页 — 包含浏览器标识和语言切换设置。
@@ -225,7 +223,7 @@ fun ConfigScreen(
                                 updateTimeoutMs = newMs
                                 settingsPrefs.set(SettingsKeys.UPDATE_TIMEOUT_MS, newMs)
                             },
-                            valueRange = MIN_UPDATE_TIMEOUT_SECONDS..MAX_UPDATE_TIMEOUT_SECONDS,
+                            valueRange = MIN_UPDATE_TIMEOUT_MS / 1000f..MAX_UPDATE_TIMEOUT_MS / 1000f,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }

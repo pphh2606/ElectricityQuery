@@ -43,6 +43,12 @@
     <string name="personalization_reduce_motion_override">（被減少動畫覆蓋）</string>
     <string name="personalization_choose_color">選取主題色</string>
     <string name="personalization_choose_color_desc">選取一種色彩作為應用程式主題色</string>
+    <string name="personalization_choose_color_hue">色相</string>
+    <string name="personalization_choose_color_saturation">飽和度</string>
+    <string name="personalization_choose_color_value">明度</string>
+    <string name="personalization_choose_color_hex">HEX</string>
+    <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
+    <string name="personalization_choose_color_hex_error">請輸入有效的 HEX 色彩</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  QR 碼設定                                  -->

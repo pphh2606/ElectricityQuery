@@ -1,5 +1,10 @@
 package edu.cqwu.electricity.update.data
 
+data class UpdateDownloadLink(
+    val label: String,
+    val url: String,
+)
+
 internal object UpdateMirrorSources {
     private const val ASSETS_OWNER = "pphh2606"
     private const val ASSETS_REPO = "ElectricityQuery-assets"
@@ -13,47 +18,29 @@ internal object UpdateMirrorSources {
 
     private data class MirrorSource(
         val label: String,
-        val metadataUrl: (String) -> String,
-        val downloadUrl: (String) -> String,
+        val url: (String) -> String,
     )
 
     private val sources = listOf(
-        MirrorSource("GitHub Raw", ::githubRaw, ::githubRaw),
-        MirrorSource(
-            label = "gh-proxy.org",
-            metadataUrl = { "https://gh-proxy.org/${githubBlob(it)}" },
-            downloadUrl = { "https://gh-proxy.org/${githubBlob(it)}" },
-        ),
-        MirrorSource(
-            label = "fastgit.cc",
-            metadataUrl = { "https://fastgit.cc/${githubBlob(it)}" },
-            downloadUrl = { "https://fastgit.cc/${githubBlob(it)}" },
-        ),
-        MirrorSource(
-            label = "ghfast.top",
-            metadataUrl = { "https://ghfast.top/${githubRaw(it)}" },
-            downloadUrl = { "https://ghfast.top/${githubRaw(it)}" },
-        ),
-        MirrorSource(
-            label = "gh.chjina.com",
-            metadataUrl = { "https://gh.chjina.com/${githubRaw(it)}" },
-            downloadUrl = { "https://gh.chjina.com/${githubRaw(it)}" },
-        ),
-        MirrorSource(
-            label = "github.boki.moe",
-            metadataUrl = { "https://github.boki.moe/${githubRaw(it)}" },
-            downloadUrl = { "https://github.boki.moe/${githubRaw(it)}" },
-        ),
+        MirrorSource("GitHub Raw", ::githubRaw),
+        MirrorSource("gh-proxy.org") { "https://gh-proxy.org/${githubBlob(it)}" },
+        MirrorSource("fastgit.cc") { "https://fastgit.cc/${githubBlob(it)}" },
+        MirrorSource("ghfast.top") { "https://ghfast.top/${githubRaw(it)}" },
+        MirrorSource("gh.chjina.com") { "https://gh.chjina.com/${githubRaw(it)}" },
+        MirrorSource("github.boki.moe") { "https://github.boki.moe/${githubRaw(it)}" },
     )
 
     fun metadataUrls(fileName: String): List<String> =
-        sources.map { it.metadataUrl(fileName) }
+        sources.map { it.url(fileName) }
 
-    fun downloadLinks(fileName: String): List<UpdateDownloadLink> =
-        sources.map { source ->
+    fun downloadLinks(originalLink: String): List<UpdateDownloadLink> {
+        val fileName = originalLink.substringAfterLast('/')
+        if (fileName.isBlank()) return emptyList()
+        return sources.map { source ->
             UpdateDownloadLink(
                 label = source.label,
-                url = source.downloadUrl(fileName),
+                url = source.url(fileName),
             )
         }
+    }
 }

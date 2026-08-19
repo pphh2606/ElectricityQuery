@@ -43,6 +43,12 @@
     <string name="personalization_reduce_motion_override">(تم تجاوزه بواسطة تقليل الحركة)</string>
     <string name="personalization_choose_color">اختيار لون السمة</string>
     <string name="personalization_choose_color_desc">اختر لونًا ليكون سمة التطبيق</string>
+    <string name="personalization_choose_color_hue">الدرجة اللونية</string>
+    <string name="personalization_choose_color_saturation">التشبع</string>
+    <string name="personalization_choose_color_value">القيمة</string>
+    <string name="personalization_choose_color_hex">HEX</string>
+    <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
+    <string name="personalization_choose_color_hex_error">أدخل لون HEX صالح</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  إعدادات رمز QR                             -->

@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.update.data
 
-import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -9,26 +8,17 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.concurrent.TimeUnit
 
 data class UpdateDownloadProbeResult(
     val ok: Boolean,
     val latencyMs: Long?,
-    val speedBytesPerSec: Long?,
-    val error: String?,
 )
 
 object UpdateDownloadProbe {
-    private const val SAMPLE_BYTES = 256 * 1024L
+    private const val PROBE_READ_BYTES = 16 * 1024
     private const val TIMEOUT_MS = 2500L
 
-    private val client: OkHttpClient by lazy {
-        HttpClientFactory.create(includeWebVpn = false).newBuilder()
-            .connectTimeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-            .readTimeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-            .writeTimeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-            .build()
-    }
+    private val client: OkHttpClient by lazy { updateHttpClient(TIMEOUT_MS) }
 
     suspend fun probe(links: List<UpdateDownloadLink>): Map<String, UpdateDownloadProbeResult> =
         withContext(Dispatchers.IO) {
@@ -41,51 +31,34 @@ object UpdateDownloadProbe {
 
     private fun probeOne(url: String): UpdateDownloadProbeResult {
         val startNs = System.nanoTime()
-        try {
+        return try {
             val request = Request.Builder()
                 .url(url)
-                .header("Range", "bytes=0-${SAMPLE_BYTES - 1}")
+                .header("Range", "bytes=0-${PROBE_READ_BYTES - 1}")
                 .get()
                 .build()
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    return UpdateDownloadProbeResult(
+                    UpdateDownloadProbeResult(
                         ok = false,
                         latencyMs = null,
-                        speedBytesPerSec = null,
-                        error = "HTTP ${response.code}",
+                    )
+                } else {
+                    val read = response.body.byteStream().use { input ->
+                        input.read(ByteArray(PROBE_READ_BYTES))
+                    }
+                    UpdateDownloadProbeResult(
+                        ok = read > 0,
+                        latencyMs = (System.nanoTime() - startNs) / 1_000_000,
                     )
                 }
-
-                var sampled = 0L
-                val buffer = ByteArray(16 * 1024)
-                response.body.byteStream().use { input ->
-                    while (sampled < SAMPLE_BYTES) {
-                        val toRead = minOf(buffer.size.toLong(), SAMPLE_BYTES - sampled).toInt()
-                        val read = input.read(buffer, 0, toRead)
-                        if (read <= 0) break
-                        sampled += read
-                    }
-                }
-
-                val costMs = (System.nanoTime() - startNs) / 1_000_000
-                val safeMs = if (costMs <= 0L) 1L else costMs
-                val speed = if (sampled > 0L) (sampled * 1000L) / safeMs else null
-                return UpdateDownloadProbeResult(
-                    ok = sampled > 0L,
-                    latencyMs = costMs,
-                    speedBytesPerSec = speed,
-                    error = if (sampled > 0L) null else "EMPTY_BODY",
-                )
             }
         } catch (e: CancellationException) {
             throw e
-        } catch (e: Exception) {
-            return UpdateDownloadProbeResult(
+        } catch (_: Exception) {
+            UpdateDownloadProbeResult(
                 ok = false,
                 latencyMs = null,
-                speedBytesPerSec = null,
-                error = e.javaClass.simpleName,
             )
         }
     }

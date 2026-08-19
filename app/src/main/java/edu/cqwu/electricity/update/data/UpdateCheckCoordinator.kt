@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.update.data
 
 import android.content.Context
+import edu.cqwu.electricity.BuildConfig
 import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 
@@ -28,11 +29,7 @@ class UpdateCheckCoordinator(context: Context) {
             timeoutMs = settingsPrefs.get(SettingsKeys.UPDATE_TIMEOUT_MS).toLong(),
         )
         val info = repository.check(channel)
-        val result = toUpdateCheckResult(
-            info = info,
-            channel = channel,
-            needsUpdate = info?.let { repository.needsUpdate(it) } == true,
-        )
+        val result = toUpdateCheckResult(info = info, channel = channel)
         if (respectSkipped && result is UpdateCheckResult.Found && isSkipped(result.info)) {
             return UpdateCheckResult.NoUpdate
         }
@@ -54,9 +51,9 @@ class UpdateCheckCoordinator(context: Context) {
 internal fun toUpdateCheckResult(
     info: UpdateInfo?,
     channel: UpdateChannel,
-    needsUpdate: Boolean,
+    localVersionCode: Long = BuildConfig.VERSION_CODE.toLong(),
 ): UpdateCheckResult = when {
     info == null -> UpdateCheckResult.Failed
-    needsUpdate -> UpdateCheckResult.Found(info, channel)
+    info.app.versionCode > localVersionCode -> UpdateCheckResult.Found(info, channel)
     else -> UpdateCheckResult.NoUpdate
 }
