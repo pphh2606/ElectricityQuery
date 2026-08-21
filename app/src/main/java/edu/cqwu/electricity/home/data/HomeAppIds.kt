@@ -13,6 +13,9 @@ object HomeAppIds {
     /** 乘车码 */
     const val BUS_QR = "6980342349549853"
 
+    /** 学生绑定银行卡 → 打开原生银行卡绑定页 */
+    const val BANK_CARD_BIND = "5416679606401266"
+
     /** 学生宿舍电费充值 → 打开原生电费查询 */
     const val DORM_ELECTRICITY = "7624123418505155"
 

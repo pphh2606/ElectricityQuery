@@ -45,8 +45,6 @@
 
     <string name="feedback_log_loading">(Chargement des journaux, veuillez réessayer plus tard)</string>
 
-    <string name="feedback_log_section_crash_buffer">═══ Journaux du tampon de crash (logcat -b crash) ═══</string>
-
     <string name="crash_report_version_code">Code de version : %1$s</string>
 
     <string name="crash_report_version_name">Nom de version : %1$s</string>
@@ -54,8 +52,6 @@
     <string name="crash_report_manufacturer">Fabricant : %1$s</string>
 
     <string name="crash_report_is_main_thread">Thread principal : %1$s</string>
-
-    <string name="feedback_share_log">Partager les journaux</string>
 
     <string name="crash_report_abi">ABI : %1$s</string>
 

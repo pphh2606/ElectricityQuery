@@ -44,8 +44,6 @@
 
     <string name="feedback_log_loading">(Logs are loading, please try again later)</string>
 
-    <string name="feedback_log_section_crash_buffer">═══ Crash buffer logs (logcat -b crash) ═══</string>
-
     <string name="crash_report_version_code">Version code: %1$s</string>
 
     <string name="crash_report_version_name">Version name: %1$s</string>
@@ -53,8 +51,6 @@
     <string name="crash_report_manufacturer">Manufacturer: %1$s</string>
 
     <string name="crash_report_is_main_thread">Is main thread: %1$s</string>
-
-    <string name="feedback_share_log">Share logs</string>
 
     <string name="crash_report_abi">ABI: %1$s</string>
 

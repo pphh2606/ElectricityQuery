@@ -36,6 +36,7 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.TextFields
+import androidx.compose.material.icons.outlined.Web
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -133,44 +134,20 @@ fun PersonalizationScreen(
                         subtitle = stringResource(appSettings.nightMode.labelRes),
                         onClick = { showNightModeDialog = true },
                     )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                appSettings.updatePureBlack(!appSettings.pureBlack)
-                            }
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Outlined.DarkMode,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.personalization_pure_black),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = stringResource(R.string.personalization_pure_black_desc),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Switch(
-                            checked = appSettings.pureBlack,
-                            onCheckedChange = appSettings::updatePureBlack,
-                        )
-                    }
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.Web,
+                        title = stringResource(R.string.personalization_webview_dark_mode),
+                        subtitle = stringResource(R.string.personalization_webview_dark_mode_desc),
+                        checked = appSettings.webviewDarkMode,
+                        onCheckedChange = appSettings::updateWebviewDarkMode,
+                    )
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.DarkMode,
+                        title = stringResource(R.string.personalization_pure_black),
+                        subtitle = stringResource(R.string.personalization_pure_black_desc),
+                        checked = appSettings.pureBlack,
+                        onCheckedChange = appSettings::updatePureBlack,
+                    )
                     FontScaleRow(
                         title = stringResource(R.string.personalization_font_scale),
                         subtitle = stringResource(

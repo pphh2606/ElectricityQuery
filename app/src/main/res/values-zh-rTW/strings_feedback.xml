@@ -43,8 +43,6 @@
 
     <string name="feedback_log_loading">（日誌載入中，請稍後再試）</string>
 
-    <string name="feedback_log_section_crash_buffer">═══ crash 緩衝區日誌（logcat -b crash）═══</string>
-
     <string name="crash_report_version_code">版本號碼: %1$s</string>
 
     <string name="crash_report_version_name">版本名稱: %1$s</string>
@@ -52,8 +50,6 @@
     <string name="crash_report_manufacturer">製造商: %1$s</string>
 
     <string name="crash_report_is_main_thread">是否主執行緒: %1$s</string>
-
-    <string name="feedback_share_log">分享日誌</string>
 
     <string name="crash_report_abi">ABI: %1$s</string>
 

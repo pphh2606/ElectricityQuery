@@ -22,9 +22,7 @@
     <string name="common_loading">جارٍ التحميل…</string>
     <string name="common_more_options">المزيد من الخيارات</string>
     <string name="common_unknown_error">خطأ غير معروف</string>
-    <string name="common_pull_to_retry">اسحب للأسفل لإعادة المحاولة</string>
     <string name="common_no_data">لا توجد بيانات</string>
-    <string name="common_please_retry">يرجى المحاولة لاحقًا</string>
     <string name="common_swipe_load_more">اسحب للأعلى لتحميل المزيد</string>
     <string name="common_search">بحث</string>
     <string name="common_share">مشاركة</string>
@@ -54,7 +52,6 @@
     <string name="common_load_failed">فشل التحميل</string>
     <string name="common_enabled">مُمكّن</string>
     <string name="common_disabled">معطّل</string>
-    <string name="common_re_query">إعادة الاستعلام</string>
     <string name="common_copied_to_clipboard">تم النسخ إلى الحافظة</string>
     <string name="common_refresh_failed">فشل التحديث</string>
     <string name="common_network_error">خطأ في الشبكة، تحقق من الاتصال</string>

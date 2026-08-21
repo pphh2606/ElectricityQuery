@@ -31,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,10 +52,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.LocalWebViewReloadAfterLogin
+import edu.cqwu.electricity.theme.ui.LocalWebViewReloadConsumed
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -234,9 +241,13 @@ fun WebViewBottomSheet(
     val scope = rememberCoroutineScope()
     val screenHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val webViewState = rememberWebViewHostState()
+    val nav = LocalNavController.current
+    val reloadAfterLogin = LocalWebViewReloadAfterLogin.current
+    val onReloadConsumed = LocalWebViewReloadConsumed.current
 
     var showMenu by remember { mutableStateOf(false) }
     var webErrorState by remember { mutableStateOf<WebViewErrorState?>(null) }
+    var loginRequiredOverlayVisible by remember { mutableStateOf(false) }
     var fileUploadCallback by remember { mutableStateOf<ValueCallback<Array<Uri>>?>(null) }
     val fileUploadLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         fileUploadCallback?.let { cb ->
@@ -248,6 +259,13 @@ fun WebViewBottomSheet(
     val nestedScrollDispatcher = remember { NestedScrollDispatcher() }
     val webViewNestedScrollConnection = remember { object : NestedScrollConnection {} }
     val touchHandler = remember { WebViewBottomSheetTouchHandler(scope, nestedScrollDispatcher) }
+
+    LaunchedEffect(reloadAfterLogin) {
+        if (reloadAfterLogin) {
+            onReloadConsumed()
+            webViewState.reload()
+        }
+    }
 
     BackHandler(enabled = visible) {
         if (webViewState.canGoBack) {
@@ -342,8 +360,13 @@ fun WebViewBottomSheet(
                 },
                 onPageStarted = { _, _ ->
                     webErrorState = null
+                    loginRequiredOverlayVisible = false
+                },
+                onPageFinished = { _, pageUrl ->
+                    loginRequiredOverlayVisible = WebViewUrlUtil.shouldShowLoginRequired(pageUrl, webErrorState != null)
                 },
                 onMainFrameError = { _, error ->
+                    loginRequiredOverlayVisible = false
                     webErrorState = WebViewErrorState(
                         errorCode = error.errorCode,
                         description = error.description ?: context.getString(R.string.common_unknown_error),
@@ -384,6 +407,14 @@ fun WebViewBottomSheet(
                     description = error.description,
                     isHttpError = error.isHttpError,
                     onRetry = { webErrorState = null; webViewState.reload() },
+                )
+            }
+
+            if (loginRequiredOverlayVisible) {
+                ReLoginContent(
+                    requiresReLogin = true,
+                    onReLogin = { nav.navigate(Routes.WEBVIEW_LOGIN) },
+                    consumeTouches = true,
                 )
             }
         }

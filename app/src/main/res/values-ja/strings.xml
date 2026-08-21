@@ -22,9 +22,7 @@
     <string name="common_loading">読み込み中…</string>
     <string name="common_more_options">その他のオプション</string>
     <string name="common_unknown_error">不明なエラー</string>
-    <string name="common_pull_to_retry">プルダウンして再試行</string>
     <string name="common_no_data">データなし</string>
-    <string name="common_please_retry">しばらくしてから再試行してください</string>
     <string name="common_swipe_load_more">上にスワイプしてもっと読み込む</string>
     <string name="common_search">検索</string>
     <string name="common_share">共有</string>
@@ -54,7 +52,6 @@
     <string name="common_load_failed">読み込み失敗</string>
     <string name="common_enabled">有効</string>
     <string name="common_disabled">無効</string>
-    <string name="common_re_query">再照会</string>
     <string name="common_copied_to_clipboard">クリップボードにコピーしました</string>
     <string name="common_refresh_failed">更新に失敗しました</string>
     <string name="common_network_error">ネットワークエラーです。接続を確認してください</string>

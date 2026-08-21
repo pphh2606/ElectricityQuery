@@ -15,14 +15,4 @@
     <string name="speakup_score_unit">pts</string>
     <string name="speakup_message_label">message</string>
     <string name="speakup_reply_label">réponse</string>
-
-    <string name="speakup_error_setup_role">Échec de la définition du rôle : %1$s</string>
-
-    <string name="speakup_error_no_active_role">Aucun rôle actif trouvé</string>
-
-    <string name="speakup_error_fetch_areas">Échec de la récupération des zones de consultation : %1$s</string>
-
-    <string name="speakup_error_fetch_messages">Échec de la récupération des messages : %1$s</string>
-
-    <string name="speakup_error_fetch_detail">Échec de la récupération des détails du message : %1$s</string>
 </resources>

@@ -84,15 +84,9 @@
     <string name="card_recharge_record">充值記錄</string>
     <string name="card_recharge_consume_record">消費記錄</string>
 
-    <string name="bill_html_structure_changed">帳單頁面結構已變更，請更新 App</string>
-
     <string name="bill_load_failed">載入帳單失敗</string>
 
-    <string name="login_required_auth">未登入，請先完成認證</string>
-
     <string name="card_bill_status_unknown">未知</string>
-
-    <string name="login_required_open_web">未登入，請先開啟原網頁完成認證</string>
 
     <string name="card_bill_status_terminated">交易終止</string>
 
@@ -107,4 +101,18 @@
     <string name="card_bill_status_success">交易成功</string>
 
     <string name="card_account_info_fetch_failed">取得帳戶資訊失敗</string>
+
+    <string name="bank_card_bind_title">學生綁定銀行卡</string>
+    <string name="bank_card_select_bank">請選擇銀行：</string>
+    <string name="bank_card_no_label">卡號</string>
+    <string name="bank_card_no_placeholder">請輸入卡號</string>
+    <string name="bank_card_bind">綁定</string>
+    <string name="bank_card_unbind">解除綁定</string>
+    <string name="bank_card_unbind_confirm_title">確認解除綁定</string>
+    <string name="bank_card_unbind_confirm_text">確定要解除綁定該銀行卡嗎？解除綁定後需重新綁定才能使用。</string>
+    <string name="bank_card_unbind_confirm_btn">確定解除綁定</string>
+    <string name="bank_card_binding">正在提交…</string>
+    <string name="bank_card_fetch_failed">取得銀行卡綁定資訊失敗</string>
+    <string name="bank_card_no_banks">未取得可綁定的銀行</string>
+    <string name="bank_card_request_failed">操作失敗，請稍後重試</string>
 </resources>

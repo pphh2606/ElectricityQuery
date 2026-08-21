@@ -10,7 +10,6 @@ import android.app.KeyguardManager
 import android.content.ClipData
 import android.content.Context
 import android.os.Build
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -146,16 +145,6 @@ fun LoginScreen(
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             showExportDialog = true
-        }
-    }
-
-    // 拦截系统返回（包括侧滑手势和物理返回键）
-    // 加载中拦截，防止登录请求中误触退出导致状态丢失
-    BackHandler {
-        if (uiState.isLoading) {
-            snackbar.show(resources.getString(R.string.login_verifying), ToastUtils.Type.ERROR)
-        } else {
-            onBack()
         }
     }
 

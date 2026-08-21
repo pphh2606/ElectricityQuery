@@ -86,15 +86,9 @@
     <string name="card_recharge_record">Recharge Records</string>
     <string name="card_recharge_consume_record">Spending Records</string>
 
-    <string name="bill_html_structure_changed">Bill page structure changed, please update the app</string>
-
     <string name="bill_load_failed">Failed to load bills</string>
 
-    <string name="login_required_auth">Not logged in, please complete authentication first</string>
-
     <string name="card_bill_status_unknown">Unknown</string>
-
-    <string name="login_required_open_web">Not logged in, please open the original page to authenticate</string>
 
     <string name="card_bill_status_terminated">Transaction terminated</string>
 
@@ -109,4 +103,19 @@
     <string name="card_bill_status_success">Transaction successful</string>
 
     <string name="card_account_info_fetch_failed">Failed to fetch account info</string>
+
+    <!-- Student Bank Card Binding -->
+    <string name="bank_card_bind_title">Student Bank Card Binding</string>
+    <string name="bank_card_select_bank">Select bank:</string>
+    <string name="bank_card_no_label">Card Number</string>
+    <string name="bank_card_no_placeholder">Enter card number</string>
+    <string name="bank_card_bind">Bind</string>
+    <string name="bank_card_unbind">Unbind</string>
+    <string name="bank_card_unbind_confirm_title">Confirm Unbind</string>
+    <string name="bank_card_unbind_confirm_text">Unbind this bank card? You will need to bind it again to use it.</string>
+    <string name="bank_card_unbind_confirm_btn">Confirm Unbind</string>
+    <string name="bank_card_binding">Submitting…</string>
+    <string name="bank_card_fetch_failed">Failed to load bank card binding info</string>
+    <string name="bank_card_request_failed">Operation failed, please try again later</string>
+    <string name="bank_card_no_banks">No bindable banks found</string>
 </resources>

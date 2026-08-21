@@ -94,15 +94,9 @@
     <string name="card_recharge_record">سجلات الشحن</string>
     <string name="card_recharge_consume_record">سجلات الإنفاق</string>
 
-    <string name="bill_html_structure_changed">تغير هيكل صفحة الفاتورة، يرجى تحديث التطبيق</string>
-
     <string name="bill_load_failed">فشل تحميل الفاتورة</string>
 
-    <string name="login_required_auth">لم تقم بتسجيل الدخول، يرجى إكمال التحقق أولاً</string>
-
     <string name="card_bill_status_unknown">غير معروف</string>
-
-    <string name="login_required_open_web">لم تقم بتسجيل الدخول، يرجى فتح الصفحة الأصلية لإكمال التحقق</string>
 
     <string name="card_bill_status_terminated">تم إنهاء المعاملة</string>
 
@@ -117,4 +111,18 @@
     <string name="card_bill_status_success">تمت المعاملة بنجاح</string>
 
     <string name="card_account_info_fetch_failed">فشل جلب معلومات الحساب</string>
+
+    <string name="bank_card_bind_title">ربط بطاقة البنك للطالب</string>
+    <string name="bank_card_select_bank">اختر البنك:</string>
+    <string name="bank_card_no_label">رقم البطاقة</string>
+    <string name="bank_card_no_placeholder">أدخل رقم البطاقة</string>
+    <string name="bank_card_bind">ربط</string>
+    <string name="bank_card_unbind">إلغاء الربط</string>
+    <string name="bank_card_unbind_confirm_title">تأكيد إلغاء الربط</string>
+    <string name="bank_card_unbind_confirm_text">هل تريد إلغاء ربط هذه البطاقة البنكية؟ ستحتاج إلى ربطها مرة أخرى لاستخدامها.</string>
+    <string name="bank_card_unbind_confirm_btn">تأكيد إلغاء الربط</string>
+    <string name="bank_card_binding">جارٍ الإرسال…</string>
+    <string name="bank_card_fetch_failed">فشل الحصول على معلومات ربط البطاقة البنكية</string>
+    <string name="bank_card_no_banks">لا توجد بنوك متاحة للربط</string>
+    <string name="bank_card_request_failed">فشلت العملية، يرجى المحاولة لاحقًا</string>
 </resources>

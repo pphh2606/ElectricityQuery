@@ -30,6 +30,7 @@ import dev.chrisbanes.haze.HazeDefaults
 import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.settings.data.ThemeColorSource
 import edu.cqwu.electricity.settings.data.TopBarStyle
+import edu.cqwu.electricity.settings.data.isDark
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -73,6 +74,9 @@ fun isHazeBlurSupported(): Boolean =
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("No NavController provided")
 }
+
+internal val LocalWebViewReloadAfterLogin = staticCompositionLocalOf { false }
+internal val LocalWebViewReloadConsumed = staticCompositionLocalOf<() -> Unit> { {} }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,11 +126,7 @@ fun 电费查询Theme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val darkTheme = when (nightMode) {
-        NightMode.SYSTEM -> isSystemInDarkTheme()
-        NightMode.LIGHT -> false
-        NightMode.DARK -> true
-    }
+    val darkTheme = nightMode.isDark(isSystemInDarkTheme())
 
     val colorScheme = when {
         colorSource is ThemeColorSource.SystemDynamic && dynamicColor

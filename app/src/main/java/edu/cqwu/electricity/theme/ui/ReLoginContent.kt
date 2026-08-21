@@ -1,5 +1,8 @@
 package edu.cqwu.electricity.theme.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,17 +32,31 @@ import edu.cqwu.electricity.R
  * @param requiresReLogin 是否需要重新登录
  * @param onReLogin 重新登录按钮点击回调
  * @param onRetry 重试按钮点击回调
+ * @param consumeTouches 作为全屏遮罩时消费触摸并填充 surface 背景，避免操作下层内容
  */
 @Composable
 fun ReLoginContent(
-    errorMessage: String?,
+    errorMessage: String? = null,
     requiresReLogin: Boolean,
     onReLogin: () -> Unit,
-    onRetry: () -> Unit,
+    onRetry: () -> Unit = {},
     modifier: Modifier = Modifier,
+    consumeTouches: Boolean = false,
 ) {
+    val overlayModifier = if (consumeTouches) {
+        Modifier
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) { }
+    } else {
+        Modifier
+    }
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .then(overlayModifier),
         contentAlignment = Alignment.Center,
     ) {
         Column(

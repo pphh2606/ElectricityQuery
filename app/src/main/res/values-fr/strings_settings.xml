@@ -21,6 +21,8 @@
     <string name="personalization_night_mode">Mode nuit</string>
     <string name="personalization_pure_black">Fond noir pur</string>
     <string name="personalization_pure_black_desc">Utiliser un fond noir pur en mode sombre</string>
+    <string name="personalization_webview_dark_mode">Mode sombre Web</string>
+    <string name="personalization_webview_dark_mode_desc">Lorsqu\'elle est activée, les pages web suivent le mode nuit de l\'application</string>
     <string name="personalization_font_scale">Taille de police</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">Défaut</string>
@@ -132,6 +134,7 @@
     <string name="storage_clear_button">Effacer les éléments sélectionnés</string>
     <string name="storage_clear_confirm_title">Confirmer l\'effacement</string>
     <string name="storage_clear_confirm_message">Les données suivantes seront définitivement effacées :\n%1$s\n\nCette action est irréversible, continuer ?</string>
+    <string name="storage_clear_confirm_restart">L\'application redémarrera après le nettoyage.</string>
     <string name="storage_clear_confirm_button">Effacer</string>
     <string name="storage_clear_cancel_button">Annuler</string>
     <string name="storage_clear_success">Effacement terminé</string>

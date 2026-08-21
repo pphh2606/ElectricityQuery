@@ -84,15 +84,9 @@
     <string name="card_recharge_record">チャージ記録</string>
     <string name="card_recharge_consume_record">利用記録</string>
 
-    <string name="bill_html_structure_changed">明細ページの構成が変更されました。アプリを更新してください</string>
-
     <string name="bill_load_failed">明細の読み込みに失敗しました</string>
 
-    <string name="login_required_auth">未ログインです。先に認証を完了してください</string>
-
     <string name="card_bill_status_unknown">不明</string>
-
-    <string name="login_required_open_web">未ログインです。元のページを開いて認証してください</string>
 
     <string name="card_bill_status_terminated">取引終了</string>
 
@@ -107,4 +101,18 @@
     <string name="card_bill_status_success">取引成功</string>
 
     <string name="card_account_info_fetch_failed">アカウント情報の取得に失敗しました</string>
+
+    <string name="bank_card_bind_title">学生銀行カード連携</string>
+    <string name="bank_card_select_bank">銀行を選択してください：</string>
+    <string name="bank_card_no_label">カード番号</string>
+    <string name="bank_card_no_placeholder">カード番号を入力してください</string>
+    <string name="bank_card_bind">連携</string>
+    <string name="bank_card_unbind">解除</string>
+    <string name="bank_card_unbind_confirm_title">解除の確認</string>
+    <string name="bank_card_unbind_confirm_text">この銀行カードの連携を解除しますか？解除後は再度連携しないと利用できません。</string>
+    <string name="bank_card_unbind_confirm_btn">解除する</string>
+    <string name="bank_card_binding">送信中…</string>
+    <string name="bank_card_fetch_failed">銀行カード連携情報の取得に失敗しました</string>
+    <string name="bank_card_no_banks">連携可能な銀行が見つかりません</string>
+    <string name="bank_card_request_failed">操作に失敗しました。後でもう一度お試しください</string>
 </resources>

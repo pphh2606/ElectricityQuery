@@ -22,9 +22,7 @@
     <string name="common_loading">Loading…</string>
     <string name="common_more_options">More</string>
     <string name="common_unknown_error">Unknown error</string>
-    <string name="common_pull_to_retry">Pull down to retry</string>
     <string name="common_no_data">No data</string>
-    <string name="common_please_retry">Please try again later</string>
     <string name="common_swipe_load_more">Swipe up to load more</string>
     <string name="common_search">Search</string>
     <string name="common_share">Share</string>
@@ -54,7 +52,6 @@
     <string name="common_load_failed">Load failed</string>
     <string name="common_enabled">Enabled</string>
     <string name="common_disabled">Disabled</string>
-    <string name="common_re_query">Retry</string>
     <string name="common_copied_to_clipboard">Copied to clipboard</string>
     <string name="common_refresh_failed">Refresh failed</string>
     <string name="common_network_error">Network error, please check your connection</string>

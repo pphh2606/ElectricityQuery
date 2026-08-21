@@ -18,9 +18,4 @@
     <string name="speakup_score_unit">分</string>
     <string name="speakup_message_label">留言</string>
     <string name="speakup_reply_label">答复</string>
-    <string name="speakup_error_fetch_areas">获取咨询区列表失败：%1$s</string>
-    <string name="speakup_error_no_active_role">未找到活跃角色</string>
-    <string name="speakup_error_setup_role">设置角色失败：%1$s</string>
-    <string name="speakup_error_fetch_messages">获取留言列表失败：%1$s</string>
-    <string name="speakup_error_fetch_detail">获取留言详情失败：%1$s</string>
 </resources>

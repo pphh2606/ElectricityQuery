@@ -24,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.login.data.UserAgentProvider
+import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
+import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 
 private const val TAG = "WebViewHost"
@@ -81,6 +83,8 @@ internal fun WebViewHost(
     onDownload: ((String) -> Unit)? = null,
     update: (WebView) -> Unit = {},
 ) {
+    val darkModeEnabled = rememberWebViewDarkModeState()
+
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
@@ -114,6 +118,7 @@ internal fun WebViewHost(
                         super.onPageFinished(view, pageUrl)
                         state.canGoBack = view?.canGoBack() == true
                         onPageFinished(view, pageUrl)
+                        view?.applyWebViewDarkMode(darkModeEnabled.value)
                     }
 
                     override fun onReceivedError(
@@ -217,6 +222,7 @@ internal fun WebViewHost(
             }
         },
         update = { webView ->
+            webView.applyWebViewDarkMode(darkModeEnabled.value)
             update(webView)
         },
         onRelease = { webView ->

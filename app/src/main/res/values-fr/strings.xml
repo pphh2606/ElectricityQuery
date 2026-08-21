@@ -22,9 +22,7 @@
     <string name="common_loading">Chargement…</string>
     <string name="common_more_options">Plus d\'options</string>
     <string name="common_unknown_error">Erreur inconnue</string>
-    <string name="common_pull_to_retry">Tirez vers le bas pour réessayer</string>
     <string name="common_no_data">Aucune donnée</string>
-    <string name="common_please_retry">Veuillez réessayer plus tard</string>
     <string name="common_swipe_load_more">Balayez vers le haut pour charger plus</string>
     <string name="common_search">Rechercher</string>
     <string name="common_share">Partager</string>
@@ -54,7 +52,6 @@
     <string name="common_load_failed">Échec du chargement</string>
     <string name="common_enabled">Activé</string>
     <string name="common_disabled">Désactivé</string>
-    <string name="common_re_query">Re-consulter</string>
     <string name="common_copied_to_clipboard">Copié dans le presse-papiers</string>
     <string name="common_refresh_failed">Échec de l\'actualisation</string>
     <string name="common_network_error">Erreur réseau, vérifiez votre connexion</string>

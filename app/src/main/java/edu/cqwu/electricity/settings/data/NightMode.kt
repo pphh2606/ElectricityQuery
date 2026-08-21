@@ -24,3 +24,10 @@ val NightMode.labelRes: Int
         NightMode.LIGHT -> R.string.settings_night_mode_light
         NightMode.DARK -> R.string.settings_night_mode_dark
     }
+
+/** 根据系统深浅解析该模式最终是否为深色。 */
+fun NightMode.isDark(systemDark: Boolean): Boolean = when (this) {
+    NightMode.SYSTEM -> systemDark
+    NightMode.LIGHT -> false
+    NightMode.DARK -> true
+}

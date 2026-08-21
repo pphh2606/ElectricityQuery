@@ -48,8 +48,6 @@
 
     <string name="feedback_log_loading">(جارٍ تحميل السجلات، يرجى المحاولة لاحقاً)</string>
 
-    <string name="feedback_log_section_crash_buffer">═══ سجل مخزن الأعطال (logcat -b crash) ═══</string>
-
     <string name="crash_report_version_code">رقم الإصدار: %1$s</string>
 
     <string name="crash_report_version_name">اسم الإصدار: %1$s</string>
@@ -57,8 +55,6 @@
     <string name="crash_report_manufacturer">الشركة المصنعة: %1$s</string>
 
     <string name="crash_report_is_main_thread">الخيط الرئيسي: %1$s</string>
-
-    <string name="feedback_share_log">مشاركة السجلات</string>
 
     <string name="crash_report_abi">ABI: %1$s</string>
 

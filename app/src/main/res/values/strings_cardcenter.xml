@@ -85,7 +85,6 @@
     <string name="card_recharge_consume_record">消费记录</string>
     <string name="card_account_info_fetch_failed">获取账户信息失败</string>
     <string name="bill_load_failed">获取账单失败</string>
-    <string name="bill_html_structure_changed">账单页面结构已变更，请更新 App</string>
     <string name="card_bill_status_waiting_pay">等待付款</string>
     <string name="card_bill_status_waiting_other_pay">等待对方付款</string>
     <string name="card_bill_status_success">交易成功</string>
@@ -93,6 +92,21 @@
     <string name="card_bill_status_terminated">交易终止</string>
     <string name="card_bill_status_failed">交易失败</string>
     <string name="card_bill_status_unknown">未知</string>
-    <string name="login_required_open_web">未登录，请先打开原网页完成认证</string>
-    <string name="login_required_auth">未登录，请先完成认证</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  学生绑定银行卡                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="bank_card_bind_title">学生绑定银行卡</string>
+    <string name="bank_card_select_bank">请选择银行：</string>
+    <string name="bank_card_no_label">卡号</string>
+    <string name="bank_card_no_placeholder">请输入卡号</string>
+    <string name="bank_card_bind">绑定</string>
+    <string name="bank_card_unbind">解绑</string>
+    <string name="bank_card_unbind_confirm_title">确认解绑</string>
+    <string name="bank_card_unbind_confirm_text">确定要解绑该银行卡吗？解绑后需重新绑定才能使用。</string>
+    <string name="bank_card_unbind_confirm_btn">确定解绑</string>
+    <string name="bank_card_binding">正在提交…</string>
+    <string name="bank_card_fetch_failed">获取银行卡绑定信息失败</string>
+    <string name="bank_card_request_failed">操作失败，请稍后重试</string>
+    <string name="bank_card_no_banks">未获取到可绑定的银行</string>
 </resources>

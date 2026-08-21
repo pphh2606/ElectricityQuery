@@ -22,9 +22,7 @@
     <string name="common_loading">載入中…</string>
     <string name="common_more_options">更多選項</string>
     <string name="common_unknown_error">未知錯誤</string>
-    <string name="common_pull_to_retry">下拉重新整理重試</string>
     <string name="common_no_data">暫無資料</string>
-    <string name="common_please_retry">請稍後重試</string>
     <string name="common_swipe_load_more">上滑載入更多</string>
     <string name="common_search">搜尋</string>
     <string name="common_share">分享</string>
@@ -54,7 +52,6 @@
     <string name="common_load_failed">載入失敗</string>
     <string name="common_enabled">已啟用</string>
     <string name="common_disabled">已停用</string>
-    <string name="common_re_query">重新查詢</string>
     <string name="common_copied_to_clipboard">已複製到剪貼簿</string>
     <string name="common_refresh_failed">重新整理失敗</string>
     <string name="common_network_error">網路異常，請檢查網路連線</string>

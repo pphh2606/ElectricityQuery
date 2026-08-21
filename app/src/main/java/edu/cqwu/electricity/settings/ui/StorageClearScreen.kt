@@ -2,6 +2,8 @@ package edu.cqwu.electricity.settings.ui
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,12 +57,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.app.MainActivity
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.settings.util.StorageManager
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.system.exitProcess
 
 /**
  * 存储清理项数据模型
@@ -206,6 +210,7 @@ fun StorageClearScreen(
     }
 
     fun doClear() {
+        val needsRestart = hasCautionSelected()
         isClearing = true
         scope.launch {
             try {
@@ -218,7 +223,11 @@ fun StorageClearScreen(
                 }
                 sizes.clear()
                 sizes.putAll(result)
-                snackbar.show(resources.getString(R.string.storage_clear_success), ToastUtils.Type.SUCCESS)
+                if (needsRestart) {
+                    restartApp(context)
+                } else {
+                    snackbar.show(resources.getString(R.string.storage_clear_success), ToastUtils.Type.SUCCESS)
+                }
             } catch (e: Exception) {
                 snackbar.show(resources.getString(R.string.common_clear_failed, e.message ?: ""), ToastUtils.Type.ERROR)
             } finally {
@@ -388,7 +397,8 @@ fun StorageClearScreen(
     if (showConfirmDialog) {
         val selectedNames = getSelectedNames().joinToString("\n• ", prefix = "• ")
         val confirmTitle = stringResource(R.string.storage_clear_confirm_title)
-        val confirmMessage = stringResource(R.string.storage_clear_confirm_message, selectedNames)
+        val confirmMessage = stringResource(R.string.storage_clear_confirm_message, selectedNames) +
+            "\n\n" + stringResource(R.string.storage_clear_confirm_restart)
         val confirmText = stringResource(R.string.storage_clear_confirm_button)
         val cancelText = stringResource(R.string.storage_clear_cancel_button)
 
@@ -491,4 +501,11 @@ private fun StorageItemRow(
             enabled = !isClearing,
         )
     }
+}
+
+private fun restartApp(context: Context) {
+    val intent = Intent(context, MainActivity::class.java)
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    context.startActivity(intent)
+    exitProcess(0)
 }

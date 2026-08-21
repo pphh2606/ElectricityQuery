@@ -32,6 +32,9 @@ class AppSettingsState(
     var nightMode by mutableStateOf(prefs.get(SettingsKeys.NIGHT_MODE))
         private set
 
+    var webviewDarkMode by mutableStateOf(prefs.get(SettingsKeys.WEBVIEW_DARK_MODE))
+        private set
+
     var pureBlack by mutableStateOf(prefs.get(SettingsKeys.PURE_BLACK))
         private set
 
@@ -78,6 +81,11 @@ class AppSettingsState(
     fun updateNightMode(value: NightMode) {
         nightMode = value
         prefs.set(SettingsKeys.NIGHT_MODE, value)
+    }
+
+    fun updateWebviewDarkMode(enabled: Boolean) {
+        webviewDarkMode = enabled
+        prefs.set(SettingsKeys.WEBVIEW_DARK_MODE, enabled)
     }
 
     fun updatePureBlack(enabled: Boolean) {

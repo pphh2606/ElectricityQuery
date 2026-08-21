@@ -61,11 +61,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.settings.data.isDark
+import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
+import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -256,22 +258,16 @@ fun NoticeDetailScreen(
                     )
                 }
                 detail != null -> {
-                    val isDarkMode = when (LocalAppSettingsState.current.nightMode) {
-                        NightMode.SYSTEM -> isSystemInDarkTheme()
-                        NightMode.LIGHT -> false
-                        NightMode.DARK -> true
-                    }
+                    val isDarkMode = LocalAppSettingsState.current.nightMode.isDark(isSystemInDarkTheme())
+                    val webDarkModeEnabled = rememberWebViewDarkModeState()
                     val detailData = detail!!
 
                     if (detailData.noticeContent.isNotBlank()) {
                         val timeDisplay = detailData.sendTimeDesc?.ifBlank { null }
                             ?: detailData.sendTime.take(16)
 
-                        val htmlContent = remember(detailData, isDarkMode) {
-                            buildHtmlPage(
-                                noticeContent = detailData.noticeContent,
-                                isDarkMode = isDarkMode
-                            )
+                        val htmlContent = remember(detailData) {
+                            buildHtmlPage(detailData.noticeContent)
                         }
 
                         // Column + verticalScroll 统一滚动，PullToRefreshBox 可检测下拉
@@ -408,6 +404,7 @@ fun NoticeDetailScreen(
                                                         contentHeightPx = finalHeight
                                                     }
                                                 }, 100)
+                                                view.applyWebViewDarkMode(webDarkModeEnabled.value)
                                             }
                                         }
                                         tag = htmlContent.hashCode()
@@ -421,6 +418,7 @@ fun NoticeDetailScreen(
                                         contentHeightPx = 0 // 重置，重新测量
                                         webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
                                     }
+                                    webView.applyWebViewDarkMode(webDarkModeEnabled.value)
                                 },
                                 onRelease = { webView ->
                                     webView.stopLoading()
@@ -448,60 +446,14 @@ fun NoticeDetailScreen(
 }
 
 /**
- * 构建纯内容 HTML（无标题/元数据，仅正文样式）
+ * 构建纯内容 HTML（无自定义样式，夜间模式由 WebViewDarkMode 统一处理）
  */
-private fun buildHtmlPage(
-    noticeContent: String,
-    isDarkMode: Boolean
-): String {
-    val textColor = if (isDarkMode) "#e0e0e0" else "#333333"
-    val linkColor = if (isDarkMode) "#4dabf7" else "#1976D2"
-    val tableBorder = if (isDarkMode) "#555555" else "#dddddd"
-    val codeBg = if (isDarkMode) "#2d2d2d" else "#f5f5f5"
-
+private fun buildHtmlPage(noticeContent: String): String {
     return """<!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<style>
-body {
-    font-size: 16px; line-height: 1.7; color: $textColor;
-    padding: 0 16px 16px; margin: 0;
-    word-wrap: break-word; overflow-wrap: break-word;
-    overflow-x: hidden;
-}
-/* 透明背景：整体和常见容器 */
-body, div, p, span, table, td, th, li, h1, h2, h3, h4, h5, h6 {
-    background-color: transparent !important;
-}
-/* 强制覆盖服务端内联样式，统一排版 */
-body * {
-    font-size: 16px !important;
-    color: $textColor !important;
-    line-height: 1.7 !important;
-    text-indent: 0 !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: break-word !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-}
-/* 排除 pre/code 背景和字体，保留其样式 */
-pre, code {
-    background: $codeBg !important;
-    padding: 2px 4px; border-radius: 4px;
-    font-family: monospace;
-}
-pre *, code * {
-    font-family: monospace !important;
-}
-img { max-width: 100% !important; height: auto !important; display: block; margin: 8px auto; }
-table { width: 100% !important; border-collapse: collapse; margin: 8px 0; }
-table, th, td { border: 1px solid $tableBorder; padding: 6px 8px; }
-p { margin: 8px 0; }
-a { color: $linkColor; word-break: break-all; }
-video { max-width: 100% !important; height: auto; }
-</style>
 </head>
 <body>
 $noticeContent

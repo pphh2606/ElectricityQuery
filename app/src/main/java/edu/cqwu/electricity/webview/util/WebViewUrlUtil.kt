@@ -38,7 +38,7 @@ object WebViewUrlUtil {
      *
      * 匹配规则：URL 以 "https://authserver.cqwu.edu.cn/authserver/login?service=" 开头。
      *
-     * 当 WebView 最终停留在此类 URL 上时，说明用户未登录（未被自动重定向）。
+     * 当 WebView 最终停留在此类 URL 上时，说明用户未登录。
      * CAS 认证服务器在用户已持有有效 TGC Cookie 时会返回 302 重定向；
      * 否则返回 200 并渲染登录页面 HTML。
      *
@@ -47,13 +47,8 @@ object WebViewUrlUtil {
     fun isCasLoginUrl(url: String): Boolean =
         url.startsWith("https://${DOMAIN_AUTHSERVER}.cqwu.edu.cn/authserver/login?service=")
 
-    /**
-     * 判断是否应跳转本地登录。
-     *
-     * 只有最终停留 CAS 登录页且主框架没有加载错误时才跳转，
-     * 避免断网/DNS 失败时把网络错误误判为未登录。
-     */
-    fun shouldOpenLocalLogin(url: String?, hasMainFrameError: Boolean): Boolean =
+    /** 判断是否应显示未登录遮罩，避免网络错误被误判为未登录。 */
+    fun shouldShowLoginRequired(url: String?, hasMainFrameError: Boolean): Boolean =
         url != null && !hasMainFrameError && isCasLoginUrl(url)
 
     /**

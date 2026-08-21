@@ -66,10 +66,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import edu.cqwu.electricity.network.WebVpnEncoder
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
+import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 import java.io.ByteArrayInputStream
 
@@ -95,6 +98,7 @@ fun UnifiedWebViewScreen(
     onReloadConsumed: () -> Unit = {}
 ) {
     val nav = LocalNavController.current
+    val webDarkModeEnabled = rememberWebViewDarkModeState()
     // Campusphere 提醒：只弹一次
     var campusphereToastShown by remember { mutableStateOf(false) }
 
@@ -108,6 +112,8 @@ fun UnifiedWebViewScreen(
         val isHttpError: Boolean = false
     )
     var webErrorState by remember { mutableStateOf<WebViewError?>(null) }
+    // CAS 登录页停留时显示登录已过期遮罩，不再自动跳转本地登录
+    var loginRequiredOverlayVisible by remember { mutableStateOf(false) }
 
     // 跟踪 WebView 历史栈状态，动态控制 BackHandler
     var canGoBack by remember { mutableStateOf(false) }
@@ -145,9 +151,6 @@ fun UnifiedWebViewScreen(
     // 标记：本地登录成功后需要自动刷新 WebView 当前页
     var needsReloadAfterReturn by remember { mutableStateOf(false) }
 
-    // ═══ CAS 登录检测状态 ═══
-    var pendingLoginNavigation by remember { mutableStateOf(false) }
-
     // ═══ 系统返回键：仅在 WebView 有历史记录时拦截 ═══
     // 当 WebView 已到首页时，enabled=false 让系统接管返回手势，
     // 从而触发 Android 14+ 的预测性返回动画（Predictive Back Gesture），
@@ -159,15 +162,6 @@ fun UnifiedWebViewScreen(
     // 同步 isLoading → isWebViewRefreshing，控制初始加载时顶部旋转指示器的显示/隐藏
     LaunchedEffect(isLoading) {
         isWebViewRefreshing = isLoading
-    }
-
-    // ═══ CAS 登录检测 ═══
-    LaunchedEffect(pendingLoginNavigation) {
-        if (pendingLoginNavigation) {
-            AppLog.d("WebView_DIAG", ">>> CAS登录检测触发，准备跳转到本地登录")
-            pendingLoginNavigation = false
-            nav.navigate(Routes.WEBVIEW_LOGIN)
-        }
     }
 
     LaunchedEffect(reloadAfterLogin) {
@@ -357,12 +351,8 @@ fun UnifiedWebViewScreen(
                             settings.displayZoomControls = true
                             settings.userAgentString = edu.cqwu.electricity.login.data.UserAgentProvider.getActiveUserAgent()
 
-                            fun maybeRedirectToLocalLogin(view: WebView?, url: String?) {
-                                if (!WebViewUrlUtil.shouldOpenLocalLogin(url, webErrorState != null)) return
-                                if (pendingLoginNavigation) return
-                                pendingLoginNavigation = true
-                                AppLog.d("WebView_DIAG", ">>> 检测到CAS登录页已提交，准备跳转到本地登录")
-                                view?.stopLoading()
+                            fun updateLoginRequiredOverlay(url: String?) {
+                                loginRequiredOverlayVisible = WebViewUrlUtil.shouldShowLoginRequired(url, webErrorState != null)
                             }
 
                             webViewClient = object : WebViewClient() {
@@ -371,6 +361,7 @@ fun UnifiedWebViewScreen(
                                     AppLog.d("WebView_DIAG", "onPageStarted: $url")
                                     isLoading = true
                                     webErrorState = null  // 新页面开始加载时清除错误状态
+                                    loginRequiredOverlayVisible = false
                                     canGoBack = view?.canGoBack() == true
 
                                     // ═══ campusphere.net 域名检测（仅一次） ═══
@@ -402,19 +393,12 @@ fun UnifiedWebViewScreen(
                                     }
                                 }
 
-                                override fun onPageCommitVisible(view: WebView?, url: String?) {
-                                    super.onPageCommitVisible(view, url)
-                                    maybeRedirectToLocalLogin(view, url)
-                                }
-
                                 override fun onPageFinished(view: WebView?, url: String?) {
                                     super.onPageFinished(view, url)
                                     AppLog.d("WebView_DIAG", "onPageFinished: $url")
                                     isLoading = false
                                     canGoBack = view?.canGoBack() == true
-                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                                        maybeRedirectToLocalLogin(view, url)
-                                    }
+                                    updateLoginRequiredOverlay(url)
 
                                     // 注入 JS 强制启用缩放：
                                     // 1. 移除页面的 user-scalable=no 限制
@@ -435,6 +419,7 @@ fun UnifiedWebViewScreen(
                                             ));
                                             document.head.appendChild(style);
                                         })()""", null)
+                                    view?.applyWebViewDarkMode(webDarkModeEnabled.value)
                                 }
 
                                 override fun onReceivedError(
@@ -458,6 +443,7 @@ fun UnifiedWebViewScreen(
                                             } ?: context.getString(R.string.common_unknown_error)
                                         AppLog.w("WebView_DIAG", ">>> 主框架加载错误: code=$code, desc=$desc")
                                         isLoading = false
+                                        loginRequiredOverlayVisible = false
                                         webErrorState = WebViewError(
                                             errorCode = code,
                                             description = desc
@@ -475,6 +461,7 @@ fun UnifiedWebViewScreen(
                                     if (request?.isForMainFrame == true && statusCode >= 400 && webErrorState == null) {
                                         AppLog.w("WebView_DIAG", ">>> HTTP 错误: statusCode=$statusCode")
                                         isLoading = false
+                                        loginRequiredOverlayVisible = false
                                         webErrorState = WebViewError(
                                             errorCode = statusCode,
                                             description = "HTTP $statusCode",
@@ -603,6 +590,7 @@ fun UnifiedWebViewScreen(
                         onReloadConsumed()
                         webView?.reload()
                     }
+                    webView?.applyWebViewDarkMode(webDarkModeEnabled.value)
                 }
             )
 
@@ -643,11 +631,20 @@ fun UnifiedWebViewScreen(
                     },
                     onNetworkSettings = {
                         try {
-                            context.startActivity(Intent(android.provider.Settings.ACTION_WIFI_SETTINGS))
+                            context.startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
                         } catch (_: ActivityNotFoundException) {
                             snackbar.show(resources.getString(R.string.webview_cannot_open_network_settings), ToastUtils.Type.ERROR)
                         }
                     }
+                )
+            }
+
+            // ═══ 登录已过期遮罩 ═══
+            if (loginRequiredOverlayVisible) {
+                ReLoginContent(
+                    requiresReLogin = true,
+                    onReLogin = { nav.navigate(Routes.WEBVIEW_LOGIN) },
+                    consumeTouches = true,
                 )
             }
         } // end Box (WebView 内容区)

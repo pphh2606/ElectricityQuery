@@ -88,15 +88,9 @@
     <string name="card_recharge_record">Enregistrements</string>
     <string name="card_recharge_consume_record">Dépenses</string>
 
-    <string name="bill_html_structure_changed">La structure de la page de factures a changé, veuillez mettre à jour l\'application</string>
-
     <string name="bill_load_failed">Échec du chargement des factures</string>
 
-    <string name="login_required_auth">Non connecté, veuillez d\'abord vous authentifier</string>
-
     <string name="card_bill_status_unknown">Inconnu</string>
-
-    <string name="login_required_open_web">Non connecté, veuillez ouvrir la page d\'origine pour vous authentifier</string>
 
     <string name="card_bill_status_terminated">Transaction interrompue</string>
 
@@ -111,4 +105,18 @@
     <string name="card_bill_status_success">Transaction réussie</string>
 
     <string name="card_account_info_fetch_failed">Échec de la récupération des informations du compte</string>
+
+    <string name="bank_card_bind_title">Liaison de carte bancaire étudiante</string>
+    <string name="bank_card_select_bank">Sélectionnez une banque :</string>
+    <string name="bank_card_no_label">Numéro de carte</string>
+    <string name="bank_card_no_placeholder">Saisissez le numéro de carte</string>
+    <string name="bank_card_bind">Lier</string>
+    <string name="bank_card_unbind">Délier</string>
+    <string name="bank_card_unbind_confirm_title">Confirmer la dissociation</string>
+    <string name="bank_card_unbind_confirm_text">Voulez-vous vraiment délier cette carte bancaire ? Vous devrez la relier de nouveau pour l\'utiliser.</string>
+    <string name="bank_card_unbind_confirm_btn">Confirmer la dissociation</string>
+    <string name="bank_card_binding">Envoi en cours…</string>
+    <string name="bank_card_fetch_failed">Échec du chargement des informations de liaison de carte bancaire</string>
+    <string name="bank_card_no_banks">Aucune banque à lier n\'est disponible</string>
+    <string name="bank_card_request_failed">Échec de l\'opération, veuillez réessayer plus tard</string>
 </resources>

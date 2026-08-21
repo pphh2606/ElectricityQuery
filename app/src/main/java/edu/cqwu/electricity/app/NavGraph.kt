@@ -17,6 +17,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.ui.AccountInfoScreen
+import edu.cqwu.electricity.cardcenter.ui.BankCardBindScreen
+import edu.cqwu.electricity.cardcenter.ui.BankCardBindViewModel
 import edu.cqwu.electricity.cardcenter.ui.BillScreen
 import edu.cqwu.electricity.cardcenter.ui.BillViewModel
 import edu.cqwu.electricity.cardcenter.ui.CardCenterScreen
@@ -85,6 +88,8 @@ import edu.cqwu.electricity.speakup.ui.MessageListScreen
 import edu.cqwu.electricity.speakup.ui.SpeakUpScreen
 import edu.cqwu.electricity.theme.ui.AppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.theme.ui.LocalWebViewReloadAfterLogin
+import edu.cqwu.electricity.theme.ui.LocalWebViewReloadConsumed
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.ui.UnifiedWebViewScreen
@@ -125,6 +130,9 @@ object Routes {
 
     /** 卡中心本地 UI 页面 */
     const val CARD_CENTER = "card_center"
+
+    /** 学生绑定银行卡本地 UI 页面 */
+    const val BANK_CARD_BIND = "bank_card_bind"
 
     /** 校园卡充值 — 学号输入+金额选择页面 */
     const val CARD_RECHARGE = "card_recharge"
@@ -368,6 +376,8 @@ fun AppNavGraph(
                     navController.navigate(Routes.qrCodeRoute(QrCodeType.PAY))
                 edu.cqwu.electricity.home.data.HomeAppIds.BUS_QR ->
                     navController.navigate(Routes.qrCodeRoute(QrCodeType.BUS))
+                edu.cqwu.electricity.home.data.HomeAppIds.BANK_CARD_BIND ->
+                    navController.navigate(Routes.BANK_CARD_BIND)
                 edu.cqwu.electricity.home.data.HomeAppIds.DORM_ELECTRICITY ->
                     navController.navigate(Routes.ELECTRICITY_MAIN)
                 edu.cqwu.electricity.home.data.HomeAppIds.CARD_CENTER ->
@@ -390,11 +400,15 @@ fun AppNavGraph(
         }
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = Routes.MAIN_TABS,
-        modifier = modifier,
+    CompositionLocalProvider(
+        LocalWebViewReloadAfterLogin provides webViewReloadAfterLogin,
+        LocalWebViewReloadConsumed provides { webViewReloadAfterLogin = false },
     ) {
+        NavHost(
+            navController = navController,
+            startDestination = Routes.MAIN_TABS,
+            modifier = modifier,
+        ) {
         // 主页 Tab 容器（HorizontalPager：首页 + 我的）
         animatedComposable(settings = appSettings, route = Routes.MAIN_TABS) {
             MainTabScreen()
@@ -434,6 +448,16 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() },
                 onNavigateToQrCode = { type -> navController.navigate(Routes.qrCodeRoute(type)) },
                 onNavigateToCardRecharge = { navController.navigate(Routes.CARD_RECHARGE) { launchSingleTop = true } },
+            )
+        }
+
+        // 学生绑定银行卡
+        animatedComposable(settings = appSettings, route = Routes.BANK_CARD_BIND) {
+            val bankCardBindViewModel: BankCardBindViewModel = viewModel()
+            BankCardBindScreen(
+                viewModel = bankCardBindViewModel,
+                onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
             )
         }
 
@@ -527,16 +551,16 @@ fun AppNavGraph(
             )
         }
 
-        // WebView 专用本地登录：返回时同时关闭登录页和 WebView，登录成功后刷新 WebView
-        animatedComposable(settings = appSettings, route = Routes.WEBVIEW_LOGIN) {
-            LoginScreen(
-                onBack = { navController.popBackStack(Routes.UNIFIED_WEBVIEW, true) },
-                onLoginSuccess = {
-                    webViewReloadAfterLogin = true
-                    navController.popBackStack()
-                },
-            )
-        }
+            // WebView 专用本地登录：返回时只退回 WebView，登录成功后刷新 WebView
+            animatedComposable(settings = appSettings, route = Routes.WEBVIEW_LOGIN) {
+                LoginScreen(
+                    onBack = { navController.popBackStack() },
+                    onLoginSuccess = {
+                        webViewReloadAfterLogin = true
+                        navController.popBackStack()
+                    },
+                )
+            }
 
         animatedComposable(settings = appSettings, route = Routes.ELECTRICITY_MAIN) {
             ElectricityMainScreen(
@@ -804,6 +828,7 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.LOGIN) },
             )
+        }
         }
     }
 }

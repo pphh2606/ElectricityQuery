@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.DropdownMenu
@@ -106,7 +107,7 @@ internal fun AppScaledDropdownMenu(
     offset: DpOffset = DpOffset(0.dp, 0.dp),
     scrollState: ScrollState = rememberScrollState(),
     properties: PopupProperties = PopupProperties(focusable = true),
-    shape: Shape = MenuDefaults.shape,
+    shape: Shape = RoundedCornerShape(12.dp),
     containerColor: Color = MenuDefaults.containerColor,
     tonalElevation: Dp = MenuDefaults.TonalElevation,
     shadowElevation: Dp = MenuDefaults.ShadowElevation,

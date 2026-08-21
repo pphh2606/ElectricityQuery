@@ -612,6 +612,11 @@ private fun handleAppClick(
         nav.navigate(Routes.qrCodeRoute(QrCodeType.BUS))
         return
     }
+    // 学生绑定银行卡 → 打开原生银行卡绑定页
+    if (app.appId == HomeAppIds.BANK_CARD_BIND) {
+        nav.navigate(Routes.BANK_CARD_BIND)
+        return
+    }
     // 学生宿舍电费充值 → 打开原生电费查询
     if (app.appId == HomeAppIds.DORM_ELECTRICITY) {
         nav.navigate(Routes.ELECTRICITY_MAIN)

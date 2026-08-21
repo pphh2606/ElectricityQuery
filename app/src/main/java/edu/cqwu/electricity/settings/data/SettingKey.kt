@@ -119,6 +119,11 @@ object SettingsKeys {
         encode = { it.value },
     )
 
+    val WEBVIEW_DARK_MODE = booleanSetting(
+        name = "webview_dark_mode",
+        default = true,
+    )
+
     val PURE_BLACK = booleanSetting(
         name = "pure_black",
         default = false,

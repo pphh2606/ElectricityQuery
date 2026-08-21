@@ -43,8 +43,6 @@
 
     <string name="feedback_log_loading">(ログを読み込み中です。後でもう一度お試しください)</string>
 
-    <string name="feedback_log_section_crash_buffer">═══ クラッシュバッファログ (logcat -b crash) ═══</string>
-
     <string name="crash_report_version_code">バージョンコード: %1$s</string>
 
     <string name="crash_report_version_name">バージョン名: %1$s</string>
@@ -52,8 +50,6 @@
     <string name="crash_report_manufacturer">メーカー: %1$s</string>
 
     <string name="crash_report_is_main_thread">メインスレッド: %1$s</string>
-
-    <string name="feedback_share_log">ログを共有</string>
 
     <string name="crash_report_abi">ABI: %1$s</string>
 

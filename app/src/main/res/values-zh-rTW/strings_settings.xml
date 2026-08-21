@@ -21,6 +21,8 @@
     <string name="personalization_night_mode">夜間模式</string>
     <string name="personalization_pure_black">純黑背景</string>
     <string name="personalization_pure_black_desc">深色模式下使用純黑背景</string>
+    <string name="personalization_webview_dark_mode">網頁深色模式</string>
+    <string name="personalization_webview_dark_mode_desc">開啟後網頁跟隨應用夜間設定</string>
     <string name="personalization_font_scale">字型大小</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">預設</string>
@@ -132,6 +134,7 @@
     <string name="storage_clear_button">清除選取項目</string>
     <string name="storage_clear_confirm_title">確認清除</string>
     <string name="storage_clear_confirm_message">以下資料將被永久清除：\n%1$s\n\n此操作無法復原，是否繼續？</string>
+    <string name="storage_clear_confirm_restart">清除完成後將自動重新啟動應用程式。</string>
     <string name="storage_clear_confirm_button">清除</string>
     <string name="storage_clear_cancel_button">取消</string>
     <string name="storage_clear_success">清除完成</string>
