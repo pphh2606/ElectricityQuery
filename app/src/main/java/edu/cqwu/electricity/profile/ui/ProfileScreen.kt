@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -291,6 +292,11 @@ fun ProfilePageContent(
                         icon = Icons.AutoMirrored.Outlined.AddToHomeScreen,
                         title = stringResource(R.string.profile_add_shortcut),
                         onClick = { nav.navigate(Routes.ADD_SHORTCUT) },
+                    )
+                    ProfileEntry(
+                        icon = Icons.Outlined.PersonSearch,
+                        title = stringResource(R.string.person_search_title),
+                        onClick = { nav.navigate(Routes.PERSON_SEARCH) },
                     )
                 }
             }

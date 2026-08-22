@@ -21,8 +21,6 @@
     <string name="personalization_night_mode">ダークモード</string>
     <string name="personalization_pure_black">純黒背景</string>
     <string name="personalization_pure_black_desc">ダークモードで純黒背景を使用</string>
-    <string name="personalization_webview_dark_mode">ウェブダークモード</string>
-    <string name="personalization_webview_dark_mode_desc">有効にすると、ウェブページはアプリのダークモード設定に従います</string>
     <string name="personalization_font_scale">文字サイズ</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">デフォルト</string>

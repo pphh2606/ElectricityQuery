@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  查找人员                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="person_search_title">查找人员</string>
+    <string name="person_search_button">搜索</string>
+    <string name="person_search_hint">输入姓名或学号搜索</string>
+    <string name="person_no_result">未找到相关人员</string>
+    <string name="person_no_more">没有更多了</string>
+    <plurals name="person_search_total_count">
+        <item quantity="other">共搜索到 %1$d 人</item>
+    </plurals>
+    <string name="person_page_info">第 %1$d/%2$d 页</string>
+</resources>

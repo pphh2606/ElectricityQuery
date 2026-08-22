@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -17,14 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import edu.cqwu.electricity.settings.data.AppLanguage
+import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.settings.util.LocaleContextWrapper
 import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.theme.ui.AppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.电费查询Theme
+import edu.cqwu.electricity.theme.ui.toAppCompatMode
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     // 快捷方式状态：onNewIntent 时更新，Compose 自动重组
     private val _shortcutAppInfo = mutableStateOf<ShortcutHelper.ShortcutAppInfo?>(null)
@@ -40,6 +43,9 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(
+            SettingsPreferences(this).get(SettingsKeys.NIGHT_MODE).toAppCompatMode()
+        )
         super.onCreate(savedInstanceState)
         // 启用边到边绘制（内容延伸到系统栏后方）
         // 系统栏图标颜色由 Compose 层的 Theme.kt 中的 SideEffect 动态管理

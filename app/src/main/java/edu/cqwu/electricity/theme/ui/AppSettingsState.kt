@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.theme.ui
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,9 +31,6 @@ class AppSettingsState(
     private val prefs: SettingsPreferences,
 ) {
     var nightMode by mutableStateOf(prefs.get(SettingsKeys.NIGHT_MODE))
-        private set
-
-    var webviewDarkMode by mutableStateOf(prefs.get(SettingsKeys.WEBVIEW_DARK_MODE))
         private set
 
     var pureBlack by mutableStateOf(prefs.get(SettingsKeys.PURE_BLACK))
@@ -81,11 +79,7 @@ class AppSettingsState(
     fun updateNightMode(value: NightMode) {
         nightMode = value
         prefs.set(SettingsKeys.NIGHT_MODE, value)
-    }
-
-    fun updateWebviewDarkMode(enabled: Boolean) {
-        webviewDarkMode = enabled
-        prefs.set(SettingsKeys.WEBVIEW_DARK_MODE, enabled)
+        AppCompatDelegate.setDefaultNightMode(value.toAppCompatMode())
     }
 
     fun updatePureBlack(enabled: Boolean) {
@@ -165,6 +159,12 @@ class AppSettingsState(
             ThemeColorSource.Custom(Color(prefs.get(SettingsKeys.SEED_COLOR)))
         }
     }
+}
+
+internal fun NightMode.toAppCompatMode(): Int = when (this) {
+    NightMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    NightMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+    NightMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
 }
 
 val LocalAppSettingsState = staticCompositionLocalOf<AppSettingsState> {

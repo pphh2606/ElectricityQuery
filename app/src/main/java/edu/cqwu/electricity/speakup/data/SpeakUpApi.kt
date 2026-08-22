@@ -78,10 +78,6 @@ class SpeakUpApi {
                         "Referer",
                         "https://ehall.cqwu.edu.cn/qljfwappnew/sys/lwPsZxzxApp/*default/index.do"
                     )
-                    .header(
-                        "User-Agent",
-                        "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36"
-                    )
                     .build()
 
                 AppLog.d(TAG, "[fetchConsultationAreas] POST $GET_ZXQ_URL")
@@ -131,7 +127,6 @@ class SpeakUpApi {
                 .post(rolesBody)
                 .header("X-Requested-With", "XMLHttpRequest")
                 .header("Referer", EHALL_APP_URL)
-                .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
             val rolesResponse = client.newCall(rolesRequest).execute()
@@ -153,7 +148,6 @@ class SpeakUpApi {
                 .post(setupBody)
                 .header("X-Requested-With", "XMLHttpRequest")
                 .header("Referer", EHALL_APP_URL)
-                .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
             val setupResponse = client.newCall(setupRequest).execute()
@@ -201,7 +195,6 @@ class SpeakUpApi {
                 .post(formBody)
                 .header("X-Requested-With", "XMLHttpRequest")
                 .header("Referer", EHALL_APP_URL)
-                .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
             AppLog.d(TAG, "[fetchMessages] POST $GET_ZXXX_URL (area=$areaCode, page=$pageNumber)")
@@ -244,7 +237,6 @@ class SpeakUpApi {
                 .post(formBody)
                 .header("X-Requested-With", "XMLHttpRequest")
                 .header("Referer", EHALL_APP_URL)
-                .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
             AppLog.d(TAG, "[fetchMessageDetail] POST $GET_ZXXX_URL (WID=$wid)")

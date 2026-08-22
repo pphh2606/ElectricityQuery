@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  بحث الأفراد                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="person_search_title">البحث عن الأشخاص</string>
+    <string name="person_search_button">بحث</string>
+    <string name="person_search_hint">ابحث بالاسم أو رقم الطالب</string>
+    <string name="person_no_result">لم يتم العثور على أشخاص</string>
+    <string name="person_no_more">لا يوجد المزيد</string>
+    <plurals name="person_search_total_count">
+        <item quantity="other">تم العثور على %1$d شخصًا</item>
+    </plurals>
+    <string name="person_page_info">الصفحة %1$d/%2$d</string>
+</resources>

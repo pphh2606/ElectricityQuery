@@ -86,6 +86,7 @@ import edu.cqwu.electricity.shortcut.ui.AddShortcutScreen
 import edu.cqwu.electricity.speakup.ui.MessageDetailScreen
 import edu.cqwu.electricity.speakup.ui.MessageListScreen
 import edu.cqwu.electricity.speakup.ui.SpeakUpScreen
+import edu.cqwu.electricity.person.ui.PersonSearchScreen
 import edu.cqwu.electricity.theme.ui.AppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalWebViewReloadAfterLogin
@@ -240,6 +241,9 @@ object Routes {
     fun speakUpDetailRoute(wid: String): String {
         return "speak_up_detail/$wid"
     }
+
+    /** 查找人员（原生页面） */
+    const val PERSON_SEARCH = "person_search"
 }
 
 /** 从动画设置生成过渡 EnterTransition */
@@ -775,6 +779,14 @@ fun AppNavGraph(
         animatedComposable(settings = appSettings, route = Routes.ADD_SHORTCUT) {
             AddShortcutScreen(
                 onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 查找人员页面
+        animatedComposable(settings = appSettings, route = Routes.PERSON_SEARCH) {
+            PersonSearchScreen(
+                onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.LOGIN) },
             )
         }
 

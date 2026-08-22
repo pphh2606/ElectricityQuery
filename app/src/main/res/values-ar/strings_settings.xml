@@ -21,8 +21,6 @@
     <string name="personalization_night_mode">الوضع الليلي</string>
     <string name="personalization_pure_black">خلفية سوداء نقية</string>
     <string name="personalization_pure_black_desc">استخدم خلفية سوداء نقية في الوضع الداكن</string>
-    <string name="personalization_webview_dark_mode">الوضع الداكن للويب</string>
-    <string name="personalization_webview_dark_mode_desc">عند التفعيل، تتبع صفحات الويب الوضع الليلي للتطبيق</string>
     <string name="personalization_font_scale">حجم الخط</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">افتراضي</string>

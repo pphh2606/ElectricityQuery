@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Person Search                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="person_search_title">Find People</string>
+    <string name="person_search_button">Search</string>
+    <string name="person_search_hint">Search by name or ID</string>
+    <string name="person_no_result">No person found</string>
+    <string name="person_no_more">No more results</string>
+    <plurals name="person_search_total_count">
+        <item quantity="other">%1$d people found</item>
+    </plurals>
+    <string name="person_page_info">Page %1$d/%2$d</string>
+</resources>

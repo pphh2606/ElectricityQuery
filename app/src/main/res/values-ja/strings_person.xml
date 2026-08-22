@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  人員検索                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="person_search_title">人員を探す</string>
+    <string name="person_search_button">検索</string>
+    <string name="person_search_hint">名前または学籍番号で検索</string>
+    <string name="person_no_result">該当する人が見つかりません</string>
+    <string name="person_no_more">これ以上ありません</string>
+    <plurals name="person_search_total_count">
+        <item quantity="other">%1$d 人見つかりました</item>
+    </plurals>
+    <string name="person_page_info">%1$d/%2$d ページ</string>
+</resources>

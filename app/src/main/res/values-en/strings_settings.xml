@@ -21,8 +21,6 @@
     <string name="personalization_night_mode">Night Mode</string>
     <string name="personalization_pure_black">Pure Black Background</string>
     <string name="personalization_pure_black_desc">Use a pure black background in dark mode</string>
-    <string name="personalization_webview_dark_mode">Web Dark Mode</string>
-    <string name="personalization_webview_dark_mode_desc">When enabled, web pages follow the app\'s night mode setting</string>
     <string name="personalization_font_scale">Font Size</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">Default</string>

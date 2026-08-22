@@ -15,9 +15,7 @@ import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 internal fun shouldApplyWebViewDarkMode(
     nightMode: NightMode,
     systemDark: Boolean,
-    webviewDarkMode: Boolean,
 ): Boolean {
-    if (!webviewDarkMode) return false
     return nightMode.isDark(systemDark)
 }
 
@@ -28,7 +26,6 @@ internal fun rememberWebViewDarkModeState(): State<Boolean> {
         shouldApplyWebViewDarkMode(
             nightMode = settings.nightMode,
             systemDark = isSystemInDarkTheme(),
-            webviewDarkMode = settings.webviewDarkMode,
         )
     )
 }

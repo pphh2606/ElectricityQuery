@@ -45,7 +45,6 @@ class HallSearchApi {
                 .get()
                 .header("X-Requested-With", "XMLHttpRequest")
                 .header("Referer", "https://ehall.cqwu.edu.cn/new/index.html?browser=no")
-                .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36")
                 .build()
 
             AppLog.d("HallSearchApi", "GET $url")

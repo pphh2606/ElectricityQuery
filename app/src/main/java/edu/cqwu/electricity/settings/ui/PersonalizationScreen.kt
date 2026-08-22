@@ -36,7 +36,6 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.TextFields
-import androidx.compose.material.icons.outlined.Web
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -133,13 +132,6 @@ fun PersonalizationScreen(
                         icon = Icons.Outlined.Contrast, title = stringResource(R.string.personalization_night_mode),
                         subtitle = stringResource(appSettings.nightMode.labelRes),
                         onClick = { showNightModeDialog = true },
-                    )
-                    SettingsSwitchEntry(
-                        icon = Icons.Outlined.Web,
-                        title = stringResource(R.string.personalization_webview_dark_mode),
-                        subtitle = stringResource(R.string.personalization_webview_dark_mode_desc),
-                        checked = appSettings.webviewDarkMode,
-                        onCheckedChange = appSettings::updateWebviewDarkMode,
                     )
                     SettingsSwitchEntry(
                         icon = Icons.Outlined.DarkMode,

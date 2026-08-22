@@ -1,19 +1,10 @@
 ## 新增功能
-- 首页新增“学生绑定银行卡”入口，用户可在原生页面选择银行、输入卡号绑定或解绑。新增 `BankCardBindApi`、`BankCardBindViewModel`、`BankCardBindScreen`，API 复用 CAS/EPay 会话并解析银行列表、`checkexist` JSON 与绑定结果 HTML，界面用 `StateFlow` 管理加载、提交、登录过期等状态。
-- 设置新增“网页深色模式”开关，内置网页会跟随应用夜间设置显示深色。新增 `WebViewDarkMode` 工具，Android 10+ 使用 `setForceDark`/`setAlgorithmicDarkeningAllowed`，旧版本注入深色 CSS，并在页面加载及设置变化时应用到整页与底部弹窗 WebView。
-- WebView 停在 CAS 登录页时改为显示“重新登录”遮罩，点击后再进入本地登录，返回后自动刷新页面。`UnifiedWebViewScreen` 和 `WebViewBottomSheet` 使用可消费触摸的 `ReLoginContent(consumeTouches = true)` 覆盖层，登录刷新信号通过 `LocalWebViewReloadAfterLogin` 跨页面传递。
-- 存储清理页面会提示清理后自动重启，并在清除需要重启的数据后自动重启应用。`StorageClearScreen` 新增 `restartApp()`，以 `FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK` 启动 `MainActivity` 后调用 `exitProcess(0)`。
-- 下拉菜单圆角统一为 12dp。`AppScaledDropdownMenu` 默认 `shape` 改为 `RoundedCornerShape(12.dp)`，与应用内弹窗风格保持一致。
-## Bug 修复
-- 修复登录页在加载中按返回键被拦截的问题，系统返回键现在可直接退出登录页。移除 `LoginScreen` 中的 `BackHandler`，避免登录请求期间误触返回造成状态丢失或返回栈异常。
-- 修复部分设备无法打开 WebView 网络设置的问题，网络设置入口统一使用兼容性更广的 `Settings.ACTION_WIRELESS_SETTINGS`。
-- 修复通知详情在深色模式下的排版与改色问题，改为复用统一的 WebView 深色模式。`NoticeDetailScreen` 移除硬编码内联 CSS 与 `!important` 覆盖，补齐 `<meta charset="utf-8">`，避免服务端内容样式被强制改写。
-- 修复底部弹窗 WebView 在本地登录成功后不刷新的问题。`WebViewBottomSheet` 现在消费 `LocalWebViewReloadAfterLogin` 并调用 `webViewState.reload()` 刷新当前页面。
+- 新增「查找人员」模块：在"我的"页面增加入口，可按姓名或学号关键字搜索校内人员，分页浏览搜索结果。通过 `PersonSearchApi` 调用 ehall 通用人员选择组件 `choose_person.do` 接口，复用 `ServiceLoginManager.ensureLogin` 完成 CAS 会话初始化；`PersonSearchViewModel` 以 StateFlow 管理 Idle/Loading/Success/Error 状态，用搜索代数（generation）机制丢弃过期请求，支持滚动到底自动加载下一页与下拉刷新；`PersonSearchScreen` 提供下划线样式搜索条、人员卡片与结果统计行，并在 `NavGraph` 注册 `person_search` 路由。
+- 新增「查找人员」界面的多语言文案：新增六套 `strings_person.xml` 资源，覆盖搜索提示、结果统计、分页与空状态等文案。
 ## 架构改进
-- 夜间模式判断统一为扩展函数。新增 `NightMode.isDark(systemDark)`，`Theme`、`NoticeDetailScreen` 等页面复用该函数解析 SYSTEM/LIGHT/DARK 的最终深浅色，消除重复判断逻辑。
-- WebView 登录刷新状态提升为导航级共享状态。`NavGraph` 用 `CompositionLocalProvider` 提供 `LocalWebViewReloadAfterLogin` 与 `LocalWebViewReloadConsumed`，整页 WebView 与底部弹窗 WebView 共用同一套“登录后刷新”协议。
-- 通知详情 HTML 改为无自定义样式的纯内容页。`buildHtmlPage()` 只负责正文与字符集，深浅色统一交给 `WebViewDarkMode` 处理，降低内容展示与主题的耦合。
-- 登录过期识别从自动跳转改为状态判断。`WebViewUrlUtil.shouldShowLoginRequired()` 只判断“最终停留 CAS 登录页且无主框架错误”，避免断网、DNS 等错误被误判为未登录。
-## 资源清理
-- 清理不再使用的多语言资源。`strings.xml`、`strings_cardcenter.xml`、`strings_feedback.xml`、`strings_speakup.xml` 中旧的通用重试、账单结构提示、旧登录提示、反馈日志与留言错误文案在各语言目录同步移除。
-- 新增学生绑卡与网页深色模式的多语言文案。`strings_cardcenter.xml` 补齐 `bank_card_*` 资源，`strings_settings.xml` 新增 `personalization_webview_dark_mode*` 和存储清理重启提示。
+- 应用夜间模式改为全局即时生效：启动时与运行中切换时都会通过 `AppCompatDelegate.setDefaultNightMode()` 把夜间模式设置应用到整个 Activity。`MainActivity` 由 `ComponentActivity` 改为 `AppCompatActivity`，在 `onCreate` 中读取 `NIGHT_MODE` 设置先行应用，新增 `NightMode.toAppCompatMode()` 将 SYSTEM/LIGHT/DARK 映射为 `MODE_NIGHT_FOLLOW_SYSTEM`/`MODE_NIGHT_NO`/`MODE_NIGHT_YES`，`updateNightMode()` 切换时同步调用。
+- 窗口主题切换为基于 AppCompat 的 DayNight 主题以配合夜间模式联动：四套主题资源（`values`、`values-night`、`values-v23`、`values-night-v23`）中 `Theme.电费查询` 的父主题统一由 `android:Theme.Material.Light/NoActionBar` 换成 `Theme.AppCompat.DayNight.NoActionBar`，使 Activity 层能够响应 `setDefaultNightMode` 引发的深浅色重建。
+- 移除「网页深色模式」独立开关：网页深色现在直接由应用夜间模式推导，无需单独开启。删除 `WEBVIEW_DARK_MODE` 设置键、`AppSettingsState.webviewDarkMode` 状态与 `updateWebviewDarkMode()`，`shouldApplyWebViewDarkMode()` 只依据 `nightMode.isDark(systemDark)` 判断，并同步移除设置页开关入口与全部语言的对应文案，简化设置项模型。
+- 移除网络请求中硬编码的 User-Agent 头：`HallFavoriteApi`、`HallSearchApi`、`SpeakUpApi` 不再为每个请求手工指定固定的 Android Chrome UA，统一交由 OkHttp 客户端提供默认 UA，减少请求头样板代码与维护成本。
+## 依赖变更
+- 新增 AndroidX AppCompat 依赖以支持 DayNight 主题与夜间模式联动：版本目录 `gradle/libs.versions.toml` 新增 `appcompat = "1.6.1"` 版本与 `androidx-appcompat` 库条目，`app/build.gradle.kts` 添加 `implementation(libs.androidx.appcompat)`。

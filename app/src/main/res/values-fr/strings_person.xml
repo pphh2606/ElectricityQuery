@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Recherche de personnes                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="person_search_title">Trouver des personnes</string>
+    <string name="person_search_button">Rechercher</string>
+    <string name="person_search_hint">Rechercher par nom ou numéro d’étudiant</string>
+    <string name="person_no_result">Aucune personne trouvée</string>
+    <string name="person_no_more">Pas d’autres résultats</string>
+    <plurals name="person_search_total_count">
+        <item quantity="other">%1$d personnes trouvées</item>
+    </plurals>
+    <string name="person_page_info">Page %1$d/%2$d</string>
+</resources>

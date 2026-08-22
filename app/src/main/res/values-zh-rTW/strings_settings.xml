@@ -21,8 +21,6 @@
     <string name="personalization_night_mode">夜間模式</string>
     <string name="personalization_pure_black">純黑背景</string>
     <string name="personalization_pure_black_desc">深色模式下使用純黑背景</string>
-    <string name="personalization_webview_dark_mode">網頁深色模式</string>
-    <string name="personalization_webview_dark_mode_desc">開啟後網頁跟隨應用夜間設定</string>
     <string name="personalization_font_scale">字型大小</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">預設</string>
