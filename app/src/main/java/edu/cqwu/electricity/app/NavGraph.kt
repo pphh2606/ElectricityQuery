@@ -1,5 +1,4 @@
 package edu.cqwu.electricity.app
-import edu.cqwu.electricity.logging.AppLog
 
 import android.os.Build
 import androidx.compose.animation.AnimatedContentScope
@@ -59,9 +58,6 @@ import edu.cqwu.electricity.electricity.ui.RechargeRecordScreen
 import edu.cqwu.electricity.electricity.ui.RechargeViewModel
 import edu.cqwu.electricity.feedback.ui.FeedbackScreen
 import edu.cqwu.electricity.feeservicehall.ui.FeeServiceHallScreen
-import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.SessionManager
-import edu.cqwu.electricity.login.data.SessionValidationResult
 import edu.cqwu.electricity.login.ui.LoginScreen
 import edu.cqwu.electricity.login.ui.QrLoginScreen
 import edu.cqwu.electricity.notice.ui.NoticeDetailScreen
@@ -91,11 +87,7 @@ import edu.cqwu.electricity.theme.ui.AppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalWebViewReloadAfterLogin
 import edu.cqwu.electricity.theme.ui.LocalWebViewReloadConsumed
-import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.ui.UnifiedWebViewScreen
-
-private var startupCookieValidationDone = false
 
 /**
  * 路由定义
@@ -336,8 +328,6 @@ private fun NavGraphBuilder.animatedComposable(
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-    shortcutAppInfo: edu.cqwu.electricity.shortcut.util.ShortcutHelper.ShortcutAppInfo? = null,
-    shortcutLaunchId: Int = 0,
     modifier: Modifier = Modifier,
 ) {
     val resources = LocalResources.current
@@ -348,66 +338,6 @@ fun AppNavGraph(
     val noticeViewModel: NoticeViewModel = viewModel()
     var webViewReloadAfterLogin by rememberSaveable { mutableStateOf(false) }
     val appSettings = LocalAppSettingsState.current
-
-    val snackbar = LocalSnackbarController.current
-
-    // 启动时后台静默验证当前账号 Cookie 有效性（仅进程启动后执行一次，
-    // 避免语言切换等 Activity 重建后再次跳转登录页）
-    LaunchedEffect(Unit) {
-        if (!startupCookieValidationDone) {
-            startupCookieValidationDone = true
-            val activeUser = AccountSessionStore.getActiveUser()
-            val cookies = activeUser?.let { AccountSessionStore.getAccount(it)?.cookies }
-                ?: emptyMap()
-            when (val result = SessionManager.validateCookie(cookies)) {
-                is SessionValidationResult.Valid -> {
-                    AppLog.d("NavGraph", "启动 Cookie 验证：有效（$activeUser）")
-                }
-                is SessionValidationResult.Invalid -> {
-                    AppLog.d("NavGraph", "启动 Cookie 验证：失效，跳转登录页")
-                    navController.navigate(Routes.COOKIE_EXPIRED_LOGIN)
-                }
-                is SessionValidationResult.NetworkError -> {
-                    AppLog.w("NavGraph", "启动 Cookie 验证：网络错误 - ${result.message}")
-                    snackbar.show(resources.getString(R.string.common_network_error), ToastUtils.Type.ERROR)
-                }
-            }
-        }
-    }
-
-    // 处理桌面快捷方式启动的导航
-    LaunchedEffect(shortcutLaunchId) {
-        if (shortcutAppInfo != null) {
-            val appId = shortcutAppInfo.appId
-            val openUrl = shortcutAppInfo.openUrl
-            when (appId) {
-                edu.cqwu.electricity.home.data.HomeAppIds.PAY_QR ->
-                    navController.navigate(Routes.qrCodeRoute(QrCodeType.PAY))
-                edu.cqwu.electricity.home.data.HomeAppIds.BUS_QR ->
-                    navController.navigate(Routes.qrCodeRoute(QrCodeType.BUS))
-                edu.cqwu.electricity.home.data.HomeAppIds.BANK_CARD_BIND ->
-                    navController.navigate(Routes.BANK_CARD_BIND)
-                edu.cqwu.electricity.home.data.HomeAppIds.DORM_ELECTRICITY ->
-                    navController.navigate(Routes.ELECTRICITY_MAIN)
-                edu.cqwu.electricity.home.data.HomeAppIds.CARD_CENTER ->
-                    navController.navigate(Routes.CARD_CENTER)
-                edu.cqwu.electricity.home.data.HomeAppIds.NOTICE ->
-                    navController.navigate(Routes.NOTICE)
-                edu.cqwu.electricity.home.data.HomeAppIds.FEE_SERVICE_HALL ->
-                    navController.navigate(Routes.FEE_SERVICE_HALL)
-                edu.cqwu.electricity.home.data.HomeAppIds.MY_INFO ->
-                    navController.navigate(Routes.MY_INFO)
-                edu.cqwu.electricity.home.data.HomeAppIds.SPEAK_UP ->
-                    navController.navigate(Routes.SPEAK_UP)
-                else -> {
-                    // 网页类功能 → 在内置浏览器中打开
-                    if (openUrl.isNotBlank()) {
-                        navController.navigate(Routes.unifiedWebViewRoute(openUrl, shortcutAppInfo.appName))
-                    }
-                }
-            }
-        }
-    }
 
     CompositionLocalProvider(
         LocalWebViewReloadAfterLogin provides webViewReloadAfterLogin,

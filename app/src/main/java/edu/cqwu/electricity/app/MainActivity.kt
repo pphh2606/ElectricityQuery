@@ -2,10 +2,10 @@ package edu.cqwu.electricity.app
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import edu.cqwu.electricity.settings.data.AppLanguage
+import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.settings.util.LocaleContextWrapper
@@ -25,9 +26,8 @@ import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.theme.ui.AppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.电费查询Theme
-import edu.cqwu.electricity.theme.ui.toAppCompatMode
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     // 快捷方式状态：onNewIntent 时更新，Compose 自动重组
     private val _shortcutAppInfo = mutableStateOf<ShortcutHelper.ShortcutAppInfo?>(null)
@@ -35,17 +35,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         val language = SettingsPreferences(newBase).getAppLanguage()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU || language == AppLanguage.SYSTEM) {
-            super.attachBaseContext(newBase)
+        val wrapped = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU || language == AppLanguage.SYSTEM) {
+            newBase
         } else {
-            super.attachBaseContext(LocaleContextWrapper.wrap(newBase, language.localeTag!!))
+            LocaleContextWrapper.wrap(newBase, language.localeTag!!)
         }
+
+        // 应用内强制夜间模式：在 super.attachBaseContext 之前注入 uiMode 到 override Configuration，
+        // 使 values-night 资源按 LIGHT/DARK 设置生效；SYSTEM 模式不干预，跟随系统
+        val nightMode = SettingsPreferences(newBase).get(SettingsKeys.NIGHT_MODE)
+        if (nightMode != NightMode.SYSTEM) {
+            val config = Configuration(wrapped.resources.configuration)
+            config.uiMode = (config.uiMode and Configuration.UI_MODE_NIGHT_MASK) or
+                if (nightMode == NightMode.DARK) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+            applyOverrideConfiguration(config)
+        }
+
+        super.attachBaseContext(wrapped)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppCompatDelegate.setDefaultNightMode(
-            SettingsPreferences(this).get(SettingsKeys.NIGHT_MODE).toAppCompatMode()
-        )
         super.onCreate(savedInstanceState)
         // 启用边到边绘制（内容延伸到系统栏后方）
         // 系统栏图标颜色由 Compose 层的 Theme.kt 中的 SideEffect 动态管理
@@ -68,7 +77,12 @@ class MainActivity : AppCompatActivity() {
             val shortcutLaunchId = _shortcutLaunchId.intValue
             val settingsPrefs = remember { SettingsPreferences(this@MainActivity) }
 
-            val appSettingsState = remember { AppSettingsState(settingsPrefs) }
+            val appSettingsState = remember {
+                AppSettingsState(
+                    settingsPrefs,
+                    onNightModeApplied = { recreate() },
+                )
+            }
 
             CompositionLocalProvider(
                 LocalAppSettingsState provides appSettingsState,

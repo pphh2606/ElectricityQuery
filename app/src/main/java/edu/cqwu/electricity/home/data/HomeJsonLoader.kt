@@ -7,7 +7,6 @@ import java.io.IOException
 class HomeJsonLoader(private val context: Context) {
 
     private val gson = Gson()
-    private var cachedCategories: List<HomeCategory>? = null
 
     /**
      * Invalidates the in-memory cache so the next call to [loadCategories]
@@ -44,5 +43,14 @@ class HomeJsonLoader(private val context: Context) {
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    companion object {
+        /**
+         * 进程级缓存：HomeViewModel 与 AddShortcutScreen 等多处加载同一份首页数据时共享，
+         * 避免各自实例重复解析 home_apps.json。
+         */
+        @Volatile
+        private var cachedCategories: List<HomeCategory>? = null
     }
 }

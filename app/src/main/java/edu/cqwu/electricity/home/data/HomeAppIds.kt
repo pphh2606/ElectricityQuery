@@ -33,4 +33,7 @@ object HomeAppIds {
 
     /** 我有话说 → 打开原生咨询区列表页 */
     const val SPEAK_UP = "6251198080206918"
+
+    /** 扫一扫 → 打开原生扫码页（openUrl 为 mamp://scan 自定义 scheme，需原生处理） */
+    const val SCAN = "5215256879824476"
 }

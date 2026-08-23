@@ -8,10 +8,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.net.Uri
-import edu.cqwu.electricity.logging.AppLog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,10 +39,8 @@ import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -88,16 +83,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import edu.cqwu.electricity.home.data.CustomServiceEntry
+import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeApp
-import edu.cqwu.electricity.home.data.HomeAppIds
-import edu.cqwu.electricity.qrcode.data.QrCodeType
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.home.data.HomeAppLauncher
 import edu.cqwu.electricity.theme.ui.CustomWebsiteDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 import kotlinx.coroutines.launch
 
 /**
@@ -279,38 +272,15 @@ fun HomePageContent(
     // 自定义网站对话框状态
     var showCustomWebsiteDialog by remember { mutableStateOf(false) }
 
-    // 提取 handleAppClick 为局部函数，消除三处重复传参
+    // 统一应用点击分发（原生 / 内置浏览器 / 外部弹窗），三处入口共用
     val handleAppClickInternal: (HomeApp) -> Unit = { app ->
-        handleAppClick(
-            app = app,
-            nav = nav,
-            onExternalIntent = { url, name -> pendingExternalIntent = name to url }
+        HomeAppLauncher.launch(
+            appId = app.appId,
+            name = app.name,
+            openUrl = app.openUrl,
+            navigate = { nav.navigate(it) },
+            onExternal = { url, name -> pendingExternalIntent = name to url },
         )
-    }
-
-    // 执行外部 Intent 跳转
-    fun openExternalIntent(appName: String, url: String) {
-        try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            AppLog.w(TAG, "系统无法处理 $url (scheme=${Uri.parse(url).scheme}), 尝试降级...")
-            // ── 降级方案 ──
-            if (url.startsWith("mamp://")) {
-                try {
-                    AppLog.d(TAG, "降级: 尝试 campusnextins:// 打开今日校园App")
-                    val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
-                    context.startActivity(fallbackIntent)
-                    return
-                } catch (e2: ActivityNotFoundException) {
-                    AppLog.w(TAG, "降级 campusnextins:// 也失败: ${e2.message}")
-                }
-            }
-            snackbar.show(resources.getString(R.string.home_install_campus_app, appName), ToastUtils.Type.ERROR)
-        } catch (e: Exception) {
-            AppLog.e(TAG, "打开外部应用异常: ${e.message}")
-            snackbar.show(resources.getString(R.string.home_open_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -328,23 +298,14 @@ fun HomePageContent(
         }
 
         PullToRefreshBox(
-            isRefreshing = uiState.isRefreshing,
+            // 首次加载与手动下拉共用同一刷新指示器（不再显示页面中央转圈）
+            isRefreshing = uiState.isRefreshing || uiState.isLoading,
             onRefresh = { homeViewModel.refresh() },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         ) {
             when {
-                uiState.isLoading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
                 uiState.error != null -> {
                     Box(
                         modifier = Modifier
@@ -477,37 +438,17 @@ fun HomePageContent(
         }
     }
 
-    // 外部 Intent 确认底部弹窗
-    BottomSheetDialog(
-        visible = pendingExternalIntent != null,
-        onDismissRequest = { pendingExternalIntent = null },
-        title = stringResource(R.string.home_external_app_title),
-        icon = Icons.Outlined.OpenInBrowser,
-        fullscreen = false,
-        leadingButton = {
-            TextButton(onClick = { pendingExternalIntent = null }) {
-                Text(stringResource(R.string.common_cancel))
-            }
-        },
-        trailingButton = {
-            TextButton(onClick = {
-                pendingExternalIntent?.let { (name, url) ->
-                    pendingExternalIntent = null
-                    openExternalIntent(name, url)
-                }
-            }) {
-                Text(stringResource(R.string.common_confirm))
+    // 外部 Intent 确认底部弹窗（与桌面快捷方式共用 ExternalAppConfirmDialog）
+    ExternalAppConfirmDialog(
+        pending = pendingExternalIntent,
+        onDismiss = { pendingExternalIntent = null },
+        onConfirm = { name, url ->
+            pendingExternalIntent = null
+            ExternalAppOpener.open(context, name, url) { message ->
+                snackbar.show(message, ToastUtils.Type.ERROR)
             }
         }
-    ) {
-        pendingExternalIntent?.let { (appName, _) ->
-            Text(
-                text = stringResource(R.string.home_external_app_message, appName),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
+    )
 
     // ── 自定义网站弹窗 ──
     CustomWebsiteDialog(
@@ -587,77 +528,6 @@ private fun SectionIndexChip(
             )
         },
     )
-}
-
-/**
- * 处理应用点击事件
- * - "学生宿舍电费充值" (appId: 7624123418505155) → 打开原生电费查询
- * - http/https URL → 在统一内置浏览器中打开
- * - 自定义 scheme (mamp:// 等) → 弹出确认弹窗，确认后通过 Intent 在外部打开
- */
-private const val TAG = "HomeScreen"
-
-private fun handleAppClick(
-    app: HomeApp,
-    nav: androidx.navigation.NavHostController,
-    onExternalIntent: (url: String, appName: String) -> Unit
-) {
-    // 支付码 → 原生二维码显示
-    if (app.appId == HomeAppIds.PAY_QR) {
-        nav.navigate(Routes.qrCodeRoute(QrCodeType.PAY))
-        return
-    }
-    // 乘车码 → 原生二维码显示
-    if (app.appId == HomeAppIds.BUS_QR) {
-        nav.navigate(Routes.qrCodeRoute(QrCodeType.BUS))
-        return
-    }
-    // 学生绑定银行卡 → 打开原生银行卡绑定页
-    if (app.appId == HomeAppIds.BANK_CARD_BIND) {
-        nav.navigate(Routes.BANK_CARD_BIND)
-        return
-    }
-    // 学生宿舍电费充值 → 打开原生电费查询
-    if (app.appId == HomeAppIds.DORM_ELECTRICITY) {
-        nav.navigate(Routes.ELECTRICITY_MAIN)
-        return
-    }
-    // 卡中心 → 原生卡中心页面
-    if (app.appId == HomeAppIds.CARD_CENTER) {
-        nav.navigate(Routes.CARD_CENTER)
-        return
-    }
-    // 通知公告 → 原生通知公告列表页
-    if (app.appId == HomeAppIds.NOTICE) {
-        nav.navigate(Routes.NOTICE)
-        return
-    }
-    // 缴费服务大厅 → 打开原生页面
-    if (app.appId == HomeAppIds.FEE_SERVICE_HALL) {
-        nav.navigate(Routes.FEE_SERVICE_HALL)
-        return
-    }
-    // 我的信息 → 打开原生页面
-    if (app.appId == HomeAppIds.MY_INFO) {
-        nav.navigate(Routes.MY_INFO)
-        return
-    }
-    // 我有话说 → 打开原生咨询区列表页
-    if (app.appId == HomeAppIds.SPEAK_UP) {
-        nav.navigate(Routes.SPEAK_UP)
-        return
-    }
-
-    val url = app.openUrl
-
-    // 非 http/https 协议 → 弹出确认弹窗
-    if (!WebViewUrlUtil.isHttpScheme(url)) {
-        onExternalIntent(url, app.name)
-        return
-    }
-
-    // http/https → 统一内置浏览器
-    nav.navigate(Routes.unifiedWebViewRoute(url, app.name))
 }
 
 /**

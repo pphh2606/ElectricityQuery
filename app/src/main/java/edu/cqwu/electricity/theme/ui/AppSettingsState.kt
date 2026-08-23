@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.theme.ui
 
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +28,7 @@ const val MAX_FONT_SCALE = 1.5f
 @Stable
 class AppSettingsState(
     private val prefs: SettingsPreferences,
+    private val onNightModeApplied: (NightMode) -> Unit = {},
 ) {
     var nightMode by mutableStateOf(prefs.get(SettingsKeys.NIGHT_MODE))
         private set
@@ -79,7 +79,8 @@ class AppSettingsState(
     fun updateNightMode(value: NightMode) {
         nightMode = value
         prefs.set(SettingsKeys.NIGHT_MODE, value)
-        AppCompatDelegate.setDefaultNightMode(value.toAppCompatMode())
+        // 由宿主 Activity 重建界面，重建时 attachBaseContext 会按新设置注入 uiMode
+        onNightModeApplied(value)
     }
 
     fun updatePureBlack(enabled: Boolean) {
@@ -159,12 +160,6 @@ class AppSettingsState(
             ThemeColorSource.Custom(Color(prefs.get(SettingsKeys.SEED_COLOR)))
         }
     }
-}
-
-internal fun NightMode.toAppCompatMode(): Int = when (this) {
-    NightMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-    NightMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-    NightMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
 }
 
 val LocalAppSettingsState = staticCompositionLocalOf<AppSettingsState> {
