@@ -114,6 +114,12 @@ internal fun WebViewHost(
                         onPageStarted(view, pageUrl)
                     }
 
+                    // 首帧提交前应用深色模式（API 23+），避免加载期间闪亮色；onPageFinished 兜底
+                    override fun onPageCommitVisible(view: WebView?, pageUrl: String?) {
+                        super.onPageCommitVisible(view, pageUrl)
+                        view?.applyWebViewDarkMode(darkModeEnabled.value)
+                    }
+
                     override fun onPageFinished(view: WebView?, pageUrl: String?) {
                         super.onPageFinished(view, pageUrl)
                         state.canGoBack = view?.canGoBack() == true

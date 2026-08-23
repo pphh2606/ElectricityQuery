@@ -11,7 +11,7 @@
     <string name="card_center_report_lost">Report Lost</string>
     <string name="card_center_recharge">Recharge</string>
     <string name="card_lost_title">Report Lost Card</string>
-    <string name="card_lost_warning">⚠ After reporting lost, the card will be immediately unusable. Please confirm before proceeding.</string>
+    <string name="card_lost_warning">After reporting lost, the card will be immediately unusable. Please confirm before proceeding.</string>
     <string name="card_lost_failure">Report lost failed</string>
     <string name="card_fetching_info">Fetching card info…</string>
     <string name="card_account_info_title">Account Info</string>

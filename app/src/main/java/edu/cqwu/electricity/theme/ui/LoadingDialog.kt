@@ -13,6 +13,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -33,6 +34,17 @@ fun LoadingDialog(
     message: String,
     modifier: Modifier = Modifier,
 ) {
+    // 与 BottomSheetDialog 同款：驱动全局 Haze 模糊背后的应用内容
+    val sheetVisibilityState = LocalSheetVisibilityState.current
+    DisposableEffect(sheetVisibilityState) {
+        sheetVisibilityState.open()
+        sheetVisibilityState.blurProgress = 1f
+        onDispose {
+            sheetVisibilityState.close()
+            sheetVisibilityState.blurProgress = 0f
+        }
+    }
+
     val appDensity = LocalDensity.current
     Dialog(
         onDismissRequest = { /* 不可关闭 */ },

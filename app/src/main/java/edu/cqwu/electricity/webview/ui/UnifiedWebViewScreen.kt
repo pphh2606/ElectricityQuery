@@ -393,6 +393,12 @@ fun UnifiedWebViewScreen(
                                     }
                                 }
 
+                                // 首帧提交前应用深色模式（API 23+），避免加载期间闪亮色；onPageFinished 兜底
+                                override fun onPageCommitVisible(view: WebView?, url: String?) {
+                                    super.onPageCommitVisible(view, url)
+                                    view?.applyWebViewDarkMode(webDarkModeEnabled.value)
+                                }
+
                                 override fun onPageFinished(view: WebView?, url: String?) {
                                     super.onPageFinished(view, url)
                                     AppLog.d("WebView_DIAG", "onPageFinished: $url")

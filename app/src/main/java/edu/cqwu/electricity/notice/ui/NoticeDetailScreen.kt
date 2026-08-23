@@ -6,8 +6,10 @@ import android.annotation.SuppressLint
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.text.Html
 import android.view.View
@@ -91,6 +93,15 @@ fun NoticeDetailScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val resources = LocalResources.current
+
+    // 文件/下载链接 → 系统浏览器打开（浏览器负责下载）
+    fun openExternalBrowser(url: String) {
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (_: ActivityNotFoundException) {
+            // 无可用浏览器，忽略
+        }
+    }
     val screenHeightPx = remember {
         resources.displayMetrics.heightPixels
     }
@@ -407,6 +418,10 @@ fun NoticeDetailScreen(
                                                 view.applyWebViewDarkMode(webDarkModeEnabled.value)
                                             }
                                         }
+                                        // 下载类响应（服务端 Content-Disposition: attachment 等）→ 外部浏览器
+                                        setDownloadListener { downloadUrl, _, _, _, _ ->
+                                            openExternalBrowser(downloadUrl)
+                                        }
                                         tag = htmlContent.hashCode()
                                         loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
                                     }
@@ -454,6 +469,13 @@ private fun buildHtmlPage(noticeContent: String): String {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+body * {
+    max-width: 100% !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+</style>
 </head>
 <body>
 $noticeContent

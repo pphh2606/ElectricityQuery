@@ -22,7 +22,6 @@ import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,6 +51,7 @@ import androidx.core.content.FileProvider
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
@@ -274,21 +274,14 @@ fun FeedbackScreen(
                     }
                 },
                 actions = {
-                    if (isSending) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.padding(end = 8.dp),
-                            strokeWidth = 2.dp,
+                    IconButton(
+                        onClick = { sendByEmail() },
+                        enabled = canSend && !isSending,
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.Send,
+                            contentDescription = stringResource(R.string.common_send_email),
                         )
-                    } else {
-                        IconButton(
-                            onClick = { sendByEmail() },
-                            enabled = canSend,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Send,
-                                contentDescription = stringResource(R.string.common_send_email),
-                            )
-                        }
                     }
                 },
                 colors = topBarColors,
@@ -331,21 +324,11 @@ fun FeedbackScreen(
                     onClick = { loadLogPreview() },
                     enabled = !isLogsLoading,
                 ) {
-                    if (isLogsLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .height(16.dp)
-                                .width(16.dp),
-                            strokeWidth = 2.dp,
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Outlined.Visibility,
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 4.dp),
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Outlined.Visibility,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 4.dp),
+                    )
                     Text(stringResource(R.string.feedback_preview_log))
                 }
 
@@ -412,4 +395,8 @@ fun FeedbackScreen(
         }
     }
 
+    // 发送中：全屏阻断加载（不可取消）
+    if (isSending) {
+        LoadingDialog(message = stringResource(R.string.common_loading))
+    }
 }

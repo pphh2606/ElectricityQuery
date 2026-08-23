@@ -2,8 +2,6 @@ package edu.cqwu.electricity.electricity.ui
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
-import edu.cqwu.electricity.logging.AppLog
-
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -188,11 +186,6 @@ fun ElectricityMainScreen(
     val showQueryResult = pagerState.currentPage == 0
         && uiState.selectedRoom != null
         && uiState.currentStep == SelectionStep.DONE
-    AppLog.d("EMS_showQR",
-        "page=${pagerState.currentPage}, " +
-        "selectedRoom=${uiState.selectedRoom?.name}, " +
-        "currentStep=${uiState.currentStep}, " +
-        "showQueryResult=$showQueryResult")
     val room = uiState.selectedRoom
     val balance = uiState.balance
 

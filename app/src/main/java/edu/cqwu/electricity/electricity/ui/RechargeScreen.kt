@@ -215,19 +215,11 @@ fun RechargeScreen(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
-                                if (recharge.isQuerying) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(20.dp),
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        strokeWidth = 2.dp
-                                    )
-                                } else {
-                                    Text(
-                                        text = stringResource(R.string.recharge_query),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(R.string.recharge_query),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }

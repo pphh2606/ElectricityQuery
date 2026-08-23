@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.electricity.ui
 
-import edu.cqwu.electricity.logging.AppLog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
@@ -48,8 +47,6 @@ data class ElectricityUiState(
     val floors: List<BuildingNode> = emptyList(),
     // ROOM_GRID 展开式分组状态
     val floorRoomsMap: Map<String, FloorRoomLoadState> = emptyMap(),
-    // ROOM_GRID 刷新版本号
-    val floorRoomRefreshVersion: Int = 0,
 
     // 已选择项
     val selectedBuilding: BuildingNode? = null,
@@ -107,7 +104,6 @@ class ElectricityViewModel(
             } else {
                 it.expandedAreaIds + areaId
             }
-            AppLog.d("DEBUG_expand", "toggleArea: ${it.expandedAreaIds} → $newSet")
             it.copy(expandedAreaIds = newSet)
         }
     }
@@ -135,7 +131,6 @@ class ElectricityViewModel(
     fun selectBuilding(building: BuildingNode) {
         val floors = building.children ?: emptyList()
         _uiState.update {
-            AppLog.d("DEBUG_expand", "selectBuilding BEFORE: expandedAreaIds=${it.expandedAreaIds}")
             it.copy(
                 selectedBuilding = building,
                 floors = floors,
@@ -172,7 +167,6 @@ class ElectricityViewModel(
 
     fun selectRoom(room: BuildingNode) {
         _uiState.update {
-            AppLog.d("DEBUG_expand", "selectRoom: expandedAreaIds=${it.expandedAreaIds}")
             it.copy(
                 isLoading = true,
                 isBalanceRefreshing = true,
@@ -211,7 +205,6 @@ class ElectricityViewModel(
 
     fun onReturnedFromDashboard() {
         _uiState.update {
-            AppLog.d("DEBUG_expand", "onReturnedFromDashboard: expandedAreaIds=${it.expandedAreaIds}, selectedBuilding=${it.selectedBuilding?.name}")
             it.copy(
                 currentStep = if (it.selectedBuilding != null) SelectionStep.ROOM_GRID else SelectionStep.AREA,
                 selectedRoom = null,
@@ -237,7 +230,6 @@ class ElectricityViewModel(
                 isRefreshing = false,
                 floorRoomsMap = emptyMap(),
                 expandedFloorIds = emptySet(),
-                floorRoomRefreshVersion = current.floorRoomRefreshVersion + 1
             )
         }
     }

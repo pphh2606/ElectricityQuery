@@ -11,7 +11,7 @@
     <string name="card_center_report_lost">Déclarer perdue</string>
     <string name="card_center_recharge">Recharger</string>
     <string name="card_lost_title">Déclaration de perte</string>
-    <string name="card_lost_warning">⚠ La carte sera immédiatement désactivée. Confirmez-vous ?</string>
+    <string name="card_lost_warning">La carte sera immédiatement désactivée. Confirmez-vous ?</string>
     <string name="card_lost_failure">Échec de la déclaration</string>
     <string name="card_fetching_info">Récupération des infos de la carte…</string>
     <string name="card_account_info_title">Info compte</string>

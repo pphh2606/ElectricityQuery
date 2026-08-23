@@ -60,6 +60,7 @@ import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -229,6 +230,11 @@ fun CardLostScreen(
         }
     }
 
+    // 挂失提交中：全屏阻断加载（不可取消）
+    if (isSubmitting) {
+        LoadingDialog(message = stringResource(R.string.card_lost_processing))
+    }
+
     // ── 二次确认对话框 ──
     if (showConfirmDialog) {
         AppScaledAlertDialog(
@@ -329,16 +335,8 @@ private fun CardLostContent(
                     ),
                     enabled = !isSubmitting
                 ) {
-                    if (isSubmitting) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            color = MaterialTheme.colorScheme.onError,
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
                     Text(
-                        text = if (isSubmitting) stringResource(R.string.card_lost_processing) else stringResource(R.string.card_lost_confirm_btn),
+                        text = stringResource(R.string.card_lost_confirm_btn),
                         fontWeight = FontWeight.Bold
                     )
                 }

@@ -11,7 +11,7 @@
     <string name="card_center_report_lost">الإبلاغ عن الفقدان</string>
     <string name="card_center_recharge">شحن</string>
     <string name="card_lost_title">الإبلاغ عن الفقدان</string>
-    <string name="card_lost_warning">⚠ سيتم تعطيل البطاقة فورًا بعد الإبلاغ. يرجى التأكيد.</string>
+    <string name="card_lost_warning">سيتم تعطيل البطاقة فورًا بعد الإبلاغ. يرجى التأكيد.</string>
     <string name="card_lost_failure">فشل الإبلاغ</string>
     <string name="card_fetching_info">جارٍ جلب معلومات البطاقة…</string>
     <string name="card_account_info_title">معلومات الحساب</string>

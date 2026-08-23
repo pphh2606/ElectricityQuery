@@ -19,7 +19,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -271,7 +270,6 @@ private fun PaymentSelectMethodSection(
     Spacer(modifier = Modifier.height(16.dp))
     PaymentPrimaryButton(
         textRes = R.string.payment_confirm,
-        showProgress = payment.isProcessing,
         enabled = payment.selectedMethod != null && !payment.isProcessing,
         onClick = onSubmitPayment,
     )
@@ -294,7 +292,6 @@ private fun PaymentWaitingSection(
     Spacer(modifier = Modifier.height(16.dp))
     PaymentPrimaryButton(
         textRes = R.string.payment_continue,
-        showProgress = payment.isProcessing,
         enabled = !payment.isProcessing,
         onClick = onContinue,
     )
@@ -336,7 +333,6 @@ private fun PaymentSuccessSection(onDone: () -> Unit) {
     Spacer(modifier = Modifier.height(16.dp))
     PaymentPrimaryButton(
         textRes = R.string.payment_done,
-        showProgress = false,
         enabled = true,
         onClick = onDone,
     )
@@ -363,12 +359,11 @@ private fun PaymentOrderErrorContent(
 }
 
 /**
- * 支付主按钮，带可选的加载状态。
+ * 支付主按钮。处理中仅通过 enabled 禁用，按钮内容保持文字不变。
  */
 @Composable
 private fun PaymentPrimaryButton(
     textRes: Int,
-    showProgress: Boolean,
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
@@ -382,20 +377,10 @@ private fun PaymentPrimaryButton(
             containerColor = MaterialTheme.colorScheme.primary
         )
     ) {
-        if (showProgress) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = MaterialTheme.colorScheme.onPrimary,
-                strokeWidth = 2.dp
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.payment_processing))
-        } else {
-            Text(
-                text = stringResource(textRes),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        Text(
+            text = stringResource(textRes),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
     }
 }

@@ -684,28 +684,20 @@ private fun HallListItem(
                     )
                     .padding(horizontal = 4.dp),
             ) {
-                if (isTogglingFavorite) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                } else {
-                    Text(
-                        text = formatFavoriteCount(item.favoriteCount),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Icon(
-                        imageVector = if (item.favorite) Icons.Default.Favorite
-                        else Icons.Outlined.FavoriteBorder,
-                        contentDescription = if (item.favorite) stringResource(R.string.hall_favorited) else stringResource(R.string.hall_unfavorited),
-                        tint = if (item.favorite) MaterialTheme.colorScheme.error
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
+                Text(
+                    text = formatFavoriteCount(item.favoriteCount),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Icon(
+                    imageVector = if (item.favorite) Icons.Default.Favorite
+                    else Icons.Outlined.FavoriteBorder,
+                    contentDescription = if (item.favorite) stringResource(R.string.hall_favorited) else stringResource(R.string.hall_unfavorited),
+                    tint = if (item.favorite) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp),
+                )
             }
             Spacer(modifier = Modifier.width(8.dp))
         }

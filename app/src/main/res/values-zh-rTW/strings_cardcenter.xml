@@ -11,7 +11,7 @@
     <string name="card_center_report_lost">卡片掛失</string>
     <string name="card_center_recharge">加值</string>
     <string name="card_lost_title">卡片掛失</string>
-    <string name="card_lost_warning">⚠ 掛失後卡片將立即無法使用，請確認後再操作</string>
+    <string name="card_lost_warning">掛失後卡片將立即無法使用，請確認後再操作</string>
     <string name="card_lost_failure">掛失失敗</string>
     <string name="card_fetching_info">正在取得卡片資訊…</string>
     <string name="card_account_info_title">帳戶資訊</string>

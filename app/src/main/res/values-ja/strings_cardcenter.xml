@@ -11,7 +11,7 @@
     <string name="card_center_report_lost">カード紛失届</string>
     <string name="card_center_recharge">チャージ</string>
     <string name="card_lost_title">カード紛失届</string>
-    <string name="card_lost_warning">⚠ 紛失届を提出すると、カードは直ちに使用できなくなります。操作前にご確認ください</string>
+    <string name="card_lost_warning">紛失届を提出すると、カードは直ちに使用できなくなります。操作前にご確認ください</string>
     <string name="card_lost_failure">紛失届の提出に失敗</string>
     <string name="card_fetching_info">カード情報を取得中…</string>
     <string name="card_account_info_title">アカウント情報</string>

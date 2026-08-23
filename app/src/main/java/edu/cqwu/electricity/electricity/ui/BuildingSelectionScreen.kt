@@ -47,7 +47,6 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.electricity.data.displayName
-import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -67,7 +66,6 @@ fun BuildingSelectionScreen(
 
     // 进入页面时加载校区列表
     LaunchedEffect(Unit) {
-        AppLog.d("DEBUG_expand", "BuildingSelectionScreen LaunchedEffect: areas.isEmpty=${uiState.areas.isEmpty()}, expandedAreaIds=${uiState.expandedAreaIds}, currentStep=${uiState.currentStep}")
         if (uiState.areas.isEmpty()) {
             viewModel.loadAreas()
         }
@@ -131,7 +129,6 @@ private fun ContentArea(
                                     EmptyStateText(stringResource(R.string.building_no_campus))
                                 }
                             } else {
-                                AppLog.d("DEBUG_expand", "Rendering AREA step: areas=${uiState.areas.size}, expandedAreaIds=${uiState.expandedAreaIds}")
                                 items(uiState.areas, key = { it.id }) { area ->
                                     AreaBuildingGroup(
                                         area = area,
@@ -159,15 +156,12 @@ private fun ContentArea(
                                         onToggle = { viewModel.toggleFloorExpanded(floor.id) },
                                         onRoomClick = { room -> viewModel.selectRoom(room) },
                                         onLoadFloor = { floor -> viewModel.loadRoomsForFloor(floor) },
-                                        refreshVersion = uiState.floorRoomRefreshVersion
                                     )
                                 }
                             }
                         }
                         SelectionStep.DONE -> {
-                            item(key = "empty") {
-                                EmptyStateText("")
-                            }
+                            // 已进入余额结果页，本列表无内容
                         }
                     }
                 }
@@ -265,8 +259,6 @@ private fun ExpandableGroupHeader(
 
 /**
  * 单个楼层分组（可点击展开/收起）
- *
- * @param refreshVersion 从 UiState 传入的刷新版本号，变化时自动重置展开状态为收起
  */
 @Composable
 private fun FloorRoomGroup(
@@ -276,7 +268,6 @@ private fun FloorRoomGroup(
     onToggle: () -> Unit,
     onRoomClick: (BuildingNode) -> Unit,
     onLoadFloor: (BuildingNode) -> Unit,
-    refreshVersion: Int = 0
 ) {
     val displayName = floor.displayName
 
@@ -291,27 +282,14 @@ private fun FloorRoomGroup(
                 if (!isExpanded && loadState == null) onLoadFloor(floor)
             },
             trailingContent = {
-                if (isExpanded) {
-                    when (loadState) {
-                        is FloorRoomLoadState.Loading -> {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        is FloorRoomLoadState.Success -> {
-        Text(pluralStringResource(R.plurals.building_rooms_count, loadState.rooms.size, loadState.rooms.size), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                        is FloorRoomLoadState.Error -> {
-                            Text(stringResource(R.string.common_load_failed), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
-                            Spacer(Modifier.width(4.dp))
-                            Text(stringResource(R.string.common_retry), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable { onLoadFloor(floor) })
-                        }
-                        null -> {
-                            Text(stringResource(R.string.building_click_to_expand), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
+                // 仅显示寝室房间数，Loading / Error / 未加载 时不渲染额外内容
+                val rooms = (loadState as? FloorRoomLoadState.Success)?.rooms
+                if (isExpanded && rooms != null) {
+                    Text(
+                        pluralStringResource(R.plurals.building_rooms_count, rooms.size, rooms.size),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         )
