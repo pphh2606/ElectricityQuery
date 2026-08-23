@@ -78,6 +78,10 @@
     <string name="account_manager_title">Account Manager</string>
     <string name="account_manager_current">Current</string>
     <string name="account_manager_add">Add Account</string>
+    <string name="account_manager_switching">Verifying login state…</string>
+    <string name="account_manager_switch_success">Switched to %1$s</string>
+    <string name="account_manager_switch_failed">Switch failed, please try again</string>
+    <string name="account_manager_switch_network_error">Network error, unable to verify login state. Please try again later</string>
 
     <string name="login_error_fetch_params_network">Failed to get login parameters, please check your network</string>
 

@@ -6,20 +6,20 @@
 
 ## 技术栈
 
-| 类别 | 技术选型 |
-|------|---------|
-| 语言 | Kotlin 2.3.21 |
-| UI 框架 | Jetpack Compose (BOM 2026.05.01) + Material 3 |
-| 网络请求 | OkHttp 5.3.2 |
-| JSON 解析 | Gson 2.14.0 |
-| 异步框架 | Kotlin Coroutines 1.11.0 |
-| 导航 | Navigation Compose 2.9.8 |
-| 图片加载 | Coil 2.7.0 |
-| 二维码 | ZXing 3.5.4 |
-| 相机 | CameraX 1.6.1 |
-| 动态取色 | MaterialKolor 4.1.1 |
-| 加密存储 | AndroidX Security Crypto 1.1.0 |
-| 构建系统 | Gradle + AGP 9.1.1 + Version Catalog |
+| 类别      | 技术选型                                          |
+|---------|-----------------------------------------------|
+| 语言      | Kotlin 2.3.21                                 |
+| UI 框架   | Jetpack Compose (BOM 2026.05.01) + Material 3 |
+| 网络请求    | OkHttp 5.3.2                                  |
+| JSON 解析 | Gson 2.14.0                                   |
+| 异步框架    | Kotlin Coroutines 1.11.0                      |
+| 导航      | Navigation Compose 2.9.8                      |
+| 图片加载    | Coil 2.7.0                                    |
+| 二维码     | ZXing 3.5.4                                   |
+| 相机      | CameraX 1.6.1                                 |
+| 动态取色    | MaterialKolor 4.1.1                           |
+| 加密存储    | AndroidX Security Crypto 1.1.0                |
+| 构建系统    | Gradle + AGP 9.1.1 + Version Catalog          |
 
 ---
 

@@ -5,11 +5,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CredentialExporter
-import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.CasAuthApi
 import edu.cqwu.electricity.login.data.CasLoginException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 登录页面 UI 状态
@@ -42,7 +43,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         private const val SAVED_PASSWORD_PLACEHOLDER = "●●●●●●●●"
     }
 
-    private val accountStore = AccountStore.getInstance(application)
     private val authApi = CasAuthApi()
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -52,21 +52,24 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     val events: Flow<LoginEvent> = _events.receiveAsFlow()
 
     init {
-        autoFillFromStorage()
+        autoFillFromStorage(null)
     }
 
     /**
-     * 从 AccountStore 自动填充最近登录的账号。
+     * 从持久化账号仓库自动填充。
+     *
+     * @param initialUsername 指定预填的账号（切换账号场景）；null 时填充最近登录的账号。
      * 如果该账号勾选了"记住密码"且有已保存密码，设置 hasSavedPassword 标志，
      * UI 层将显示占位圆点而非实际密码，防止密码被眼睛按钮查看。
      */
-    private fun autoFillFromStorage() {
-        val allAccounts = accountStore.getAllAccounts()
-        val lastAccount = allAccounts.firstOrNull()
-        val rememberPwd = lastAccount?.rememberPassword ?: true
-        val hasSaved = lastAccount?.password != null && rememberPwd
+    private fun autoFillFromStorage(initialUsername: String?) {
+        val allAccounts = AccountSessionStore.getAllAccounts()
+        val target = initialUsername?.let { name -> allAccounts.firstOrNull { it.username == name } }
+            ?: allAccounts.firstOrNull()
+        val rememberPwd = target?.rememberPassword ?: true
+        val hasSaved = target?.password != null && rememberPwd
         val state = LoginUiState(
-            username = lastAccount?.username ?: "",
+            username = target?.username ?: "",
             password = if (hasSaved) SAVED_PASSWORD_PLACEHOLDER else "",
             rememberPassword = rememberPwd,
             hasSavedPassword = hasSaved,
@@ -76,14 +79,15 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * 重置状态。
-     * @param clearForm true 时显示空白表单（"添加账号"场景），false 时自动填充最近账号。
+     * @param clearForm true 时显示空白表单（"添加账号"场景），false 时自动填充账号。
+     * @param initialUsername 切换账号场景传入目标学号，优先预填该账号。
      */
-    fun resetState(clearForm: Boolean = false) {
-        AppLog.d("LoginVM", "resetState: clearForm=$clearForm")
+    fun resetState(clearForm: Boolean = false, initialUsername: String? = null) {
+        AppLog.d("LoginVM", "resetState: clearForm=$clearForm, initialUsername=$initialUsername")
         if (clearForm) {
             _uiState.value = LoginUiState()
         } else {
-            autoFillFromStorage()
+            autoFillFromStorage(initialUsername)
         }
     }
 
@@ -108,11 +112,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setRememberPassword(remember: Boolean) {
         _uiState.update { it.copy(rememberPassword = remember, hasSavedPassword = if (!remember) false else it.hasSavedPassword) }
-        // 更新当前账号的记住密码标志
-        val username = _uiState.value.username.trim()
-        if (username.isNotBlank()) {
-            accountStore.setRememberPasswordForAccount(username, remember)
-        }
+        // 记住密码标志仅在登录成功提交时落盘，登录前不持久化任何账号数据
     }
 
     fun togglePasswordRevealed() {
@@ -122,9 +122,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     fun login() {
         val state = _uiState.value
         val username = state.username.trim()
-        // 占位状态下从 AccountStore 读取实际密码
+        // 占位状态下从持久化仓库读取实际密码
         val password = if (state.hasSavedPassword) {
-            accountStore.getPassword(username) ?: ""
+            AccountSessionStore.getAccount(username)?.password ?: ""
         } else {
             state.password
         }
@@ -143,19 +143,22 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 authApi.loginForUser(username, password)
                     .onSuccess { result ->
+                        val rememberPwd = _uiState.value.rememberPassword
+                        // 登录成功：持久化账号与登录态并原子激活（内部会清除旧登录态）。
+                        // 登录过程中当前登录态保持不变（隔离临时 store）。
                         result.cookieStore?.let { tempStore ->
-                            AccountManager.commitLoginCookies(username, tempStore)
+                            withContext(Dispatchers.IO) {
+                                AccountSessionStore.commitLogin(
+                                    username = username,
+                                    password = password,
+                                    rememberPassword = rememberPwd,
+                                    cookies = tempStore.getAllCookies(),
+                                )
+                            }
                         }
 
                         _uiState.update { it.copy(isLoading = false) }
                         _events.send(LoginEvent.LoginSuccess(result.cookieString))
-
-                        val rememberPwd = _uiState.value.rememberPassword
-                        accountStore.saveAccount(
-                            username = username,
-                            password = password,
-                            rememberPassword = rememberPwd
-                        )
                     }
                     .onFailure { e ->
                         val errorMsg = when {
@@ -192,14 +195,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             }
             val state = _uiState.value
             val currentUsername = state.username.trim()
-            // 占位状态下从 AccountStore 读取实际密码用于导出
+            // 占位状态下从持久化仓库读取实际密码用于导出
             val currentPassword = if (state.hasSavedPassword) {
-                accountStore.getPassword(currentUsername) ?: ""
+                AccountSessionStore.getAccount(currentUsername)?.password ?: ""
             } else {
                 state.password
             }
 
-            val accounts = accountStore.getAllAccountsWithPassword().toMutableList()
+            val accounts = AccountSessionStore.getAllAccounts()
+                .filter { it.rememberPassword && !it.password.isNullOrBlank() }
+                .map { it.username to it.password!! }
+                .toMutableList()
 
             if (currentUsername.isNotBlank() && currentPassword.isNotBlank()) {
                 val exists = accounts.any { it.first == currentUsername }

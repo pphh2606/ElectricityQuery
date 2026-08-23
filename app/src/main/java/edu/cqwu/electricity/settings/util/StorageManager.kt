@@ -2,8 +2,8 @@ package edu.cqwu.electricity.settings.util
 
 import android.content.Context
 import android.webkit.CookieManager
-import edu.cqwu.electricity.login.data.AccountStore
-import edu.cqwu.electricity.login.data.CookieStore
+import edu.cqwu.electricity.login.data.AccountSessionStore
+import edu.cqwu.electricity.login.data.SessionCleaner
 import java.io.File
 import java.util.Locale
 
@@ -31,12 +31,23 @@ class StorageManager(private val context: Context) {
     fun getTempLogSize(): Long =
         getDirSize(File(context.cacheDir, "logs"))
 
-    /** WebView 浏览数据：系统 WebView 缓存目录 */
+    /**
+     * WebView 真实数据目录：dataDir/app_webview。
+     *
+     * Android 的 WebView 将 localStorage / IndexedDB / Cookies 数据库 / 网页资源 HTTP 缓存 /
+     * GPUCache / Service Worker 等全部存放在此目录（而不是 cacheDir），
+     * 系统设置「应用详情」中显示为「数据」。
+     */
+    private fun getWebViewDataDir(): File =
+        File(context.applicationInfo.dataDir, "app_webview")
+
+    /** WebView 浏览数据：系统 WebView 缓存目录 + dataDir/app_webview */
     fun getWebViewDataSize(): Long {
         val webViewDir = File(context.cacheDir, "WebView")
         val webviewDir = File(context.cacheDir, "webview")
         val chromiumDir = File(context.cacheDir, "org.chromium.android_webview")
-        return getDirSize(webViewDir) + getDirSize(webviewDir) + getDirSize(chromiumDir)
+        return getDirSize(webViewDir) + getDirSize(webviewDir) +
+            getDirSize(chromiumDir) + getDirSize(getWebViewDataDir())
     }
 
     /**
@@ -77,10 +88,10 @@ class StorageManager(private val context: Context) {
         return if (spFile.exists()) spFile.length() else 0
     }
 
-    /** 账号数据：account_store_encrypted EncryptedSharedPreferences 文件 */
+    /** 账号数据：account_session_store_encrypted EncryptedSharedPreferences 文件 */
     fun getAccountDataSize(): Long {
         val spDir = File(context.applicationInfo.dataDir, "shared_prefs")
-        val spFile = File(spDir, "account_store_encrypted.xml")
+        val spFile = File(spDir, "account_session_store_encrypted.xml")
         return if (spFile.exists()) spFile.length() else 0
     }
 
@@ -103,16 +114,22 @@ class StorageManager(private val context: Context) {
         deleteDir(File(context.cacheDir, "logs"))
     }
 
-    /** 清除 WebView 浏览数据 */
+    /** 清除 WebView 浏览数据（缓存目录 + dataDir/app_webview 数据目录 + DOM 存储） */
     fun clearWebViewData() {
         deleteDir(File(context.cacheDir, "WebView"))
         deleteDir(File(context.cacheDir, "webview"))
         deleteDir(File(context.cacheDir, "org.chromium.android_webview"))
+        // WebView 真实数据目录（localStorage/IndexedDB/HTTP 缓存等），删除后 WebView 会自动重建
+        deleteDir(getWebViewDataDir())
+        SessionCleaner.clearWebStorages()
     }
 
-    /** 清除 Cookie / 会话数据 */
+    /**
+     * 清除「登录信息和cookie」：清除所有浏览器登录数据（系统 cookie + 所有账号持久化的登录状态），
+     * 保留账号管理弹窗中的账号和密码。
+     */
     fun clearCookieData() {
-        CookieStore.removeAllCookies()
+        AccountSessionStore.clearAllLoginStates()
     }
 
     /** 清除应用设置（恢复默认） */
@@ -121,13 +138,9 @@ class StorageManager(private val context: Context) {
         prefs.edit().clear().apply()
     }
 
-    /** 清除账号数据 */
+    /** 清除账号数据（所有账号的学号/密码/登录状态 + 当前登录态） */
     fun clearAccountData() {
-        val store = AccountStore.getInstance(context)
-        val accounts = store.getAllAccounts()
-        for (account in accounts) {
-            store.removeAccount(account.username)
-        }
+        AccountSessionStore.clearAllData()
     }
 
     // ═══════════════════════════════════════════════════

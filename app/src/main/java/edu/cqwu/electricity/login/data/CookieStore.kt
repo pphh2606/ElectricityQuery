@@ -2,6 +2,8 @@ package edu.cqwu.electricity.login.data
 
 import android.net.Uri
 import android.webkit.CookieManager
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * Bridge over android.webkit.CookieManager for shared cookies.
@@ -27,10 +29,29 @@ object CookieStore {
         CookieManager.getInstance().flush()
     }
 
+    /**
+     * 清除系统 CookieManager 中的所有 cookie。
+     *
+     * 使用回调 + CountDownLatch 同步等待删除完成（最多 3 秒，超时按已尽力处理继续），
+     * 确保后续写入新 cookie 时旧 cookie 已被完全清除。
+     */
     fun removeAllCookies() {
         checkInitialized()
-        CookieManager.getInstance().removeAllCookies(null)
-        CookieManager.getInstance().flush()
+        val latch = CountDownLatch(1)
+        try {
+            CookieManager.getInstance().removeAllCookies { latch.countDown() }
+        } catch (e: Exception) {
+            latch.countDown()
+        }
+        try {
+            CookieManager.getInstance().flush()
+        } catch (_: Exception) {
+        }
+        try {
+            latch.await(3, TimeUnit.SECONDS)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
     }
 
     private fun checkInitialized() {
@@ -41,7 +62,10 @@ object CookieStore {
 }
 
 /**
- * Per-user in-memory cookie store for multi-account isolation.
+ * Per-user cookie store（内存临时容器）。
+ *
+ * 仅用于登录过程（账号密码登录 / 扫码登录）的隔离收集，以及会话验证时临时装载账号 cookie，
+ * 持久化统一由 [AccountSessionStore] 负责。
  */
 class UserCookieStore {
 
@@ -70,39 +94,8 @@ class UserCookieStore {
         domainCookies[name] = value
     }
 
-    fun removeAllCookies() {
-        cookieMap.clear()
-    }
-
     fun getAllCookies(): Map<String, Map<String, String>> {
         return cookieMap.toMap()
-    }
-
-    fun syncToCookieManager() {
-        val cm = CookieManager.getInstance()
-        for ((url, domainCookies) in cookieMap) {
-            for ((name, value) in domainCookies) {
-                cm.setCookie(url, "$name=$value")
-            }
-        }
-        cm.flush()
-    }
-
-    fun syncFromCookieManager() {
-        val cm = CookieManager.getInstance()
-        val knownDomains = listOf(
-            "https://authserver.cqwu.edu.cn",
-            "https://clientvpn.cqwu.edu.cn",
-            "https://electricitypay.cqwu.edu.cn",
-            "https://pay.cqwu.edu.cn",
-            "http://218.194.176.214:8382",
-        )
-        for (url in knownDomains) {
-            val cookies = cm.getCookie(url) ?: continue
-            CookieParser.parse(cookies).forEach { (name, value) ->
-                setCookie(url, "$name=$value")
-            }
-        }
     }
 
     private fun normalizeUrl(url: String): String {

@@ -59,9 +59,9 @@ import edu.cqwu.electricity.electricity.ui.RechargeRecordScreen
 import edu.cqwu.electricity.electricity.ui.RechargeViewModel
 import edu.cqwu.electricity.feedback.ui.FeedbackScreen
 import edu.cqwu.electricity.feeservicehall.ui.FeeServiceHallScreen
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.login.data.SessionValidationResult
-import edu.cqwu.electricity.login.data.UserCookieStore
 import edu.cqwu.electricity.login.ui.LoginScreen
 import edu.cqwu.electricity.login.ui.QrLoginScreen
 import edu.cqwu.electricity.notice.ui.NoticeDetailScreen
@@ -116,8 +116,11 @@ object Routes {
     /** 扫码页面 */
     const val SCAN = "scan"
 
-    /** 本地登录页面 */
-    const val LOGIN = "login"
+    /** 本地登录页面（支持可选 username 参数，预填指定账号） */
+    const val LOGIN = "login?username={username}"
+
+    /** 构造登录页路由；username 为空时登录页自动填充最近登录账号 */
+    fun loginRoute(username: String = ""): String = "login?username=$username"
     /** 从内置浏览器进入的本地登录页面（返回时同时关闭 WebView） */
     const val WEBVIEW_LOGIN = "webview_login"
     /** 添加新账号（空白表单） */
@@ -348,15 +351,17 @@ fun AppNavGraph(
 
     val snackbar = LocalSnackbarController.current
 
-    // 启动时后台静默验证 Cookie 有效性（仅进程启动后执行一次，
+    // 启动时后台静默验证当前账号 Cookie 有效性（仅进程启动后执行一次，
     // 避免语言切换等 Activity 重建后再次跳转登录页）
     LaunchedEffect(Unit) {
         if (!startupCookieValidationDone) {
             startupCookieValidationDone = true
-            val store = UserCookieStore() // 空 store，validate 内部会从系统 CookieManager 兜底
-            when (val result = SessionManager.validateCookie(store)) {
+            val activeUser = AccountSessionStore.getActiveUser()
+            val cookies = activeUser?.let { AccountSessionStore.getAccount(it)?.cookies }
+                ?: emptyMap()
+            when (val result = SessionManager.validateCookie(cookies)) {
                 is SessionValidationResult.Valid -> {
-                    AppLog.d("NavGraph", "启动 Cookie 验证：有效")
+                    AppLog.d("NavGraph", "启动 Cookie 验证：有效（$activeUser）")
                 }
                 is SessionValidationResult.Invalid -> {
                     AppLog.d("NavGraph", "启动 Cookie 验证：失效，跳转登录页")
@@ -423,7 +428,7 @@ fun AppNavGraph(
             FeeServiceHallScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 
@@ -432,7 +437,7 @@ fun AppNavGraph(
             FeeServiceHallScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
                 initialTab = 1,
             )
         }
@@ -441,7 +446,7 @@ fun AppNavGraph(
         animatedComposable(settings = appSettings, route = Routes.MY_INFO) {
             MyInfoScreen(
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
             )
         }
@@ -461,7 +466,7 @@ fun AppNavGraph(
             BankCardBindScreen(
                 viewModel = bankCardBindViewModel,
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 
@@ -486,7 +491,7 @@ fun AppNavGraph(
         animatedComposable(settings = appSettings, route = Routes.ACCOUNT_INFO) {
             AccountInfoScreen(
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 
@@ -494,7 +499,7 @@ fun AppNavGraph(
         animatedComposable(settings = appSettings, route = Routes.CARD_LOST) {
             CardLostScreen(
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 
@@ -505,7 +510,7 @@ fun AppNavGraph(
                 viewModel = billViewModel,
                 onBack = { navController.popBackStack() },
                 onNavigateToWebView = { url, title -> navController.navigate(Routes.unifiedWebViewRoute(url, title)) },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 
@@ -641,9 +646,21 @@ fun AppNavGraph(
             )
         }
 
-        // 本地登录页面（通用入口，自动填充最近账号）
-        animatedComposable(settings = appSettings, route = Routes.LOGIN) {
+        // 本地登录页面（通用入口；可选 username 参数预填指定账号，为空时自动填充最近账号）
+        animatedComposable(
+            settings = appSettings,
+            route = Routes.LOGIN,
+            arguments = listOf(
+                navArgument("username") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            ),
+        ) { backStackEntry ->
+            val initialUsername = backStackEntry.arguments?.getString("username")
+                ?.takeIf { it.isNotBlank() }
             LoginScreen(
+                initialUsername = initialUsername,
                 onBack = { navController.popBackStack() },
             )
         }
@@ -786,7 +803,7 @@ fun AppNavGraph(
         animatedComposable(settings = appSettings, route = Routes.PERSON_SEARCH) {
             PersonSearchScreen(
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 
@@ -794,7 +811,7 @@ fun AppNavGraph(
         animatedComposable(settings = appSettings, route = Routes.SPEAK_UP) {
             SpeakUpScreen(
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
                 onNavigateToWebView = { url, title ->
                     navController.navigate(Routes.unifiedWebViewRoute(url, title))
                 },
@@ -819,7 +836,7 @@ fun AppNavGraph(
                 areaCode = areaCode,
                 areaName = areaName,
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
                 onMessageClick = { wid ->
                     navController.navigate(Routes.speakUpDetailRoute(wid))
                 },
@@ -838,7 +855,7 @@ fun AppNavGraph(
             MessageDetailScreen(
                 wid = wid,
                 onBack = { navController.popBackStack() },
-                onReLogin = { navController.navigate(Routes.LOGIN) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
         }

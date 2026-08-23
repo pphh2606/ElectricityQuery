@@ -109,13 +109,14 @@ fun LoginScreen(
     onBack: () -> Unit,
     onLoginSuccess: () -> Unit = onBack,
     clearForm: Boolean = false,
+    initialUsername: String? = null,
     loginViewModel: LoginViewModel = viewModel()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
 
     // 每次进入登录页时重置状态，防止 ViewModel 跨导航残留旧数据
     LaunchedEffect(Unit) {
-        loginViewModel.resetState(clearForm = clearForm)
+        loginViewModel.resetState(clearForm = clearForm, initialUsername = initialUsername)
     }
     val context = LocalContext.current
     val resources = LocalResources.current

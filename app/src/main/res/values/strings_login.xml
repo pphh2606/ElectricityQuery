@@ -78,6 +78,10 @@
     <string name="account_manager_title">账号管理</string>
     <string name="account_manager_current">当前</string>
     <string name="account_manager_add">添加账号</string>
+    <string name="account_manager_switching">正在验证登录状态…</string>
+    <string name="account_manager_switch_success">已切换到 %1$s</string>
+    <string name="account_manager_switch_failed">切换失败，请重试</string>
+    <string name="account_manager_switch_network_error">网络错误，暂时无法验证登录状态，请稍后重试</string>
     <string name="login_error_student_id_required">请输入学号</string>
     <string name="login_error_password_required">请输入密码</string>
     <string name="login_error_captcha_required">需要验证码，请手动完成登录</string>

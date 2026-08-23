@@ -41,6 +41,9 @@ object ServiceLoginManager {
                 AppLog.w(TAG, "service authorization failed: $serviceDomain missing $expectedCookie")
                 throw SessionExpiredException("服务授权失败，请重新登录")
             }
+
+            // 将服务域登录 cookie 合并进当前激活账号的持久化登录状态，切换账号后仍可恢复
+            AccountSessionStore.mergeSystemCookiesForActiveUser(serviceDomain)
         }
     }
 }

@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.dp
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.QrLoginApi
 import edu.cqwu.electricity.settings.data.QrCodeColorMode
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
@@ -218,14 +218,18 @@ fun QrLoginScreen(
                             val loginResult = submitResult.getOrThrow()
                             if (loginResult.username.isNotBlank()) {
                                 try {
-                                    val accountStore = AccountStore.getInstance(context)
-                                    accountStore.saveAccount(
-                                        username = loginResult.username,
-                                        password = null,
-                                        rememberPassword = true
-                                    )
+                                    loginResult.cookieStore?.let { tempStore ->
+                                        withContext(Dispatchers.IO) {
+                                            AccountSessionStore.commitLogin(
+                                                username = loginResult.username,
+                                                password = null,
+                                                rememberPassword = false,
+                                                cookies = tempStore.getAllCookies(),
+                                            )
+                                        }
+                                    }
                                 } catch (e: Exception) {
-                                    AppLog.w("QrLoginScreen", "保存用户到 AccountStore 失败", e)
+                                    AppLog.w("QrLoginScreen", "保存用户到 AccountSessionStore 失败", e)
                                 }
                             }
                             snackbar.show(resources.getString(R.string.login_success), ToastUtils.Type.SUCCESS)

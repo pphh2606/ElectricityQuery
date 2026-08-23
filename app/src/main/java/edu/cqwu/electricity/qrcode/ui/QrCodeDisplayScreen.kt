@@ -371,7 +371,7 @@ fun QrCodeDisplayScreen(
                         ReLoginContent(
                             errorMessage = errorMessage,
                             requiresReLogin = true,
-                            onReLogin = { nav.navigate(Routes.LOGIN) },
+                            onReLogin = { nav.navigate(Routes.loginRoute()) },
                             onRetry = {
                                 requiresReLogin = false
                                 isLoading = true

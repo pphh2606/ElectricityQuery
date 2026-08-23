@@ -203,7 +203,7 @@ fun AboutScreen(
                     )
 
                     // 构建信息
-                    val isCiBuild = BuildConfig.BUILD_SOURCE == "github-actions"
+                    val isCiBuild = false
                     AboutEntry(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.about_build_info),
@@ -256,7 +256,7 @@ fun AboutScreen(
     // ─── 联系方式底部弹窗 ───
     BottomSheetDialog(
         visible = showContactSheet,
-        onDismissRequest = { showContactSheet = false },
+        onDismissRequest = { },
         title = stringResource(R.string.about_contact_title),
     ) {
             // QQ
@@ -264,7 +264,6 @@ fun AboutScreen(
                 icon = Icons.AutoMirrored.Outlined.Chat,
                 title = stringResource(R.string.about_contact_qq),
                 onClick = {
-                    showContactSheet = false
                     try {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
@@ -282,7 +281,6 @@ fun AboutScreen(
                 icon = Icons.Outlined.VideogameAsset,
                 title = stringResource(R.string.about_contact_bilibili),
                 onClick = {
-                    showContactSheet = false
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("Bilibili UID", "1858606373"))
                     snackbar.show(resources.getString(R.string.common_copied_to_clipboard))
@@ -294,7 +292,6 @@ fun AboutScreen(
                 icon = Icons.Outlined.Email,
                 title = stringResource(R.string.about_contact_email),
                 onClick = {
-                    showContactSheet = false
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:2606841932@qq.com")
                     }

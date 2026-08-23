@@ -5,6 +5,7 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.network.WebVpnSettings
@@ -31,9 +32,11 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         CrashHandler.init(this)
         instance = this
         CookieStore.init()
-        // 预初始化 AccountStore 单例（EncryptedSharedPreferences 初始化耗时 ~100ms）
+        // 预初始化登录会话仓库（EncryptedSharedPreferences 初始化耗时 ~100ms），
         // 避免在 UI 组合线程中首次调用时阻塞滑动动画
-        edu.cqwu.electricity.login.data.AccountStore.getInstance(this)
+        AccountSessionStore.init(this)
+        // 恢复上次激活账号的登录态到系统 CookieManager
+        AccountSessionStore.restoreActiveSession()
     }
 
     companion object {

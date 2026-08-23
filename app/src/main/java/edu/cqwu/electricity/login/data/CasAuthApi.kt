@@ -40,7 +40,7 @@ class CasAuthApi {
      * 使用隔离的临时 UserCookieStore，与持久存储完全隔离：
      * - 登录过程中所有 Cookie 写入临时存储
      * - 登录失败时临时存储随对象销毁，不影响持久存储
-     * - 登录成功后由调用方通过 AccountManager.commitLoginCookies() 迁移到持久存储
+     * - 登录成功后由调用方通过 AccountSessionStore.commitLogin() 提交到持久存储并原子激活
      */
     suspend fun loginForUser(username: String, password: String): Result<LoginResult> {
         // 每次登录创建全新的隔离 Cookie 存储，避免脏 Cookie 残留
@@ -127,6 +127,6 @@ class CasAuthApi {
 data class LoginResult(
     val username: String,
     val cookieString: String,
-    /** 登录成功后的临时 Cookie 存储，由调用方通过 AccountManager.commitLoginCookies() 提交到持久存储 */
+    /** 登录成功后的临时 Cookie 存储，由调用方通过 AccountSessionStore.commitLogin() 提交到持久存储 */
     var cookieStore: UserCookieStore? = null
 )

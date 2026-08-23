@@ -2,7 +2,6 @@ package edu.cqwu.electricity.network
 
 import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager
-import edu.cqwu.electricity.app.ElectricityApp
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.login.data.SessionExpiryReason
@@ -33,7 +32,7 @@ class WebVpnInterceptor(
     private val cookieJar: CookieJar?,
     private val swallowSessionExpired: Boolean = false,
     private val sessionAuthenticator: (String) -> Unit = { protectedUrl ->
-        WebVpnSessionManager.authenticate(ElectricityApp.instance, protectedUrl, cookieJar)
+        WebVpnSessionManager.authenticate(protectedUrl, cookieJar)
     },
 ) : Interceptor {
 
@@ -95,7 +94,7 @@ class WebVpnInterceptor(
 
         AppLog.url(
             TAG,
-            "WebVPN 转换: ${original.url} -> ${transformedUrl}",
+            "WebVPN 转换: ${original.url} -> $transformedUrl",
         )
         val response = executeWithLoginRetry(buildTransformedRequest(original, transformedUrl)) {
             chain.proceed(it)
@@ -176,7 +175,7 @@ class WebVpnInterceptor(
         val protectedUrl = runCatching {
             WebVpnEncoder.decode(request.url.toString())
         }.getOrNull() ?: request.url.toString()
-        AppLog.url(TAG, "WebVPN 检测到需要登录，开始自动登录: ${protectedUrl}")
+        AppLog.url(TAG, "WebVPN 检测到需要登录，开始自动登录: $protectedUrl")
         sessionAuthenticator(protectedUrl)
         throw WebVpnRetryException()
     }

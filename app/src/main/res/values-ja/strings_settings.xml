@@ -123,12 +123,12 @@
     <string name="storage_clear_crash_logs">クラッシュログ</string>
     <string name="storage_clear_temp_logs">一時ログファイル</string>
     <string name="storage_clear_webview_data">WebView ブラウジングデータ</string>
-    <string name="storage_clear_cookie_data">Cookie / セッションデータ</string>
-    <string name="storage_clear_cookie_hint">すべてのサイトの Cookie を削除します。再ログインが必要です</string>
+    <string name="storage_clear_cookie_data">ログイン情報とCookie</string>
+    <string name="storage_clear_cookie_hint">すべてのブラウザのログインデータを削除します。再ログインが必要です</string>
     <string name="storage_clear_settings">アプリ設定</string>
     <string name="storage_clear_settings_hint">クリア後に設定がデフォルトに戻ります</string>
     <string name="storage_clear_account_data">アカウントデータ</string>
-    <string name="storage_clear_account_hint">すべてのユーザーアカウント情報を削除</string>
+    <string name="storage_clear_account_hint">すべてのユーザーアカウント情報を削除します。Cookie/セッションデータも同時に必要です</string>
     <string name="storage_clear_button">選択した項目をクリア</string>
     <string name="storage_clear_confirm_title">クリアの確認</string>
     <string name="storage_clear_confirm_message">以下のデータが完全に削除されます：\n%1$s\n\nこの操作は取り消せません。続行しますか？</string>

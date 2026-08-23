@@ -147,7 +147,7 @@ class QrLoginApi {
                 throw RuntimeException("二维码解码结果为空")
             }
 
-            AppLog.url("QrLoginApi", "二维码解码成功: ${decodedText}")
+            AppLog.url("QrLoginApi", "二维码解码成功: $decodedText")
             Result.success(decodedText)
         } catch (e: Exception) {
             AppLog.e("QrLoginApi", "下载并解码二维码失败", e)
@@ -191,7 +191,7 @@ class QrLoginApi {
      * 我们只需要第一个 302 响应的 Set-Cookie: CASTGC，无需跟随重定向。
      *
      * 获取到 CASTGC 后，会自动查询 /authserver/index.do 提取学号和实名，
-     * 并将 CASTGC 保存到 AccountManager，确保后续智能切换可用。
+     * 并将 CASTGC 保存到 AccountSessionStore，确保后续智能切换可用。
      */
     suspend fun submitQrLogin(lt: String, uuid: String, execution: String): Result<LoginResult> = withContext(Dispatchers.IO) {
         try {
@@ -233,10 +233,9 @@ class QrLoginApi {
                 throw RuntimeException("扫码登录失败：未能获取到 CASTGC Cookie")
             }
 
-            // ═══ 提取用户信息并保存到 AccountManager ═══
+            // ═══ 提取用户信息（学号/实名）═══
             // 使用同一个独立 client（含全部 Cookie）请求 /authserver/index.do
             var username = ""
-            var committed = false
             try {
                 val indexResponse = client.newCall(
                     Request.Builder()
@@ -254,18 +253,12 @@ class QrLoginApi {
                         "QrLoginApi",
                         "扫码登录: 学号=${username}, 实名=${realName}",
                     )
-
-                    // 使用统一的提交方法，将临时 CookieStore 迁移到持久存储
-                    AccountManager.commitLoginCookies(username, cookieStore)
-                    committed = true
                 }
             } catch (e: Exception) {
                 AppLog.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
             }
 
-            if (!committed) {
-                cookieStore.syncToCookieManager()
-            }
+            // 未提取到学号时不提交登录态（保持当前登录态不变），由调用方根据 username 决定是否保存
 
             val cookieString = cookieStore.getCookie("https://authserver.cqwu.edu.cn") ?: ""
             AppLog.d(
@@ -276,7 +269,9 @@ class QrLoginApi {
             Result.success(
                 LoginResult(
                     username = username,
-                    cookieString = cookieString
+                    cookieString = cookieString,
+                    // 临时 Cookie 存储交由调用方通过 AccountSessionStore.commitLogin 提交（持久化 + 原子激活）
+                    cookieStore = cookieStore,
                 )
             )
         } catch (e: Exception) {

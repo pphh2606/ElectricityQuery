@@ -60,8 +60,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountStore
-import edu.cqwu.electricity.login.data.AccountManager
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
@@ -97,8 +96,7 @@ fun CardRechargeScreen(
 
     // ── 自动填充已登录用户的学号并查询 ──
     val loggedInStudentId = remember {
-        AccountManager.getActiveUser()
-            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
+        AccountSessionStore.getActiveUser()
     }
     LaunchedEffect(Unit) {
         viewModel.autoFillFromLogin(loggedInStudentId)

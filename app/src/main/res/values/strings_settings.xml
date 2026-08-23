@@ -123,12 +123,12 @@
     <string name="storage_clear_crash_logs">崩溃日志</string>
     <string name="storage_clear_temp_logs">临时日志文件</string>
     <string name="storage_clear_webview_data">WebView 浏览数据</string>
-    <string name="storage_clear_cookie_data">Cookie / 会话数据</string>
-    <string name="storage_clear_cookie_hint">清除所有网站的 Cookie，需重新登录</string>
+    <string name="storage_clear_cookie_data">登录信息和cookie</string>
+    <string name="storage_clear_cookie_hint">清除所有的浏览器登录数据，需重新登录</string>
     <string name="storage_clear_settings">应用设置</string>
     <string name="storage_clear_settings_hint">清除后设置恢复默认</string>
     <string name="storage_clear_account_data">账号数据</string>
-    <string name="storage_clear_account_hint">清除所有用户账号信息</string>
+    <string name="storage_clear_account_hint">清除所有用户账号信息，须同时cookie/会话储存</string>
     <string name="storage_clear_button">清除选中项目</string>
     <string name="storage_clear_confirm_title">确认清除</string>
     <string name="storage_clear_confirm_message">以下数据将被永久清除：\n%1$s\n\n此操作不可撤销，是否继续？</string>

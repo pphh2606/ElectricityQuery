@@ -123,12 +123,12 @@
     <string name="storage_clear_crash_logs">Journaux de plantage</string>
     <string name="storage_clear_temp_logs">Fichiers journaux temporaires</string>
     <string name="storage_clear_webview_data">Données de navigation WebView</string>
-    <string name="storage_clear_cookie_data">Cookies / Données de session</string>
-    <string name="storage_clear_cookie_hint">Effacer les cookies de tous les sites, reconnexion nécessaire</string>
+    <string name="storage_clear_cookie_data">Informations de connexion et cookies</string>
+    <string name="storage_clear_cookie_hint">Efface toutes les données de connexion du navigateur, reconnexion requise</string>
     <string name="storage_clear_settings">Paramètres de l\'application</string>
     <string name="storage_clear_settings_hint">Les paramètres seront réinitialisés après l\'effacement</string>
     <string name="storage_clear_account_data">Données du compte</string>
-    <string name="storage_clear_account_hint">Effacer toutes les informations de compte utilisateur</string>
+    <string name="storage_clear_account_hint">Efface toutes les informations de compte utilisateur ; nécessite également Cookies/Données de session</string>
     <string name="storage_clear_button">Effacer les éléments sélectionnés</string>
     <string name="storage_clear_confirm_title">Confirmer l\'effacement</string>
     <string name="storage_clear_confirm_message">Les données suivantes seront définitivement effacées :\n%1$s\n\nCette action est irréversible, continuer ?</string>

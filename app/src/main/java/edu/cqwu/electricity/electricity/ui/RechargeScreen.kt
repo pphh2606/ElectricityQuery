@@ -62,8 +62,7 @@ import java.util.Locale
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
-import edu.cqwu.electricity.login.data.AccountManager
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
@@ -114,10 +113,9 @@ fun RechargeScreen(
     val showRechargeContent = hasQueriedSuccess
 
     // ── 自动填充已登录用户的学号并查询 ──
-    // 优先取内存中的活跃用户，其次取本地持久化的最近登录学号
+    // 取当前激活账号（持久化，进程重启后仍有效）
     val loggedInStudentId = remember {
-        AccountManager.getActiveUser()
-            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
+        AccountSessionStore.getActiveUser()
     }
     LaunchedEffect(Unit) {
         viewModel.autoFillFromLogin(loggedInStudentId)

@@ -35,7 +35,7 @@ object RedirectChainFollower {
         var redirectCount = 0
 
         while (redirectCount < MAX_REDIRECTS) {
-            tag?.let { AppLog.url(it, "redirect ${redirectCount + 1}: ${currentUrl}") }
+            tag?.let { AppLog.url(it, "redirect ${redirectCount + 1}: $currentUrl") }
             val response = client.newCall(
                 Request.Builder()
                     .url(currentUrl)

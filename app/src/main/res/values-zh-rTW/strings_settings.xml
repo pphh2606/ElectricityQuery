@@ -123,12 +123,12 @@
     <string name="storage_clear_crash_logs">當機記錄</string>
     <string name="storage_clear_temp_logs">暫存記錄檔</string>
     <string name="storage_clear_webview_data">WebView 瀏覽資料</string>
-    <string name="storage_clear_cookie_data">Cookie / 工作階段資料</string>
-    <string name="storage_clear_cookie_hint">清除所有網站的 Cookie，需重新登入</string>
+    <string name="storage_clear_cookie_data">登入資訊和 Cookie</string>
+    <string name="storage_clear_cookie_hint">清除所有瀏覽器登入資料，需重新登入</string>
     <string name="storage_clear_settings">應用程式設定</string>
     <string name="storage_clear_settings_hint">清除後設定將恢復為預設值</string>
     <string name="storage_clear_account_data">帳號資料</string>
-    <string name="storage_clear_account_hint">清除所有使用者帳號資訊</string>
+    <string name="storage_clear_account_hint">清除所有使用者帳號資訊，須同時清除 Cookie/工作階段資料</string>
     <string name="storage_clear_button">清除選取項目</string>
     <string name="storage_clear_confirm_title">確認清除</string>
     <string name="storage_clear_confirm_message">以下資料將被永久清除：\n%1$s\n\n此操作無法復原，是否繼續？</string>

@@ -62,8 +62,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.login.data.AccountManager
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.ui.AccountManagerSheet
 import edu.cqwu.electricity.network.WebVpnEncoder
 import edu.cqwu.electricity.settings.data.NightMode
@@ -155,8 +154,7 @@ fun ProfilePageContent(
 
     val username = remember(usernameRefreshKey) {
         val t0 = System.currentTimeMillis()
-        val result = AccountManager.getActiveUser()
-            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
+        val result = AccountSessionStore.getActiveUser()
         AppLog.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
         result
     }
@@ -183,7 +181,7 @@ fun ProfilePageContent(
                         if (isLoggedIn) {
                             nav.navigate(Routes.MY_INFO)
                         } else {
-                            nav.navigate(Routes.LOGIN)
+                            nav.navigate(Routes.loginRoute())
                         }
                     },
                 shape = RoundedCornerShape(16.dp),
@@ -254,7 +252,7 @@ fun ProfilePageContent(
                             if (isLoggedIn) {
                                 nav.navigate(Routes.MY_INFO)
                             } else {
-                                nav.navigate(Routes.LOGIN)
+                                nav.navigate(Routes.loginRoute())
                             }
                         },
                         modifier = Modifier.size(36.dp),
@@ -307,9 +305,9 @@ fun ProfilePageContent(
     AccountManagerSheet(
         show = showAccountManagerSheet,
         onDismiss = { showAccountManagerSheet = false },
-        onNavigateToLogin = {
+        onNavigateToLogin = { username ->
             showAccountManagerSheet = false
-            nav.navigate(Routes.LOGIN)
+            nav.navigate(Routes.loginRoute(username))
         },
         onNavigateToAddAccount = {
             showAccountManagerSheet = false

@@ -38,25 +38,25 @@ object SessionManager {
     // ═══════════════════════════════════════════
 
     /**
-     * 验证指定用户的 Cookie 是否有效。
+     * 验证指定账号的登录状态（cookie）是否有效。
      *
      * 使用 GET /authserver/index.do 验证 CASTGC 是否有效，
      * 同时从返回的个人设置页 HTML 中提取学号和实名信息。
      *
-     * @param userStore 该用户的 [UserCookieStore]
-     * @param syncFromSystem 是否在 UserCookieStore 为空时从系统 CookieManager 兜底导入。
+     * @param cookies 该账号持久化的 cookie 集合（domain → name→value），为空直接判定无效。
      * @return [SessionValidationResult.Valid]、[SessionValidationResult.Invalid]、[SessionValidationResult.NetworkError]
      */
     suspend fun validateCookie(
-        userStore: UserCookieStore,
-        syncFromSystem: Boolean = true,
+        cookies: Map<String, Map<String, String>>,
     ): SessionValidationResult = withContext(Dispatchers.IO) {
         try {
-            if (syncFromSystem) {
-                val existingCookie = userStore.getCookie("https://authserver.cqwu.edu.cn")
-                if (existingCookie.isNullOrBlank()) {
-                    AppLog.d("SessionManager", "UserCookieStore 为空，从系统 CookieManager 兜底导入")
-                    userStore.syncFromCookieManager()
+            if (cookies.isEmpty()) return@withContext SessionValidationResult.Invalid
+
+            // 将持久化的账号 cookie 装载到临时 UserCookieStore，用 UserAwareCookieJar 隔离验证
+            val userStore = UserCookieStore()
+            for ((domain, kv) in cookies) {
+                for ((name, value) in kv) {
+                    userStore.setCookie(domain, "$name=$value")
                 }
             }
 

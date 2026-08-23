@@ -123,12 +123,12 @@
     <string name="storage_clear_crash_logs">سجلات الأعطال</string>
     <string name="storage_clear_temp_logs">ملفات السجلات المؤقتة</string>
     <string name="storage_clear_webview_data">بيانات تصفح WebView</string>
-    <string name="storage_clear_cookie_data">ملفات تعريف الارتباط / بيانات الجلسة</string>
-    <string name="storage_clear_cookie_hint">مسح ملفات تعريف الارتباط لجميع المواقع، يتطلب إعادة تسجيل الدخول</string>
+    <string name="storage_clear_cookie_data">معلومات تسجيل الدخول وملفات تعريف الارتباط</string>
+    <string name="storage_clear_cookie_hint">مسح جميع بيانات تسجيل الدخول في المتصفح، يتطلب إعادة تسجيل الدخول</string>
     <string name="storage_clear_settings">إعدادات التطبيق</string>
     <string name="storage_clear_settings_hint">ستعود الإعدادات إلى الوضع الافتراضي بعد المسح</string>
     <string name="storage_clear_account_data">بيانات الحساب</string>
-    <string name="storage_clear_account_hint">مسح جميع معلومات حسابات المستخدمين</string>
+    <string name="storage_clear_account_hint">مسح جميع معلومات حسابات المستخدمين، يتطلب أيضًا ملفات تعريف الارتباط/بيانات الجلسة</string>
     <string name="storage_clear_button">مسح العناصر المحددة</string>
     <string name="storage_clear_confirm_title">تأكيد المسح</string>
     <string name="storage_clear_confirm_message">سيتم مسح البيانات التالية نهائيًا:\n%1$s\n\nلا يمكن التراجع عن هذا الإجراء، هل تريد المتابعة؟</string>

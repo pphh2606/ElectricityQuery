@@ -1,11 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.electricity.ui
-import edu.cqwu.electricity.logging.AppLog
-
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.pluralStringResource
-import edu.cqwu.electricity.R
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -40,18 +35,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.electricity.data.displayName
-import edu.cqwu.electricity.login.data.AccountManager
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -68,12 +64,6 @@ fun BuildingSelectionScreen(
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
     val context = LocalContext.current
-
-    // 获取当前登录学号
-    remember {
-        AccountManager.getActiveUser()
-            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
-    }
 
     // 进入页面时加载校区列表
     LaunchedEffect(Unit) {

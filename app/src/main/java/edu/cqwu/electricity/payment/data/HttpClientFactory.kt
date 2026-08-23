@@ -1,9 +1,7 @@
 package edu.cqwu.electricity.payment.data
 
-import edu.cqwu.electricity.login.data.AccountManager
 import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
 import edu.cqwu.electricity.login.data.UserAgentInterceptor
-import edu.cqwu.electricity.login.data.UserAwareCookieJar
 import edu.cqwu.electricity.network.WebVpnInterceptor
 import okhttp3.CookieJar
 import okhttp3.Dns
@@ -37,11 +35,6 @@ object HttpClientFactory {
             cookieJar = CookieStoreOkHttpJar,
             swallowSessionExpired = true,
         )
-    }
-
-    fun createForUser(username: String): OkHttpClient {
-        val userStore = AccountManager.getCookiesForUser(username)
-        return create(cookieJar = UserAwareCookieJar(userStore))
     }
 
     fun create(

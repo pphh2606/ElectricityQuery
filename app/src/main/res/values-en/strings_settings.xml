@@ -123,12 +123,12 @@
     <string name="storage_clear_crash_logs">Crash Logs</string>
     <string name="storage_clear_temp_logs">Temporary Log Files</string>
     <string name="storage_clear_webview_data">WebView Browsing Data</string>
-    <string name="storage_clear_cookie_data">Cookie / Session Data</string>
-    <string name="storage_clear_cookie_hint">Clears all website cookies, requires re-login</string>
+    <string name="storage_clear_cookie_data">Login Info &amp; Cookies</string>
+    <string name="storage_clear_cookie_hint">Clears all browser login data, requires re-login</string>
     <string name="storage_clear_settings">App Settings</string>
     <string name="storage_clear_settings_hint">Settings will reset to defaults</string>
     <string name="storage_clear_account_data">Account Data</string>
-    <string name="storage_clear_account_hint">Clear all user account information</string>
+    <string name="storage_clear_account_hint">Clears all user account info; requires Cookie/Session Data as well</string>
     <string name="storage_clear_button">Clear Selected</string>
     <string name="storage_clear_confirm_title">Confirm Clear</string>
     <string name="storage_clear_confirm_message">The following data will be permanently deleted:\n%1$s\n\nThis action cannot be undone. Continue?</string>

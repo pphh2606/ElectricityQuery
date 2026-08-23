@@ -67,8 +67,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.SelectionStep
-import edu.cqwu.electricity.login.data.AccountManager
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
@@ -137,8 +136,7 @@ fun ElectricityMainScreen(
 
     // 获取当前登录学号
     val loggedInStudentId = remember {
-        AccountManager.getActiveUser()
-            ?: AccountStore.getInstance(context).getAllAccountNames().firstOrNull()
+        AccountSessionStore.getActiveUser()
     }
 
     // 当前 Tab 标题：查询 Tab 进入余额结果页后显示"电费查询结果"
@@ -336,7 +334,7 @@ fun ElectricityMainScreen(
                     MyRoomDashboardTab(
                         viewModel = myRoomViewModel,
                         loggedInStudentId = loggedInStudentId,
-                        onReLogin = { nav.navigate(Routes.LOGIN) },
+                        onReLogin = { nav.navigate(Routes.loginRoute()) },
                     )
                 }
             }

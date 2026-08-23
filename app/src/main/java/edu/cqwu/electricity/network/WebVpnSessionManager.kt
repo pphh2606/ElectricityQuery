@@ -1,10 +1,8 @@
 package edu.cqwu.electricity.network
 
-import android.content.Context
 import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager
-import edu.cqwu.electricity.login.data.AccountManager
-import edu.cqwu.electricity.login.data.AccountStore
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CasLoginException
 import edu.cqwu.electricity.login.data.CasLoginFlow
 import edu.cqwu.electricity.login.data.CookieParser
@@ -66,13 +64,12 @@ object WebVpnSessionManager {
     private const val TAG = "WebVpnSessionManager"
 
     fun authenticate(
-        context: Context,
         protectedUrl: String,
         cookieJar: CookieJar? = CookieStoreOkHttpJar,
     ) {
         if (!WebVpnSettings.enabled) return
 
-        val account = resolveSavedAccount(context)
+        val account = resolveSavedAccount()
             ?: throw SessionExpiredException(
                 "未找到已保存的账号密码，无法自动登录 WebVPN，请先保存密码",
                 SessionExpiryReason.NO_SAVED_ACCOUNT,
@@ -146,7 +143,7 @@ object WebVpnSessionManager {
                 SessionExpiryReason.LOGIN_REJECTED,
             )
         val ticketUrl = RedirectChainFollower.resolve(loginUrl, location)
-        AppLog.url(TAG, "CAS 登录成功，跟踪 ticket 回调: ${ticketUrl}")
+        AppLog.url(TAG, "CAS 登录成功，跟踪 ticket 回调: $ticketUrl")
         val finalPage = try {
             RedirectChainFollower.followToCasLoginPage(
                 client = client,
@@ -172,27 +169,24 @@ object WebVpnSessionManager {
     }
 
     private fun persistWebVpnCookies(cookieJar: CookieJar?) {
-        val activeUser = AccountManager.getActiveUser() ?: return
         if (cookieJar != null && cookieJar !== CookieStoreOkHttpJar) return
 
         val cookieString = CookieManager.getInstance().getCookie(WebVpnEncoder.PROXY_BASE)
             ?: return
-        val store = AccountManager.getCookiesForUser(activeUser)
         val parsed = CookieParser.parse(cookieString)
-        parsed.forEach { (name, value) ->
-            store.setCookie(WebVpnEncoder.PROXY_BASE, "$name=$value")
-        }
+        if (parsed.isEmpty()) return
+        // 将 clientvpn cookie 合并进当前激活账号的持久化登录状态，切换账号后仍可恢复
+        AccountSessionStore.mergeSystemCookiesForActiveUser(WebVpnEncoder.PROXY_BASE)
         AppLog.d(TAG, "WebVPN 自动登录完成，已同步 clientvpn Cookie: ${parsed.keys.sorted()}")
     }
 
-    private fun resolveSavedAccount(context: Context): Pair<String, String>? {
-        val store = AccountStore.getInstance(context)
-        val activeUser = AccountManager.getActiveUser()
+    private fun resolveSavedAccount(): Pair<String, String>? {
+        val activeUser = AccountSessionStore.getActiveUser()
         if (activeUser != null) {
-            val password = store.getPassword(activeUser)
+            val password = AccountSessionStore.getAccount(activeUser)?.password
             if (!password.isNullOrBlank()) return activeUser to password
         }
-        return store.getAllAccounts()
+        return AccountSessionStore.getAllAccounts()
             .firstOrNull { !it.password.isNullOrBlank() }
             ?.let { it.username to it.password!! }
     }

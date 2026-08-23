@@ -189,7 +189,7 @@ fun HallPageContent(
                                 val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
                                 nav.navigate(Routes.unifiedWebViewRoute(url, item.appName))
                             },
-                            onReLogin = { nav.navigate(Routes.LOGIN) },
+                            onReLogin = { nav.navigate(Routes.loginRoute()) },
                             onRetry = { hallViewModel.loadFavorites() },
                         )
                     }
@@ -199,7 +199,7 @@ fun HallPageContent(
                             uiState = uiState,
                             onQueryChange = { hallViewModel.setSearchQuery(it) },
                             onSearch = { hallViewModel.performSearch() },
-                            onReLogin = { nav.navigate(Routes.LOGIN) },
+                            onReLogin = { nav.navigate(Routes.loginRoute()) },
                             onRetry = { hallViewModel.loadSearchData() },
                             onRoleSelect = { hallViewModel.selectRoleLabel(it) },
                             onCategorySelect = { hallViewModel.selectCategoryLabel(it) },

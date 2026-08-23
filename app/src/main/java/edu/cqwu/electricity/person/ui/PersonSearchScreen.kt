@@ -339,7 +339,7 @@ private fun PersonCard(person: PersonRow) {
                         )
                     }
                     // id（长数字）与 deptCode（短数字）之间用空格隔开
-                    val numbers = listOf(person.id, person.deptCode).filterNotNull()
+                    val numbers = listOfNotNull(person.id, person.deptCode)
                     if (numbers.isNotEmpty()) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(

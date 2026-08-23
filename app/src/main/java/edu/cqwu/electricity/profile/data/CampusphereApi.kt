@@ -3,7 +3,7 @@ package edu.cqwu.electricity.profile.data
 import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.login.data.AccountManager
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.ServiceLoginManager
@@ -54,14 +54,9 @@ class CampusphereApi {
 
     /**
      * 创建 OkHttpClient 并获取 Cookie 读取器。
+     * 系统 CookieManager 始终只反映当前激活账号的登录态，直接使用共享 client 即可。
      */
     private fun createClient(): Pair<OkHttpClient, (String) -> String?> {
-        val activeUser = AccountManager.getActiveUser()
-        if (activeUser != null) {
-            val store = AccountManager.getCookiesForUser(activeUser)
-            store.syncFromCookieManager()
-            return HttpClientFactory.createForUser(activeUser) to { store.getCookie(it) }
-        }
         return HttpClientFactory.shared to { CookieStore.getCookie(it) }
     }
 
@@ -89,7 +84,7 @@ class CampusphereApi {
                 val campusCookie = cookieReader(BASE)
                 val authCookie = cookieReader(AUTH_SERVER)
                 AppLog.d(TAG,
-                    "activeUser=${AccountManager.getActiveUser()}, " +
+                    "activeUser=${AccountSessionStore.getActiveUser()}, " +
                     "campusphere=${campusCookie != null}(len=${campusCookie?.length ?: 0}), " +
                     "auth=${authCookie != null}(len=${authCookie?.length ?: 0})")
             }

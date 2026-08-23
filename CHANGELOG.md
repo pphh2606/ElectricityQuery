@@ -1,10 +1,13 @@
 ## 新增功能
-- 新增「查找人员」模块：在"我的"页面增加入口，可按姓名或学号关键字搜索校内人员，分页浏览搜索结果。通过 `PersonSearchApi` 调用 ehall 通用人员选择组件 `choose_person.do` 接口，复用 `ServiceLoginManager.ensureLogin` 完成 CAS 会话初始化；`PersonSearchViewModel` 以 StateFlow 管理 Idle/Loading/Success/Error 状态，用搜索代数（generation）机制丢弃过期请求，支持滚动到底自动加载下一页与下拉刷新；`PersonSearchScreen` 提供下划线样式搜索条、人员卡片与结果统计行，并在 `NavGraph` 注册 `person_search` 路由。
-- 新增「查找人员」界面的多语言文案：新增六套 `strings_person.xml` 资源，覆盖搜索提示、结果统计、分页与空状态等文案。
+- 账号管理支持一键免密切换与预填登录。点击已有账号先验证 CAS 登录态，有效则原子切换无需重新登录，失效则跳转登录页预填该学号，登录路由新增可选 username 参数。
+- 应用启动自动恢复上次登录会话。启动时把当前激活账号的持久化 cookie 写回系统 CookieManager，退出登录接口预留在 LogoutApi 中，服务端暂无接口时记录日志跳过。
+## Bug 修复
+- 修复账号切换与删除后旧登录态残留。新增 SessionCleaner 统一清空系统 Cookie 与 WebView DOM 存储，CookieStore.removeAllCookies 改用 CountDownLatch 同步等待清除完成。
+- 修复关于页交互与显示问题。联系方式点击后弹窗保持打开，构建信息不再依据构建来源显示 CI 标识。
 ## 架构改进
-- 应用夜间模式改为全局即时生效：启动时与运行中切换时都会通过 `AppCompatDelegate.setDefaultNightMode()` 把夜间模式设置应用到整个 Activity。`MainActivity` 由 `ComponentActivity` 改为 `AppCompatActivity`，在 `onCreate` 中读取 `NIGHT_MODE` 设置先行应用，新增 `NightMode.toAppCompatMode()` 将 SYSTEM/LIGHT/DARK 映射为 `MODE_NIGHT_FOLLOW_SYSTEM`/`MODE_NIGHT_NO`/`MODE_NIGHT_YES`，`updateNightMode()` 切换时同步调用。
-- 窗口主题切换为基于 AppCompat 的 DayNight 主题以配合夜间模式联动：四套主题资源（`values`、`values-night`、`values-v23`、`values-night-v23`）中 `Theme.电费查询` 的父主题统一由 `android:Theme.Material.Light/NoActionBar` 换成 `Theme.AppCompat.DayNight.NoActionBar`，使 Activity 层能够响应 `setDefaultNightMode` 引发的深浅色重建。
-- 移除「网页深色模式」独立开关：网页深色现在直接由应用夜间模式推导，无需单独开启。删除 `WEBVIEW_DARK_MODE` 设置键、`AppSettingsState.webviewDarkMode` 状态与 `updateWebviewDarkMode()`，`shouldApplyWebViewDarkMode()` 只依据 `nightMode.isDark(systemDark)` 判断，并同步移除设置页开关入口与全部语言的对应文案，简化设置项模型。
-- 移除网络请求中硬编码的 User-Agent 头：`HallFavoriteApi`、`HallSearchApi`、`SpeakUpApi` 不再为每个请求手工指定固定的 Android Chrome UA，统一交由 OkHttp 客户端提供默认 UA，减少请求头样板代码与维护成本。
-## 依赖变更
-- 新增 AndroidX AppCompat 依赖以支持 DayNight 主题与夜间模式联动：版本目录 `gradle/libs.versions.toml` 新增 `appcompat = "1.6.1"` 版本与 `androidx-appcompat` 库条目，`app/build.gradle.kts` 添加 `implementation(libs.androidx.appcompat)`。
+- 登录会话收敛为单一持久化仓库。AccountSessionStore 统一加密存储账号、密码与登录态 cookie 并记录激活账号，替代原 AccountStore 与 AccountManager，登录态提交与切换改为原子操作，成功前不改动当前登录态。
+- 扫码登录与服务登录态统一走持久化提交。QrLoginApi 返回临时 Cookie 存储交由上层 commitLogin 激活，WebVPN 自动登录与 ticket 交换后的 cookie 合并进当前激活账号。
+- 系统 CookieManager 只反映当前激活账号。HttpClientFactory 移除按用户创建客户端逻辑，CampusphereApi 改用共享客户端，WebVpnSessionManager 移除 Context 依赖。
+- 设置页存储清理语义重构。WebView 清理覆盖 app_webview 真实数据目录与 DOM 存储，登录信息和 cookie 清理保留账号密码，相关多语言文案同步更新。
+## 删除的文件
+- 删除 AccountManager.kt 与 AccountStore.kt。原多用户 Cookie 管理与账号密码持久化逻辑并入 AccountSessionStore。
