@@ -75,7 +75,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.feeservicehall.data.FeeItem
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
@@ -140,7 +140,7 @@ fun FeeServiceHallScreen(
     }
 
     // 订单详情底部弹窗
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = selectedOrder != null,
         onDismissRequest = { selectedOrder = null },
     ) {

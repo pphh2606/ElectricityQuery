@@ -80,7 +80,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LanguageSwitchButton
 import edu.cqwu.electricity.theme.ui.LoadingDialog
@@ -500,7 +500,7 @@ fun LoginScreen(
     )
 
     // ========== 其他登录方式弹窗 ==========
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showOtherLoginSheet,
         onDismissRequest = { showOtherLoginSheet = false },
         title = stringResource(R.string.login_other_login),
@@ -526,7 +526,7 @@ fun LoginScreen(
     // ========== 找回密码弹窗 ==========
     val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
     val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showRecoverySheet,
         onDismissRequest = { showRecoverySheet = false },
         title = stringResource(R.string.login_password_recovery),

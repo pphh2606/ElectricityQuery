@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 
 /**
  * 安全说明底部弹窗。
@@ -22,7 +22,7 @@ fun SecurityNoticeSheet(
     visible: Boolean = true,
     onDismiss: () -> Unit,
 ) {
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.login_security_notice_title),

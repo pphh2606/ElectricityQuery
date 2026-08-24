@@ -25,6 +25,22 @@
     <string name="account_manager_v2_relogin_message">認証に失敗しました。もう一度ログインしてください。</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  ユーザー名の変更                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="user_name_edit_title">ユーザー名を変更</string>
+    <string name="user_name_edit_tip">ログイン別名を設定すると、その別名でログインできます。複数の別名はカンマで区切ってください。\n注意：追加した別名は後から変更できません。</string>
+    <string name="user_name_edit_alias_label">ログイン別名</string>
+    <string name="user_name_edit_nickname_label">ニックネーム</string>
+    <string name="user_name_edit_nickname_placeholder">ニックネームを入力してください</string>
+    <string name="user_name_edit_save">保存</string>
+    <string name="user_name_edit_success">変更が完了しました</string>
+    <string name="user_name_edit_alias_available">別名は使用可能です</string>
+    <string name="user_name_edit_alias_unavailable">別名は使用できません</string>
+    <string name="user_name_edit_saving">保存中…</string>
+    <string name="user_name_edit_no_account">ユーザー名を変更するには、先にログインしてください</string>
+    <string name="user_name_edit_load_failed">読み込みに失敗しました。もう一度お試しください</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  個人設定                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">個人設定</string>

@@ -25,6 +25,22 @@
     <string name="account_manager_v2_relogin_message">L\'authentification a échoué. Veuillez vous reconnecter.</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  Modifier le nom d\'utilisateur             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="user_name_edit_title">Modifier le nom d\'utilisateur</string>
+    <string name="user_name_edit_tip">Si vous définissez un alias de connexion, vous pouvez l\'utiliser pour vous connecter. Séparez plusieurs alias par des virgules.\nRemarque : Les alias ne peuvent plus être modifiés une fois ajoutés.</string>
+    <string name="user_name_edit_alias_label">Alias de connexion</string>
+    <string name="user_name_edit_nickname_label">Surnom</string>
+    <string name="user_name_edit_nickname_placeholder">Saisissez un surnom</string>
+    <string name="user_name_edit_save">Enregistrer</string>
+    <string name="user_name_edit_success">Modification réussie</string>
+    <string name="user_name_edit_alias_available">Alias disponible</string>
+    <string name="user_name_edit_alias_unavailable">Alias indisponible</string>
+    <string name="user_name_edit_saving">Enregistrement…</string>
+    <string name="user_name_edit_no_account">Veuillez d\'abord vous connecter pour modifier le nom d\'utilisateur</string>
+    <string name="user_name_edit_load_failed">Échec du chargement. Veuillez réessayer.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  Personnalisation                           -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">Personnalisation</string>

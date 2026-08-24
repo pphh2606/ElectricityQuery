@@ -6,7 +6,7 @@ import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.logging.LogLevel
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 
 @Composable
@@ -16,7 +16,7 @@ fun LogLevelSheet(
 ) {
     val appSettings = LocalAppSettingsState.current
 
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showSheet,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.log_level_select),

@@ -49,7 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.feedback.util.CrashHandler
@@ -237,7 +237,7 @@ fun FeedbackScreen(
     }
 
     // ── 日志预览弹窗（下滑或点击外部关闭） ──
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showLogPreview,
         onDismissRequest = { showLogPreview = false },
         title = stringResource(R.string.feedback_log_preview),

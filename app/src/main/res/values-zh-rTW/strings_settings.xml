@@ -25,6 +25,22 @@
     <string name="account_manager_v2_relogin_message">身分驗證失敗，請重新登入。</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  修改用戶名（CAS 登入別名 + 暱稱）          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="user_name_edit_title">修改用戶名</string>
+    <string name="user_name_edit_tip">如果您設定了登入別名，您就可以使用登入別名登入系統，多個別名用逗號隔開\n注意：新增登入別名後不可再修改</string>
+    <string name="user_name_edit_alias_label">登入別名</string>
+    <string name="user_name_edit_nickname_label">暱稱</string>
+    <string name="user_name_edit_nickname_placeholder">請輸入暱稱</string>
+    <string name="user_name_edit_save">儲存</string>
+    <string name="user_name_edit_success">修改成功</string>
+    <string name="user_name_edit_alias_available">登入別名可使用</string>
+    <string name="user_name_edit_alias_unavailable">登入別名不可用</string>
+    <string name="user_name_edit_saving">正在儲存…</string>
+    <string name="user_name_edit_no_account">請先登入後再修改用戶名</string>
+    <string name="user_name_edit_load_failed">載入失敗，請重試</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  個人化設定                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">個人化</string>

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.payment.ui.AmountGrid
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.app.Routes
@@ -300,7 +299,7 @@ fun CardRechargeScreen(
     // ================================================================
     val cardRechargeH5Url = "https://pay.cqwu.edu.cn/mobile/#/eCardRechargePay?projectId=80bb5ee2189e4ca2bd5dff4513a0dae2"
 
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showOtherRechargeDialog,
         onDismissRequest = { showOtherRechargeDialog = false },
         title = stringResource(R.string.recharge_other_method_title)

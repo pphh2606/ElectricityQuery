@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 
 /**
  * 外部应用打开确认弹窗。
@@ -38,7 +38,7 @@ fun ExternalAppConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: (appName: String, url: String) -> Unit,
 ) {
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = pending != null,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.home_external_app_title),

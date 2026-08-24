@@ -12,10 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.AppLanguage
 import edu.cqwu.electricity.settings.data.SettingsPreferences
@@ -60,7 +58,7 @@ fun LanguageSwitchSheet(
     val settingsPrefs = remember { SettingsPreferences(context) }
     val currentLanguage by remember { mutableStateOf(settingsPrefs.getAppLanguage()) }
 
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showSheet,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.language_select),

@@ -109,7 +109,7 @@ fun OpenUrlDialog(
         }
     }
 
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.open_url_title),

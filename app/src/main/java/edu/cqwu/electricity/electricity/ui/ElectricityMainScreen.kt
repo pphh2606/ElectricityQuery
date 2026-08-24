@@ -66,8 +66,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
@@ -336,7 +335,7 @@ fun ElectricityMainScreen(
     }
 
     // ── 充值 Tab 提示信息弹窗 - Bottom Sheet ──
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showRechargeInfoDialog,
         onDismissRequest = { showRechargeInfoDialog = false },
         title = stringResource(R.string.recharge_hint)
@@ -421,7 +420,7 @@ fun ElectricityMainScreen(
     }
 
     // ── 我的寝室房间切换 BottomSheet ──
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty(),
         onDismissRequest = { showRoomSwitchSheet = false },
             title = stringResource(R.string.dashboard_select_dorm),

@@ -63,7 +63,7 @@ import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.login.data.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -92,6 +92,7 @@ fun AccountManagerScreen(
     onBack: () -> Unit,
     onNavigateToLogin: (accountId: String) -> Unit,
     onNavigateToAddAccount: () -> Unit,
+    onNavigateToUserNameEdit: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -236,7 +237,7 @@ fun AccountManagerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── 修改用户名 / 修改密码（占位，后期开放）──
+            // ── 修改用户名 / 修改密码（修改用户名已开放）──
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -246,6 +247,7 @@ fun AccountManagerScreen(
                     PlaceholderRow(
                         icon = Icons.Outlined.Person,
                         title = stringResource(R.string.account_manager_v2_username),
+                        onClick = onNavigateToUserNameEdit,
                     )
                     PlaceholderRow(
                         icon = Icons.Outlined.Lock,
@@ -296,8 +298,8 @@ fun AccountManagerScreen(
     }
 
     // 登录失效安全提醒弹窗（仿新版 MIUI 权限弹窗：拖动手柄 + 按钮上下排列）
-    // 使用 ListSheetDialog 统一弹窗形式（内容自适应 + 标题/空白随内容滚动）
-    ListSheetDialog(
+    // 使用 BottomSheetDialogV2 统一弹窗形式（内容自适应 + 标题/空白随内容滚动）
+    BottomSheetDialogV2(
         visible = pendingReLoginId != null,
         onDismissRequest = { pendingReLoginId = null },
         title = stringResource(R.string.account_manager_v2_relogin_title),
@@ -466,16 +468,17 @@ private fun AddAccountRow(
     }
 }
 
-/** 占位行（修改用户名 / 修改密码，后期开放），disabled 样式无点击 */
+/** 功能行（修改用户名 / 修改密码）：onClick 为空时占位禁用样式 */
 @Composable
 private fun PlaceholderRow(
     icon: ImageVector,
     title: String,
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(0.38f)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier.alpha(0.38f))
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

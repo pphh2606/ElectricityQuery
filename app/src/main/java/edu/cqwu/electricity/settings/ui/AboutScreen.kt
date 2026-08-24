@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.BuildConfig
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -254,7 +254,7 @@ fun AboutScreen(
     }
 
     // ─── 联系方式底部弹窗 ───
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showContactSheet,
         onDismissRequest = { showContactSheet = false },
         title = stringResource(R.string.about_contact_title),

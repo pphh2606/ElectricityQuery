@@ -77,8 +77,7 @@ import edu.cqwu.electricity.theme.ui.MAX_FONT_SCALE
 import edu.cqwu.electricity.theme.ui.MAX_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.theme.ui.MIN_FONT_SCALE
 import edu.cqwu.electricity.theme.ui.MIN_SHEET_BLUR_RADIUS
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -545,7 +544,7 @@ private fun NightModeSelectionDialog(
     onSelect: (NightMode) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.personalization_night_mode)
@@ -605,7 +604,7 @@ private fun ColorPickerDialog(
         }
     }
 
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.personalization_choose_color),
@@ -720,7 +719,7 @@ private fun <T> SelectionDialog(
     onSelect: (T) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = visible,
         onDismissRequest = onDismiss,
         title = title,

@@ -216,7 +216,7 @@ fun BottomSheetDialog(
  * @param content 列表项内容（如多个 [BottomSheetItem]）
  */
 @Composable
-fun ListSheetDialog(
+fun BottomSheetDialogV2(
     visible: Boolean,
     onDismissRequest: () -> Unit,
     title: String? = null,

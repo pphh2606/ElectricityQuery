@@ -25,6 +25,22 @@
     <string name="account_manager_v2_relogin_message">身份验证失败，请你重新登录。</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  修改用户名（CAS 登录别名 + 昵称）          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="user_name_edit_title">修改用户名</string>
+    <string name="user_name_edit_tip">如果您设定了登录别名，您就可以使用登录别名登录系统，多个别名用逗号隔开\n注意：添加登录别名后不可再修改</string>
+    <string name="user_name_edit_alias_label">登录别名</string>
+    <string name="user_name_edit_nickname_label">昵称</string>
+    <string name="user_name_edit_nickname_placeholder">请输入昵称</string>
+    <string name="user_name_edit_save">保存</string>
+    <string name="user_name_edit_success">修改成功</string>
+    <string name="user_name_edit_alias_available">登录别名可使用</string>
+    <string name="user_name_edit_alias_unavailable">登录别名不可用</string>
+    <string name="user_name_edit_saving">正在保存…</string>
+    <string name="user_name_edit_no_account">请先登录后再修改用户名</string>
+    <string name="user_name_edit_load_failed">加载失败，请重试</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  个性化设置                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">个性化</string>

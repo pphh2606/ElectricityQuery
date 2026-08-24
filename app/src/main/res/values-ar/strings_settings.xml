@@ -25,6 +25,22 @@
     <string name="account_manager_v2_relogin_message">فشل التحقق من الهوية، يرجى تسجيل الدخول مرة أخرى.</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  تعديل اسم المستخدم                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="user_name_edit_title">تعديل اسم المستخدم</string>
+    <string name="user_name_edit_tip">إذا قمت بتعيين اسم مستعار لتسجيل الدخول، يمكنك استخدامه لتسجيل الدخول. افصل بين الأسماء المستعارة المتعددة بفواصل.\nملاحظة: لا يمكن تعديل الأسماء المستعارة بعد إضافتها.</string>
+    <string name="user_name_edit_alias_label">اسم الدخول المستعار</string>
+    <string name="user_name_edit_nickname_label">الكنية</string>
+    <string name="user_name_edit_nickname_placeholder">أدخل الكنية</string>
+    <string name="user_name_edit_save">حفظ</string>
+    <string name="user_name_edit_success">تم التعديل بنجاح</string>
+    <string name="user_name_edit_alias_available">الاسم المستعار متاح</string>
+    <string name="user_name_edit_alias_unavailable">الاسم المستعار غير متاح</string>
+    <string name="user_name_edit_saving">جارٍ الحفظ…</string>
+    <string name="user_name_edit_no_account">يرجى تسجيل الدخول أولاً لتعديل اسم المستخدم</string>
+    <string name="user_name_edit_load_failed">فشل التحميل، يرجى المحاولة مرة أخرى</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  التخصيص                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">التخصيص</string>

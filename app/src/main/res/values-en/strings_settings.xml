@@ -25,6 +25,22 @@
     <string name="account_manager_v2_relogin_message">Authentication failed. Please log in again.</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  Change Username (CAS login alias + nickname) -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="user_name_edit_title">Change Username</string>
+    <string name="user_name_edit_tip">If you set a login alias, you can use it to log in. Separate multiple aliases with commas.\nNote: Aliases cannot be modified once added.</string>
+    <string name="user_name_edit_alias_label">Login Alias</string>
+    <string name="user_name_edit_nickname_label">Nickname</string>
+    <string name="user_name_edit_nickname_placeholder">Enter a nickname</string>
+    <string name="user_name_edit_save">Save</string>
+    <string name="user_name_edit_success">Changed successfully</string>
+    <string name="user_name_edit_alias_available">Alias available</string>
+    <string name="user_name_edit_alias_unavailable">Alias unavailable</string>
+    <string name="user_name_edit_saving">Saving…</string>
+    <string name="user_name_edit_no_account">Please log in first to change your username</string>
+    <string name="user_name_edit_load_failed">Failed to load. Please try again.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  Personalization                            -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">Personalization</string>

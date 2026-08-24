@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationArea
-import edu.cqwu.electricity.theme.ui.ListSheetDialog
+import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import kotlinx.coroutines.launch
@@ -151,7 +151,7 @@ fun SpeakUpScreen(
     }
 
     // ── 操作选择弹窗 ──
-    ListSheetDialog(
+    BottomSheetDialogV2(
         visible = showActionDialog,
         onDismissRequest = { showActionDialog = false },
     ) {
