@@ -37,6 +37,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.accountmanagerv2.AccountManagerScreen
 import edu.cqwu.electricity.cardcenter.ui.AccountInfoScreen
 import edu.cqwu.electricity.cardcenter.ui.BankCardBindScreen
 import edu.cqwu.electricity.cardcenter.ui.BankCardBindViewModel
@@ -96,6 +97,8 @@ object Routes {
     /** 主页 Tab 容器（HorizontalPager：首页 + 我的） */
     const val MAIN_TABS = "main_tabs"
     const val SETTINGS = "settings"
+    /** 账号管理页（独立页面，代码位于 accountmanagerv2 包） */
+    const val ACCOUNT_MANAGER = "account_manager"
     const val PERSONALIZATION = "personalization"
     const val QR_CODE_SETTINGS = "qr_code_settings"
     const val QR_LOGIN = "qr_login"
@@ -108,11 +111,11 @@ object Routes {
     /** 扫码页面 */
     const val SCAN = "scan"
 
-    /** 本地登录页面（支持可选 username 参数，预填指定账号） */
-    const val LOGIN = "login?username={username}"
+    /** 本地登录页面（支持可选 accountId 参数，预填指定账号条目） */
+    const val LOGIN = "login?accountId={accountId}"
 
-    /** 构造登录页路由；username 为空时登录页自动填充最近登录账号 */
-    fun loginRoute(username: String = ""): String = "login?username=$username"
+    /** 构造登录页路由；accountId 为空时登录页自动填充当前激活条目 */
+    fun loginRoute(accountId: String = ""): String = "login?accountId=$accountId"
     /** 从内置浏览器进入的本地登录页面（返回时同时关闭 WebView） */
     const val WEBVIEW_LOGIN = "webview_login"
     /** 添加新账号（空白表单） */
@@ -576,21 +579,21 @@ fun AppNavGraph(
             )
         }
 
-        // 本地登录页面（通用入口；可选 username 参数预填指定账号，为空时自动填充最近账号）
+        // 本地登录页面（通用入口；可选 accountId 参数预填指定账号条目，为空时自动填充当前激活条目）
         animatedComposable(
             settings = appSettings,
             route = Routes.LOGIN,
             arguments = listOf(
-                navArgument("username") {
+                navArgument("accountId") {
                     type = NavType.StringType
                     defaultValue = ""
                 }
             ),
         ) { backStackEntry ->
-            val initialUsername = backStackEntry.arguments?.getString("username")
+            val initialAccountId = backStackEntry.arguments?.getString("accountId")
                 ?.takeIf { it.isNotBlank() }
             LoginScreen(
-                initialUsername = initialUsername,
+                initialAccountId = initialAccountId,
                 onBack = { navController.popBackStack() },
             )
         }
@@ -633,6 +636,15 @@ fun AppNavGraph(
         animatedComposable(settings = appSettings, route = Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 账号管理页（独立页面，代码位于 accountmanagerv2 包）
+        animatedComposable(settings = appSettings, route = Routes.ACCOUNT_MANAGER) {
+            AccountManagerScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToLogin = { accountId -> navController.navigate(Routes.loginRoute(accountId)) },
+                onNavigateToAddAccount = { navController.navigate(Routes.NEW_ACCOUNT_LOGIN) },
             )
         }
 

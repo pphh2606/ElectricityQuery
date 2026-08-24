@@ -14,6 +14,17 @@
     <string name="settings_webvpn_enabled_desc">有効にすると、すべてのネットワークリクエストを学校の WebVPN 経由で送信します</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  アカウント管理                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_account_manager">アカウント管理</string>
+    <string name="settings_account_manager_desc">アカウントの切り替え、ログイン状態の管理</string>
+    <string name="account_manager_v2_username">ユーザー名を変更</string>
+    <string name="account_manager_v2_password">パスワードを変更…</string>
+    <string name="account_manager_v2_login_time">ログイン時間:%1$s</string>
+    <string name="account_manager_v2_relogin_title">安全通知</string>
+    <string name="account_manager_v2_relogin_message">認証に失敗しました。もう一度ログインしてください。</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  個人設定                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">個人設定</string>
@@ -60,6 +71,8 @@
     <string name="qrcode_settings_black">黒色</string>
     <string name="qrcode_settings_black_desc">黒色をQRコードの黒ブロック色として使用</string>
     <string name="qrcode_settings_corner_radius">角丸度</string>
+    <string name="qrcode_settings_corner_radius_switch">QRコード角丸</string>
+    <string name="qrcode_settings_corner_radius_switch_desc">オンにするとQRコードの角を丸めます</string>
     <string name="qrcode_settings_display">表示</string>
     <string name="qrcode_settings_screen_brightness">画面の明るさ</string>
     <string name="qrcode_settings_screen_brightness_desc">QRコード表示時に自動で画面の明るさを上げる</string>

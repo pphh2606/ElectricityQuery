@@ -49,7 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.LoadingDialog
 import edu.cqwu.electricity.feedback.util.CrashHandler
@@ -237,20 +237,16 @@ fun FeedbackScreen(
     }
 
     // ── 日志预览弹窗（下滑或点击外部关闭） ──
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showLogPreview,
         onDismissRequest = { showLogPreview = false },
         title = stringResource(R.string.feedback_log_preview),
     ) {
-        // 外层 BottomSheetDialog(fullscreen=true) 已包含 fillMaxHeight + 滚动，
-        // 内容只需 fillMaxWidth，不要固定高度和内层滚动，避免冲突
         SelectionContainer {
             Text(
                 text = previewLogText,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }

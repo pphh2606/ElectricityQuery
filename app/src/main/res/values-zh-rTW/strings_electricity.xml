@@ -21,7 +21,6 @@
     <string name="dashboard_cash_balance">現金餘額</string>
     <string name="dashboard_subsidy_balance">補貼餘額</string>
     <string name="dashboard_base_balance">基礎餘額</string>
-    <string name="dashboard_querying_balance">正在查詢餘額…</string>
     <string name="dashboard_room_name">房間名稱</string>
     <string name="dashboard_room_id">房間 ID</string>
     <string name="dashboard_unknown">未知</string>
@@ -54,7 +53,6 @@
     <string name="electricity_tab_my_dorm">我的寢室</string>
     <string name="building_no_campus">暫無校區資料</string>
     <string name="building_no_floors">該建築物下無樓層資料</string>
-    <string name="building_click_to_expand">點選展開</string>
     <string name="building_no_rooms">暫無房間</string>
     <string name="building_reload">重新載入</string>
     <string name="building_no_buildings">該校區下無建築物</string>

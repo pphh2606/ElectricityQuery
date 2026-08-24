@@ -84,7 +84,7 @@ class CampusphereApi {
                 val campusCookie = cookieReader(BASE)
                 val authCookie = cookieReader(AUTH_SERVER)
                 AppLog.d(TAG,
-                    "activeUser=${AccountSessionStore.getActiveUser()}, " +
+                    "activeUser=${AccountSessionStore.getActiveAccount()?.username}, " +
                     "campusphere=${campusCookie != null}(len=${campusCookie?.length ?: 0}), " +
                     "auth=${authCookie != null}(len=${authCookie?.length ?: 0})")
             }

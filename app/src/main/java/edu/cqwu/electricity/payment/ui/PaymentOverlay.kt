@@ -116,7 +116,6 @@ fun PaymentOverlay(
     BottomSheetDialog(
         visible = visible,
         onDismissRequest = onClose,
-        fullscreen = false,
         skipPartiallyExpanded = false,
         onHideStarted = { webViewState.stopLoading() },
         leadingButton = {

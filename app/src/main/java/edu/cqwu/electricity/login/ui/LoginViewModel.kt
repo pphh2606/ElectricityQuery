@@ -31,6 +31,8 @@ data class LoginUiState(
     val passwordRevealed: Boolean = false,
     /** 是否有已保存的密码（占位状态）。为 true 时 password 为占位符，用户只能全选删除或开始新输入 */
     val hasSavedPassword: Boolean = false,
+    /** 预填/登录的目标账号条目 id；为 null 表示手动输入（非预填） */
+    val accountId: String? = null,
 )
 
 /**
@@ -58,14 +60,13 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 从持久化账号仓库自动填充。
      *
-     * @param initialUsername 指定预填的账号（切换账号场景）；null 时填充最近登录的账号。
-     * 如果该账号勾选了"记住密码"且有已保存密码，设置 hasSavedPassword 标志，
+     * @param initialAccountId 指定预填的账号条目（切换/失效跳转场景）；null 时填充当前激活条目。
+     * 如果该条目勾选了"记住密码"且有已保存密码，设置 hasSavedPassword 标志，
      * UI 层将显示占位圆点而非实际密码，防止密码被眼睛按钮查看。
      */
-    private fun autoFillFromStorage(initialUsername: String?) {
-        val allAccounts = AccountSessionStore.getAllAccounts()
-        val target = initialUsername?.let { name -> allAccounts.firstOrNull { it.username == name } }
-            ?: allAccounts.firstOrNull()
+    private fun autoFillFromStorage(initialAccountId: String?) {
+        val target = initialAccountId?.let { AccountSessionStore.getAccountById(it) }
+            ?: AccountSessionStore.getActiveAccount()
         val rememberPwd = target?.rememberPassword ?: true
         val hasSaved = target?.password != null && rememberPwd
         val state = LoginUiState(
@@ -73,6 +74,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             password = if (hasSaved) SAVED_PASSWORD_PLACEHOLDER else "",
             rememberPassword = rememberPwd,
             hasSavedPassword = hasSaved,
+            accountId = target?.id,
         )
         _uiState.value = state
     }
@@ -80,19 +82,22 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 重置状态。
      * @param clearForm true 时显示空白表单（"添加账号"场景），false 时自动填充账号。
-     * @param initialUsername 切换账号场景传入目标学号，优先预填该账号。
+     * @param initialAccountId 切换账号场景传入目标条目 id，优先预填该条目。
      */
-    fun resetState(clearForm: Boolean = false, initialUsername: String? = null) {
-        AppLog.d("LoginVM", "resetState: clearForm=$clearForm, initialUsername=$initialUsername")
+    fun resetState(clearForm: Boolean = false, initialAccountId: String? = null) {
+        AppLog.d("LoginVM", "resetState: clearForm=$clearForm, initialAccountId=$initialAccountId")
         if (clearForm) {
             _uiState.value = LoginUiState()
         } else {
-            autoFillFromStorage(initialUsername)
+            autoFillFromStorage(initialAccountId)
         }
     }
 
     fun updateUsername(value: String) {
-        _uiState.update { it.copy(username = value) }
+        // 学号被编辑即脱离预填条目：清除条目关联与已保存密码占位状态
+        _uiState.update {
+            it.copy(username = value, accountId = null, hasSavedPassword = false, password = "")
+        }
     }
 
     fun updatePassword(value: String) {
@@ -122,9 +127,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     fun login() {
         val state = _uiState.value
         val username = state.username.trim()
-        // 占位状态下从持久化仓库读取实际密码
+        // 占位状态下从预填条目读取实际密码
         val password = if (state.hasSavedPassword) {
-            AccountSessionStore.getAccount(username)?.password ?: ""
+            state.accountId?.let { AccountSessionStore.getAccountById(it)?.password } ?: ""
         } else {
             state.password
         }
@@ -195,9 +200,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             }
             val state = _uiState.value
             val currentUsername = state.username.trim()
-            // 占位状态下从持久化仓库读取实际密码用于导出
+            // 占位状态下从预填条目读取实际密码用于导出
             val currentPassword = if (state.hasSavedPassword) {
-                AccountSessionStore.getAccount(currentUsername)?.password ?: ""
+                state.accountId?.let { AccountSessionStore.getAccountById(it)?.password } ?: ""
             } else {
                 state.password
             }

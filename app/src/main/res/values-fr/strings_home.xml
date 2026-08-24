@@ -16,7 +16,6 @@
     <string name="home_external_app_title">Ouvrir une application externe</string>
     <string name="home_external_app_message">« %1$s » doit être ouvert dans Campusphere. Continuer ?</string>
     <string name="home_install_campus_app">Installez Campusphere pour utiliser « %1$s »</string>
-    <string name="home_open_failed">Échec d\'ouverture : %1$s</string>
     <string name="home_edit_my_services">Modifier mes services</string>
     <string name="home_confirm_exit_edit">Confirmer et quitter</string>
     <string name="home_load_failed">Échec du chargement</string>

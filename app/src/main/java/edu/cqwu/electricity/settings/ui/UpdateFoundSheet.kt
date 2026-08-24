@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
@@ -42,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.BuildConfig
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.update.data.UpdateChannel
 import edu.cqwu.electricity.update.data.UpdateDownloadProbe
@@ -76,61 +80,16 @@ fun UpdateFoundSheet(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.update_available_title),
         icon = Icons.Outlined.SystemUpdate,
-        fullscreen = false,
-        skipPartiallyExpanded = true,
         contentModifier = Modifier.height(screenHeight * 0.7f),
-        fixedHeader = true,
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { toggleSkipThisVersion() },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(
-                        checked = skipThisVersion,
-                        onCheckedChange = { toggleSkipThisVersion() },
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.update_skip_version),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    OutlinedButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Text(stringResource(R.string.common_cancel))
-                    }
-                    Button(
-                        onClick = { showDownloadSourceSheet = true },
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.FileDownload,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(stringResource(R.string.update_download))
-                    }
-                }
-            }
-        },
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 0.dp),
     ) {
+        Column(modifier = Modifier.fillMaxHeight()) {
+        // ── 更新信息与说明（可滚动区）──
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+        ) {
         val channelLabel = if (channel == UpdateChannel.CI) {
             stringResource(R.string.update_channel_ci)
         } else {
@@ -174,12 +133,63 @@ fun UpdateFoundSheet(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        }
+
+        // ── 底部固定操作区（原 bottomBar）──
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 24.dp),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { toggleSkipThisVersion() },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = skipThisVersion,
+                    onCheckedChange = { toggleSkipThisVersion() },
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.update_skip_version),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(stringResource(R.string.common_cancel))
+                }
+                Button(
+                    onClick = { showDownloadSourceSheet = true },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.FileDownload,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(stringResource(R.string.update_download))
+                }
+            }
+        }
+        }
 
         val downloadLinks = remember(info) {
             UpdateMirrorSources.downloadLinks(info.app.link.orEmpty())
         }
         if (downloadLinks.isNotEmpty()) {
-            BottomSheetDialog(
+            ListSheetDialog(
                 visible = showDownloadSourceSheet,
                 onDismissRequest = { showDownloadSourceSheet = false },
                 title = stringResource(R.string.update_download_source_title),

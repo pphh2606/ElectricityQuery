@@ -77,7 +77,6 @@
     <string name="payment_selected">محدد</string>
     <string name="payment_confirm">تأكيد الدفع</string>
     <string name="payment_continue">متابعة الدفع</string>
-    <string name="payment_processing">جارٍ معالجة الدفع…</string>
     <string name="payment_order_failed">فشل إنشاء الطلب</string>
     <string name="payment_success">تم الدفع بنجاح!</string>
     <string name="payment_done">تم</string>

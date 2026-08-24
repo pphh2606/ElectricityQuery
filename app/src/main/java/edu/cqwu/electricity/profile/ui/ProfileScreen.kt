@@ -63,7 +63,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.ui.AccountManagerSheet
 import edu.cqwu.electricity.network.WebVpnEncoder
 import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
@@ -137,7 +136,6 @@ fun ProfilePageContent(
     val context = LocalContext.current
     val resources = LocalResources.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
-    var showAccountManagerSheet by remember { mutableStateOf(false) }
 
     // 响应式刷新用户名：页面从后台恢复时重新读取（支持切换账号后自动更新）
     var usernameRefreshKey by remember { mutableIntStateOf(0) }
@@ -154,7 +152,7 @@ fun ProfilePageContent(
 
     val username = remember(usernameRefreshKey) {
         val t0 = System.currentTimeMillis()
-        val result = AccountSessionStore.getActiveUser()
+        val result = AccountSessionStore.getActiveAccount()?.username
         AppLog.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
         result
     }
@@ -232,10 +230,10 @@ fun ProfilePageContent(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    // ── 右侧：编辑按钮（仅登录后显示）+ > 箭头 ──
+                    // ── 右侧：编辑按钮（仅登录后显示，打开账号管理页）+ > 箭头 ──
                     if (isLoggedIn) {
                         IconButton(
-                            onClick = { showAccountManagerSheet = true },
+                            onClick = { nav.navigate(Routes.ACCOUNT_MANAGER) },
                             modifier = Modifier.size(36.dp),
                         ) {
                             Icon(
@@ -300,25 +298,6 @@ fun ProfilePageContent(
             }
         }
     }
-
-    // ── 账号管理弹窗 ──
-    AccountManagerSheet(
-        show = showAccountManagerSheet,
-        onDismiss = { showAccountManagerSheet = false },
-        onNavigateToLogin = { username ->
-            showAccountManagerSheet = false
-            nav.navigate(Routes.loginRoute(username))
-        },
-        onNavigateToAddAccount = {
-            showAccountManagerSheet = false
-            nav.navigate(Routes.NEW_ACCOUNT_LOGIN)
-        },
-        onSwitchSuccess = {
-            // 切换成功后刷新用户名（Lifecycle ON_RESUME 已自动处理，
-            // 此处额外 +1 确保即时更新）
-            usernameRefreshKey++
-        },
-    )
 
     // ── 打开网址底部弹窗 ──
     OpenUrlDialog(

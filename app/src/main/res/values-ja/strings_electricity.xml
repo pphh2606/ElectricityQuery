@@ -21,7 +21,6 @@
     <string name="dashboard_cash_balance">現金残高</string>
     <string name="dashboard_subsidy_balance">補助残高</string>
     <string name="dashboard_base_balance">基本残高</string>
-    <string name="dashboard_querying_balance">残高を照会中…</string>
     <string name="dashboard_room_name">ルーム名</string>
     <string name="dashboard_room_id">ルーム ID</string>
     <string name="dashboard_unknown">不明</string>
@@ -54,7 +53,6 @@
     <string name="electricity_tab_my_dorm">マイ寮室</string>
     <string name="building_no_campus">キャンパスデータがありません</string>
     <string name="building_no_floors">この建物にはフロアデータがありません</string>
-    <string name="building_click_to_expand">タップして展開</string>
     <string name="building_no_rooms">ルームがありません</string>
     <string name="building_reload">再読み込み</string>
     <string name="building_no_buildings">このキャンパスには建物がありません</string>

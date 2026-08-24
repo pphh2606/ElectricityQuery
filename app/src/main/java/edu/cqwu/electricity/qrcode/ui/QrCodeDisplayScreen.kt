@@ -119,7 +119,7 @@ fun QrCodeDisplayScreen(
         qrPrimaryColor
     }
     val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
-    val qrCornerFraction = appSettings.qrCodeCornerRadius / 100f
+    val qrCornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var requiresReLogin by rememberSaveable { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }

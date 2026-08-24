@@ -2,10 +2,6 @@ package edu.cqwu.electricity.theme.ui
 
 import android.app.Activity
 import android.os.Build
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.Icon
@@ -64,42 +60,35 @@ fun LanguageSwitchSheet(
     val settingsPrefs = remember { SettingsPreferences(context) }
     val currentLanguage by remember { mutableStateOf(settingsPrefs.getAppLanguage()) }
 
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showSheet,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.language_select),
-        fullscreen = false,
-        skipPartiallyExpanded = false,
     ) {
-        Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            AppLanguage.entries.forEach { language ->
-                val title = if (language == AppLanguage.SYSTEM) {
-                    stringResource(R.string.language_system)
+        AppLanguage.entries.forEach { language ->
+            val title = if (language == AppLanguage.SYSTEM) {
+                stringResource(R.string.language_system)
+            } else {
+                val currentName = stringResource(language.labelRes)
+                if (currentName == language.nativeName) {
+                    currentName
                 } else {
-                    val currentName = stringResource(language.labelRes)
-                    if (currentName == language.nativeName) {
-                        currentName
-                    } else {
-                        "$currentName(${language.nativeName})"
-                    }
+                    "$currentName(${language.nativeName})"
                 }
-                BottomSheetItem(
-                    icon = null,
-                    title = title,
-                    selected = language == currentLanguage,
-                    onClick = {
-                        val activity = context as? Activity ?: return@BottomSheetItem
-                        onDismiss()
-                        settingsPrefs.setAppLanguage(language)
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                            activity.recreate()
-                        }
-                    },
-                )
             }
+            BottomSheetItem(
+                icon = null,
+                title = title,
+                selected = language == currentLanguage,
+                onClick = {
+                    val activity = context as? Activity ?: return@BottomSheetItem
+                    onDismiss()
+                    settingsPrefs.setAppLanguage(language)
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        activity.recreate()
+                    }
+                },
+            )
         }
     }
 }

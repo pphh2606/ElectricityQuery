@@ -14,6 +14,17 @@
     <string name="settings_webvpn_enabled_desc">开启后所有网络请求将通过学校 WebVPN 转发</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  账号管理                                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_account_manager">账号管理</string>
+    <string name="settings_account_manager_desc">切换账号、管理登录状态</string>
+    <string name="account_manager_v2_username">修改用户名</string>
+    <string name="account_manager_v2_password">修改密码…</string>
+    <string name="account_manager_v2_login_time">登录时间:%1$s</string>
+    <string name="account_manager_v2_relogin_title">安全提醒</string>
+    <string name="account_manager_v2_relogin_message">身份验证失败，请你重新登录。</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  个性化设置                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">个性化</string>
@@ -60,6 +71,8 @@
     <string name="qrcode_settings_black">黑色</string>
     <string name="qrcode_settings_black_desc">使用黑色作为二维码黑块颜色</string>
     <string name="qrcode_settings_corner_radius">圆角度</string>
+    <string name="qrcode_settings_corner_radius_switch">二维码圆角</string>
+    <string name="qrcode_settings_corner_radius_switch_desc">开启后调整二维码方块的圆角</string>
     <string name="qrcode_settings_display">显示</string>
     <string name="qrcode_settings_screen_brightness">屏幕高亮</string>
     <string name="qrcode_settings_screen_brightness_desc">显示二维码时自动调高屏幕亮度</string>

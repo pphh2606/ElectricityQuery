@@ -73,7 +73,6 @@
     <string name="payment_selected">Selected</string>
     <string name="payment_confirm">Confirm Payment</string>
     <string name="payment_continue">Continue Payment</string>
-    <string name="payment_processing">Processing payment…</string>
     <string name="payment_order_failed">Order creation failed</string>
     <string name="payment_success">Payment Successful!</string>
     <string name="payment_done">Done</string>

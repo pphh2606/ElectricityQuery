@@ -10,6 +10,7 @@ import edu.cqwu.electricity.R
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -576,10 +577,11 @@ private fun MyServicesSection(
             }
         }
 
-        // ── 横向滚动行：收藏的服务 + 自定义服务 + 添加按钮 ──
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+        // ── 横向滚动行：编辑模式或有内容时才显示，显示/隐藏切换带动画 ──
+        AnimatedVisibility(visible = isEditMode || myServiceApps.isNotEmpty() || customServices.isNotEmpty()) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
             // 收藏的应用图标
             items(
                 items = myServiceApps,
@@ -652,9 +654,15 @@ private fun MyServicesSection(
                 }
             }
 
-            // ── 固定在末尾的「+ 自定义网站」按钮 ──
+            // ── 编辑模式下才显示「+ 自定义网站」按钮 ──
             item(key = "add_custom_service") {
-                AddCustomServiceButton(onClick = onAddCustomService)
+                if (isEditMode) {
+                    AddCustomServiceButton(onClick = onAddCustomService)
+                } else if (myServiceApps.isEmpty() && customServices.isEmpty()) {
+                    // 无服务退出编辑时保持等高占位，避免高度塌缩导致收起动画不可见
+                    Box(modifier = Modifier.size(60.dp, 80.dp))
+                }
+            }
             }
         }
     }

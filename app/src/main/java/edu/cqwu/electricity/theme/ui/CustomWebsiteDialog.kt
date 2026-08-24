@@ -71,7 +71,7 @@ fun CustomWebsiteDialog(
         iconUri = uri
     }
 
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.custom_website_title),

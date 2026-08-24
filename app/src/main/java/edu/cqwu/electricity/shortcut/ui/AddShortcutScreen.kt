@@ -315,7 +315,6 @@ fun AddShortcutScreen(
         visible = showFunctionSheet,
         onDismissRequest = { showFunctionSheet = false },
         title = stringResource(R.string.shortcut_select_function),
-        fullscreen = false,
         skipPartiallyExpanded = false,
         leadingButton = {
             TextButton(onClick = { showFunctionSheet = false }) {

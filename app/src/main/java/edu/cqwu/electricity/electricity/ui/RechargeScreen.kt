@@ -64,7 +64,7 @@ import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.payment.ui.AmountGrid
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -115,7 +115,7 @@ fun RechargeScreen(
     // ── 自动填充已登录用户的学号并查询 ──
     // 取当前激活账号（持久化，进程重启后仍有效）
     val loggedInStudentId = remember {
-        AccountSessionStore.getActiveUser()
+        AccountSessionStore.getActiveAccount()?.username
     }
     LaunchedEffect(Unit) {
         viewModel.autoFillFromLogin(loggedInStudentId)
@@ -426,7 +426,7 @@ fun RechargeScreen(
     // ================================================================
     //  其他充值方式 - Bottom Sheet
     // ================================================================
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showOtherRechargeDialog,
         onDismissRequest = { showOtherRechargeDialog = false },
             title = stringResource(R.string.recharge_other_method_title)
@@ -545,7 +545,7 @@ private fun RoomSelectionDialog(
     onNavigateToWebView: (String, String) -> Unit = { _, _ -> }
 ) {
     val resources = LocalResources.current
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.recharge_select_room_title),

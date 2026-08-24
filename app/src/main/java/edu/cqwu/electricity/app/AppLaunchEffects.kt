@@ -81,12 +81,11 @@ fun AppLaunchEffects(
     LaunchedEffect(Unit) {
         if (!startupCookieValidationDone) {
             startupCookieValidationDone = true
-            val activeUser = AccountSessionStore.getActiveUser()
-            val cookies = activeUser?.let { AccountSessionStore.getAccount(it)?.cookies }
-                ?: emptyMap()
+            val activeAccount = AccountSessionStore.getActiveAccount()
+            val cookies = activeAccount?.cookies ?: emptyMap()
             when (val result = SessionManager.validateCookie(cookies)) {
                 is SessionValidationResult.Valid -> {
-                    AppLog.d("AppLaunchEffects", "启动 Cookie 验证：有效（$activeUser）")
+                    AppLog.d("AppLaunchEffects", "启动 Cookie 验证：有效（${activeAccount?.username}）")
                 }
                 is SessionValidationResult.Invalid -> {
                     AppLog.d("AppLaunchEffects", "启动 Cookie 验证：失效，跳转登录页")

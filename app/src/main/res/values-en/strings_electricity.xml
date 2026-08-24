@@ -21,7 +21,6 @@
     <string name="dashboard_cash_balance">Cash Balance</string>
     <string name="dashboard_subsidy_balance">Subsidy Balance</string>
     <string name="dashboard_base_balance">Base Balance</string>
-    <string name="dashboard_querying_balance">Querying balance…</string>
     <string name="dashboard_room_name">Room Name</string>
     <string name="dashboard_room_id">Room ID</string>
     <string name="dashboard_unknown">Unknown</string>
@@ -54,7 +53,6 @@
     <string name="electricity_tab_my_dorm">My Dorm</string>
     <string name="building_no_campus">No campus data</string>
     <string name="building_no_floors">No floors in this building</string>
-    <string name="building_click_to_expand">Tap to expand</string>
     <string name="building_no_rooms">No rooms</string>
     <string name="building_reload">Reload</string>
     <string name="building_no_buildings">No buildings in this campus</string>

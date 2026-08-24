@@ -75,8 +75,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  账号管理弹窗                               -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="account_manager_title">账号管理</string>
-    <string name="account_manager_current">当前</string>
     <string name="account_manager_add">添加账号</string>
     <string name="account_manager_switching">正在验证登录状态…</string>
     <string name="account_manager_switch_success">已切换到 %1$s</string>

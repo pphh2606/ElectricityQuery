@@ -14,6 +14,17 @@
     <string name="settings_webvpn_enabled_desc">عند التفعيل، يتم توجيه جميع طلبات الشبكة عبر WebVPN الخاص بالمدرسة</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  إدارة الحسابات                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_account_manager">إدارة الحسابات</string>
+    <string name="settings_account_manager_desc">تبديل الحسابات وإدارة حالة تسجيل الدخول</string>
+    <string name="account_manager_v2_username">تعديل اسم المستخدم</string>
+    <string name="account_manager_v2_password">تعديل كلمة المرور…</string>
+    <string name="account_manager_v2_login_time">وقت تسجيل الدخول: %1$s</string>
+    <string name="account_manager_v2_relogin_title">تنبيه أمني</string>
+    <string name="account_manager_v2_relogin_message">فشل التحقق من الهوية، يرجى تسجيل الدخول مرة أخرى.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  التخصيص                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">التخصيص</string>
@@ -60,6 +71,8 @@
     <string name="qrcode_settings_black">أسود</string>
     <string name="qrcode_settings_black_desc">استخدام الأسود كلون للخلايا السوداء</string>
     <string name="qrcode_settings_corner_radius">الزوايا المستديرة</string>
+    <string name="qrcode_settings_corner_radius_switch">زوايا رمز الاستجابة السريعة</string>
+    <string name="qrcode_settings_corner_radius_switch_desc">ضبط استدارة زوايا رمز QR</string>
     <string name="qrcode_settings_display">العرض</string>
     <string name="qrcode_settings_screen_brightness">سطوع الشاشة</string>
     <string name="qrcode_settings_screen_brightness_desc">زيادة سطوع الشاشة تلقائيًا عند عرض رمز QR</string>

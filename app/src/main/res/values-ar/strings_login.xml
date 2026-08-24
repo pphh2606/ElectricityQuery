@@ -75,9 +75,11 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  إدارة الحسابات                             -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="account_manager_title">إدارة الحسابات</string>
-    <string name="account_manager_current">الحالي</string>
     <string name="account_manager_add">إضافة حساب</string>
+    <string name="account_manager_switching">جارٍ التحقق من حالة تسجيل الدخول…</string>
+    <string name="account_manager_switch_success">تم التبديل إلى %1$s</string>
+    <string name="account_manager_switch_failed">فشل التبديل، يرجى المحاولة مرة أخرى</string>
+    <string name="account_manager_switch_network_error">خطأ في الشبكة، تعذر التحقق من حالة تسجيل الدخول مؤقتًا، يرجى المحاولة لاحقًا</string>
 
     <string name="login_error_fetch_params_network">فشل الحصول على معلمات تسجيل الدخول، يرجى التحقق من الشبكة</string>
 

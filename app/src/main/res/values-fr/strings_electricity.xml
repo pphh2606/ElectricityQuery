@@ -21,7 +21,6 @@
     <string name="dashboard_cash_balance">Solde en espèces</string>
     <string name="dashboard_subsidy_balance">Solde subventionné</string>
     <string name="dashboard_base_balance">Solde de base</string>
-    <string name="dashboard_querying_balance">Consultation du solde…</string>
     <string name="dashboard_room_name">Nom de la chambre</string>
     <string name="dashboard_room_id">ID chambre</string>
     <string name="dashboard_unknown">Inconnu</string>
@@ -54,7 +53,6 @@
     <string name="electricity_tab_my_dorm">Mon dortoir</string>
     <string name="building_no_campus">Aucune donnée de campus</string>
     <string name="building_no_floors">Aucun étage dans ce bâtiment</string>
-    <string name="building_click_to_expand">Appuyez pour développer</string>
     <string name="building_no_rooms">Aucune chambre</string>
     <string name="building_reload">Recharger</string>
     <string name="building_no_buildings">Aucun bâtiment sur ce campus</string>

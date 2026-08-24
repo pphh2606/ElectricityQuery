@@ -133,7 +133,7 @@ fun QrLoginScreen(
         qrPrimaryColor
     }
     val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
-    val qrCornerFraction = appSettings.qrCodeCornerRadius / 100f
+    val qrCornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
 
     // 窗口亮度控制：根据设置决定是否调高屏幕亮度（与支付码页面一致）
     val window = remember(context) { (context as? Activity)?.window }

@@ -71,7 +71,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.data.BillPageInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.DatePickerField
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
@@ -387,12 +387,12 @@ fun BillScreen(
     )
 
     // ── 提示弹窗 ──
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showHintDialog,
         onDismissRequest = { showHintDialog = false },
         title = stringResource(R.string.bill_hint_title)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(text = stringResource(R.string.bill_hint_item1), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = stringResource(R.string.bill_hint_item2), style = MaterialTheme.typography.bodyMedium)

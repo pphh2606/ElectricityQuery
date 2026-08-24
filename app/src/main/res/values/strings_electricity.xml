@@ -21,7 +21,6 @@
     <string name="dashboard_cash_balance">现金余额</string>
     <string name="dashboard_subsidy_balance">补贴余额</string>
     <string name="dashboard_base_balance">基础余额</string>
-    <string name="dashboard_querying_balance">正在查询余额…</string>
     <string name="dashboard_room_name">房间名称</string>
     <string name="dashboard_room_id">房间 ID</string>
     <string name="dashboard_unknown">未知</string>
@@ -54,7 +53,6 @@
     <string name="electricity_tab_my_dorm">我的寝室</string>
     <string name="building_no_campus">暂无校区数据</string>
     <string name="building_no_floors">该楼栋下无楼层数据</string>
-    <string name="building_click_to_expand">点击展开</string>
     <string name="building_no_rooms">暂无房间</string>
     <string name="building_reload">重新加载</string>
     <string name="building_no_buildings">该校区下无楼栋</string>

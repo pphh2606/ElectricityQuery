@@ -19,7 +19,6 @@
     <string name="home_external_app_title">فتح تطبيق خارجي</string>
     <string name="home_external_app_message">يجب فتح «%1$s» داخل Campusphere. متابعة؟</string>
     <string name="home_install_campus_app">يرجى تثبيت Campusphere لاستخدام «%1$s»</string>
-    <string name="home_open_failed">فشل الفتح: %1$s</string>
     <string name="home_edit_my_services">تعديل خدماتي</string>
     <string name="home_confirm_exit_edit">تأكيد وإنهاء التعديل</string>
     <string name="home_load_failed">فشل التحميل</string>

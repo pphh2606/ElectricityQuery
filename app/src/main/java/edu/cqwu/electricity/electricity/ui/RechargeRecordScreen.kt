@@ -75,7 +75,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BuyRecord
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
 
@@ -347,7 +347,7 @@ fun RechargeRecordScreen(
 
 }
     // ========== 提示弹窗 - Bottom Sheet ==========
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showInfoDialog,
         onDismissRequest = { showInfoDialog = false },
         title = stringResource(R.string.recharge_hint)

@@ -72,7 +72,6 @@
     <string name="payment_selected">選択済み</string>
     <string name="payment_confirm">支払い確認</string>
     <string name="payment_continue">支払い続ける</string>
-    <string name="payment_processing">支払い処理中…</string>
     <string name="payment_order_failed">注文作成失敗</string>
     <string name="payment_success">支払い成功！</string>
     <string name="payment_done">完了</string>

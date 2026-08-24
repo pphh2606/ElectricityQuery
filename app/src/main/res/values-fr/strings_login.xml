@@ -75,9 +75,11 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Gestion des comptes                        -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="account_manager_title">Gestion des comptes</string>
-    <string name="account_manager_current">Actuel</string>
     <string name="account_manager_add">Ajouter un compte</string>
+    <string name="account_manager_switching">Vérification de l\'état de connexion…</string>
+    <string name="account_manager_switch_success">Bascule vers %1$s réussie</string>
+    <string name="account_manager_switch_failed">Échec de la bascule, veuillez réessayer</string>
+    <string name="account_manager_switch_network_error">Erreur réseau, impossible de vérifier l\'état de connexion pour le moment, veuillez réessayer plus tard</string>
 
     <string name="login_error_fetch_params_network">Échec de la récupération des paramètres de connexion, vérifiez le réseau</string>
 

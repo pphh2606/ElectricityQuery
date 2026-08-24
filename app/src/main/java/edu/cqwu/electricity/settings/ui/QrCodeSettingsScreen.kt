@@ -1,8 +1,8 @@
 package edu.cqwu.electricity.settings.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.BrightnessHigh
+import androidx.compose.material.icons.outlined.FormatPaint
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.QrCodeColorMode
@@ -83,8 +83,8 @@ fun QrCodeSettingsScreen(
     }
     val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
 
-    // 圆角分数（0~50 int → 0.0f~0.5f float）
-    val cornerFraction = appSettings.qrCodeCornerRadius / 100f
+    // 圆角分数（0~50 int → 0.0f~0.5f float），开关关闭时为 0
+    val cornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
 
     Scaffold(
         topBar = {
@@ -169,53 +169,80 @@ fun QrCodeSettingsScreen(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                ) {
-                    // 当前值显示
-                    Text(
-                        text = "${"%.1f".format(appSettings.qrCodeCornerRadius)}%",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // 滑块（steps = 4 表示中间 4 个 tick，加上两端共 6 个整数点位：0,10,20,30,40,50）
-                    Slider(
-                        value = appSettings.qrCodeCornerRadius,
-                        onValueChange = appSettings::updateQrCodeCornerRadius,
-                        valueRange = CORNER_RADIUS_RANGE,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = SliderDefaults.colors(
-                            thumbColor = MaterialTheme.colorScheme.primary,
-                            activeTrackColor = MaterialTheme.colorScheme.primary,
-                            inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        ),
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // 固定点位标签
+                Column {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                appSettings.updateQrCodeCornerRadiusEnabled(
+                                    !appSettings.qrCodeCornerRadiusEnabled,
+                                )
+                            }
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = "${CORNER_RADIUS_RANGE.start}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        Icon(
+                            imageVector = Icons.Outlined.FormatPaint,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(24.dp),
                         )
-                        Text(
-                            text = "${CORNER_RADIUS_RANGE.endInclusive}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.qrcode_settings_corner_radius_switch),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = stringResource(R.string.qrcode_settings_corner_radius_switch_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Switch(
+                            checked = appSettings.qrCodeCornerRadiusEnabled,
+                            onCheckedChange = appSettings::updateQrCodeCornerRadiusEnabled,
                         )
+                    }
+                    AnimatedVisibility(visible = appSettings.qrCodeCornerRadiusEnabled) {
+                        Column {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.qrcode_settings_corner_radius),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Text(
+                                    text = "${"%.1f".format(appSettings.qrCodeCornerRadius)}%",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                            Slider(
+                                value = appSettings.qrCodeCornerRadius,
+                                onValueChange = appSettings::updateQrCodeCornerRadius,
+                                valueRange = CORNER_RADIUS_RANGE,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                ),
+                            )
+                        }
                     }
                 }
             }

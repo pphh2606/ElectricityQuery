@@ -278,8 +278,6 @@ fun WebViewBottomSheet(
     BottomSheetDialog(
         visible = visible,
         onDismissRequest = onDismissRequest,
-        fullscreen = false,
-        skipPartiallyExpanded = true,
         onHideStarted = { webViewState.stopLoading() },
         leadingButton = {
             IconButton(

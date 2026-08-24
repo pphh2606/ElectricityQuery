@@ -181,10 +181,10 @@ object WebVpnSessionManager {
     }
 
     private fun resolveSavedAccount(): Pair<String, String>? {
-        val activeUser = AccountSessionStore.getActiveUser()
-        if (activeUser != null) {
-            val password = AccountSessionStore.getAccount(activeUser)?.password
-            if (!password.isNullOrBlank()) return activeUser to password
+        val active = AccountSessionStore.getActiveAccount()
+        if (active != null) {
+            val password = active.password
+            if (!password.isNullOrBlank()) return active.username to password
         }
         return AccountSessionStore.getAllAccounts()
             .firstOrNull { !it.password.isNullOrBlank() }

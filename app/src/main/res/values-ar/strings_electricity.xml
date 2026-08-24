@@ -21,7 +21,6 @@
     <string name="dashboard_cash_balance">الرصيد النقدي</string>
     <string name="dashboard_subsidy_balance">رصيد الدعم</string>
     <string name="dashboard_base_balance">الرصيد الأساسي</string>
-    <string name="dashboard_querying_balance">جارٍ استعلام الرصيد…</string>
     <string name="dashboard_room_name">اسم الغرفة</string>
     <string name="dashboard_room_id">معرف الغرفة</string>
     <string name="dashboard_unknown">غير معروف</string>
@@ -54,7 +53,6 @@
     <string name="electricity_tab_my_dorm">سكني</string>
     <string name="building_no_campus">لا توجد بيانات الحرم</string>
     <string name="building_no_floors">لا توجد طوابق في هذا المبنى</string>
-    <string name="building_click_to_expand">اضغط للتوسيع</string>
     <string name="building_no_rooms">لا توجد غرف</string>
     <string name="building_reload">إعادة تحميل</string>
     <string name="building_no_buildings">لا توجد مبانٍ في هذا الحرم</string>

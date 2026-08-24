@@ -136,7 +136,7 @@ object SettingsKeys {
 
     val PAGE_TRANSITION = enumSetting(
         name = "page_transition",
-        default = PageTransition.SLIDE,
+        default = PageTransition.CUPERTINO,
         fromValue = PageTransition::fromValue,
         encode = { it.value },
     )
@@ -172,6 +172,11 @@ object SettingsKeys {
     val QR_CODE_CORNER_RADIUS = floatSetting(
         name = "qr_code_corner_radius",
         default = 30f,
+    )
+
+    val QR_CODE_CORNER_RADIUS_ENABLED = booleanSetting(
+        name = "qr_code_corner_radius_enabled",
+        default = false,
     )
 
     val QR_SCREEN_BRIGHTNESS = booleanSetting(

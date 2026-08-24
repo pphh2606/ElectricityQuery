@@ -74,7 +74,6 @@
     <string name="payment_selected">Sélectionné</string>
     <string name="payment_confirm">Confirmer le paiement</string>
     <string name="payment_continue">Continuer le paiement</string>
-    <string name="payment_processing">Traitement du paiement…</string>
     <string name="payment_order_failed">Échec de création de commande</string>
     <string name="payment_success">Paiement réussi !</string>
     <string name="payment_done">Terminé</string>

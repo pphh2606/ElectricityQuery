@@ -75,8 +75,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Account Manager Sheet                      -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="account_manager_title">Account Manager</string>
-    <string name="account_manager_current">Current</string>
     <string name="account_manager_add">Add Account</string>
     <string name="account_manager_switching">Verifying login state…</string>
     <string name="account_manager_switch_success">Switched to %1$s</string>

@@ -14,6 +14,17 @@
     <string name="settings_webvpn_enabled_desc">Acheminer toutes les requêtes réseau via le WebVPN de l\'école lorsqu\'il est activé</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  Gestion des comptes                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_account_manager">Gestion des comptes</string>
+    <string name="settings_account_manager_desc">Basculer de compte, gérer l\'état de connexion</string>
+    <string name="account_manager_v2_username">Modifier le nom d\'utilisateur</string>
+    <string name="account_manager_v2_password">Modifier le mot de passe…</string>
+    <string name="account_manager_v2_login_time">Heure de connexion : %1$s</string>
+    <string name="account_manager_v2_relogin_title">Alerte de sécurité</string>
+    <string name="account_manager_v2_relogin_message">L\'authentification a échoué. Veuillez vous reconnecter.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  Personnalisation                           -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">Personnalisation</string>
@@ -60,6 +71,8 @@
     <string name="qrcode_settings_black">Noir</string>
     <string name="qrcode_settings_black_desc">Utiliser le noir pour les modules noirs</string>
     <string name="qrcode_settings_corner_radius">Arrondi des coins</string>
+    <string name="qrcode_settings_corner_radius_switch">Rayon des coins QR</string>
+    <string name="qrcode_settings_corner_radius_switch_desc">Ajuster l\'arrondi des coins du QR code</string>
     <string name="qrcode_settings_display">Affichage</string>
     <string name="qrcode_settings_screen_brightness">Luminosité de l\'écran</string>
     <string name="qrcode_settings_screen_brightness_desc">Augmenter automatiquement la luminosité lors de l\'affichage du QR code</string>

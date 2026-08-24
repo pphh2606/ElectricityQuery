@@ -14,7 +14,6 @@
     <string name="home_external_app_title">外部アプリを開く</string>
     <string name="home_external_app_message">「%1$s」は今日のキャンパス内で開く必要があります。続行しますか？</string>
     <string name="home_install_campus_app">「%1$s」を使用するには今日のキャンパスアプリをインストールしてください</string>
-    <string name="home_open_failed">開けませんでした: %1$s</string>
     <string name="home_edit_my_services">マイサービスを編集</string>
     <string name="home_confirm_exit_edit">確認して編集を終了</string>
     <string name="home_load_failed">読み込み失敗</string>

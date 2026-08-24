@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.payment.ui.AmountGrid
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.app.Routes
@@ -95,7 +95,7 @@ fun CardRechargeScreen(
 
     // ── 自动填充已登录用户的学号并查询 ──
     val loggedInStudentId = remember {
-        AccountSessionStore.getActiveUser()
+        AccountSessionStore.getActiveAccount()?.username
     }
     LaunchedEffect(Unit) {
         viewModel.autoFillFromLogin(loggedInStudentId)
@@ -300,7 +300,7 @@ fun CardRechargeScreen(
     // ================================================================
     val cardRechargeH5Url = "https://pay.cqwu.edu.cn/mobile/#/eCardRechargePay?projectId=80bb5ee2189e4ca2bd5dff4513a0dae2"
 
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showOtherRechargeDialog,
         onDismissRequest = { showOtherRechargeDialog = false },
         title = stringResource(R.string.recharge_other_method_title)

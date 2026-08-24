@@ -80,7 +80,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LanguageSwitchButton
 import edu.cqwu.electricity.theme.ui.LoadingDialog
@@ -109,14 +109,14 @@ fun LoginScreen(
     onBack: () -> Unit,
     onLoginSuccess: () -> Unit = onBack,
     clearForm: Boolean = false,
-    initialUsername: String? = null,
+    initialAccountId: String? = null,
     loginViewModel: LoginViewModel = viewModel()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
 
     // 每次进入登录页时重置状态，防止 ViewModel 跨导航残留旧数据
     LaunchedEffect(Unit) {
-        loginViewModel.resetState(clearForm = clearForm, initialUsername = initialUsername)
+        loginViewModel.resetState(clearForm = clearForm, initialAccountId = initialAccountId)
     }
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -500,7 +500,7 @@ fun LoginScreen(
     )
 
     // ========== 其他登录方式弹窗 ==========
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showOtherLoginSheet,
         onDismissRequest = { showOtherLoginSheet = false },
         title = stringResource(R.string.login_other_login),
@@ -526,7 +526,7 @@ fun LoginScreen(
     // ========== 找回密码弹窗 ==========
     val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
     val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showRecoverySheet,
         onDismissRequest = { showRecoverySheet = false },
         title = stringResource(R.string.login_password_recovery),

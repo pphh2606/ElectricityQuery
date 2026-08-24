@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.MaterialTheme
@@ -111,12 +109,11 @@ fun OpenUrlDialog(
         }
     }
 
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.open_url_title),
         icon = Icons.Outlined.OpenInBrowser,
-        fullscreen = false,
         trailingButton = {
             TextButton(
                 onClick = { doConfirm() },
@@ -132,9 +129,7 @@ fun OpenUrlDialog(
         },
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             TextField(
                 value = urlInput,

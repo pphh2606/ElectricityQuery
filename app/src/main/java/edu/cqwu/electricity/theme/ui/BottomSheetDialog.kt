@@ -8,15 +8,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.rememberScrollState
@@ -67,7 +64,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  *                设为 `false` 时仅在退出动画完成后才真正移除，不会立即消失。
  * @param onDismissRequest 用户请求关闭弹窗时触发的回调，通常在此将状态变量设为 false。
  *                         组件不会在内部隐藏动画结束后再次补调该回调。
- * @param fullscreen 如果为 true，内容区将撑满全屏高度并支持滚动。
+ * @param skipPartiallyExpanded 是否跳过半展开，默认 true（打开直接显示内容高度）；内容较高时可传 false 让弹窗先停在半展开位置。
  * @param leadingButton 拖拽手柄栏左侧的可选按钮（文字 / 图标），靠左边缘对齐。
  * @param trailingButton 拖拽手柄栏右侧的可选按钮（文字 / 图标），靠右边缘对齐。
  * @param contentModifier 应用到内容列的修饰符，位于默认布局之后。
@@ -111,26 +108,27 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetDialog(
+    // ── 显隐与标题 ──
     visible: Boolean = true,
     onDismissRequest: () -> Unit,
     title: String? = null,
     icon: ImageVector? = null,
-    fullscreen: Boolean = true,
-    sheetGesturesEnabled: Boolean = true,
-    /** 显式覆盖 skipPartiallyExpanded，默认为 `!fullscreen`。 */
+    // ── 布局 ──
+    /** 是否跳过半展开，默认 true（打开直接显示内容高度）；内容较高时可传 false 先停在半展开位置。 */
     skipPartiallyExpanded: Boolean? = null,
+    // ── 手柄栏按钮 ──
     leadingButton: @Composable (() -> Unit)? = null,
     trailingButton: @Composable (() -> Unit)? = null,
+    // ── 内容微调 ──
     contentModifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
     contentArrangement: Arrangement.Vertical = Arrangement.spacedBy(4.dp),
-    fixedHeader: Boolean = false,
-    bottomBar: @Composable (() -> Unit)? = null,
+    // ── 生命周期 ──
     onHideStarted: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
-    // 兼容 Android 7+ 的 sheet 状态行为。
-    val computedSkip = skipPartiallyExpanded ?: !fullscreen
+    // 兼容 Android 7+ 的 sheet 状态行为；默认跳过半展开，直接显示内容高度。
+    val computedSkip = skipPartiallyExpanded ?: true
     val appDensity = LocalDensity.current
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = computedSkip
@@ -145,9 +143,8 @@ fun BottomSheetDialog(
     if (visible || isHiding) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
-            modifier = if (fullscreen) Modifier.statusBarsPadding() else Modifier,
             sheetState = sheetState,
-            sheetGesturesEnabled = sheetGesturesEnabled,
+            sheetGesturesEnabled = true,
             dragHandle = {
                 ProvideAppScaledDensity(appDensity) {
                     Row(
@@ -183,61 +180,71 @@ fun BottomSheetDialog(
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = 2.dp,
             contentWindowInsets = {
-                val bars = if (fullscreen) {
-                    WindowInsets.navigationBars
-                } else {
-                    WindowInsets.systemBars
-                }
-                bars.union(WindowInsets.ime)
+                WindowInsets.systemBars.union(WindowInsets.ime)
             }
         ) {
             ProvideAppScaledDensity(appDensity) {
-                if (bottomBar != null) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
-                            .then(contentModifier)
-                    ) {
-                        if (fixedHeader && title != null) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                BottomSheetHeader(title = title, icon = icon)
-                            }
-                        }
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .padding(contentPadding)
-                                .verticalScroll(rememberScrollState()),
-                            verticalArrangement = contentArrangement
-                        ) {
-                            if (!fixedHeader) {
-                                BottomSheetHeader(title = title, icon = icon)
-                            }
-                            content()
-                        }
-                        bottomBar()
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .then(if (fullscreen) Modifier.fillMaxHeight() else Modifier)
-                            .padding(contentPadding)
-                            .then(if (fullscreen) Modifier.verticalScroll(rememberScrollState()) else Modifier)
-                            .then(contentModifier),
-                        verticalArrangement = contentArrangement
-                    ) {
-                        BottomSheetHeader(title = title, icon = icon)
-                        content()
-                    }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(contentPadding)
+                        .then(contentModifier),
+                    verticalArrangement = contentArrangement
+                ) {
+                    BottomSheetHeader(title = title, icon = icon)
+                    content()
                 }
             }
+        }
+    }
+}
+
+/**
+ * 单选列表底部弹窗（语言选择弹窗同款形式）。
+ *
+ * 相对全屏弹窗的优势：
+ * - 内容不高时高度自适应，不撑满全屏、底部无留白；
+ * - 内容超过半屏时先停在半展开位置，可上滑看全；
+ * - 标题、列表项与底部空白整体可滚动。
+ *
+ * @param visible 控制弹窗是否可见
+ * @param onDismissRequest 关闭回调
+ * @param title 标题（随内容滚动），null 不显示
+ * @param icon 标题上方图标，null 只显示标题
+ * @param leadingButton 手柄栏左侧按钮（可选）
+ * @param trailingButton 手柄栏右侧按钮（可选）
+ * @param content 列表项内容（如多个 [BottomSheetItem]）
+ */
+@Composable
+fun ListSheetDialog(
+    visible: Boolean,
+    onDismissRequest: () -> Unit,
+    title: String? = null,
+    icon: ImageVector? = null,
+    leadingButton: @Composable (() -> Unit)? = null,
+    trailingButton: @Composable (() -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    BottomSheetDialog(
+        visible = visible,
+        onDismissRequest = onDismissRequest,
+        skipPartiallyExpanded = false,
+        leadingButton = leadingButton,
+        trailingButton = trailingButton,
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 0.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            if (title != null) {
+                BottomSheetHeader(title = title, icon = icon)
+            }
+            content()
+            // 原内容区底部空白，随内容一起滚动
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -271,7 +278,7 @@ private fun rememberBottomSheetHidingState(
     previousVisible = visible
 
     // 驱动 ModalBottomSheet 执行退出动画。
-    // 使用 try-finally 确保即使 sheetState.hide() 被取消（如键盘弹出触发 expand()），
+    // 使用 try-finally 确保即使 sheetState.hide() 被取消（如重新打开），
     // isHiding 也会被正确重置，避免 ModalBottomSheet 的 scrim 永久阻挡屏幕。
     LaunchedEffect(isHiding) {
         if (isHiding) {
@@ -285,15 +292,6 @@ private fun rememberBottomSheetHidingState(
             } finally {
                 isHiding = false
             }
-        }
-    }
-
-    // 键盘弹出时自动将半展开的 sheet 展开到全屏状态，避免输入框被输入法遮挡。
-    // 当 isHiding 为 true 时跳过，防止 expand() 取消正在进行的 hide() 动画。
-    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    LaunchedEffect(isKeyboardVisible) {
-        if (isKeyboardVisible && !isHiding && sheetState.currentValue == SheetValue.PartiallyExpanded) {
-            sheetState.expand()
         }
     }
 

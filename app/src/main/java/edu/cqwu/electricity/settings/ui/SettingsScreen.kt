@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.ManageAccounts
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -83,6 +84,13 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 Column {
+                    SettingsEntry(
+                        icon = Icons.Outlined.ManageAccounts,
+                        title = stringResource(R.string.settings_account_manager),
+                        subtitle = stringResource(R.string.settings_account_manager_desc),
+                        onClick = { nav.navigate(Routes.ACCOUNT_MANAGER) },
+                    )
+
                     SettingsEntry(
                         icon = Icons.Outlined.Palette,
                         title = stringResource(R.string.settings_personalization),

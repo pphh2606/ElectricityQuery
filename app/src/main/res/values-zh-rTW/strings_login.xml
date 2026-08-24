@@ -75,9 +75,11 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  帳號管理                                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="account_manager_title">帳號管理</string>
-    <string name="account_manager_current">目前</string>
     <string name="account_manager_add">新增帳號</string>
+    <string name="account_manager_switching">正在驗證登入狀態…</string>
+    <string name="account_manager_switch_success">已切換到 %1$s</string>
+    <string name="account_manager_switch_failed">切換失敗，請重試</string>
+    <string name="account_manager_switch_network_error">網路錯誤，暫時無法驗證登入狀態，請稍後重試</string>
 
     <string name="login_error_fetch_params_network">取得登入參數失敗，請檢查網路</string>
 

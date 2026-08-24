@@ -75,9 +75,11 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  アカウント管理                              -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="account_manager_title">アカウント管理</string>
-    <string name="account_manager_current">現在</string>
     <string name="account_manager_add">アカウントを追加</string>
+    <string name="account_manager_switching">ログイン状態を検証中…</string>
+    <string name="account_manager_switch_success">%1$s に切り替えました</string>
+    <string name="account_manager_switch_failed">切り替えに失敗しました。もう一度お試しください</string>
+    <string name="account_manager_switch_network_error">ネットワークエラーが発生しました。ログイン状態を確認できないため、しばらくしてからお試しください</string>
 
     <string name="login_error_fetch_params_network">ログインパラメータの取得に失敗しました。ネットワークを確認してください</string>
 

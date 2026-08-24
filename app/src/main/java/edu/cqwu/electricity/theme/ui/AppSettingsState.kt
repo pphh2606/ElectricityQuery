@@ -60,6 +60,13 @@ class AppSettingsState(
     )
         private set
 
+    var qrCodeCornerRadiusEnabled by mutableStateOf(prefs.get(SettingsKeys.QR_CODE_CORNER_RADIUS_ENABLED))
+        private set
+
+    /** 生效的二维码圆角百分比：开关关闭时强制为 0 */
+    val effectiveQrCodeCornerRadius: Float
+        get() = if (qrCodeCornerRadiusEnabled) qrCodeCornerRadius else 0f
+
     var qrScreenBrightnessEnabled by mutableStateOf(prefs.get(SettingsKeys.QR_SCREEN_BRIGHTNESS))
         private set
 
@@ -128,6 +135,11 @@ class AppSettingsState(
         val clamped = value.coerceIn(MIN_QR_CORNER_RADIUS, MAX_QR_CORNER_RADIUS)
         qrCodeCornerRadius = clamped
         prefs.set(SettingsKeys.QR_CODE_CORNER_RADIUS, clamped)
+    }
+
+    fun updateQrCodeCornerRadiusEnabled(enabled: Boolean) {
+        qrCodeCornerRadiusEnabled = enabled
+        prefs.set(SettingsKeys.QR_CODE_CORNER_RADIUS_ENABLED, enabled)
     }
 
     fun updateQrScreenBrightnessEnabled(enabled: Boolean) {

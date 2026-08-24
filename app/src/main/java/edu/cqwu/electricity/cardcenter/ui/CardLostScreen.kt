@@ -26,7 +26,7 @@ import androidx.compose.material.icons.outlined.CreditCardOff
 import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -260,7 +260,7 @@ fun CardLostScreen(
     }
 
     // ── 错误提示 - Bottom Sheet ──
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = errorDialogMessage != null,
         onDismissRequest = { errorDialogMessage = null },
         title = stringResource(R.string.card_error_title)

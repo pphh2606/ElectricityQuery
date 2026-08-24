@@ -3,6 +3,8 @@ package edu.cqwu.electricity.settings.ui
 import android.os.Build
 import kotlin.math.roundToInt
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,7 +34,6 @@ import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FormatPaint
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.TextFields
@@ -57,6 +58,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -76,6 +78,7 @@ import edu.cqwu.electricity.theme.ui.MAX_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.theme.ui.MIN_FONT_SCALE
 import edu.cqwu.electricity.theme.ui.MIN_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -253,37 +256,39 @@ fun PersonalizationScreen(
                             onCheckedChange = appSettings::updateSheetBlurEnabled,
                         )
                     }
-                    if (appSettings.sheetBlurEnabled) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.personalization_sheet_blur_strength),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Text(
-                                text = stringResource(
-                                    R.string.personalization_sheet_blur_radius_value,
-                                    appSettings.sheetBlurRadius
-                                ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
+                    AnimatedVisibility(visible = appSettings.sheetBlurEnabled) {
+                        Column {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.personalization_sheet_blur_strength),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.personalization_sheet_blur_radius_value,
+                                        appSettings.sheetBlurRadius
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                            Slider(
+                                value = appSettings.sheetBlurRadius,
+                                onValueChange = appSettings::updateSheetBlurRadius,
+                                valueRange = MIN_SHEET_BLUR_RADIUS..MAX_SHEET_BLUR_RADIUS,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
                             )
                         }
-                        Slider(
-                            value = appSettings.sheetBlurRadius,
-                            onValueChange = appSettings::updateSheetBlurRadius,
-                            valueRange = MIN_SHEET_BLUR_RADIUS..MAX_SHEET_BLUR_RADIUS,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                        )
                     }
                 }
             }
@@ -474,15 +479,16 @@ private fun FontScaleRow(
         }
         Spacer(modifier = Modifier.width(16.dp))
         Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            val arrowRotation by animateFloatAsState(
+                targetValue = if (expanded) 90f else 0f,
+                animationSpec = tween(300),
+                label = "expandArrow",
+            )
             Icon(
-                imageVector = if (expanded) {
-                    Icons.Outlined.KeyboardArrowDown
-                } else {
-                    Icons.AutoMirrored.Outlined.KeyboardArrowRight
-                },
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(24.dp).rotate(arrowRotation),
             )
         }
     }
@@ -539,7 +545,7 @@ private fun NightModeSelectionDialog(
     onSelect: (NightMode) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.personalization_night_mode)
@@ -599,16 +605,13 @@ private fun ColorPickerDialog(
         }
     }
 
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.personalization_choose_color),
-        fullscreen = false,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
@@ -717,10 +720,10 @@ private fun <T> SelectionDialog(
     onSelect: (T) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = visible,
         onDismissRequest = onDismiss,
-        title = title
+        title = title,
     ) {
         entries.forEach { entry ->
             BottomSheetItem(

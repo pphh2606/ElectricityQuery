@@ -8,6 +8,7 @@ import androidx.security.crypto.MasterKey
 import edu.cqwu.electricity.logging.AppLog
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.UUID
 
 /**
  * 持久化的账号信息：学号、密码（可选）、最后登录时间、记住密码标志、登录状态（cookie 集合）。
@@ -15,8 +16,11 @@ import org.json.JSONObject
  * 注意：登录状态（[cookies]）与"学号+密码"相互独立：
  * - 扫码登录：只有学号 + 登录状态，没有密码；
  * - 未勾选"记住密码"：只有学号 + 登录状态，密码不落盘。
+ *
+ * [id] 为条目唯一标识（UUID）：同一学号可通过不同登录方式产生多个条目，切换/删除按 id 定位。
  */
 data class SavedAccount(
+    val id: String,
     val username: String,
     val password: String? = null,
     val lastLoginTime: Long = 0,
@@ -44,7 +48,7 @@ object AccountSessionStore {
 
     private const val PREF_NAME = "account_session_store_encrypted"
     private const val KEY_ACCOUNTS = "saved_accounts"
-    private const val KEY_ACTIVE_USER = "active_user"
+    private const val KEY_ACTIVE_ACCOUNT_ID = "active_account_id"
 
     @Volatile
     private var prefs: SharedPreferences? = null
@@ -92,13 +96,15 @@ object AccountSessionStore {
         }
     }
 
-    /** 获取指定账号 */
-    fun getAccount(username: String): SavedAccount? =
-        getAllAccounts().firstOrNull { it.username == username }
+    /** 按条目 id 获取账号 */
+    fun getAccountById(id: String): SavedAccount? =
+        getAllAccounts().firstOrNull { it.id == id }
 
-    /** 当前激活账号（持久化） */
-    fun getActiveUser(): String? =
-        prefs().getString(KEY_ACTIVE_USER, null)?.takeIf { it.isNotBlank() }
+    /** 当前激活的账号条目（按持久化的条目 id 定位） */
+    fun getActiveAccount(): SavedAccount? {
+        val id = prefs().getString(KEY_ACTIVE_ACCOUNT_ID, null)?.takeIf { it.isNotBlank() } ?: return null
+        return getAccountById(id)
+    }
 
     // ═══════════════════════════════════════════
     //  登录提交与切换
@@ -120,50 +126,47 @@ object AccountSessionStore {
         rememberPassword: Boolean,
         cookies: Map<String, Map<String, String>>,
     ) {
-        val accounts = getAllAccounts().toMutableList()
-        accounts.removeAll { it.username == username }
-        accounts.add(
-            SavedAccount(
-                username = username,
-                password = if (rememberPassword) password else null,
-                lastLoginTime = System.currentTimeMillis(),
-                rememberPassword = rememberPassword,
-                cookies = cookies,
-            )
+        // 每次登录新增独立条目（允许同一学号多个条目，用于多账号切换测试）
+        val account = SavedAccount(
+            id = UUID.randomUUID().toString(),
+            username = username,
+            password = if (rememberPassword) password else null,
+            lastLoginTime = System.currentTimeMillis(),
+            rememberPassword = rememberPassword,
+            cookies = cookies,
         )
-        saveAccounts(accounts)
+        saveAccounts(getAllAccounts() + account)
         AppLog.d("AccountSessionStore", "commitLogin: $username, 记住密码=$rememberPassword, cookie域数=${cookies.size}")
-        activate(username)
+        activate(account.id)
     }
 
     /**
-     * 原子激活指定账号（QQ 模式切换）：
+     * 原子激活指定条目（QQ 模式切换）：
      * 1. 清空系统 CookieManager（同步等待完成）
      * 2. 清空 WebView DOM 存储（localStorage 等，避免旧账号网页残留）
-     * 3. 将该账号持久化的 cookie 写入系统 CookieManager
-     * 4. 更新 activeUser
+     * 3. 将该条目持久化的 cookie 写入系统 CookieManager
+     * 4. 持久化当前激活条目 id
      *
      * 调用方应确保在 IO 线程执行（内部有等待系统 cookie 清除完成的操作）。
      */
-    fun activate(username: String) {
-        val account = getAccount(username)
-            ?: throw IllegalStateException("账号不存在: $username")
+    fun activate(accountId: String) {
+        val account = getAccountById(accountId)
+            ?: throw IllegalStateException("账号不存在: $accountId")
         SessionCleaner.clearAll()
         writeCookiesToSystem(account.cookies)
-        prefs().edit().putString(KEY_ACTIVE_USER, username).apply()
-        AppLog.d("AccountSessionStore", "激活账号: $username, cookie域数=${account.cookies.size}")
+        prefs().edit().putString(KEY_ACTIVE_ACCOUNT_ID, accountId).apply()
+        AppLog.d("AccountSessionStore", "激活账号: ${account.username}, cookie域数=${account.cookies.size}")
     }
 
     /**
      * 启动时恢复当前账号登录态到系统 CookieManager（幂等，不清除任何数据）。
-     * WebKit CookieManager 本身持久化，此处确保 activeUser 的 cookie 一定存在（例如被系统清理后重建）。
+     * WebKit CookieManager 本身持久化，此处确保激活条目的 cookie 一定存在（例如被系统清理后重建）。
      */
     fun restoreActiveSession() {
-        val active = getActiveUser() ?: return
-        val account = getAccount(active) ?: return
+        val account = getActiveAccount() ?: return
         if (!account.hasLoginState) return
         writeCookiesToSystem(account.cookies)
-        AppLog.d("AccountSessionStore", "启动恢复会话: $active, cookie域数=${account.cookies.size}")
+        AppLog.d("AccountSessionStore", "启动恢复会话: ${account.username}, cookie域数=${account.cookies.size}")
     }
 
     /** 将指定 cookie 集合写入系统 CookieManager */
@@ -178,12 +181,12 @@ object AccountSessionStore {
     }
 
     /**
-     * 将新 cookie 合并进指定账号的持久化登录状态（WebVPN 自动登录、服务 ticket 交换等场景）。
+     * 将新 cookie 合并进指定条目的持久化登录状态（WebVPN 自动登录、服务 ticket 交换等场景）。
      */
-    fun mergeCookies(username: String, cookies: Map<String, Map<String, String>>) {
+    fun mergeCookies(accountId: String, cookies: Map<String, Map<String, String>>) {
         if (cookies.isEmpty()) return
         val accounts = getAllAccounts().toMutableList()
-        val idx = accounts.indexOfFirst { it.username == username }
+        val idx = accounts.indexOfFirst { it.id == accountId }
         if (idx < 0) return
         val old = accounts[idx]
         val mergedMap = old.cookies.toMutableMap()
@@ -195,15 +198,15 @@ object AccountSessionStore {
         }
         accounts[idx] = old.copy(cookies = mergedMap)
         saveAccounts(accounts)
-        AppLog.d("AccountSessionStore", "合并 cookie 到 $username: ${cookies.keys}")
+        AppLog.d("AccountSessionStore", "合并 cookie 到 ${old.username}: ${cookies.keys}")
     }
 
     /**
-     * 将系统 CookieManager 中指定域名的 cookie 合并进当前激活账号的持久化登录状态。
+     * 将系统 CookieManager 中指定域名的 cookie 合并进当前激活条目的持久化登录状态。
      * 用于服务登录成功后把该服务的登录态随账号一起保存。
      */
     fun mergeSystemCookiesForActiveUser(domain: String) {
-        val active = getActiveUser() ?: return
+        val active = getActiveAccount() ?: return
         val cookieString = try {
             CookieManager.getInstance().getCookie(domain)
         } catch (e: Exception) {
@@ -211,7 +214,7 @@ object AccountSessionStore {
         } ?: return
         val parsed = CookieParser.parse(cookieString)
         if (parsed.isEmpty()) return
-        mergeCookies(active, mapOf(domain to parsed))
+        mergeCookies(active.id, mapOf(domain to parsed))
     }
 
     // ═══════════════════════════════════════════
@@ -219,18 +222,18 @@ object AccountSessionStore {
     // ═══════════════════════════════════════════
 
     /**
-     * 删除账号：删除持久化记录（学号 + 密码 + 登录状态）。
-     * 若删除的是当前激活账号，同时清空系统登录态（cookie + WebView 存储），回到未登录。
+     * 删除账号条目：删除持久化记录（id + 学号 + 密码 + 登录状态）。
+     * 若删除的是当前激活条目，同时清空系统登录态（cookie + WebView 存储），回到未登录。
      * 退出登录 API 的调用由调用方在调用本方法前完成（见 [LogoutApi]）。
      */
-    fun deleteAccount(username: String) {
-        val accounts = getAllAccounts().filterNot { it.username == username }
+    fun deleteAccount(accountId: String) {
+        val accounts = getAllAccounts().filterNot { it.id == accountId }
         saveAccounts(accounts)
-        if (getActiveUser() == username) {
+        if (getActiveAccount()?.id == accountId) {
             SessionCleaner.clearAll()
-            prefs().edit().remove(KEY_ACTIVE_USER).apply()
+            prefs().edit().remove(KEY_ACTIVE_ACCOUNT_ID).apply()
         }
-        AppLog.d("AccountSessionStore", "删除账号: $username")
+        AppLog.d("AccountSessionStore", "删除账号: $accountId")
     }
 
     /** 清空所有账号数据与登录态（设置页"清除存储空间"用）。 */
@@ -262,6 +265,7 @@ object AccountSessionStore {
         val arr = JSONArray()
         for (a in accounts.sortedByDescending { it.lastLoginTime }) {
             val obj = JSONObject()
+            obj.put("i", a.id)
             obj.put("u", a.username)
             a.password?.let { obj.put("p", it) }
             obj.put("t", a.lastLoginTime)
@@ -280,6 +284,8 @@ object AccountSessionStore {
 
     private fun parseAccount(obj: JSONObject): SavedAccount? {
         return try {
+            // 无 id 的旧格式条目直接丢弃（测试版不迁移旧数据）
+            val id = obj.optString("i").takeIf { it.isNotBlank() } ?: return null
             val cookies = mutableMapOf<String, Map<String, String>>()
             val cookiesObj = obj.optJSONObject("c")
             if (cookiesObj != null) {
@@ -297,6 +303,7 @@ object AccountSessionStore {
                 }
             }
             SavedAccount(
+                id = id,
                 username = obj.getString("u"),
                 password = if (obj.has("p")) obj.getString("p") else null,
                 lastLoginTime = if (obj.has("t")) obj.getLong("t") else 0,

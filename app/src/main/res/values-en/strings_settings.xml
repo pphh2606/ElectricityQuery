@@ -14,6 +14,17 @@
     <string name="settings_webvpn_enabled_desc">Route all network requests through the school WebVPN when enabled</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  Account Manager                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="settings_account_manager">Account Manager</string>
+    <string name="settings_account_manager_desc">Switch accounts, manage login state</string>
+    <string name="account_manager_v2_username">Change Username</string>
+    <string name="account_manager_v2_password">Change Password…</string>
+    <string name="account_manager_v2_login_time">Login time: %1$s</string>
+    <string name="account_manager_v2_relogin_title">Security Alert</string>
+    <string name="account_manager_v2_relogin_message">Authentication failed. Please log in again.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  Personalization                            -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">Personalization</string>
@@ -60,6 +71,8 @@
     <string name="qrcode_settings_black">Black</string>
     <string name="qrcode_settings_black_desc">Use black for QR code dark modules</string>
     <string name="qrcode_settings_corner_radius">Corner Radius</string>
+    <string name="qrcode_settings_corner_radius_switch">QR Corner Radius</string>
+    <string name="qrcode_settings_corner_radius_switch_desc">Enable to adjust the corner radius of QR code modules</string>
     <string name="qrcode_settings_display">Display</string>
     <string name="qrcode_settings_screen_brightness">Screen Brightness</string>
     <string name="qrcode_settings_screen_brightness_desc">Automatically increase screen brightness when displaying QR code</string>

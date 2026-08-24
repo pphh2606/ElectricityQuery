@@ -67,6 +67,7 @@ import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.theme.ui.ListSheetDialog
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.ReLoginContent
@@ -134,7 +135,7 @@ fun ElectricityMainScreen(
 
     // 获取当前登录学号
     val loggedInStudentId = remember {
-        AccountSessionStore.getActiveUser()
+        AccountSessionStore.getActiveAccount()?.username
     }
 
     // 当前 Tab 标题：查询 Tab 进入余额结果页后显示"电费查询结果"
@@ -335,13 +336,13 @@ fun ElectricityMainScreen(
     }
 
     // ── 充值 Tab 提示信息弹窗 - Bottom Sheet ──
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showRechargeInfoDialog,
         onDismissRequest = { showRechargeInfoDialog = false },
         title = stringResource(R.string.recharge_hint)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // 第1条：纯文本（学号/编号说明）
@@ -420,7 +421,7 @@ fun ElectricityMainScreen(
     }
 
     // ── 我的寝室房间切换 BottomSheet ──
-    BottomSheetDialog(
+    ListSheetDialog(
         visible = showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty(),
         onDismissRequest = { showRoomSwitchSheet = false },
             title = stringResource(R.string.dashboard_select_dorm),
