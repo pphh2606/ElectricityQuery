@@ -58,7 +58,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
@@ -92,12 +91,11 @@ fun CardRechargeScreen(
     // ── 其他充值方式弹窗状态 ──
     var showOtherRechargeDialog by remember { mutableStateOf(false) }
 
-    // ── 自动填充已登录用户的学号并查询 ──
-    val loggedInStudentId = remember {
-        AccountSessionStore.getActiveAccount()?.username
-    }
+    // ── 自动填充当前登录账号的数字学号并查询 ──
+    // 登录用户名可能是登录别名（非学号），校园卡系统只认数字学号；
+    // 学号在登录时获取并随账号缓存（AccountSessionStore.getActiveStudentId，本地读取零网络）
     LaunchedEffect(Unit) {
-        viewModel.autoFillFromLogin(loggedInStudentId)
+        viewModel.autoFillStudentIdFromLogin()
     }
 
     // 显示查询错误

@@ -216,6 +216,7 @@ fun FeeServiceHallScreen(
                 0 -> FeeServiceHallHomeTab(
                     uiState = uiState,
                     onRefresh = { viewModel.refreshAll() },
+                    onReLogin = onReLogin,
                     onNavigateToWebView = onNavigateToWebView,
                 )
                 1 -> FeeServiceHallOrderTab(
@@ -237,6 +238,8 @@ fun FeeServiceHallScreen(
                 2 -> FeeServiceHallProfileTab(
                     uiState = uiState,
                     onNavigateToWebView = onNavigateToWebView,
+                    onReLogin = onReLogin,
+                    onRetryProfile = { viewModel.retryProfileLoad() },
                 )
             }
         }
@@ -252,6 +255,7 @@ fun FeeServiceHallScreen(
 private fun FeeServiceHallHomeTab(
     uiState: FeeServiceHallUiState,
     onRefresh: () -> Unit,
+    onReLogin: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -319,8 +323,8 @@ private fun FeeServiceHallHomeTab(
                 uiState.errorMessage != null && uiState.categories.isEmpty() -> {
                     ReLoginContent(
                         errorMessage = stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""),
-                        requiresReLogin = false,
-                        onReLogin = {},
+                        requiresReLogin = uiState.requiresReLogin,
+                        onReLogin = onReLogin,
                         onRetry = onRefresh,
                     )
                 }

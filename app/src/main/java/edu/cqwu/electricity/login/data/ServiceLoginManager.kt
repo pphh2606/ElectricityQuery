@@ -17,10 +17,7 @@ object ServiceLoginManager {
     ) {
         AppLog.d(TAG, ">>> ensure service login: $protectedUrl")
 
-        val client = HttpClientFactory.create(
-            cookieJar = CookieStoreOkHttpJar,
-            followRedirects = false,
-        )
+        val client = HttpClientFactory.casFlowClient
         val loginPage = RedirectChainFollower.followToCasLoginPage(
             client = client,
             startUrl = protectedUrl,

@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.theme.ui.ReLoginContent
 
 /** 功能菜单项数据 */
 private data class ProfileMenuItem(
@@ -74,6 +75,8 @@ private val queryServiceItems = listOf(
 internal fun FeeServiceHallProfileTab(
     uiState: FeeServiceHallUiState,
     onNavigateToWebView: (url: String, title: String) -> Unit,
+    onReLogin: () -> Unit,
+    onRetryProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -82,7 +85,7 @@ internal fun FeeServiceHallProfileTab(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
-        ProfileInfoCard(uiState)
+        ProfileInfoCard(uiState, onReLogin, onRetryProfile)
 
         Spacer(Modifier.height(16.dp))
 
@@ -123,7 +126,11 @@ private fun ProfileMenuCard(
 }
 
 @Composable
-private fun ProfileInfoCard(uiState: FeeServiceHallUiState) {
+private fun ProfileInfoCard(
+    uiState: FeeServiceHallUiState,
+    onReLogin: () -> Unit,
+    onRetryProfile: () -> Unit,
+) {
     ElevatedCard(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
@@ -136,10 +143,12 @@ private fun ProfileInfoCard(uiState: FeeServiceHallUiState) {
                 }
             }
             uiState.profileError != null -> {
-                Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.fee_profile_load_failed, uiState.profileError ?: ""), style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error)
-                }
+                ReLoginContent(
+                    errorMessage = stringResource(R.string.fee_profile_load_failed, uiState.profileError ?: ""),
+                    requiresReLogin = uiState.profileRequiresReLogin,
+                    onReLogin = onReLogin,
+                    onRetry = onRetryProfile,
+                )
             }
             else -> {
                 val profile = uiState.profile

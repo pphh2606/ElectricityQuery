@@ -15,7 +15,7 @@ object LogoutApi {
     /**
      * 调用服务端退出登录接口，使该账号在服务端的会话失效。
      *
-     * @param username 要退出登录的学号
+     * @param username 要退出登录的登录用户名（学号或登录别名）
      * @param cookies 该账号当前持久化的登录状态（cookie 集合），供退出登录请求携带
      */
     fun logout(username: String, cookies: Map<String, Map<String, String>>) {

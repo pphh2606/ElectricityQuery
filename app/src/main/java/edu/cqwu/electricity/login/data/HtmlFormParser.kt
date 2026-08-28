@@ -47,9 +47,14 @@ object HtmlFormParser {
     //  CAS 登录页检测
     // ═══════════════════════════════════════════
 
-    /** CAS 登录页 HTML 特征信号列表 */
+    /**
+     * CAS 登录页 HTML 特征信号列表。
+     *
+     * 注意：不使用 "authserver/login" 作为信号——pay 域 casLogin/ 未认证时返回的
+     * JS 导航页（跳转 authserver 登录页）其 URL 就包含该子串，会被误判为登录页。
+     * 真正的 CAS 登录页必含登录表单（casLoginForm / pwdDefaultEncryptSalt / CASTGC）。
+     */
     private val CAS_LOGIN_SIGNALS = listOf(
-        "authserver/login",
         "id=\"casLoginForm\"",
         "pwdDefaultEncryptSalt",
         "CASTGC",
@@ -99,10 +104,12 @@ object HtmlFormParser {
     private val REAL_NAME_REGEX = Regex("""data-name="name">([^<]+)</div>""")
 
     /**
-     * 从 CAS index.do 页面 HTML 中提取学号。
+     * 从 CAS index.do 页面 HTML 中提取用户ID（数字学号）。
      *
-     * 有效 Cookie → 返回 200 + 个人设置页 HTML（含 data-name="id" 学号）
+     * 有效 Cookie → 返回 200 + 个人设置页 HTML（含 data-name="id"，即 CAS 用户ID/数字学号）
      * 无效 Cookie → 被重定向回 CAS 登录页 HTML
+     *
+     * 注意：该字段是数字学号，与登录时使用的用户名（可能是登录别名）无关。
      */
     fun extractUsername(html: String): String? {
         return USERNAME_REGEX.find(html)?.groupValues?.getOrNull(1)?.trim()

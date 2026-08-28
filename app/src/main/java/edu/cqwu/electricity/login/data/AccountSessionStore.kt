@@ -11,13 +11,13 @@ import org.json.JSONObject
 import java.util.UUID
 
 /**
- * 持久化的账号信息：学号、密码（可选）、最后登录时间、记住密码标志、登录状态（cookie 集合）。
+ * 持久化的账号信息：登录用户名（可为学号或登录别名）、密码（可选）、最后登录时间、记住密码标志、登录状态（cookie 集合）。
  *
- * 注意：登录状态（[cookies]）与"学号+密码"相互独立：
- * - 扫码登录：只有学号 + 登录状态，没有密码；
- * - 未勾选"记住密码"：只有学号 + 登录状态，密码不落盘。
+ * 注意：登录状态（[cookies]）与"登录用户名+密码"相互独立：
+ * - 扫码登录：只有登录用户名 + 登录状态，没有密码；
+ * - 未勾选"记住密码"：只有登录用户名 + 登录状态，密码不落盘。
  *
- * [id] 为条目唯一标识（UUID）：同一学号可通过不同登录方式产生多个条目，切换/删除按 id 定位。
+ * [id] 为条目唯一标识（UUID）：同一登录用户名可通过不同登录方式产生多个条目，切换/删除按 id 定位。
  */
 data class SavedAccount(
     val id: String,
@@ -27,6 +27,8 @@ data class SavedAccount(
     val rememberPassword: Boolean = true,
     /** 登录状态：domain(scheme://host) → cookie name→value。为空表示该账号无登录状态 */
     val cookies: Map<String, Map<String, String>> = emptyMap(),
+    /** 数字学号（登录时获取并缓存，与登录用户名无关；可能为 null 表示尚未获取/回填） */
+    val studentId: String? = null,
 ) {
     /** 是否有登录状态（存在任一非空 cookie） */
     val hasLoginState: Boolean get() = cookies.any { (_, kv) -> kv.isNotEmpty() }
@@ -36,7 +38,7 @@ data class SavedAccount(
  * 登录会话唯一持久化仓库（替代原 AccountStore + AccountManager）。
  *
  * 设计原则：
- * - 单一数据源：账号列表（学号、密码、登录状态）+ 当前激活账号全部持久化（加密存储），进程重启后可恢复。
+ * - 单一数据源：账号列表（登录用户名、密码、登录状态）+ 当前激活账号全部持久化（加密存储），进程重启后可恢复。
  * - 系统 CookieManager 始终只反映当前激活账号的登录态：切换账号 = 清空系统 cookie + WebView DOM 存储，再写入目标账号的 cookie。
  * - 登录/切换成功之前不改动当前任何登录状态：登录过程使用隔离的临时 UserCookieStore，
  *   仅在成功后才通过 [commitLogin] 原子激活。
@@ -115,18 +117,20 @@ object AccountSessionStore {
      *
      * 登录成功之前当前登录态保持不变（登录过程使用隔离的临时 store，调用方仅在成功后调用本方法）。
      *
-     * @param username 学号
+     * @param username 登录用户名（学号或登录别名）
      * @param password 密码；仅当 [rememberPassword] 为 true 时才落盘（扫码登录传 null + false）
      * @param rememberPassword 是否记住密码
      * @param cookies 登录过程中收集的完整 cookie 集合（domain → name→value）
+     * @param studentId 数字学号（扫码登录时已在手可传；账号密码登录可后补，见 [updateStudentId]）
      */
     fun commitLogin(
         username: String,
         password: String?,
         rememberPassword: Boolean,
         cookies: Map<String, Map<String, String>>,
+        studentId: String? = null,
     ) {
-        // 每次登录新增独立条目（允许同一学号多个条目，用于多账号切换测试）
+        // 每次登录新增独立条目（允许同一登录用户名多个条目，用于多账号切换测试）
         val account = SavedAccount(
             id = UUID.randomUUID().toString(),
             username = username,
@@ -134,11 +138,29 @@ object AccountSessionStore {
             lastLoginTime = System.currentTimeMillis(),
             rememberPassword = rememberPassword,
             cookies = cookies,
+            studentId = studentId,
         )
         saveAccounts(getAllAccounts() + account)
-        AppLog.d("AccountSessionStore", "commitLogin: $username, 记住密码=$rememberPassword, cookie域数=${cookies.size}")
+        AppLog.d("AccountSessionStore", "commitLogin: $username, 记住密码=$rememberPassword, cookie域数=${cookies.size}, studentId=${studentId ?: "-"}")
         activate(account.id)
     }
+
+    /**
+     * 回填/更新指定账号的数字学号（登录成功后获取、启动验证回填等场景）。
+     */
+    fun updateStudentId(accountId: String, studentId: String?) {
+        if (studentId.isNullOrBlank()) return
+        val accounts = getAllAccounts().toMutableList()
+        val idx = accounts.indexOfFirst { it.id == accountId }
+        if (idx < 0) return
+        if (accounts[idx].studentId == studentId) return
+        accounts[idx] = accounts[idx].copy(studentId = studentId)
+        saveAccounts(accounts)
+        AppLog.d("AccountSessionStore", "回填学号: ${accounts[idx].username} -> $studentId")
+    }
+
+    /** 当前激活账号的数字学号（本地读取，零网络） */
+    fun getActiveStudentId(): String? = getActiveAccount()?.studentId
 
     /**
      * 原子激活指定条目（QQ 模式切换）：
@@ -222,7 +244,7 @@ object AccountSessionStore {
     // ═══════════════════════════════════════════
 
     /**
-     * 删除账号条目：删除持久化记录（id + 学号 + 密码 + 登录状态）。
+     * 删除账号条目：删除持久化记录（id + 登录用户名 + 密码 + 登录状态）。
      * 若删除的是当前激活条目，同时清空系统登录态（cookie + WebView 存储），回到未登录。
      * 退出登录 API 的调用由调用方在调用本方法前完成（见 [LogoutApi]）。
      */
@@ -244,7 +266,7 @@ object AccountSessionStore {
     }
 
     /**
-     * 清除所有账号的登录状态（cookie），保留账号（学号）和密码。
+     * 清除所有账号的登录状态（cookie），保留账号（登录用户名）和密码。
      *
      * 用于设置页「登录信息和cookie」清理：清完后账号管理弹窗仍显示账号和密码，
      * 但切换任何账号都需重新登录。不涉及 WebView DOM 存储（由「WebView 数据」项负责）。
@@ -270,6 +292,7 @@ object AccountSessionStore {
             a.password?.let { obj.put("p", it) }
             obj.put("t", a.lastLoginTime)
             obj.put("r", a.rememberPassword)
+            a.studentId?.let { obj.put("s", it) }
             val cookiesObj = JSONObject()
             for ((domain, kv) in a.cookies) {
                 val kvObj = JSONObject()
@@ -309,6 +332,7 @@ object AccountSessionStore {
                 lastLoginTime = if (obj.has("t")) obj.getLong("t") else 0,
                 rememberPassword = if (obj.has("r")) obj.getBoolean("r") else true,
                 cookies = cookies,
+                studentId = if (obj.has("s")) obj.getString("s") else null,
             )
         } catch (e: Exception) {
             null

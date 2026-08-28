@@ -225,6 +225,8 @@ fun QrLoginScreen(
                                                 password = null,
                                                 rememberPassword = false,
                                                 cookies = tempStore.getAllCookies(),
+                                                // 扫码登录提取的 data-name="id" 即数字学号，直接随账号缓存
+                                                studentId = loginResult.username,
                                             )
                                         }
                                     }

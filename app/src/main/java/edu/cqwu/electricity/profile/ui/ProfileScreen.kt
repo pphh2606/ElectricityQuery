@@ -163,7 +163,7 @@ fun ProfilePageContent(
     } else {
         "?"
     }
-    val displayStudentId = username ?: stringResource(R.string.profile_not_logged_in)
+    val displayUsername = username ?: stringResource(R.string.profile_not_logged_in)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -210,13 +210,13 @@ fun ProfilePageContent(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    // ── 中间：姓名（可选）+ 学号 ──
+                    // ── 中间：姓名（可选）+ 登录用户名（可能为登录别名）──
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = displayStudentId,
+                            text = displayUsername,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = if (isLoggedIn)

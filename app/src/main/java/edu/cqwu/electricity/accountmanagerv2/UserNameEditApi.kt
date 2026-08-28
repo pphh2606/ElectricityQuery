@@ -147,12 +147,7 @@ class UserNameEditApi {
 
     /** 用账号 cookie 构建隔离客户端（UserCookieStore + UserAwareCookieJar，直连 authserver） */
     private fun clientFor(cookies: Map<String, Map<String, String>>): OkHttpClient {
-        val store = UserCookieStore()
-        for ((domain, kv) in cookies) {
-            for ((name, value) in kv) {
-                store.setCookie(domain, "$name=$value")
-            }
-        }
+        val store = UserCookieStore().also { it.loadFrom(cookies) }
         return HttpClientFactory.create(
             cookieJar = UserAwareCookieJar(store),
             includeWebVpn = false,

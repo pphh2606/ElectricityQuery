@@ -22,6 +22,8 @@ data class FeeServiceHallUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val errorMessage: String? = null,
+    /** 主页加载失败且为会话过期（SessionExpiredException）时置位，UI 引导重新登录 */
+    val requiresReLogin: Boolean = false,
 
     // 订单 Tab
     val orders: List<OrderRecord> = emptyList(),
@@ -46,6 +48,8 @@ data class FeeServiceHallUiState(
     val profile: UserProfile? = null,
     val isProfileLoading: Boolean = false,
     val profileError: String? = null,
+    /** 资料加载失败且为会话过期时置位，UI 引导重新登录 */
+    val profileRequiresReLogin: Boolean = false,
 )
 
 /** 关闭订单结果，消费后重置为 null */
@@ -94,22 +98,26 @@ class FeeServiceHallViewModel : ViewModel() {
     // ── 主页 ──
     private fun loadProjects() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null, requiresReLogin = false) }
             api.fetchProjects().onSuccess { c ->
                 _uiState.update { it.copy(categories = c, isLoading = false) }
             }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = e.message, requiresReLogin = e is SessionExpiredException)
+                }
             }
         }
     }
 
     fun refreshProjects() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
+            _uiState.update { it.copy(isRefreshing = true, errorMessage = null, requiresReLogin = false) }
             api.fetchProjects().onSuccess { c ->
                 _uiState.update { it.copy(categories = c, isRefreshing = false) }
             }.onFailure { e ->
-                _uiState.update { it.copy(isRefreshing = false, errorMessage = e.message) }
+                _uiState.update {
+                    it.copy(isRefreshing = false, errorMessage = e.message, requiresReLogin = e is SessionExpiredException)
+                }
             }
         }
     }
@@ -201,14 +209,19 @@ class FeeServiceHallViewModel : ViewModel() {
     // ── 个人资料 ──
     private fun loadProfile() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isProfileLoading = true, profileError = null) }
+            _uiState.update { it.copy(isProfileLoading = true, profileError = null, profileRequiresReLogin = false) }
             api.fetchUserProfile().onSuccess { p ->
                 _uiState.update { it.copy(profile = p, isProfileLoading = false) }
             }.onFailure { e ->
-                _uiState.update { it.copy(isProfileLoading = false, profileError = e.message) }
+                _uiState.update {
+                    it.copy(isProfileLoading = false, profileError = e.message, profileRequiresReLogin = e is SessionExpiredException)
+                }
             }
         }
     }
+
+    /** 重新加载个人资料（错误态 [重试] 入口） */
+    fun retryProfileLoad() = loadProfile()
 
     fun refreshAll() {
         refreshProjects()

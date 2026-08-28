@@ -18,6 +18,13 @@ object HttpClientFactory {
 
     private const val DEFAULT_TIMEOUT_SECONDS = 15L
 
+    /**
+     * pay.cqwu.edu.cn 业务 API 专用客户端。
+     *
+     * 注意：刻意不挂 CookieJar —— pay 业务 API 的鉴权凭证是 JWT（`X-Token` 头，
+     * 由 [edu.cqwu.electricity.login.data.PaySessionManager] 统一管理），不依赖 cookie；
+     * token 交换链路（/casLogin/ → dlyscas）走 [shared]（共享 CookieJar 桥接 CookieManager）。
+     */
     val payClient: OkHttpClient by lazy {
         create(
             connectTimeout = 10,
@@ -28,6 +35,17 @@ object HttpClientFactory {
 
     val shared: OkHttpClient by lazy {
         create(cookieJar = CookieStoreOkHttpJar)
+    }
+
+    /**
+     * CAS 重定向链客户端（服务登录 ticket 交换、pay token 获取等）：
+     * 共享 CookieJar（桥接 CookieManager）、不自动跟随重定向（由调用方手动跟随）。
+     */
+    val casFlowClient: OkHttpClient by lazy {
+        create(
+            cookieJar = CookieStoreOkHttpJar,
+            followRedirects = false,
+        )
     }
 
     val webVpnImageClient: OkHttpClient by lazy {

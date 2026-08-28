@@ -201,7 +201,7 @@ fun AccountManagerScreen(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 Column {
-                    // 所有条目均以副标题「登录时间」显示（区分同一学号的多个登录条目）
+                    // 所有条目均以副标题「登录时间」显示（区分同一登录用户名的多个登录条目）
                     val timeFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
                     accounts.forEachIndexed { index, account ->
                         AccountRow(
@@ -351,7 +351,7 @@ fun AccountManagerScreen(
 }
 
 /**
- * 账号行：圆形头像 + 学号 + trailing 区域。
+ * 账号行：圆形头像 + 登录用户名 + trailing 区域。
  * 当前账号高亮 + ✓；编辑模式下显示删除图标（40dp 固定交互区，行高不变化）。
  */
 @Composable

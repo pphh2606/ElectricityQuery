@@ -21,7 +21,7 @@ import okhttp3.Request
  * 3. 获取二维码图片 URL
  * 4. 轮询扫码状态
  * 5. 提交认证获取 CASTGC
- * 6. （新增）用获取到的 CASTGC 从 /authserver/index.do 提取学号和实名
+ * 6. （新增）用获取到的 CASTGC 从 /authserver/index.do 提取用户ID（数字学号）和实名
  *
  * 使用独立的 OkHttpClient + UserCookieStore，与全局 CookieManager 完全隔离，
  * 不携带任何已登录用户的 Cookie（隐私模式），防止因已有 CASTGC 导致扫码登录页被重定向。
@@ -190,7 +190,7 @@ class QrLoginApi {
      * 最后一步耗时可能超过 15 秒，导致 readTimeout 超时异常。
      * 我们只需要第一个 302 响应的 Set-Cookie: CASTGC，无需跟随重定向。
      *
-     * 获取到 CASTGC 后，会自动查询 /authserver/index.do 提取学号和实名，
+     * 获取到 CASTGC 后，会自动查询 /authserver/index.do 提取用户ID（数字学号）和实名，
      * 并将 CASTGC 保存到 AccountSessionStore，确保后续智能切换可用。
      */
     suspend fun submitQrLogin(lt: String, uuid: String, execution: String): Result<LoginResult> = withContext(Dispatchers.IO) {
@@ -233,32 +233,20 @@ class QrLoginApi {
                 throw RuntimeException("扫码登录失败：未能获取到 CASTGC Cookie")
             }
 
-            // ═══ 提取用户信息（学号/实名）═══
-            // 使用同一个独立 client（含全部 Cookie）请求 /authserver/index.do
+            // ═══ 提取用户信息（用户ID/实名）═══
+            // 复用 SessionManager.fetchUserInfo（隔离装载 cookies 请求 index.do）
             var username = ""
             try {
-                val indexResponse = client.newCall(
-                    Request.Builder()
-                        .url("https://authserver.cqwu.edu.cn/authserver/index.do?locale=zh_CN")
-                        .get()
-                        .build()
-                ).execute()
-
-                val html = indexResponse.body.string()
-                val extracted = HtmlFormParser.extractUsername(html)
-                if (extracted != null) {
-                    username = extracted
-                    val realName = HtmlFormParser.extractRealName(html) ?: ""
-                    AppLog.d(
-                        "QrLoginApi",
-                        "扫码登录: 学号=${username}, 实名=${realName}",
-                    )
+                val userInfo = SessionManager.fetchUserInfo(cookieStore.getAllCookies()).getOrNull()
+                if (userInfo != null) {
+                    username = userInfo.first
+                    AppLog.d("QrLoginApi", "扫码登录: 用户ID=${username}, 实名=${userInfo.second}")
                 }
             } catch (e: Exception) {
                 AppLog.w("QrLoginApi", "提取用户信息失败（不影响登录本身）", e)
             }
 
-            // 未提取到学号时不提交登录态（保持当前登录态不变），由调用方根据 username 决定是否保存
+            // 未提取到用户ID时不提交登录态（保持当前登录态不变），由调用方根据 username 决定是否保存
 
             val cookieString = cookieStore.getCookie("https://authserver.cqwu.edu.cn") ?: ""
             AppLog.d(

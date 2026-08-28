@@ -98,6 +98,15 @@ class UserCookieStore {
         return cookieMap.toMap()
     }
 
+    /** 批量装载持久化 cookie（domain → name→value） */
+    fun loadFrom(cookies: Map<String, Map<String, String>>) {
+        for ((domain, kv) in cookies) {
+            for ((name, value) in kv) {
+                setCookie(domain, "$name=$value")
+            }
+        }
+    }
+
     private fun normalizeUrl(url: String): String {
         return try {
             val uri = Uri.parse(url)

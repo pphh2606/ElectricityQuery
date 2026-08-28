@@ -61,7 +61,7 @@ class CasAuthApi {
     /**
      * CAS 登录核心实现。
      *
-     * @param username    学号
+     * @param username    登录用户名（学号或登录别名）
      * @param password    密码
      * @param client      用于 HTTP 请求的 OkHttpClient
      * @param cookieProvider 从指定 URL 获取 Cookie 字符串的函数
@@ -121,7 +121,7 @@ class CasAuthApi {
 /**
  * CAS 登录结果
  *
- * @param username 登录用户名（学号）
+ * @param username 登录用户名（学号或登录别名）
  * @param cookieString 完整 Cookie 字符串（包含 CASTGC 等），用于展示和调试
  */
 data class LoginResult(

@@ -9,6 +9,7 @@ import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CredentialExporter
 import edu.cqwu.electricity.login.data.CasAuthApi
 import edu.cqwu.electricity.login.data.CasLoginException
+import edu.cqwu.electricity.login.data.SessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -152,12 +153,19 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         // 登录成功：持久化账号与登录态并原子激活（内部会清除旧登录态）。
                         // 登录过程中当前登录态保持不变（隔离临时 store）。
                         result.cookieStore?.let { tempStore ->
+                            val cookies = tempStore.getAllCookies()
+                            // 登录后获取数字学号（一次性网络请求；失败传 null，
+                            // 由启动验证回填兜底，不影响登录成功），随 commitLogin 直接落盘
+                            val studentId = withContext(Dispatchers.IO) {
+                                SessionManager.fetchUserInfo(cookies).getOrNull()?.first
+                            }
                             withContext(Dispatchers.IO) {
                                 AccountSessionStore.commitLogin(
                                     username = username,
                                     password = password,
                                     rememberPassword = rememberPwd,
-                                    cookies = tempStore.getAllCookies(),
+                                    cookies = cookies,
+                                    studentId = studentId,
                                 )
                             }
                         }

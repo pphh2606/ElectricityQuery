@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.electricity.data.SelectionStep
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
@@ -131,11 +130,6 @@ fun ElectricityMainScreen(
     var triggerOtherRecharge by remember { mutableStateOf(false) }
 
     val topBarColors = currentTopBarColors()
-
-    // 获取当前登录学号
-    val loggedInStudentId = remember {
-        AccountSessionStore.getActiveAccount()?.username
-    }
 
     // 当前 Tab 标题：查询 Tab 进入余额结果页后显示"电费查询结果"
     val currentTitle = when {
@@ -326,7 +320,6 @@ fun ElectricityMainScreen(
                     // ── 我的 Tab ──
                     MyRoomDashboardTab(
                         viewModel = myRoomViewModel,
-                        loggedInStudentId = loggedInStudentId,
                         onReLogin = { nav.navigate(Routes.loginRoute()) },
                     )
                 }
@@ -471,7 +464,6 @@ fun ElectricityMainScreen(
 @Composable
 private fun MyRoomDashboardTab(
     viewModel: MyRoomViewModel,
-    loggedInStudentId: String?,
     onReLogin: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -488,14 +480,14 @@ private fun MyRoomDashboardTab(
     // 仅在首次查询（无缓存数据）时自动查询当前登录用户的寝室
     // 后续切换到其他 Tab 再回来时，使用缓存数据，不再重复查询
     LaunchedEffect(Unit) {
-        if (loggedInStudentId != null && uiState.selectedRoom == null) {
-            viewModel.fastQueryMyRoom(loggedInStudentId)
+        if (uiState.selectedRoom == null) {
+            viewModel.fastQueryMyRoom()
         }
     }
 
     // 正在查询我的寝室
     val isLoadingMyRoom = uiState.isMyRoomQuerying
-        || (loggedInStudentId != null && uiState.myRoomList.isEmpty() && uiState.selectedRoom == null)
+        || (uiState.myRoomList.isEmpty() && uiState.selectedRoom == null)
 
     if (isLoadingMyRoom) {
         // 加载中：显示骨架屏
@@ -510,19 +502,19 @@ private fun MyRoomDashboardTab(
                 )
             }
         }
-    } else if (loggedInStudentId == null || uiState.requiresReLogin) {
+    } else if (uiState.requiresReLogin) {
         ReLoginContent(
             errorMessage = null,
             requiresReLogin = true,
             onReLogin = onReLogin,
-            onRetry = { if (loggedInStudentId != null) viewModel.fastQueryMyRoom(loggedInStudentId) },
+            onRetry = { viewModel.fastQueryMyRoom() },
         )
     } else if (uiState.selectedRoom == null) {
         ReLoginContent(
             errorMessage = uiState.queryError?.resolve(resources) ?: stringResource(R.string.common_no_room_data),
             requiresReLogin = false,
             onReLogin = onReLogin,
-            onRetry = { viewModel.fastQueryMyRoom(loggedInStudentId) },
+            onRetry = { viewModel.fastQueryMyRoom() },
         )
     } else {
         // 已有房间数据，显示 Dashboard

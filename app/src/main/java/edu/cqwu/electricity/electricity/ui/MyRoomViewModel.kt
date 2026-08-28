@@ -7,7 +7,9 @@ import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.electricity.data.ElectricityApi
+import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,9 +40,8 @@ data class MyRoomUiState(
  * 与 [ElectricityViewModel] 完全解耦，不共享任何状态。
  */
 class MyRoomViewModel(
-    private val api: ElectricityApi = ElectricityApi()
+    private val api: ElectricityApi = ElectricityApi(),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(MyRoomUiState())
     val uiState: StateFlow<MyRoomUiState> = _uiState.asStateFlow()
 
@@ -51,10 +52,11 @@ class MyRoomViewModel(
     /**
      * 查询当前登录用户绑定的寝室列表，直接更新 selectedRoom 并查询余额。
      *
-     * 流程：学号 → userId → 房间列表 → 更新 selectedRoom → 查询余额
+     * 内部先获取当前登录账号的数字学号（登录用户名可能是登录别名，电费系统只认数字学号），
+     * 流程：数字学号 → userId → 房间列表 → 更新 selectedRoom → 查询余额
      * 错误通过 [errorEvent] Channel 通知 UI 层显示。
      */
-    fun fastQueryMyRoom(loggedInStudentId: String) {
+    fun fastQueryMyRoom() {
         viewModelScope.launch {
             // 立即清空旧房间数据，防止闪现旧房间
             _uiState.update {
@@ -68,8 +70,27 @@ class MyRoomViewModel(
                 )
             }
 
+            // 获取当前登录账号的数字学号（登录时缓存，本地读取零网络）
+            val account = AccountSessionStore.getActiveAccount()
+            if (account == null) {
+                AppLog.d("MyRoomVM", "fastQueryMyRoom: 未登录")
+                _uiState.update { it.copy(isMyRoomQuerying = false, requiresReLogin = true) }
+                return@launch
+            }
+            val studentId = account.studentId
+            if (studentId.isNullOrBlank()) {
+                AppLog.w("MyRoomVM", "fastQueryMyRoom: 本地无学号（未回填）")
+                _uiState.update {
+                    it.copy(
+                        isMyRoomQuerying = false,
+                        queryError = UiMessage(R.string.common_query_failed, listOf("账号学号未就绪，请稍后重试")),
+                    )
+                }
+                return@launch
+            }
+
             // 学号 → userId
-            val userIdResult = api.queryUseridByStudentId(loggedInStudentId)
+            val userIdResult = api.queryUseridByStudentId(studentId)
             val wechatUser = userIdResult.getOrNull()
             if (wechatUser == null || wechatUser.id.isBlank()) {
                 _uiState.update {

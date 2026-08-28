@@ -2,6 +2,7 @@ package edu.cqwu.electricity.login.data
 
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.payment.data.HttpClientFactory
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -15,8 +16,9 @@ import java.net.UnknownHostException
  * 服务级 CAS ticket 交换已迁移到 [edu.cqwu.electricity.login.data.ServiceLoginManager]。
  *
  * 提供以下能力：
- * 1. **Cookie 验证**：[validateCookie] — 验证 CASTGC 是否有效，提取学号/实名
- * 2. **会话检测**：[isCasLoginPage] / [checkSessionOrThrow] — 检测响应是否为 CAS 登录页
+ * 1. **Cookie 验证**：[validateCookie] — 验证 CASTGC 是否有效，提取用户ID（数字学号）/实名
+ * 2. **学号获取**：[fetchUserInfo] — 带账号 cookie 请求 index.do 提取用户ID（数字学号）/实名
+ * 3. **会话检测**：响应为 CAS 登录页时抛 [SessionExpiredException]（[HtmlFormParser.checkAndThrow]）
  */
 object SessionManager {
 
@@ -41,66 +43,87 @@ object SessionManager {
      * 验证指定账号的登录状态（cookie）是否有效。
      *
      * 使用 GET /authserver/index.do 验证 CASTGC 是否有效，
-     * 同时从返回的个人设置页 HTML 中提取学号和实名信息。
+     * 同时从返回的个人设置页 HTML 中提取用户ID（数字学号）和实名信息，
+     * 并顺手回填该账号的数字学号（[AccountSessionStore.updateStudentId]，启动验证场景零额外请求）。
      *
      * @param cookies 该账号持久化的 cookie 集合（domain → name→value），为空直接判定无效。
      * @return [SessionValidationResult.Valid]、[SessionValidationResult.Invalid]、[SessionValidationResult.NetworkError]
      */
     suspend fun validateCookie(
         cookies: Map<String, Map<String, String>>,
-    ): SessionValidationResult = withContext(Dispatchers.IO) {
-        try {
-            if (cookies.isEmpty()) return@withContext SessionValidationResult.Invalid
-
-            // 将持久化的账号 cookie 装载到临时 UserCookieStore，用 UserAwareCookieJar 隔离验证
-            val userStore = UserCookieStore()
-            for ((domain, kv) in cookies) {
-                for ((name, value) in kv) {
-                    userStore.setCookie(domain, "$name=$value")
+    ): SessionValidationResult {
+        val result = fetchUserInfo(cookies)
+        return if (result.isSuccess) {
+            val (username, realName) = result.getOrThrow()
+            AppLog.d("SessionManager", "Cookie 有效！用户ID=${username}, 实名=${realName}")
+            // 启动验证回填老账号学号（index.do 请求已发生，无额外网络开销）
+            val active = AccountSessionStore.getActiveAccount()
+            if (active != null) AccountSessionStore.updateStudentId(active.id, username)
+            SessionValidationResult.Valid
+        } else {
+            when (val e = result.exceptionOrNull()) {
+                is SessionExpiredException -> {
+                    AppLog.d("SessionManager", "Cookie 无效：会话失效或响应为 CAS 登录页")
+                    SessionValidationResult.Invalid
+                }
+                is SocketTimeoutException -> {
+                    AppLog.w("SessionManager", "验证 Cookie 网络超时", e)
+                    SessionValidationResult.NetworkError("网络超时，请检查网络连接")
+                }
+                is UnknownHostException -> {
+                    AppLog.w("SessionManager", "验证 Cookie DNS 解析失败", e)
+                    SessionValidationResult.NetworkError("无法连接服务器，请检查网络")
+                }
+                else -> {
+                    AppLog.w("SessionManager", "验证 Cookie 时发生异常", e)
+                    SessionValidationResult.NetworkError("网络异常: ${e?.message}")
                 }
             }
+        }
+    }
 
+    /**
+     * 带账号 cookie 请求 index.do 提取用户ID（数字学号）和实名。
+     *
+     * 供登录成功后获取学号、启动验证回填等场景复用（index.do 请求与解析的单点实现）。
+     *
+     * @param cookies 该账号持久化的 cookie 集合（domain → name → value）
+     * @return 成功返回 `(数字学号, 实名)`；cookie 为空/会话失效抛 [SessionExpiredException]，网络异常原样返回 failure
+     */
+    suspend fun fetchUserInfo(
+        cookies: Map<String, Map<String, String>>,
+    ): Result<Pair<String, String>> = withContext(Dispatchers.IO) {
+        try {
+            if (cookies.isEmpty()) {
+                return@withContext Result.failure(SessionExpiredException("cookies 为空"))
+            }
+
+            // 将账号 cookie 装载到临时 UserCookieStore，用 UserAwareCookieJar 隔离验证
+            val userStore = UserCookieStore().also { it.loadFrom(cookies) }
             val client = baseClient.newBuilder()
                 .cookieJar(UserAwareCookieJar(userStore))
                 .build()
 
-            val response = client.newCall(
+            val html = client.newCall(
                 Request.Builder()
                     .url(INDEX_URL)
                     .get()
                     .build()
-            ).execute()
+            ).execute().use { it.body.string() }
 
-            val html = response.body.string()
+            // 响应为 CAS 登录页（会话失效）→ 抛 SessionExpiredException
+            HtmlFormParser.checkAndThrow(html)
 
-            if (HtmlFormParser.isCasLoginPage(html)) {
-                AppLog.d("SessionManager", "Cookie 无效：响应为 CAS 登录页")
-                return@withContext SessionValidationResult.Invalid
-            }
-
-            val username = HtmlFormParser.extractUsername(html)
-                ?: run {
-                    AppLog.w("SessionManager", "无法从 index.do 提取学号，HTML长度=${html.length}")
-                    return@withContext SessionValidationResult.Invalid
-                }
-
-            val realName = HtmlFormParser.extractRealName(html) ?: ""
-
-            AppLog.d(
-                "SessionManager",
-                "Cookie 有效！学号=${username}, 实名=${realName}",
-            )
-
-            SessionValidationResult.Valid
-        } catch (e: SocketTimeoutException) {
-            AppLog.w("SessionManager", "验证 Cookie 网络超时", e)
-            SessionValidationResult.NetworkError("网络超时，请检查网络连接")
-        } catch (e: UnknownHostException) {
-            AppLog.w("SessionManager", "验证 Cookie DNS 解析失败", e)
-            SessionValidationResult.NetworkError("无法连接服务器，请检查网络")
+            val username = HtmlFormParser.extractUsername(html)?.trim()
+                ?: return@withContext Result.failure(
+                    SessionExpiredException("无法从 index.do 提取用户ID，HTML长度=${html.length}")
+                )
+            val realName = HtmlFormParser.extractRealName(html)?.trim() ?: ""
+            Result.success(username to realName)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            AppLog.w("SessionManager", "验证 Cookie 时发生异常", e)
-            SessionValidationResult.NetworkError("网络异常: ${e.message}")
+            Result.failure(e)
         }
     }
 

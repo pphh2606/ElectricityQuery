@@ -23,8 +23,6 @@ class CardRechargeApi : PayApiBase() {
 
     private val jsonMediaType = "application/json;charset=UTF-8".toMediaType()
 
-    override val defaultErrorMsg: String = "未登录，请先打开原网页完成认证"
-
     companion object {
         private const val TAG = "CardRechargeApi"
         private const val PROJECT_ID = "80bb5ee2189e4ca2bd5dff4513a0dae2"
