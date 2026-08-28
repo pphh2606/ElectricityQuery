@@ -66,7 +66,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.settings.data.isDark
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState

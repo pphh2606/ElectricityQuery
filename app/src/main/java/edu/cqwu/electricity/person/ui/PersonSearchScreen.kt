@@ -59,7 +59,7 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.person.data.PersonRow
 import edu.cqwu.electricity.person.data.PersonSearchApi
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 /**

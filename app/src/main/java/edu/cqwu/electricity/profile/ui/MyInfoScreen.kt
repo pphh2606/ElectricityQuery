@@ -61,7 +61,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.profile.data.StudentInfo
 import edu.cqwu.electricity.profile.data.MenuCategory
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

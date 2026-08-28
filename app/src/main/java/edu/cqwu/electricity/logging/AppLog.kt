@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.logging
 
 import android.util.Log
-import edu.cqwu.electricity.feedback.util.LogRedactor
+import edu.cqwu.electricity.logging.LogRedactor
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

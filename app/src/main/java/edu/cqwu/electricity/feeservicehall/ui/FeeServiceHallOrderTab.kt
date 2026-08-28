@@ -5,7 +5,7 @@ package edu.cqwu.electricity.feeservicehall.ui
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.DatePickerField
+import edu.cqwu.electricity.common.ui.DatePickerField
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 
 /**
  * 订单 Tab 内容

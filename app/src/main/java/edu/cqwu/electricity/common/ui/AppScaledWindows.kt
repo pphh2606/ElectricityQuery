@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.common.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
@@ -13,6 +13,7 @@ import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.PopupProperties
+import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
 
 @Composable
 internal fun ProvideAppScaledDensity(
@@ -52,6 +54,18 @@ internal fun AppScaledAlertDialog(
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(),
 ) {
+    // 与 LoadingDialog / BottomSheetDialog 同款：驱动全局 Haze 模糊背后的应用内容。
+    // 组合进入（弹窗显示）即开启模糊，组合销毁（弹窗关闭）即复位。
+    val sheetVisibilityState = LocalSheetVisibilityState.current
+    DisposableEffect(sheetVisibilityState) {
+        sheetVisibilityState.open()
+        sheetVisibilityState.blurProgress = 1f
+        onDispose {
+            sheetVisibilityState.close()
+            sheetVisibilityState.blurProgress = 0f
+        }
+    }
+
     val appDensity = LocalDensity.current
     AlertDialog(
         onDismissRequest = onDismissRequest,

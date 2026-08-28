@@ -62,9 +62,9 @@ import edu.cqwu.electricity.login.data.LogoutApi
 import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.login.data.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
-import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.theme.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -84,7 +84,7 @@ import java.util.Locale
  * - 右上角编辑图标 → 编辑模式，账号行右侧显示删除图标
  * - 删除账号 → 确认弹窗 → 退出登录 API（预留）+ 删除持久化记录；删当前账号时清空系统登录态回到未登录
  * - 点击「添加账号」→ 空白登录页
- * - 「修改用户名 / 修改密码」为占位条目，后期开放
+ * - 「修改用户名 / 修改密码」入口，跳转对应修改页
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,6 +93,7 @@ fun AccountManagerScreen(
     onNavigateToLogin: (accountId: String) -> Unit,
     onNavigateToAddAccount: () -> Unit,
     onNavigateToUserNameEdit: () -> Unit,
+    onNavigateToPasswordEdit: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -237,7 +238,7 @@ fun AccountManagerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── 修改用户名 / 修改密码（修改用户名已开放）──
+            // ── 修改用户名 / 修改密码 ──
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -252,6 +253,7 @@ fun AccountManagerScreen(
                     PlaceholderRow(
                         icon = Icons.Outlined.Lock,
                         title = stringResource(R.string.account_manager_v2_password),
+                        onClick = onNavigateToPasswordEdit,
                     )
                 }
             }
@@ -276,7 +278,8 @@ fun AccountManagerScreen(
                     scope.launch {
                         val account = AccountSessionStore.getAccountById(accountId)
                         withContext(Dispatchers.IO) {
-                            // 预留退出登录 API 调用点（目前服务端无此接口）
+                            // 先调用服务端退出登录注销该账号会话（302 视为成功），
+                            // 登出失败不阻塞本地删除（尽力而为，API 内部已记录日志）
                             LogoutApi.logout(account?.username ?: "", account?.cookies ?: emptyMap())
                             // 删除账号条目；删当前激活条目时内部清空系统登录态回到未登录
                             AccountSessionStore.deleteAccount(accountId)

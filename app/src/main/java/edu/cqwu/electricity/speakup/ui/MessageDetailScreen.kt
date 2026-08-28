@@ -50,7 +50,7 @@ import edu.cqwu.electricity.login.data.SessionExpiredException
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow

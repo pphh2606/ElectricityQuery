@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.home.ui
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
@@ -44,6 +44,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import java.net.URI
 
 /**
  * 自定义网站弹窗，让用户选择本地图标、输入标题和网址。
@@ -218,7 +220,7 @@ private fun isValidUrl(url: String): Boolean {
         url
     }
     return try {
-        val uri = java.net.URI(normalized)
+        val uri = URI(normalized)
         uri.host != null && uri.host.contains(".")
     } catch (_: Exception) {
         false

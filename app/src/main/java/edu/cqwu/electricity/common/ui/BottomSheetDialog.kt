@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.common.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
@@ -469,7 +471,7 @@ fun BottomSheetItem(
     enabled: Boolean = true,
     selected: Boolean = false,
     iconUrl: String? = null,
-    containerColor: androidx.compose.ui.graphics.Color? = null,
+    containerColor: Color? = null,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
     trailingContent: (@Composable () -> Unit)? = null,
     onClick: () -> Unit

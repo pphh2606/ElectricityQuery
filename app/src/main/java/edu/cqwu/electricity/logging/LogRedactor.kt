@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.feedback.util
+package edu.cqwu.electricity.logging
 
 /**
  * 日志脱敏工具：避免把 Cookie、Token、ticket、密码等敏感值写入 Logcat。

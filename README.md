@@ -247,10 +247,10 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`NavGraph.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/NavGraph.kt) | **导航图核心文件**。定义所有路由常量（`Routes` 对象）和 `NavHost`，管理页面跳转与参数传递，实现页面过渡动画（支持滑动、淡入、缩放、Cupertino 等 6 种效果）。支持桌面快捷方式启动时的路由分发 |
-| [`AppShell.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/AppShell.kt) | 导航壳组件，包含底部导航栏和 `NavHost`，是整个应用的 UI 骨架 |
-| [`BottomNavTab.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/BottomNavTab.kt) | 底部导航栏 Tab 定义（首页、我的等） |
-| [`MainTabScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/navigation/MainTabScreen.kt) | 主 Tab 页面容器，使用 `HorizontalPager` 实现左右滑动切换 Tab |
+| [`NavGraph.kt`](app/src/main/java/edu/cqwu/electricity/common/navigation/NavGraph.kt) | **导航图核心文件**。定义所有路由常量（`Routes` 对象）和 `NavHost`，管理页面跳转与参数传递，实现页面过渡动画（支持滑动、淡入、缩放、Cupertino 等 6 种效果）。支持桌面快捷方式启动时的路由分发 |
+| [`AppShell.kt`](app/src/main/java/edu/cqwu/electricity/common/navigation/AppShell.kt) | 导航壳组件，包含底部导航栏和 `NavHost`，是整个应用的 UI 骨架 |
+| [`BottomNavTab.kt`](app/src/main/java/edu/cqwu/electricity/common/navigation/BottomNavTab.kt) | 底部导航栏 Tab 定义（首页、我的等） |
+| [`MainTabScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/navigation/MainTabScreen.kt) | 主 Tab 页面容器，使用 `HorizontalPager` 实现左右滑动切换 Tab |
 
 </details>
 
@@ -259,8 +259,8 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`HomeScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/home/HomeScreen.kt) | 首页界面（1000+ 行）。展示校园服务入口网格（电费查询、充值、卡中心、办事大厅等），支持搜索、下拉刷新、自定义服务入口管理（含自定义网站图标/标题/网址）、打开外部链接等 |
-| [`HomeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/home/HomeViewModel.kt) | 首页 ViewModel，管理首页数据加载与状态 |
+| [`HomeScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/home/HomeScreen.kt) | 首页界面（1000+ 行）。展示校园服务入口网格（电费查询、充值、卡中心、办事大厅等），支持搜索、下拉刷新、自定义服务入口管理（含自定义网站图标/标题/网址）、打开外部链接等 |
+| [`HomeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/home/HomeViewModel.kt) | 首页 ViewModel，管理首页数据加载与状态 |
 
 </details>
 
@@ -269,14 +269,14 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`LoginScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/LoginScreen.kt) | 登录界面。支持学号+密码登录，提供多账号管理、记住密码、凭据导入导出、其他登录方式入口（扫码登录、手机号找回、邮箱找回）等功能 |
-| [`LoginViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/LoginViewModel.kt) | 登录 ViewModel，处理登录逻辑、错误提示、会话管理、智能切换账号（含 Cookie 串号校验） |
-| [`QrLoginScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/QrLoginScreen.kt) | 扫码登录界面，展示二维码供用户扫码认证 |
-| [`AccountManagerSheet.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/AccountManagerSheet.kt) | 账号管理底部弹窗，支持查看、切换、删除、新增账号等操作 |
-| [`DeleteAccountSheet.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/DeleteAccountSheet.kt) | 删除账号确认弹窗 |
-| [`ExportCredentialDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/ExportCredentialDialog.kt) | 凭据导出对话框，生成加密的 Base64 凭据字符串供备份 |
-| [`ImportCredentialDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/ImportCredentialDialog.kt) | 凭据导入对话框，解析 Base64 凭据字符串恢复账号 |
-| [`SecurityNoticeSheet.kt`](app/src/main/java/edu/cqwu/electricity/ui/login/SecurityNoticeSheet.kt) | 安全提示弹窗，凭据导入导出前的安全警告 |
+| [`LoginScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/login/LoginScreen.kt) | 登录界面。支持学号+密码登录，提供多账号管理、记住密码、凭据导入导出、其他登录方式入口（扫码登录、手机号找回、邮箱找回）等功能 |
+| [`LoginViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/login/LoginViewModel.kt) | 登录 ViewModel，处理登录逻辑、错误提示、会话管理、智能切换账号（含 Cookie 串号校验） |
+| [`QrLoginScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/login/QrLoginScreen.kt) | 扫码登录界面，展示二维码供用户扫码认证 |
+| [`AccountManagerSheet.kt`](app/src/main/java/edu/cqwu/electricity/common/login/AccountManagerSheet.kt) | 账号管理底部弹窗，支持查看、切换、删除、新增账号等操作 |
+| [`DeleteAccountSheet.kt`](app/src/main/java/edu/cqwu/electricity/common/login/DeleteAccountSheet.kt) | 删除账号确认弹窗 |
+| [`ExportCredentialDialog.kt`](app/src/main/java/edu/cqwu/electricity/common/login/ExportCredentialDialog.kt) | 凭据导出对话框，生成加密的 Base64 凭据字符串供备份 |
+| [`ImportCredentialDialog.kt`](app/src/main/java/edu/cqwu/electricity/common/login/ImportCredentialDialog.kt) | 凭据导入对话框，解析 Base64 凭据字符串恢复账号 |
+| [`SecurityNoticeSheet.kt`](app/src/main/java/edu/cqwu/electricity/common/login/SecurityNoticeSheet.kt) | 安全提示弹窗，凭据导入导出前的安全警告 |
 
 </details>
 
@@ -285,12 +285,12 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`ElectricityMainScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/electricity/ElectricityMainScreen.kt) | 电费查询主入口页面 |
-| [`ElectricityViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/electricity/ElectricityViewModel.kt) | 电费查询 ViewModel，管理楼栋选择、余额查询等状态 |
-| [`BuildingSelectionScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/electricity/BuildingSelectionScreen.kt) | 楼栋选择页面（校区→楼栋→楼层→房间 多级选择） |
-| [`DashboardScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/electricity/DashboardScreen.kt) | 电费仪表盘页面，展示余额、用电趋势图表、快捷操作入口 |
-| [`DetailScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailScreen.kt) | 用电详情页面（6 个月记录/本月每日/24 小时明细/电表状态） |
-| [`DetailViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/electricity/DetailViewModel.kt) | 详情页 ViewModel |
+| [`ElectricityMainScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/electricity/ElectricityMainScreen.kt) | 电费查询主入口页面 |
+| [`ElectricityViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/electricity/ElectricityViewModel.kt) | 电费查询 ViewModel，管理楼栋选择、余额查询等状态 |
+| [`BuildingSelectionScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/electricity/BuildingSelectionScreen.kt) | 楼栋选择页面（校区→楼栋→楼层→房间 多级选择） |
+| [`DashboardScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/electricity/DashboardScreen.kt) | 电费仪表盘页面，展示余额、用电趋势图表、快捷操作入口 |
+| [`DetailScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/electricity/DetailScreen.kt) | 用电详情页面（6 个月记录/本月每日/24 小时明细/电表状态） |
+| [`DetailViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/electricity/DetailViewModel.kt) | 详情页 ViewModel |
 
 </details>
 
@@ -299,15 +299,15 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`RechargeScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeScreen.kt) | 电费充值页面，输入金额并选择支付方式 |
-| [`RechargeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeViewModel.kt) | 电费充值 ViewModel，管理充值流程状态 |
-| [`PaymentSelectionScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/recharge/PaymentSelectionScreen.kt) | 支付方式选择页面 |
-| [`RechargeRecordScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/recharge/RechargeRecordScreen.kt) | 充值记录查询页面 |
-| [`PaymentState.kt`](app/src/main/java/edu/cqwu/electricity/ui/paycommom/PaymentState.kt) | 支付流程共享状态，电费充值和校园卡充值共用，统一管理支付方式选择、支付提交、订单轮询等状态 |
-| [`PaymentFlowDelegate.kt`](app/src/main/java/edu/cqwu/electricity/ui/paycommom/PaymentFlowDelegate.kt) | 支付流程委托，封装 `RechargeViewModel` 和 `CardRechargeViewModel` 共有的支付流程逻辑（支付方式选择、提交支付、订单状态轮询） |
-| [`PaymentOverlay.kt`](app/src/main/java/edu/cqwu/electricity/ui/paycommom/PaymentOverlay.kt) | 支付 WebView 覆盖层，处理支付宝自动提交表单和微信 H5 支付页面的加载与回调 |
-| [`PaymentConfirmScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/paycommom/PaymentConfirmScreen.kt) | 支付确认页面，展示订单金额、支付状态和支付结果 |
-| [`AmountGrid.kt`](app/src/main/java/edu/cqwu/electricity/ui/paycommom/AmountGrid.kt) | 预设金额网格组件，电费充值和校园卡充值共用的金额选择组件 |
+| [`RechargeScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/recharge/RechargeScreen.kt) | 电费充值页面，输入金额并选择支付方式 |
+| [`RechargeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/recharge/RechargeViewModel.kt) | 电费充值 ViewModel，管理充值流程状态 |
+| [`PaymentSelectionScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/recharge/PaymentSelectionScreen.kt) | 支付方式选择页面 |
+| [`RechargeRecordScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/recharge/RechargeRecordScreen.kt) | 充值记录查询页面 |
+| [`PaymentState.kt`](app/src/main/java/edu/cqwu/electricity/common/paycommom/PaymentState.kt) | 支付流程共享状态，电费充值和校园卡充值共用，统一管理支付方式选择、支付提交、订单轮询等状态 |
+| [`PaymentFlowDelegate.kt`](app/src/main/java/edu/cqwu/electricity/common/paycommom/PaymentFlowDelegate.kt) | 支付流程委托，封装 `RechargeViewModel` 和 `CardRechargeViewModel` 共有的支付流程逻辑（支付方式选择、提交支付、订单状态轮询） |
+| [`PaymentOverlay.kt`](app/src/main/java/edu/cqwu/electricity/common/paycommom/PaymentOverlay.kt) | 支付 WebView 覆盖层，处理支付宝自动提交表单和微信 H5 支付页面的加载与回调 |
+| [`PaymentConfirmScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/paycommom/PaymentConfirmScreen.kt) | 支付确认页面，展示订单金额、支付状态和支付结果 |
+| [`AmountGrid.kt`](app/src/main/java/edu/cqwu/electricity/common/paycommom/AmountGrid.kt) | 预设金额网格组件，电费充值和校园卡充值共用的金额选择组件 |
 
 </details>
 
@@ -316,14 +316,14 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`CardCenterScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardCenterScreen.kt) | 校园卡中心主页 |
-| [`AccountInfoScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/AccountInfoScreen.kt) | 账户信息页面 |
-| [`BillScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/BillScreen.kt) | 账单查询页面（含筛选面板） |
-| [`BillViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/BillViewModel.kt) | 账单 ViewModel |
-| [`CardLostScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardLostScreen.kt) | 卡挂失页面 |
-| [`CardRechargeScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardRechargeScreen.kt) | 校园卡充值页面，输入学号和金额，支持金额选择和自定义输入 |
-| [`CardRechargeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardRechargeViewModel.kt) | 校园卡充值 ViewModel，管理充值流程状态（复用 `PaymentFlowDelegate`） |
-| [`CardPaymentScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/cardcenter/CardPaymentScreen.kt) | 校园卡充值支付执行页面，复用 `PaymentConfirmScreen` 展示支付确认与结果 |
+| [`CardCenterScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/CardCenterScreen.kt) | 校园卡中心主页 |
+| [`AccountInfoScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/AccountInfoScreen.kt) | 账户信息页面 |
+| [`BillScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/BillScreen.kt) | 账单查询页面（含筛选面板） |
+| [`BillViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/BillViewModel.kt) | 账单 ViewModel |
+| [`CardLostScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/CardLostScreen.kt) | 卡挂失页面 |
+| [`CardRechargeScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/CardRechargeScreen.kt) | 校园卡充值页面，输入学号和金额，支持金额选择和自定义输入 |
+| [`CardRechargeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/CardRechargeViewModel.kt) | 校园卡充值 ViewModel，管理充值流程状态（复用 `PaymentFlowDelegate`） |
+| [`CardPaymentScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/cardcenter/CardPaymentScreen.kt) | 校园卡充值支付执行页面，复用 `PaymentConfirmScreen` 展示支付确认与结果 |
 
 </details>
 
@@ -332,11 +332,11 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`FeeServiceHallScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallScreen.kt) | 缴费服务大厅主页 |
-| [`FeeServiceHallViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallViewModel.kt) | 大厅 ViewModel |
-| [`FeeServiceHallOrderTab.kt`](app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallOrderTab.kt) | 订单列表 Tab 页 |
-| [`FeeServiceHallProfileTab.kt`](app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/FeeServiceHallProfileTab.kt) | 个人资料 Tab 页 |
-| [`OrderDetailScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/feeservicehall/OrderDetailScreen.kt) | 订单详情页面 |
+| [`FeeServiceHallScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/feeservicehall/FeeServiceHallScreen.kt) | 缴费服务大厅主页 |
+| [`FeeServiceHallViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/feeservicehall/FeeServiceHallViewModel.kt) | 大厅 ViewModel |
+| [`FeeServiceHallOrderTab.kt`](app/src/main/java/edu/cqwu/electricity/common/feeservicehall/FeeServiceHallOrderTab.kt) | 订单列表 Tab 页 |
+| [`FeeServiceHallProfileTab.kt`](app/src/main/java/edu/cqwu/electricity/common/feeservicehall/FeeServiceHallProfileTab.kt) | 个人资料 Tab 页 |
+| [`OrderDetailScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/feeservicehall/OrderDetailScreen.kt) | 订单详情页面 |
 
 </details>
 
@@ -345,8 +345,8 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`HallScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/hall/HallScreen.kt) | 办事大厅页面，展示校内应用列表，支持收藏管理 |
-| [`HallViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/hall/HallViewModel.kt) | 办事大厅 ViewModel |
+| [`HallScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/hall/HallScreen.kt) | 办事大厅页面，展示校内应用列表，支持收藏管理 |
+| [`HallViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/hall/HallViewModel.kt) | 办事大厅 ViewModel |
 
 </details>
 
@@ -355,10 +355,10 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`NoticeScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeScreen.kt) | 通知公告列表页面 |
-| [`NoticeDetailScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeDetailScreen.kt) | 通知公告详情页面 |
-| [`NoticeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeViewModel.kt) | 通知公告 ViewModel |
-| [`NoticeApi.kt`](app/src/main/java/edu/cqwu/electricity/ui/notice/NoticeApi.kt) | 通知公告 API |
+| [`NoticeScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/notice/NoticeScreen.kt) | 通知公告列表页面 |
+| [`NoticeDetailScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/notice/NoticeDetailScreen.kt) | 通知公告详情页面 |
+| [`NoticeViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/notice/NoticeViewModel.kt) | 通知公告 ViewModel |
+| [`NoticeApi.kt`](app/src/main/java/edu/cqwu/electricity/common/notice/NoticeApi.kt) | 通知公告 API |
 
 </details>
 
@@ -367,9 +367,9 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`ProfileScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/profile/ProfileScreen.kt) | 个人中心页面（「我的」Tab），展示用户头像、学号、功能入口列表、桌面快捷方式入口卡片 |
-| [`MyInfoScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/profile/MyInfoScreen.kt) | 我的信息页面，展示详细的学生信息 |
-| [`MyInfoViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/profile/MyInfoViewModel.kt) | 我的信息 ViewModel |
+| [`ProfileScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/profile/ProfileScreen.kt) | 个人中心页面（「我的」Tab），展示用户头像、学号、功能入口列表、桌面快捷方式入口卡片 |
+| [`MyInfoScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/profile/MyInfoScreen.kt) | 我的信息页面，展示详细的学生信息 |
+| [`MyInfoViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/profile/MyInfoViewModel.kt) | 我的信息 ViewModel |
 
 </details>
 
@@ -378,8 +378,8 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`QrCodeDisplayScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/qrcode/QrCodeDisplayScreen.kt) | 二维码展示页面（支付码、乘车码），支持颜色模式、圆角、屏幕亮度调节 |
-| [`ScanScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/scan/ScanScreen.kt) | 扫码页面，使用 CameraX 实现实时扫码 |
+| [`QrCodeDisplayScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/qrcode/QrCodeDisplayScreen.kt) | 二维码展示页面（支付码、乘车码），支持颜色模式、圆角、屏幕亮度调节 |
+| [`ScanScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/scan/ScanScreen.kt) | 扫码页面，使用 CameraX 实现实时扫码 |
 
 </details>
 
@@ -388,14 +388,14 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`SettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/SettingsScreen.kt) | 设置主页 |
-| [`PersonalizationScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/PersonalizationScreen.kt) | 个性化设置页面（夜间模式、主题色、动画效果、语言切换） |
-| [`QrCodeSettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/QrCodeSettingsScreen.kt) | 二维码样式设置页面（颜色模式、圆角、屏幕亮度） |
-| [`UserAgentSettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/UserAgentSettingsScreen.kt) | 浏览器标识 UA 设置页面 |
-| [`UserAgentEditScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/UserAgentEditScreen.kt) | 编辑/添加自定义 UA 条目 |
-| [`ConfigScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/ConfigScreen.kt) | 高级配置页面 |
-| [`AboutScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/AboutScreen.kt) | 关于页面，展示版本信息、构建信息（构建时间、Git commit hash）、联系方式 |
-| [`StorageClearScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/settings/StorageClearScreen.kt) | 存储清理页面，支持选择性清除图片缓存、崩溃日志、临时文件、Cookie、账号数据等 7 类存储 |
+| [`SettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/SettingsScreen.kt) | 设置主页 |
+| [`PersonalizationScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/PersonalizationScreen.kt) | 个性化设置页面（夜间模式、主题色、动画效果、语言切换） |
+| [`QrCodeSettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/QrCodeSettingsScreen.kt) | 二维码样式设置页面（颜色模式、圆角、屏幕亮度） |
+| [`UserAgentSettingsScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/UserAgentSettingsScreen.kt) | 浏览器标识 UA 设置页面 |
+| [`UserAgentEditScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/UserAgentEditScreen.kt) | 编辑/添加自定义 UA 条目 |
+| [`ConfigScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/ConfigScreen.kt) | 高级配置页面 |
+| [`AboutScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/AboutScreen.kt) | 关于页面，展示版本信息、构建信息（构建时间、Git commit hash）、联系方式 |
+| [`StorageClearScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/settings/StorageClearScreen.kt) | 存储清理页面，支持选择性清除图片缓存、崩溃日志、临时文件、Cookie、账号数据等 7 类存储 |
 
 </details>
 
@@ -404,7 +404,7 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`AddShortcutScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/shortcut/AddShortcutScreen.kt) | 桌面快捷方式创建页面。包含预览区、名称输入、底部弹窗选择功能列表，支持 Coil 异步加载图标，通过 `ShortcutHelper` + `ShortcutManagerCompat` 创建 Pinned Shortcut |
+| [`AddShortcutScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/shortcut/AddShortcutScreen.kt) | 桌面快捷方式创建页面。包含预览区、名称输入、底部弹窗选择功能列表，支持 Coil 异步加载图标，通过 `ShortcutHelper` + `ShortcutManagerCompat` 创建 Pinned Shortcut |
 
 </details>
 
@@ -413,7 +413,7 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`UnifiedWebViewScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/webview/UnifiedWebViewScreen.kt) | 通用内置浏览器页面，封装 WebView 组件，支持加载任意 URL、自定义标题、错误页面覆盖等 |
+| [`UnifiedWebViewScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/webview/UnifiedWebViewScreen.kt) | 通用内置浏览器页面，封装 WebView 组件，支持加载任意 URL、自定义标题、错误页面覆盖等 |
 
 </details>
 
@@ -422,8 +422,8 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`FeedbackScreen.kt`](app/src/main/java/edu/cqwu/electricity/ui/feedback/FeedbackScreen.kt) | 意见反馈页面，支持日志附件 |
-| [`LogCapture.kt`](app/src/main/java/edu/cqwu/electricity/ui/feedback/LogCapture.kt) | 日志捕获工具，收集应用运行日志用于反馈附件 |
+| [`FeedbackScreen.kt`](app/src/main/java/edu/cqwu/electricity/common/feedback/FeedbackScreen.kt) | 意见反馈页面，支持日志附件 |
+| [`LogCapture.kt`](app/src/main/java/edu/cqwu/electricity/common/feedback/LogCapture.kt) | 日志捕获工具，收集应用运行日志用于反馈附件 |
 
 </details>
 
@@ -432,7 +432,7 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`MyRoomViewModel.kt`](app/src/main/java/edu/cqwu/electricity/ui/myroom/MyRoomViewModel.kt) | 我的宿舍 ViewModel，管理用户绑定的房间信息 |
+| [`MyRoomViewModel.kt`](app/src/main/java/edu/cqwu/electricity/common/myroom/MyRoomViewModel.kt) | 我的宿舍 ViewModel，管理用户绑定的房间信息 |
 
 </details>
 
@@ -441,17 +441,17 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`BottomSheetDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/BottomSheetDialog.kt) | 底部弹出对话框组件，封装 MD3 `ModalBottomSheet`。支持标题、图标、左右按钮、全屏/半屏模式、键盘弹出自动展开 |
-| [`CustomWebsiteDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/CustomWebsiteDialog.kt) | 自定义网站输入对话框，支持选择本地图标、输入标题和网址 |
-| [`DatePickerField.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/DatePickerField.kt) | 日期选择器组件，封装 MD3 `DatePickerDialog`，支持文本输入和日历弹窗选择 |
-| [`LanguageSwitchComponents.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LanguageSwitchComponents.kt) | 语言切换组件，支持 6 种语言选择（中文、英文、日文、繁体中文、法语、阿拉伯语） |
-| [`LineChartCard.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LineChartCard.kt) | 折线图卡片组件（用于用电趋势展示） |
-| [`LoadingDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LoadingDialog.kt) | 加载中对话框组件（Card 包裹，圆角 + 阴影） |
-| [`OpenUrlDialog.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/OpenUrlDialog.kt) | 打开链接确认对话框 |
-| [`QrCodeView.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/QrCodeView.kt) | 二维码渲染组件（基于 ZXing） |
-| [`ReLoginContent.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/ReLoginContent.kt) | 重新登录提示内容组件（会话过期时展示） |
-| [`SnackbarController.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/SnackbarController.kt) | Snackbar 消息控制器 |
-| [`WebViewErrorOverlay.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/WebViewErrorOverlay.kt) | WebView 错误覆盖层组件，WebView 加载失败时显示自定义错误页面 |
+| [`BottomSheetDialog.kt`](app/src/main/java/edu/cqwu/electricity/common/components/BottomSheetDialog.kt) | 底部弹出对话框组件，封装 MD3 `ModalBottomSheet`。支持标题、图标、左右按钮、全屏/半屏模式、键盘弹出自动展开 |
+| [`CustomWebsiteDialog.kt`](app/src/main/java/edu/cqwu/electricity/common/components/CustomWebsiteDialog.kt) | 自定义网站输入对话框，支持选择本地图标、输入标题和网址 |
+| [`DatePickerField.kt`](app/src/main/java/edu/cqwu/electricity/common/components/DatePickerField.kt) | 日期选择器组件，封装 MD3 `DatePickerDialog`，支持文本输入和日历弹窗选择 |
+| [`LanguageSwitchComponents.kt`](app/src/main/java/edu/cqwu/electricity/common/components/LanguageSwitchComponents.kt) | 语言切换组件，支持 6 种语言选择（中文、英文、日文、繁体中文、法语、阿拉伯语） |
+| [`LineChartCard.kt`](app/src/main/java/edu/cqwu/electricity/common/components/LineChartCard.kt) | 折线图卡片组件（用于用电趋势展示） |
+| [`LoadingDialog.kt`](app/src/main/java/edu/cqwu/electricity/common/components/LoadingDialog.kt) | 加载中对话框组件（Card 包裹，圆角 + 阴影） |
+| [`OpenUrlDialog.kt`](app/src/main/java/edu/cqwu/electricity/common/components/OpenUrlDialog.kt) | 打开链接确认对话框 |
+| [`QrCodeView.kt`](app/src/main/java/edu/cqwu/electricity/common/components/QrCodeView.kt) | 二维码渲染组件（基于 ZXing） |
+| [`ReLoginContent.kt`](app/src/main/java/edu/cqwu/electricity/common/components/ReLoginContent.kt) | 重新登录提示内容组件（会话过期时展示） |
+| [`SnackbarController.kt`](app/src/main/java/edu/cqwu/electricity/common/components/SnackbarController.kt) | Snackbar 消息控制器 |
+| [`WebViewErrorOverlay.kt`](app/src/main/java/edu/cqwu/electricity/common/components/WebViewErrorOverlay.kt) | WebView 错误覆盖层组件，WebView 加载失败时显示自定义错误页面 |
 
 </details>
 
@@ -460,10 +460,10 @@ app/src/main/java/edu/cqwu/electricity/
 
 | 文件 | 作用 |
 |------|------|
-| [`Theme.kt`](app/src/main/java/edu/cqwu/electricity/ui/theme/Theme.kt) | Material 3 主题定义。支持夜间模式切换、动态取色（Material You）和自定义种子色，管理状态栏图标颜色、`CompositionLocal` 等 |
-| [`Color.kt`](app/src/main/java/edu/cqwu/electricity/ui/theme/Color.kt) | 颜色常量定义 |
-| [`Type.kt`](app/src/main/java/edu/cqwu/electricity/ui/theme/Type.kt) | 字体排版样式定义 |
-| [`ThemeColorGenerator.kt`](app/src/main/java/edu/cqwu/electricity/ui/theme/ThemeColorGenerator.kt) | 主题色生成器，基于 MaterialKolor 从种子色生成完整调色板 |
+| [`Theme.kt`](app/src/main/java/edu/cqwu/electricity/common/theme/Theme.kt) | Material 3 主题定义。支持夜间模式切换、动态取色（Material You）和自定义种子色，管理状态栏图标颜色、`CompositionLocal` 等 |
+| [`Color.kt`](app/src/main/java/edu/cqwu/electricity/common/theme/Color.kt) | 颜色常量定义 |
+| [`Type.kt`](app/src/main/java/edu/cqwu/electricity/common/theme/Type.kt) | 字体排版样式定义 |
+| [`ThemeColorGenerator.kt`](app/src/main/java/edu/cqwu/electricity/common/theme/ThemeColorGenerator.kt) | 主题色生成器，基于 MaterialKolor 从种子色生成完整调色板 |
 
 </details>
 
@@ -525,7 +525,7 @@ app/src/main/java/edu/cqwu/electricity/
 | Français | `values-fr/` | 法语 |
 | العربية | `values-ar/` | 阿拉伯语（RTL 布局支持） |
 
-语言切换通过 [`LanguageSwitchComponents.kt`](app/src/main/java/edu/cqwu/electricity/ui/components/LanguageSwitchComponents.kt) 实现，使用 [`LocaleContextWrapper.kt`](app/src/main/java/edu/cqwu/electricity/util/LocaleContextWrapper.kt) 在应用内动态切换语言。
+语言切换通过 [`LanguageSwitchComponents.kt`](app/src/main/java/edu/cqwu/electricity/common/components/LanguageSwitchComponents.kt) 实现，使用 [`LocaleContextWrapper.kt`](app/src/main/java/edu/cqwu/electricity/util/LocaleContextWrapper.kt) 在应用内动态切换语言。
 
 ---
 

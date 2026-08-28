@@ -77,8 +77,8 @@ import edu.cqwu.electricity.theme.ui.MAX_FONT_SCALE
 import edu.cqwu.electricity.theme.ui.MAX_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.theme.ui.MIN_FONT_SCALE
 import edu.cqwu.electricity.theme.ui.MIN_SHEET_BLUR_RADIUS
-import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.theme.ui.BottomSheetItem
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 

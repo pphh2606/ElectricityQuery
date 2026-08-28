@@ -50,13 +50,14 @@ object HtmlFormParser {
     /**
      * CAS 登录页 HTML 特征信号列表。
      *
-     * 注意：不使用 "authserver/login" 作为信号——pay 域 casLogin/ 未认证时返回的
+     * 注意1：不使用 "authserver/login" 作为信号——pay 域 casLogin/ 未认证时返回的
      * JS 导航页（跳转 authserver 登录页）其 URL 就包含该子串，会被误判为登录页。
-     * 真正的 CAS 登录页必含登录表单（casLoginForm / pwdDefaultEncryptSalt / CASTGC）。
+     * 注意2：不使用 "pwdDefaultEncryptSalt" 作为信号——它只是密码加密盐，会出现在
+     * 所有需要 AES 加密密码的页面（登录页、修改密码页等），会把正常页面误判为登录页。
+     * 真正的 CAS 登录页必含登录表单（id="casLoginForm"）。
      */
     private val CAS_LOGIN_SIGNALS = listOf(
         "id=\"casLoginForm\"",
-        "pwdDefaultEncryptSalt",
         "CASTGC",
     )
 

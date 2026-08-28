@@ -58,10 +58,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.data.BankOption
-import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
-import edu.cqwu.electricity.theme.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
+import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.util.ToastUtils
 
 /** 学生绑定银行卡原生页面。 */

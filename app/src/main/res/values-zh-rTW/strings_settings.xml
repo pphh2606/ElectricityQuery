@@ -19,7 +19,7 @@
     <string name="settings_account_manager">帳號管理</string>
     <string name="settings_account_manager_desc">切換帳號、管理登入狀態</string>
     <string name="account_manager_v2_username">修改使用者名稱</string>
-    <string name="account_manager_v2_password">修改密碼…</string>
+    <string name="account_manager_v2_password">修改密碼</string>
     <string name="account_manager_v2_login_time">登入時間:%1$s</string>
     <string name="account_manager_v2_relogin_title">安全提醒</string>
     <string name="account_manager_v2_relogin_message">身分驗證失敗，請重新登入。</string>
@@ -39,6 +39,32 @@
     <string name="user_name_edit_saving">正在儲存…</string>
     <string name="user_name_edit_no_account">請先登入後再修改用戶名</string>
     <string name="user_name_edit_load_failed">載入失敗，請重試</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  修改密碼（CAS mobilePasswordChange.do）    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="password_change_title">修改密碼</string>
+    <string name="password_change_tip">為保障帳號安全，請設定符合要求的新密碼</string>
+    <string name="password_change_old_label">舊密碼</string>
+    <string name="password_change_old_placeholder">請輸入舊密碼</string>
+    <string name="password_change_new_label">新密碼</string>
+    <string name="password_change_new_placeholder">請輸入新密碼</string>
+    <string name="password_change_confirm_label">確認新密碼</string>
+    <string name="password_change_confirm_placeholder">請再次輸入新密碼</string>
+    <string name="password_change_captcha_label">驗證碼</string>
+    <string name="password_change_captcha_placeholder">請輸入驗證碼</string>
+    <string name="password_change_captcha_click_hint">點擊圖片刷新驗證碼</string>
+    <string name="password_change_strength">密碼長度至少8位；字元種類至少3種（數字，大寫字母，小寫字母，標點符號）</string>
+    <string name="password_change_save">儲存</string>
+    <string name="password_change_saving">正在提交…</string>
+    <string name="password_change_failed">修改失敗，請重試</string>
+    <string name="password_change_no_account">請先登入後再修改密碼</string>
+    <string name="password_change_load_failed">載入失敗，請重試</string>
+    <string name="password_change_old_empty">請輸入舊密碼</string>
+    <string name="password_change_captcha_empty">請輸入驗證碼</string>
+    <string name="password_change_confirm_mismatch">兩次輸入的新密碼不一致</string>
+    <string name="password_change_relogin_title">下線通知</string>
+    <string name="password_change_relogin_message">你的帳號目前登入已失效，請重新登入。</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  個人化設定                                 -->

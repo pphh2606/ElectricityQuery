@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Process
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.logging.LogRedactor
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

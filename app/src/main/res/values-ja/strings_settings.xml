@@ -19,7 +19,7 @@
     <string name="settings_account_manager">アカウント管理</string>
     <string name="settings_account_manager_desc">アカウントの切り替え、ログイン状態の管理</string>
     <string name="account_manager_v2_username">ユーザー名を変更</string>
-    <string name="account_manager_v2_password">パスワードを変更…</string>
+    <string name="account_manager_v2_password">パスワードを変更</string>
     <string name="account_manager_v2_login_time">ログイン時間:%1$s</string>
     <string name="account_manager_v2_relogin_title">安全通知</string>
     <string name="account_manager_v2_relogin_message">認証に失敗しました。もう一度ログインしてください。</string>
@@ -39,6 +39,32 @@
     <string name="user_name_edit_saving">保存中…</string>
     <string name="user_name_edit_no_account">ユーザー名を変更するには、先にログインしてください</string>
     <string name="user_name_edit_load_failed">読み込みに失敗しました。もう一度お試しください</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  パスワードの変更                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="password_change_title">パスワードを変更</string>
+    <string name="password_change_tip">アカウントの安全のため、要件を満たす新しいパスワードを設定してください</string>
+    <string name="password_change_old_label">現在のパスワード</string>
+    <string name="password_change_old_placeholder">現在のパスワードを入力してください</string>
+    <string name="password_change_new_label">新しいパスワード</string>
+    <string name="password_change_new_placeholder">新しいパスワードを入力してください</string>
+    <string name="password_change_confirm_label">新しいパスワードの確認</string>
+    <string name="password_change_confirm_placeholder">新しいパスワードをもう一度入力してください</string>
+    <string name="password_change_captcha_label">認証コード</string>
+    <string name="password_change_captcha_placeholder">認証コードを入力してください</string>
+    <string name="password_change_captcha_click_hint">画像をタップして認証コードを更新</string>
+    <string name="password_change_strength">パスワードは8文字以上、かつ3種類以上の文字種（数字、大文字、小文字、記号）を含む必要があります</string>
+    <string name="password_change_save">保存</string>
+    <string name="password_change_saving">送信中…</string>
+    <string name="password_change_failed">変更に失敗しました。もう一度お試しください</string>
+    <string name="password_change_no_account">パスワードを変更するには、先にログインしてください</string>
+    <string name="password_change_load_failed">読み込みに失敗しました。もう一度お試しください</string>
+    <string name="password_change_old_empty">現在のパスワードを入力してください</string>
+    <string name="password_change_captcha_empty">認証コードを入力してください</string>
+    <string name="password_change_confirm_mismatch">新しいパスワードが一致しません</string>
+    <string name="password_change_relogin_title">オフライン通知</string>
+    <string name="password_change_relogin_message">お使いのアカウントのログインが失効しました。再ログインしてください。</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  個人設定                                   -->

@@ -1,5 +1,6 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.common.ui
 
+import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -176,10 +177,10 @@ fun ElectricityLineChartCard(
 
                     // 1.1: Y 轴标签（修复 hashCode → value.toInt）
                     val labelText = formatAxisLabel(yValue)
-                    val yPaint = android.graphics.Paint().apply {
+                    val yPaint = Paint().apply {
                         color = labelColorArgb
                         textSize = yLabelTextSize
-                        textAlign = android.graphics.Paint.Align.RIGHT
+                        textAlign = Paint.Align.RIGHT
                     }
                     drawContext.canvas.nativeCanvas.drawText(
                         labelText,
@@ -200,10 +201,10 @@ fun ElectricityLineChartCard(
                     if (index % step == 0) {
                         val x = xToPixel(index)
                         // 1.1: X 轴标签（修复 hashCode → value.toInt）
-                        val xPaint = android.graphics.Paint().apply {
+                        val xPaint = Paint().apply {
                             color = labelColorArgb
                             textSize = xLabelTextSize
-                            textAlign = android.graphics.Paint.Align.CENTER
+                            textAlign = Paint.Align.CENTER
                         }
                         drawContext.canvas.nativeCanvas.drawText(
                             label,

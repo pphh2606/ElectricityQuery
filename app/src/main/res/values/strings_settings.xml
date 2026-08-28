@@ -19,7 +19,7 @@
     <string name="settings_account_manager">账号管理</string>
     <string name="settings_account_manager_desc">切换账号、管理登录状态</string>
     <string name="account_manager_v2_username">修改用户名</string>
-    <string name="account_manager_v2_password">修改密码…</string>
+    <string name="account_manager_v2_password">修改密码</string>
     <string name="account_manager_v2_login_time">登录时间:%1$s</string>
     <string name="account_manager_v2_relogin_title">安全提醒</string>
     <string name="account_manager_v2_relogin_message">身份验证失败，请你重新登录。</string>
@@ -39,6 +39,32 @@
     <string name="user_name_edit_saving">正在保存…</string>
     <string name="user_name_edit_no_account">请先登录后再修改用户名</string>
     <string name="user_name_edit_load_failed">加载失败，请重试</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  修改密码（CAS mobilePasswordChange.do）    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="password_change_title">修改密码</string>
+    <string name="password_change_tip">为保障账号安全，请设置符合要求的新密码</string>
+    <string name="password_change_old_label">旧密码</string>
+    <string name="password_change_old_placeholder">请输入旧密码</string>
+    <string name="password_change_new_label">新密码</string>
+    <string name="password_change_new_placeholder">请输入新密码</string>
+    <string name="password_change_confirm_label">确认新密码</string>
+    <string name="password_change_confirm_placeholder">请再次输入新密码</string>
+    <string name="password_change_captcha_label">验证码</string>
+    <string name="password_change_captcha_placeholder">请输入验证码</string>
+    <string name="password_change_captcha_click_hint">点击图片刷新验证码</string>
+    <string name="password_change_strength">密码长度至少8位；字符种类至少3种（数字，大写字母，小写字母，标点符号）</string>
+    <string name="password_change_save">保存</string>
+    <string name="password_change_saving">正在提交…</string>
+    <string name="password_change_failed">修改失败，请重试</string>
+    <string name="password_change_no_account">请先登录后再修改密码</string>
+    <string name="password_change_load_failed">加载失败，请重试</string>
+    <string name="password_change_old_empty">请输入旧密码</string>
+    <string name="password_change_captcha_empty">请输入验证码</string>
+    <string name="password_change_confirm_mismatch">两次输入的新密码不一致</string>
+    <string name="password_change_relogin_title">下线通知</string>
+    <string name="password_change_relogin_message">你的帐号当前登录已失效，请重新登录。</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  个性化设置                                 -->

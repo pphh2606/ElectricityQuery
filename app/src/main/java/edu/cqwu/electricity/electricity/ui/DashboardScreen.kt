@@ -31,7 +31,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CardDefaults
-import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,7 +64,7 @@ import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.electricity.data.displayName
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.UiMessage
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.util.ToastUtils

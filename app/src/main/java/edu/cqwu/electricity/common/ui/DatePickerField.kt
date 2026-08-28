@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.common.ui
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +27,7 @@ import edu.cqwu.electricity.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 /**
  * 日期选择器输入框 — 只读，点击尾部日历图标弹出 Material 3 原生 [DatePickerDialog]。
@@ -89,9 +90,10 @@ fun DatePickerField(
                 ProvideAppScaledDensity(appDensity) {
                     TextButton(onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
-                                timeZone = java.util.TimeZone.getTimeZone("Asia/Shanghai")
-                            }
+                            val formatter =
+                                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+                                    timeZone = TimeZone.getTimeZone("Asia/Shanghai")
+                                }
                             onValueChanged(formatter.format(Date(millis)))
                         }
                         showDialog = false

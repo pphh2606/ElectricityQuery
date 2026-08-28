@@ -19,7 +19,7 @@
     <string name="settings_account_manager">Gestion des comptes</string>
     <string name="settings_account_manager_desc">Basculer de compte, gérer l\'état de connexion</string>
     <string name="account_manager_v2_username">Modifier le nom d\'utilisateur</string>
-    <string name="account_manager_v2_password">Modifier le mot de passe…</string>
+    <string name="account_manager_v2_password">Modifier le mot de passe</string>
     <string name="account_manager_v2_login_time">Heure de connexion : %1$s</string>
     <string name="account_manager_v2_relogin_title">Alerte de sécurité</string>
     <string name="account_manager_v2_relogin_message">L\'authentification a échoué. Veuillez vous reconnecter.</string>
@@ -39,6 +39,32 @@
     <string name="user_name_edit_saving">Enregistrement…</string>
     <string name="user_name_edit_no_account">Veuillez d\'abord vous connecter pour modifier le nom d\'utilisateur</string>
     <string name="user_name_edit_load_failed">Échec du chargement. Veuillez réessayer.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Modifier le mot de passe                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="password_change_title">Modifier le mot de passe</string>
+    <string name="password_change_tip">Pour la sécurité du compte, veuillez définir un nouveau mot de passe conforme aux exigences</string>
+    <string name="password_change_old_label">Ancien mot de passe</string>
+    <string name="password_change_old_placeholder">Saisissez l\'ancien mot de passe</string>
+    <string name="password_change_new_label">Nouveau mot de passe</string>
+    <string name="password_change_new_placeholder">Saisissez un nouveau mot de passe</string>
+    <string name="password_change_confirm_label">Confirmer le mot de passe</string>
+    <string name="password_change_confirm_placeholder">Saisissez à nouveau le nouveau mot de passe</string>
+    <string name="password_change_captcha_label">Code de vérification</string>
+    <string name="password_change_captcha_placeholder">Saisissez le code de vérification</string>
+    <string name="password_change_captcha_click_hint">Appuyez sur l\'image pour actualiser le code</string>
+    <string name="password_change_strength">Le mot de passe doit contenir au moins 8 caractères et au moins 3 types de caractères (chiffres, majuscules, minuscules, ponctuation)</string>
+    <string name="password_change_save">Enregistrer</string>
+    <string name="password_change_saving">Envoi…</string>
+    <string name="password_change_failed">Échec de la modification. Veuillez réessayer.</string>
+    <string name="password_change_no_account">Veuillez d\'abord vous connecter pour modifier le mot de passe</string>
+    <string name="password_change_load_failed">Échec du chargement. Veuillez réessayer.</string>
+    <string name="password_change_old_empty">Veuillez saisir l\'ancien mot de passe</string>
+    <string name="password_change_captcha_empty">Veuillez saisir le code de vérification</string>
+    <string name="password_change_confirm_mismatch">Les deux nouveaux mots de passe ne correspondent pas</string>
+    <string name="password_change_relogin_title">Avis de déconnexion</string>
+    <string name="password_change_relogin_message">Votre session de connexion a expiré. Veuillez vous reconnecter.</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Personnalisation                           -->

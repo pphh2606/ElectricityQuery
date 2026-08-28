@@ -2,8 +2,6 @@ package edu.cqwu.electricity.settings.ui
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,14 +55,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.MainActivity
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.settings.util.StorageManager
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.theme.util.restartApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.system.exitProcess
 
 /**
  * 存储清理项数据模型
@@ -501,11 +498,4 @@ private fun StorageItemRow(
             enabled = !isClearing,
         )
     }
-}
-
-private fun restartApp(context: Context) {
-    val intent = Intent(context, MainActivity::class.java)
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-    context.startActivity(intent)
-    exitProcess(0)
 }

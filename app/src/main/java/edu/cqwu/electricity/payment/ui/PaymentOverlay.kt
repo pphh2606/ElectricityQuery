@@ -29,7 +29,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.common.ui.BottomSheetDialog
 import edu.cqwu.electricity.webview.ui.WebViewHost
 import edu.cqwu.electricity.webview.ui.WebViewProgress
 import edu.cqwu.electricity.webview.ui.rememberWebViewHostState

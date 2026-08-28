@@ -23,7 +23,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
-import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,13 +53,13 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
+import edu.cqwu.electricity.common.ui.BottomSheetDialog
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalWebViewReloadAfterLogin
 import edu.cqwu.electricity.theme.ui.LocalWebViewReloadConsumed
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.WebViewErrorOverlay
+import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 import kotlinx.coroutines.CoroutineScope

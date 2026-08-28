@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.accountmanagerv2.AccountManagerScreen
+import edu.cqwu.electricity.accountmanagerv2.PasswordChangeScreen
 import edu.cqwu.electricity.accountmanagerv2.UserNameEditScreen
 import edu.cqwu.electricity.cardcenter.ui.AccountInfoScreen
 import edu.cqwu.electricity.cardcenter.ui.BankCardBindScreen
@@ -102,6 +103,8 @@ object Routes {
     const val ACCOUNT_MANAGER = "account_manager"
     /** 修改用户名页（登录别名 + 昵称） */
     const val USER_NAME_EDIT = "user_name_edit"
+    /** 修改密码页 */
+    const val PASSWORD_CHANGE = "password_change"
     const val PERSONALIZATION = "personalization"
     const val QR_CODE_SETTINGS = "qr_code_settings"
     const val QR_LOGIN = "qr_login"
@@ -649,12 +652,21 @@ fun AppNavGraph(
                 onNavigateToLogin = { accountId -> navController.navigate(Routes.loginRoute(accountId)) },
                 onNavigateToAddAccount = { navController.navigate(Routes.NEW_ACCOUNT_LOGIN) },
                 onNavigateToUserNameEdit = { navController.navigate(Routes.USER_NAME_EDIT) },
+                onNavigateToPasswordEdit = { navController.navigate(Routes.PASSWORD_CHANGE) },
             )
         }
 
         // 修改用户名页（登录别名 + 昵称，本地化 CAS mobileUserAttrEdit.do）
         animatedComposable(settings = appSettings, route = Routes.USER_NAME_EDIT) {
             UserNameEditScreen(
+                onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
+            )
+        }
+
+        // 修改密码页（本地化 CAS mobilePasswordChange.do）
+        animatedComposable(settings = appSettings, route = Routes.PASSWORD_CHANGE) {
+            PasswordChangeScreen(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.loginRoute()) },
             )

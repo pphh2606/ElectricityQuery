@@ -23,10 +23,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.CreditCardOff
-import edu.cqwu.electricity.theme.ui.AppScaledAlertDialog
+import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -58,9 +58,9 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.cardcenter.data.CardLostInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

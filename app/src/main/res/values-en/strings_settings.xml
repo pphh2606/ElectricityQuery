@@ -19,7 +19,7 @@
     <string name="settings_account_manager">Account Manager</string>
     <string name="settings_account_manager_desc">Switch accounts, manage login state</string>
     <string name="account_manager_v2_username">Change Username</string>
-    <string name="account_manager_v2_password">Change Password…</string>
+    <string name="account_manager_v2_password">Change Password</string>
     <string name="account_manager_v2_login_time">Login time: %1$s</string>
     <string name="account_manager_v2_relogin_title">Security Alert</string>
     <string name="account_manager_v2_relogin_message">Authentication failed. Please log in again.</string>
@@ -39,6 +39,32 @@
     <string name="user_name_edit_saving">Saving…</string>
     <string name="user_name_edit_no_account">Please log in first to change your username</string>
     <string name="user_name_edit_load_failed">Failed to load. Please try again.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Change Password (CAS mobilePasswordChange.do) -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="password_change_title">Change Password</string>
+    <string name="password_change_tip">For account security, please set a new password that meets the requirements</string>
+    <string name="password_change_old_label">Old Password</string>
+    <string name="password_change_old_placeholder">Enter your old password</string>
+    <string name="password_change_new_label">New Password</string>
+    <string name="password_change_new_placeholder">Enter a new password</string>
+    <string name="password_change_confirm_label">Confirm New Password</string>
+    <string name="password_change_confirm_placeholder">Enter the new password again</string>
+    <string name="password_change_captcha_label">Captcha</string>
+    <string name="password_change_captcha_placeholder">Enter the captcha</string>
+    <string name="password_change_captcha_click_hint">Tap the image to refresh the captcha</string>
+    <string name="password_change_strength">Password must be at least 8 characters and contain at least 3 character types (digits, uppercase, lowercase, punctuation)</string>
+    <string name="password_change_save">Save</string>
+    <string name="password_change_saving">Submitting…</string>
+    <string name="password_change_failed">Failed to change. Please try again.</string>
+    <string name="password_change_no_account">Please log in first to change your password</string>
+    <string name="password_change_load_failed">Failed to load. Please try again.</string>
+    <string name="password_change_old_empty">Please enter your old password</string>
+    <string name="password_change_captcha_empty">Please enter the captcha</string>
+    <string name="password_change_confirm_mismatch">The two new passwords do not match</string>
+    <string name="password_change_relogin_title">Offline Notice</string>
+    <string name="password_change_relogin_message">Your account login has expired. Please log in again.</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Personalization                            -->

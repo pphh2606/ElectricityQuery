@@ -49,9 +49,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers

@@ -7,11 +7,14 @@ import edu.cqwu.electricity.R
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import edu.cqwu.electricity.logging.AppLog
 import android.view.ViewGroup
 import android.webkit.ValueCallback
@@ -39,7 +42,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Share
-import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -64,10 +67,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import edu.cqwu.electricity.network.WebVpnEncoder
+import edu.cqwu.electricity.webvpn.WebVpnEncoder
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.WebViewErrorOverlay
+import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -253,8 +256,8 @@ fun UnifiedWebViewScreen(
                                 onClick = {
                                     showMenu = false
                                     val url = webViewRef.value?.url ?: return@DropdownMenuItem
-                                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                                    val clip = android.content.ClipData.newPlainText(resources.getString(R.string.webview_clip_label), url)
+                                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                    val clip = ClipData.newPlainText(resources.getString(R.string.webview_clip_label), url)
                                     clipboard.setPrimaryClip(clip)
                                     snackbar.show(resources.getString(R.string.webview_link_copied), ToastUtils.Type.SUCCESS)
                                 }
@@ -637,7 +640,7 @@ fun UnifiedWebViewScreen(
                     },
                     onNetworkSettings = {
                         try {
-                            context.startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
+                            context.startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
                         } catch (_: ActivityNotFoundException) {
                             snackbar.show(resources.getString(R.string.webview_cannot_open_network_settings), ToastUtils.Type.ERROR)
                         }

@@ -57,9 +57,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.BuildConfig
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.theme.ui.BottomSheetItem
-import edu.cqwu.electricity.theme.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.BottomSheetItem
+import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
 import edu.cqwu.electricity.update.data.UpdateChannel

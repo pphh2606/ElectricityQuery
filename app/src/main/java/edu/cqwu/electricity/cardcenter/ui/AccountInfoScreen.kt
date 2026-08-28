@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.cardcenter.data.AccountInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

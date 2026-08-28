@@ -19,7 +19,7 @@
     <string name="settings_account_manager">إدارة الحسابات</string>
     <string name="settings_account_manager_desc">تبديل الحسابات وإدارة حالة تسجيل الدخول</string>
     <string name="account_manager_v2_username">تعديل اسم المستخدم</string>
-    <string name="account_manager_v2_password">تعديل كلمة المرور…</string>
+    <string name="account_manager_v2_password">تعديل كلمة المرور</string>
     <string name="account_manager_v2_login_time">وقت تسجيل الدخول: %1$s</string>
     <string name="account_manager_v2_relogin_title">تنبيه أمني</string>
     <string name="account_manager_v2_relogin_message">فشل التحقق من الهوية، يرجى تسجيل الدخول مرة أخرى.</string>
@@ -39,6 +39,32 @@
     <string name="user_name_edit_saving">جارٍ الحفظ…</string>
     <string name="user_name_edit_no_account">يرجى تسجيل الدخول أولاً لتعديل اسم المستخدم</string>
     <string name="user_name_edit_load_failed">فشل التحميل، يرجى المحاولة مرة أخرى</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  تعديل كلمة المرور                          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="password_change_title">تعديل كلمة المرور</string>
+    <string name="password_change_tip">لأمان الحساب، يرجى تعيين كلمة مرور جديدة تفي بالمتطلبات</string>
+    <string name="password_change_old_label">كلمة المرور القديمة</string>
+    <string name="password_change_old_placeholder">أدخل كلمة المرور القديمة</string>
+    <string name="password_change_new_label">كلمة المرور الجديدة</string>
+    <string name="password_change_new_placeholder">أدخل كلمة مرور جديدة</string>
+    <string name="password_change_confirm_label">تأكيد كلمة المرور الجديدة</string>
+    <string name="password_change_confirm_placeholder">أدخل كلمة المرور الجديدة مرة أخرى</string>
+    <string name="password_change_captcha_label">رمز التحقق</string>
+    <string name="password_change_captcha_placeholder">أدخل رمز التحقق</string>
+    <string name="password_change_captcha_click_hint">اضغط على الصورة لتحديث رمز التحقق</string>
+    <string name="password_change_strength">يجب أن تتكون كلمة المرور من 8 أحرف على الأقل وتحتوي على 3 أنواع على الأقل من الأحرف (أرقام، أحرف كبيرة، أحرف صغيرة، علامات ترقيم)</string>
+    <string name="password_change_save">حفظ</string>
+    <string name="password_change_saving">جارٍ الإرسال…</string>
+    <string name="password_change_failed">فشل التعديل، يرجى المحاولة مرة أخرى</string>
+    <string name="password_change_no_account">يرجى تسجيل الدخول أولاً لتعديل كلمة المرور</string>
+    <string name="password_change_load_failed">فشل التحميل، يرجى المحاولة مرة أخرى</string>
+    <string name="password_change_old_empty">يرجى إدخال كلمة المرور القديمة</string>
+    <string name="password_change_captcha_empty">يرجى إدخال رمز التحقق</string>
+    <string name="password_change_confirm_mismatch">كلمتا المرور الجديدتان غير متطابقتين</string>
+    <string name="password_change_relogin_title">إشعار الخروج</string>
+    <string name="password_change_relogin_message">انتهت صلاحية تسجيل دخول حسابك الحالي، يرجى إعادة تسجيل الدخول.</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  التخصيص                                   -->

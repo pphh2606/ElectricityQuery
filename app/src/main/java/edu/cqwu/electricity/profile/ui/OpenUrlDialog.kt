@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.profile.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -35,6 +35,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import java.net.URI
 
 /**
  * 校验输入的字符串是否为合法的 URL。
@@ -48,7 +50,7 @@ private fun isValidUrl(url: String): Boolean {
         url
     }
     return try {
-        val uri = java.net.URI(normalized)
+        val uri = URI(normalized)
         uri.host != null && uri.host.contains(".")
     } catch (_: Exception) {
         false
@@ -70,7 +72,7 @@ private fun normalizeUrl(url: String): String {
 /**
  * 打开网址底部弹窗，让用户输入 URL 并选择打开方式。
  *
- * 使用 [BottomSheetDialog]（MD3 ModalBottomSheet）实现，
+ * 使用 [edu.cqwu.electricity.common.ui.BottomSheetDialog]（MD3 ModalBottomSheet）实现，
  * 带拖拽手柄，支持手势下滑关闭。
  *
  * @param visible 控制弹窗是否可见

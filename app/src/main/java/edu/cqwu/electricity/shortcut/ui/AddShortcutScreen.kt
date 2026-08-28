@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -61,8 +62,8 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.home.data.HomeApp
 import edu.cqwu.electricity.home.data.HomeCategory
 import edu.cqwu.electricity.home.data.HomeJsonLoader
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
-import edu.cqwu.electricity.theme.ui.BottomSheetItem
+import edu.cqwu.electricity.common.ui.BottomSheetDialog
+import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -348,7 +349,7 @@ fun AddShortcutScreen(
                             containerColor = if (selectedApp?.appId == app.appId) {
                                 MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
                             } else {
-                                androidx.compose.ui.graphics.Color.Transparent
+                                Color.Transparent
                             },
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             onClick = {

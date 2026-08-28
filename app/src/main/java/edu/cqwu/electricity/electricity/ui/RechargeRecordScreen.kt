@@ -31,7 +31,7 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreVert
-import edu.cqwu.electricity.theme.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -40,7 +40,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import edu.cqwu.electricity.theme.ui.AppScaledExposedDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledExposedDropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -75,7 +75,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BuyRecord
-import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
 

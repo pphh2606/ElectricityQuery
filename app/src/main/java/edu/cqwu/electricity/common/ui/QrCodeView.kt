@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.common.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.material3.MaterialTheme

@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.network
+package edu.cqwu.electricity.webvpn
 
 import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager

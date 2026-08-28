@@ -8,7 +8,7 @@ import coil.memory.MemoryCache
 import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CookieStore
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.network.WebVpnSettings
+import edu.cqwu.electricity.webvpn.WebVpnSettings
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.settings.data.SettingsKeys

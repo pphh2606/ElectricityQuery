@@ -44,8 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.BuildConfig
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.theme.ui.BottomSheetDialog
-import edu.cqwu.electricity.theme.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.BottomSheetDialog
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.update.data.UpdateChannel
 import edu.cqwu.electricity.update.data.UpdateDownloadProbe

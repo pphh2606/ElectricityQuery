@@ -2,7 +2,7 @@ package edu.cqwu.electricity.payment.data
 
 import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
 import edu.cqwu.electricity.login.data.UserAgentInterceptor
-import edu.cqwu.electricity.network.WebVpnInterceptor
+import edu.cqwu.electricity.webvpn.WebVpnInterceptor
 import okhttp3.CookieJar
 import okhttp3.Dns
 import okhttp3.OkHttpClient

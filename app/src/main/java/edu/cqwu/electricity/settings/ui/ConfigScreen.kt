@@ -48,7 +48,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.AppLanguage
 import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
-import edu.cqwu.electricity.theme.ui.LanguageSwitchSheet
+import edu.cqwu.electricity.common.ui.LanguageSwitchSheet
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import kotlin.math.roundToInt
 

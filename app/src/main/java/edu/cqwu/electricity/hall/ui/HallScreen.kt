@@ -77,7 +77,7 @@ import edu.cqwu.electricity.hall.data.HallServiceLabel
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import kotlinx.coroutines.launch
 import java.util.Locale
 
