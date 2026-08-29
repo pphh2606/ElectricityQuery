@@ -67,6 +67,59 @@
     <string name="password_change_relogin_message">お使いのアカウントのログインが失効しました。再ログインしてください。</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  ログイン端末管理（CAS userOnline.do）       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="device_session_title">ログイン端末管理</string>
+    <string name="device_session_current">現在の端末</string>
+    <string name="device_session_kick">切断</string>
+    <string name="device_session_kick_title">この端末を切断しますか？</string>
+    <string name="device_session_kick_message">切断後、この端末は再ログインが必要になります</string>
+    <string name="device_session_kick_success">端末を切断しました</string>
+    <string name="device_session_kick_failed">切断に失敗しました。再試行してください</string>
+    <string name="device_session_kick_pending">切断中…</string>
+    <string name="device_session_empty">他にオンラインの端末はありません</string>
+    <string name="device_session_no_account">先にログインしてください</string>
+    <string name="device_session_load_failed">読み込みに失敗しました。再試行してください</string>
+    <string name="device_session_unknown_device">不明な端末</string>
+    <string name="device_session_ip_label">IPアドレス</string>
+    <string name="device_session_auth_label">認証タイプ</string>
+    <string name="device_session_client_label">クライアントタイプ</string>
+    <string name="device_session_online">現在オンライン</string>
+    <string name="device_session_time_label">ログイン時間</string>
+    <string name="device_session_tip">注意：クライアントタイプはOSとブラウザエンジンの情報です。取得可否は第三者の公開状況に依存するため、誤差が生じる可能性があり、参考情報としてご利用ください。</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  認証ログ（CAS userLogs.do）                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_log_title">認証ログ</string>
+    <string name="login_log_detail_title">認証詳細</string>
+    <string name="login_log_all_loaded">すべてのレコードを読み込みました</string>
+    <plurals name="login_log_loaded_count">
+        <item quantity="other">読み込み済み %1$d 件</item>
+    </plurals>
+    <string name="login_log_page_info">%1$d/%2$d ページ</string>
+    <string name="login_log_oper_auth">認証記録</string>
+    <string name="login_log_oper_account">アカウント管理</string>
+    <string name="login_log_oper_password">パスワード管理</string>
+    <string name="login_log_oper_app">アプリアクセス</string>
+    <string name="login_log_result_all">すべて</string>
+    <string name="login_log_result_success">成功</string>
+    <string name="login_log_result_failed">失敗</string>
+    <string name="login_log_start_time">開始時間</string>
+    <string name="login_log_end_time">終了時間</string>
+    <string name="login_log_query">検索</string>
+    <string name="login_log_reset">リセット</string>
+    <string name="login_log_empty">ログ記録はありません</string>
+    <string name="login_log_no_account">先にログインしてください</string>
+    <string name="login_log_load_failed">読み込みに失敗しました。再試行してください</string>
+    <string name="login_log_ip">IPアドレス</string>
+    <string name="login_log_login_time">ログイン時間</string>
+    <string name="login_log_logout_time">ログアウト時間</string>
+    <string name="login_log_auth_type">認証タイプ</string>
+    <string name="login_log_client_type">クライアントタイプ</string>
+    <string name="login_log_result">認証結果</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  個人設定                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">個人設定</string>

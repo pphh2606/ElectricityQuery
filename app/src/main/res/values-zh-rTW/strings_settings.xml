@@ -67,6 +67,59 @@
     <string name="password_change_relogin_message">你的帳號目前登入已失效，請重新登入。</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  登入裝置管理（CAS userOnline.do）           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="device_session_title">登入裝置管理</string>
+    <string name="device_session_current">目前裝置</string>
+    <string name="device_session_kick">踢出</string>
+    <string name="device_session_kick_title">踢出該裝置？</string>
+    <string name="device_session_kick_message">踢出後該裝置需要重新登入</string>
+    <string name="device_session_kick_success">已將該裝置踢出</string>
+    <string name="device_session_kick_failed">踢出失敗，請重試</string>
+    <string name="device_session_kick_pending">正在踢出…</string>
+    <string name="device_session_empty">暫無其他線上裝置</string>
+    <string name="device_session_no_account">請先登入後再管理裝置</string>
+    <string name="device_session_load_failed">載入失敗，請重試</string>
+    <string name="device_session_unknown_device">未知裝置</string>
+    <string name="device_session_ip_label">使用者IP</string>
+    <string name="device_session_auth_label">認證類型</string>
+    <string name="device_session_client_label">用戶端類型</string>
+    <string name="device_session_online">目前線上</string>
+    <string name="device_session_time_label">登入時間</string>
+    <string name="device_session_tip">注意啦： 用戶端類型的資料為作業系統和瀏覽器核心資訊，資訊取得主要取決於第三方是否開放，此資訊可能存在一定誤差，僅供參考。</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  認證日誌（CAS userLogs.do）                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_log_title">認證日誌</string>
+    <string name="login_log_detail_title">認證詳情</string>
+    <string name="login_log_all_loaded">已載入全部紀錄</string>
+    <plurals name="login_log_loaded_count">
+        <item quantity="other">已載入 %1$d 條</item>
+    </plurals>
+    <string name="login_log_page_info">第%1$d/%2$d頁</string>
+    <string name="login_log_oper_auth">認證紀錄</string>
+    <string name="login_log_oper_account">帳號維護</string>
+    <string name="login_log_oper_password">密碼維護</string>
+    <string name="login_log_oper_app">應用程式存取</string>
+    <string name="login_log_result_all">全部</string>
+    <string name="login_log_result_success">成功</string>
+    <string name="login_log_result_failed">失敗</string>
+    <string name="login_log_start_time">開始時間</string>
+    <string name="login_log_end_time">結束時間</string>
+    <string name="login_log_query">查詢</string>
+    <string name="login_log_reset">重設</string>
+    <string name="login_log_empty">暫無日誌紀錄</string>
+    <string name="login_log_no_account">請先登入後再查看日誌</string>
+    <string name="login_log_load_failed">載入失敗，請重試</string>
+    <string name="login_log_ip">使用者IP</string>
+    <string name="login_log_login_time">登入時間</string>
+    <string name="login_log_logout_time">登出時間</string>
+    <string name="login_log_auth_type">認證類型</string>
+    <string name="login_log_client_type">用戶端類型</string>
+    <string name="login_log_result">認證結果</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  個人化設定                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">個人化</string>

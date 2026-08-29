@@ -92,6 +92,54 @@ object HtmlFormParser {
     }
 
     // ═══════════════════════════════════════════
+    //  HTML 表格行解析（设备管理 / 登录日志等共用）
+    // ═══════════════════════════════════════════
+
+    /** <tr> 数据行（排除 thead 列头行） */
+    private val ROW_REGEX = Regex("<tr[^>]*>([\\s\\S]*?)</tr>", RegexOption.IGNORE_CASE)
+    /** <td> 单元格 */
+    private val TD_REGEX = Regex("<td[^>]*>([\\s\\S]*?)</td>", RegexOption.IGNORE_CASE)
+    /** ips138 IP 链接 */
+    private val IP_LINK_REGEX = Regex("""ips138\.asp\?ip=([^"&]+)""", RegexOption.IGNORE_CASE)
+
+    /**
+     * 提取 HTML 表格的全部数据行（<tr> 内容），自动跳过 thead 列头行。
+     */
+    fun htmlRows(html: String): List<String> {
+        return ROW_REGEX.findAll(html)
+            .map { it.groupValues[1] }
+            .filterNot { it.contains("<th", ignoreCase = true) }
+            .toList()
+    }
+
+    /**
+     * 提取一行的全部单元格文本（<td>，已去除 HTML 标签并压缩空白）。
+     */
+    fun htmlCells(rowHtml: String): List<String> {
+        return TD_REGEX.findAll(rowHtml)
+            .map { stripHtml(it.groupValues[1]) }
+            .toList()
+    }
+
+    /**
+     * 提取一行中所有 ips138 IP 链接的地址（IPv6 与 IPv4 均在列表中）。
+     */
+    fun extractIpLinks(rowHtml: String): List<String> {
+        return IP_LINK_REGEX.findAll(rowHtml)
+            .map { it.groupValues[1].trim() }
+            .toList()
+    }
+
+    /**
+     * 去除单元格内 HTML 标签并压缩空白。
+     */
+    fun stripHtml(cell: String): String {
+        return cell.replace(Regex("<[^>]+>"), "")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+    }
+
+    // ═══════════════════════════════════════════
     //  CAS 用户信息提取
     // ═══════════════════════════════════════════
 

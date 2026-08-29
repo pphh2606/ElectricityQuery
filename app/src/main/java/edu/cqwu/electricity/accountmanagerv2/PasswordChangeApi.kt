@@ -4,15 +4,12 @@ import com.google.gson.Gson
 import edu.cqwu.electricity.login.data.AesEncrypt
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.login.data.UserAwareCookieJar
-import edu.cqwu.electricity.login.data.UserCookieStore
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
@@ -59,7 +56,7 @@ class PasswordChangeApi {
     suspend fun loadPage(cookies: Map<String, Map<String, String>>): Result<PasswordChangePageInfo> =
         withContext(Dispatchers.IO) {
             try {
-                val html = clientFor(cookies).newCall(
+                val html = HttpClientFactory.createIsolated(cookies).newCall(
                     Request.Builder()
                         .url(CHANGE_URL)
                         .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -94,7 +91,7 @@ class PasswordChangeApi {
         captcha: String,
     ): Result<PasswordChangeSubmitResult> = withContext(Dispatchers.IO) {
         try {
-            val body = clientFor(cookies).newCall(
+            val body = HttpClientFactory.createIsolated(cookies).newCall(
                 Request.Builder()
                     .url(CHANGE_URL)
                     .post(
@@ -127,14 +124,6 @@ class PasswordChangeApi {
         }
     }
 
-    /** 用账号 cookie 构建隔离客户端（UserCookieStore + UserAwareCookieJar，直连 authserver） */
-    private fun clientFor(cookies: Map<String, Map<String, String>>): OkHttpClient {
-        val store = UserCookieStore().also { it.loadFrom(cookies) }
-        return HttpClientFactory.create(
-            cookieJar = UserAwareCookieJar(store),
-            includeWebVpn = false,
-        )
-    }
-
+    /** 用账号 cookie 构建隔离客户端（同 UserNameEditApi 模式） */
     private data class SubmitResponse(val success: Boolean = false, val errorMsg: String = "")
 }

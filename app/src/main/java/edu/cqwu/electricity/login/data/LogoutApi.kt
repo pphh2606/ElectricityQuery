@@ -5,7 +5,6 @@ import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
@@ -37,7 +36,7 @@ object LogoutApi {
     suspend fun logout(username: String, cookies: Map<String, Map<String, String>>): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
-                val code = clientFor(cookies).newCall(
+                val code = HttpClientFactory.createIsolated(cookies, followRedirects = false).newCall(
                     Request.Builder()
                         .url(LOGOUT_URL)
                         .addHeader("X-Requested-With", "edu.cqwu.electricity")
@@ -58,14 +57,4 @@ object LogoutApi {
                 Result.failure(e)
             }
         }
-
-    /** 用账号 cookie 构建隔离客户端（UserCookieStore + UserAwareCookieJar，直连 authserver） */
-    private fun clientFor(cookies: Map<String, Map<String, String>>): OkHttpClient {
-        val store = UserCookieStore().also { it.loadFrom(cookies) }
-        return HttpClientFactory.create(
-            cookieJar = UserAwareCookieJar(store),
-            includeWebVpn = false,
-            followRedirects = false,
-        )
-    }
 }

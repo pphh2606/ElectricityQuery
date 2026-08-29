@@ -3,15 +3,12 @@ package edu.cqwu.electricity.accountmanagerv2
 import com.google.gson.Gson
 import edu.cqwu.electricity.login.data.HtmlFormParser
 import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.login.data.UserAwareCookieJar
-import edu.cqwu.electricity.login.data.UserCookieStore
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.payment.data.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
@@ -57,7 +54,7 @@ class UserNameEditApi {
     suspend fun loadCurrent(cookies: Map<String, Map<String, String>>): Result<UserNameEditInfo> =
         withContext(Dispatchers.IO) {
             try {
-                val html = clientFor(cookies).newCall(
+                val html = HttpClientFactory.createIsolated(cookies).newCall(
                     Request.Builder()
                         .url(EDIT_URL)
                         .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -86,7 +83,7 @@ class UserNameEditApi {
     suspend fun checkAlias(cookies: Map<String, Map<String, String>>, value: String): Result<Boolean> =
         withContext(Dispatchers.IO) {
             try {
-                val body = clientFor(cookies).newCall(
+                val body = HttpClientFactory.createIsolated(cookies).newCall(
                     Request.Builder()
                         .url(CHECK_ALIAS_URL)
                         .post(FormBody.Builder().add("validateValue", value).build())
@@ -114,7 +111,7 @@ class UserNameEditApi {
         nickName: String,
     ): Result<UserNameSubmitResult> = withContext(Dispatchers.IO) {
         try {
-            val body = clientFor(cookies).newCall(
+            val body = HttpClientFactory.createIsolated(cookies).newCall(
                 Request.Builder()
                     .url(EDIT_URL)
                     .post(
@@ -143,15 +140,6 @@ class UserNameEditApi {
             AppLog.e(TAG, "保存用户名失败", e)
             Result.failure(e)
         }
-    }
-
-    /** 用账号 cookie 构建隔离客户端（UserCookieStore + UserAwareCookieJar，直连 authserver） */
-    private fun clientFor(cookies: Map<String, Map<String, String>>): OkHttpClient {
-        val store = UserCookieStore().also { it.loadFrom(cookies) }
-        return HttpClientFactory.create(
-            cookieJar = UserAwareCookieJar(store),
-            includeWebVpn = false,
-        )
     }
 
     private data class CheckAliasResponse(val jsonValidateReturn: Boolean = false)

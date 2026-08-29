@@ -67,6 +67,59 @@
     <string name="password_change_relogin_message">你的帐号当前登录已失效，请重新登录。</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  登录设备管理（CAS userOnline.do）           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="device_session_title">登录设备管理</string>
+    <string name="device_session_current">当前设备</string>
+    <string name="device_session_kick">踢出</string>
+    <string name="device_session_kick_title">踢出该设备？</string>
+    <string name="device_session_kick_message">踢出后该设备需要重新登录</string>
+    <string name="device_session_kick_success">已将该设备踢出</string>
+    <string name="device_session_kick_failed">踢出失败，请重试</string>
+    <string name="device_session_kick_pending">正在踢出…</string>
+    <string name="device_session_empty">暂无其他在线设备</string>
+    <string name="device_session_no_account">请先登录后再管理设备</string>
+    <string name="device_session_load_failed">加载失败，请重试</string>
+    <string name="device_session_unknown_device">未知设备</string>
+    <string name="device_session_ip_label">用户IP</string>
+    <string name="device_session_auth_label">认证类型</string>
+    <string name="device_session_client_label">客户端类型</string>
+    <string name="device_session_online">当前在线</string>
+    <string name="device_session_time_label">登入时间</string>
+    <string name="device_session_tip">注意啦： 客户端类型的数据为操作系统和浏览器内核信息，信息获取主要取决于第三方是否开放，此信息可能存在一定误差，仅供参考。</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  认证日志（CAS userLogs.do）                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_log_title">认证日志</string>
+    <string name="login_log_detail_title">认证详情</string>
+    <string name="login_log_all_loaded">已加载全部记录</string>
+    <plurals name="login_log_loaded_count">
+        <item quantity="other">已加载 %1$d 条</item>
+    </plurals>
+    <string name="login_log_page_info">第%1$d/%2$d页</string>
+    <string name="login_log_oper_auth">认证记录</string>
+    <string name="login_log_oper_account">帐号维护</string>
+    <string name="login_log_oper_password">密码维护</string>
+    <string name="login_log_oper_app">应用访问</string>
+    <string name="login_log_result_all">全部</string>
+    <string name="login_log_result_success">成功</string>
+    <string name="login_log_result_failed">失败</string>
+    <string name="login_log_start_time">开始时间</string>
+    <string name="login_log_end_time">结束时间</string>
+    <string name="login_log_query">查询</string>
+    <string name="login_log_reset">重置</string>
+    <string name="login_log_empty">暂无日志记录</string>
+    <string name="login_log_no_account">请先登录后再查看日志</string>
+    <string name="login_log_load_failed">加载失败，请重试</string>
+    <string name="login_log_ip">用户IP</string>
+    <string name="login_log_login_time">登入时间</string>
+    <string name="login_log_logout_time">登出时间</string>
+    <string name="login_log_auth_type">认证类型</string>
+    <string name="login_log_client_type">客户端类型</string>
+    <string name="login_log_result">认证结果</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  个性化设置                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">个性化</string>

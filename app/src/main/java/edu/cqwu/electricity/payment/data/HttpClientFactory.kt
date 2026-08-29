@@ -2,6 +2,8 @@ package edu.cqwu.electricity.payment.data
 
 import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
 import edu.cqwu.electricity.login.data.UserAgentInterceptor
+import edu.cqwu.electricity.login.data.UserAwareCookieJar
+import edu.cqwu.electricity.login.data.UserCookieStore
 import edu.cqwu.electricity.webvpn.WebVpnInterceptor
 import okhttp3.CookieJar
 import okhttp3.Dns
@@ -52,6 +54,25 @@ object HttpClientFactory {
         create(
             cookieJar = CookieStoreOkHttpJar,
             swallowSessionExpired = true,
+        )
+    }
+
+    /**
+     * 账号隔离客户端：用账号持久化 cookie 构建独立 UserCookieStore + UserAwareCookieJar，
+     * 直连 authserver（修改用户名/密码、设备管理、认证日志、登出等 CAS 页面接口共用）。
+     *
+     * @param cookies 账号持久化的 cookie 集合
+     * @param followRedirects 是否自动跟随重定向（登出等需拿到首个 3xx 响应时传 false）
+     */
+    fun createIsolated(
+        cookies: Map<String, Map<String, String>>,
+        followRedirects: Boolean = true,
+    ): OkHttpClient {
+        val store = UserCookieStore().also { it.loadFrom(cookies) }
+        return create(
+            cookieJar = UserAwareCookieJar(store),
+            includeWebVpn = false,
+            followRedirects = followRedirects,
         )
     }
 

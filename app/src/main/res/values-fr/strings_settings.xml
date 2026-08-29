@@ -67,6 +67,60 @@
     <string name="password_change_relogin_message">Votre session de connexion a expiré. Veuillez vous reconnecter.</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  Gestion des appareils connectés (CAS userOnline.do) -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="device_session_title">Gestion des appareils connectés</string>
+    <string name="device_session_current">Appareil actuel</string>
+    <string name="device_session_kick">Déconnecter</string>
+    <string name="device_session_kick_title">Déconnecter cet appareil ?</string>
+    <string name="device_session_kick_message">Cet appareil devra se reconnecter après la déconnexion</string>
+    <string name="device_session_kick_success">Appareil déconnecté</string>
+    <string name="device_session_kick_failed">Échec de la déconnexion, veuillez réessayer</string>
+    <string name="device_session_kick_pending">Déconnexion en cours…</string>
+    <string name="device_session_empty">Aucun autre appareil en ligne</string>
+    <string name="device_session_no_account">Veuillez d\'abord vous connecter</string>
+    <string name="device_session_load_failed">Échec du chargement, veuillez réessayer</string>
+    <string name="device_session_unknown_device">Appareil inconnu</string>
+    <string name="device_session_ip_label">Adresse IP</string>
+    <string name="device_session_auth_label">Type d\'authentification</string>
+    <string name="device_session_client_label">Type de client</string>
+    <string name="device_session_online">En ligne actuellement</string>
+    <string name="device_session_time_label">Heure de connexion</string>
+    <string name="device_session_tip">Remarque : le type de client correspond au système d\'exploitation et au moteur du navigateur ; sa disponibilité dépend du tiers, ces informations peuvent donc être approximatives et sont fournies à titre indicatif.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Journal d'authentification (CAS userLogs.do) -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_log_title">Journal d\'authentification</string>
+    <string name="login_log_detail_title">Détails de l\'authentification</string>
+    <string name="login_log_all_loaded">Tous les enregistrements chargés</string>
+    <plurals name="login_log_loaded_count">
+        <item quantity="one">%1$d enregistrement chargé</item>
+        <item quantity="other">%1$d enregistrements chargés</item>
+    </plurals>
+    <string name="login_log_page_info">Page %1$d/%2$d</string>
+    <string name="login_log_oper_auth">Enregistrements d\'authentification</string>
+    <string name="login_log_oper_account">Maintenance du compte</string>
+    <string name="login_log_oper_password">Maintenance du mot de passe</string>
+    <string name="login_log_oper_app">Accès aux applications</string>
+    <string name="login_log_result_all">Tous</string>
+    <string name="login_log_result_success">Succès</string>
+    <string name="login_log_result_failed">Échec</string>
+    <string name="login_log_start_time">Heure de début</string>
+    <string name="login_log_end_time">Heure de fin</string>
+    <string name="login_log_query">Rechercher</string>
+    <string name="login_log_reset">Réinitialiser</string>
+    <string name="login_log_empty">Aucun enregistrement</string>
+    <string name="login_log_no_account">Veuillez d\'abord vous connecter</string>
+    <string name="login_log_load_failed">Échec du chargement, veuillez réessayer</string>
+    <string name="login_log_ip">Adresse IP</string>
+    <string name="login_log_login_time">Heure de connexion</string>
+    <string name="login_log_logout_time">Heure de déconnexion</string>
+    <string name="login_log_auth_type">Type d\'authentification</string>
+    <string name="login_log_client_type">Type de client</string>
+    <string name="login_log_result">Résultat d\'authentification</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  Personnalisation                           -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">Personnalisation</string>

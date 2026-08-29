@@ -67,6 +67,59 @@
     <string name="password_change_relogin_message">انتهت صلاحية تسجيل دخول حسابك الحالي، يرجى إعادة تسجيل الدخول.</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  إدارة الأجهزة المتصلة (CAS userOnline.do)  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="device_session_title">إدارة الأجهزة المتصلة</string>
+    <string name="device_session_current">الجهاز الحالي</string>
+    <string name="device_session_kick">إخراج</string>
+    <string name="device_session_kick_title">إخراج هذا الجهاز؟</string>
+    <string name="device_session_kick_message">بعد الإخراج، سيحتاج هذا الجهاز إلى إعادة تسجيل الدخول</string>
+    <string name="device_session_kick_success">تم إخراج الجهاز</string>
+    <string name="device_session_kick_failed">فشل الإخراج، يرجى المحاولة مرة أخرى</string>
+    <string name="device_session_kick_pending">جارٍ الإخراج…</string>
+    <string name="device_session_empty">لا توجد أجهزة أخرى متصلة</string>
+    <string name="device_session_no_account">يرجى تسجيل الدخول أولاً</string>
+    <string name="device_session_load_failed">فشل التحميل، يرجى المحاولة مرة أخرى</string>
+    <string name="device_session_unknown_device">جهاز غير معروف</string>
+    <string name="device_session_ip_label">عنوان IP</string>
+    <string name="device_session_auth_label">نوع المصادقة</string>
+    <string name="device_session_client_label">نوع العميل</string>
+    <string name="device_session_online">متصل حالياً</string>
+    <string name="device_session_time_label">وقت تسجيل الدخول</string>
+    <string name="device_session_tip">ملاحظة: نوع العميل يعرض معلومات نظام التشغيل ومحرك المتصفح، وتوفرها يعتمد على إتاحة الطرف الثالث، لذا قد توجد فروق وهي للعلم فقط.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  سجلات المصادقة (CAS userLogs.do)           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_log_title">سجلات المصادقة</string>
+    <string name="login_log_detail_title">تفاصيل المصادقة</string>
+    <string name="login_log_all_loaded">تم تحميل جميع السجلات</string>
+    <plurals name="login_log_loaded_count">
+        <item quantity="other">تم تحميل %1$d سجلات</item>
+    </plurals>
+    <string name="login_log_page_info">صفحة %1$d/%2$d</string>
+    <string name="login_log_oper_auth">سجلات المصادقة</string>
+    <string name="login_log_oper_account">صيانة الحساب</string>
+    <string name="login_log_oper_password">صيانة كلمة المرور</string>
+    <string name="login_log_oper_app">الوصول إلى التطبيقات</string>
+    <string name="login_log_result_all">الكل</string>
+    <string name="login_log_result_success">نجاح</string>
+    <string name="login_log_result_failed">فشل</string>
+    <string name="login_log_start_time">وقت البدء</string>
+    <string name="login_log_end_time">وقت الانتهاء</string>
+    <string name="login_log_query">بحث</string>
+    <string name="login_log_reset">إعادة تعيين</string>
+    <string name="login_log_empty">لا توجد سجلات</string>
+    <string name="login_log_no_account">يرجى تسجيل الدخول أولاً</string>
+    <string name="login_log_load_failed">فشل التحميل، يرجى المحاولة مرة أخرى</string>
+    <string name="login_log_ip">عنوان IP</string>
+    <string name="login_log_login_time">وقت تسجيل الدخول</string>
+    <string name="login_log_logout_time">وقت تسجيل الخروج</string>
+    <string name="login_log_auth_type">نوع المصادقة</string>
+    <string name="login_log_client_type">نوع العميل</string>
+    <string name="login_log_result">نتيجة المصادقة</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  التخصيص                                   -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">التخصيص</string>

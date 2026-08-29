@@ -67,6 +67,60 @@
     <string name="password_change_relogin_message">Your account login has expired. Please log in again.</string>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!--  Device Session Management (CAS userOnline.do) -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="device_session_title">Login Device Management</string>
+    <string name="device_session_current">Current device</string>
+    <string name="device_session_kick">Kick out</string>
+    <string name="device_session_kick_title">Kick out this device?</string>
+    <string name="device_session_kick_message">This device will need to sign in again after being kicked out</string>
+    <string name="device_session_kick_success">Device kicked out</string>
+    <string name="device_session_kick_failed">Failed to kick out, please retry</string>
+    <string name="device_session_kick_pending">Kicking out…</string>
+    <string name="device_session_empty">No other online devices</string>
+    <string name="device_session_no_account">Please sign in first</string>
+    <string name="device_session_load_failed">Failed to load, please retry</string>
+    <string name="device_session_unknown_device">Unknown device</string>
+    <string name="device_session_ip_label">IP address</string>
+    <string name="device_session_auth_label">Auth type</string>
+    <string name="device_session_client_label">Client type</string>
+    <string name="device_session_online">Currently online</string>
+    <string name="device_session_time_label">Login time</string>
+    <string name="device_session_tip">Note: The client type shows the OS and browser kernel info. Its availability depends on whether the third party exposes it, so it may be inaccurate and is for reference only.</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Auth Logs (CAS userLogs.do)                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="login_log_title">Auth Logs</string>
+    <string name="login_log_detail_title">Auth Details</string>
+    <string name="login_log_all_loaded">All records loaded</string>
+    <plurals name="login_log_loaded_count">
+        <item quantity="one">%1$d loaded</item>
+        <item quantity="other">%1$d loaded</item>
+    </plurals>
+    <string name="login_log_page_info">Page %1$d/%2$d</string>
+    <string name="login_log_oper_auth">Auth records</string>
+    <string name="login_log_oper_account">Account maintenance</string>
+    <string name="login_log_oper_password">Password maintenance</string>
+    <string name="login_log_oper_app">App access</string>
+    <string name="login_log_result_all">All</string>
+    <string name="login_log_result_success">Success</string>
+    <string name="login_log_result_failed">Failed</string>
+    <string name="login_log_start_time">Start time</string>
+    <string name="login_log_end_time">End time</string>
+    <string name="login_log_query">Query</string>
+    <string name="login_log_reset">Reset</string>
+    <string name="login_log_empty">No log records</string>
+    <string name="login_log_no_account">Please sign in first</string>
+    <string name="login_log_load_failed">Failed to load, please retry</string>
+    <string name="login_log_ip">IP address</string>
+    <string name="login_log_login_time">Login time</string>
+    <string name="login_log_logout_time">Logout time</string>
+    <string name="login_log_auth_type">Auth type</string>
+    <string name="login_log_client_type">Client type</string>
+    <string name="login_log_result">Auth result</string>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!--  Personalization                            -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="personalization_title">Personalization</string>

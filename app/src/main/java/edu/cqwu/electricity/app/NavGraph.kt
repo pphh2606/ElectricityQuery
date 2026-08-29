@@ -38,6 +38,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.accountmanagerv2.AccountManagerScreen
+import edu.cqwu.electricity.accountmanagerv2.DeviceSessionScreen
+import edu.cqwu.electricity.accountmanagerv2.LoginLogScreen
 import edu.cqwu.electricity.accountmanagerv2.PasswordChangeScreen
 import edu.cqwu.electricity.accountmanagerv2.UserNameEditScreen
 import edu.cqwu.electricity.cardcenter.ui.AccountInfoScreen
@@ -105,6 +107,10 @@ object Routes {
     const val USER_NAME_EDIT = "user_name_edit"
     /** 修改密码页 */
     const val PASSWORD_CHANGE = "password_change"
+    /** 登录设备管理页（在线会话查看/踢出） */
+    const val DEVICE_SESSION = "device_session"
+    /** 日志记录页（登录/维护日志查看与筛选） */
+    const val LOGIN_LOG = "login_log"
     const val PERSONALIZATION = "personalization"
     const val QR_CODE_SETTINGS = "qr_code_settings"
     const val QR_LOGIN = "qr_login"
@@ -653,6 +659,8 @@ fun AppNavGraph(
                 onNavigateToAddAccount = { navController.navigate(Routes.NEW_ACCOUNT_LOGIN) },
                 onNavigateToUserNameEdit = { navController.navigate(Routes.USER_NAME_EDIT) },
                 onNavigateToPasswordEdit = { navController.navigate(Routes.PASSWORD_CHANGE) },
+                onNavigateToDeviceSession = { navController.navigate(Routes.DEVICE_SESSION) },
+                onNavigateToLoginLog = { navController.navigate(Routes.LOGIN_LOG) },
             )
         }
 
@@ -667,6 +675,22 @@ fun AppNavGraph(
         // 修改密码页（本地化 CAS mobilePasswordChange.do）
         animatedComposable(settings = appSettings, route = Routes.PASSWORD_CHANGE) {
             PasswordChangeScreen(
+                onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
+            )
+        }
+
+        // 登录设备管理页（本地化 CAS userOnline.do）
+        animatedComposable(settings = appSettings, route = Routes.DEVICE_SESSION) {
+            DeviceSessionScreen(
+                onBack = { navController.popBackStack() },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
+            )
+        }
+
+        // 日志记录页（本地化 CAS userLogs.do）
+        animatedComposable(settings = appSettings, route = Routes.LOGIN_LOG) {
+            LoginLogScreen(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.loginRoute()) },
             )

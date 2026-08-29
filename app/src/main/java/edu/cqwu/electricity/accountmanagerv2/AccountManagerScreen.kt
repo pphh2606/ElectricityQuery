@@ -24,7 +24,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.WarningAmber
@@ -94,6 +96,8 @@ fun AccountManagerScreen(
     onNavigateToAddAccount: () -> Unit,
     onNavigateToUserNameEdit: () -> Unit,
     onNavigateToPasswordEdit: () -> Unit,
+    onNavigateToDeviceSession: () -> Unit,
+    onNavigateToLoginLog: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -254,6 +258,16 @@ fun AccountManagerScreen(
                         icon = Icons.Outlined.Lock,
                         title = stringResource(R.string.account_manager_v2_password),
                         onClick = onNavigateToPasswordEdit,
+                    )
+                    PlaceholderRow(
+                        icon = Icons.Outlined.Devices,
+                        title = stringResource(R.string.device_session_title),
+                        onClick = onNavigateToDeviceSession,
+                    )
+                    PlaceholderRow(
+                        icon = Icons.Outlined.History,
+                        title = stringResource(R.string.login_log_title),
+                        onClick = onNavigateToLoginLog,
                     )
                 }
             }
