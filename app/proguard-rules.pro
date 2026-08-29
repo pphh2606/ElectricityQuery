@@ -38,11 +38,12 @@
 -keep class com.google.gson.** { *; }
 -keepclassmembers class * {
     @com.google.gson.annotations.SerializedName <fields>;
+    <init>();
 }
 
-# Keep ALL Gson data model classes (prevent R8 from renaming class names)
-# Gson uses reflection to instantiate classes by name - renaming breaks it
--keep class edu.cqwu.electricity.*.data.** { *; }
+# 项目规模较小，直接保留全部业务类（含 Gson 反序列化目标类）
+# 防止 R8 优化将 data class / Kotlin 文件类标记为 abstract 或移除构造器，导致 Gson 反射实例化失败
+-keep class edu.cqwu.electricity.** { *; }
 
 # ============================================================
 # Coil
