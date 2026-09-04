@@ -12,7 +12,6 @@ import edu.cqwu.electricity.theme.ui.resolve
 // 剪贴板与文件导出
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,13 +31,12 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.InfoRow
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,9 +53,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.font.FontWeight
@@ -65,12 +60,6 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.electricity.data.DetailType
-import edu.cqwu.electricity.electricity.data.HourDataRecord
-import edu.cqwu.electricity.electricity.data.MeterDataItem
-import edu.cqwu.electricity.electricity.data.UsageRecord
-import edu.cqwu.electricity.electricity.data.UsageResponse
-import edu.cqwu.electricity.common.ui.ElectricityLineChartCard
-import edu.cqwu.electricity.common.ui.LineData
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
 
@@ -89,12 +78,7 @@ fun DetailScreen(
 
     // 进入页面时自动加载数据
     LaunchedEffect(detailType) {
-        when (detailType) {
-            DetailType.SIX_MONTH_USAGE -> viewModel.loadSixMonthUsage()
-            DetailType.MONTH_DAILY_USAGE -> viewModel.loadMonthDailyUsage()
-            DetailType.HOURLY_USAGE -> viewModel.loadCurrentData()
-            DetailType.METER_STATUS -> viewModel.loadCurrentData()
-        }
+        viewModel.loadCurrentData()
     }
 
     // Composable 退出时自动清除详情数据，避免下次进入时显示旧数据
@@ -104,12 +88,7 @@ fun DetailScreen(
         }
     }
 
-    val title = when (detailType) {
-        DetailType.SIX_MONTH_USAGE -> stringResource(R.string.detail_title_6months)
-        DetailType.MONTH_DAILY_USAGE -> stringResource(R.string.detail_title_daily)
-        DetailType.HOURLY_USAGE -> stringResource(R.string.detail_title_hourly)
-        DetailType.METER_STATUS -> stringResource(R.string.detail_title_meter)
-    }
+    val title = stringResource(R.string.detail_title_meter)
 
     // 控制三点菜单
     var showMenu by remember { mutableStateOf(false) }
@@ -197,12 +176,7 @@ fun DetailScreen(
         PullToRefreshBox(
             isRefreshing = detailState.isRefreshing,
             onRefresh = {
-                when (detailType) {
-                    DetailType.SIX_MONTH_USAGE -> viewModel.loadSixMonthUsage()
-                    DetailType.MONTH_DAILY_USAGE -> viewModel.loadMonthDailyUsage()
-                    DetailType.HOURLY_USAGE -> viewModel.loadCurrentData()
-                    DetailType.METER_STATUS -> viewModel.loadCurrentData()
-                }
+                viewModel.loadCurrentData()
             },
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
@@ -228,131 +202,10 @@ fun DetailScreen(
                     }
     
                     else -> {
-                        when (detailType) {
-                            DetailType.SIX_MONTH_USAGE -> {
-                                SixMonthUsageContent(detailState.sixMonthUsage)
-                            }
-                            DetailType.MONTH_DAILY_USAGE -> {
-                                MonthDailyUsageContent(detailState.monthDailyUsage)
-                            }
-                            DetailType.HOURLY_USAGE -> {
-                                HourlyUsageContent(detailState.currentData)
-                            }
-                            DetailType.METER_STATUS -> {
-                                MeterStatusContent(detailState.currentData)
-                            }
-                        }
+                        MeterStatusContent(detailState.currentData)
                     }
                 }
             }
-        }
-    }
-}
-
-// ============================================================
-//  2.6: 统一 Usage 列表 + 折线图组件（合并 SixMonthUsageContent 与 MonthDailyUsageContent）
-//       两者唯一区别是标题、X 轴标签格式、空提示文案
-// ============================================================
-
-/**
- * 通用的用电记录列表（含顶部折线图）。
- *
- * @param data 用电数据
- * @param emptyMessage 空数据提示文案
- * @param xLabelTransform 将 [UsageRecord] 转换为 X 轴标签的函数
- */
-@Composable
-private fun UsageListWithChart(
-    data: UsageResponse?,
-    emptyMessage: String,
-    xLabelTransform: (UsageRecord) -> String
-) {
-    val records = data?.costObj
-    if (records.isNullOrEmpty()) {
-        EmptyPlaceholder(emptyMessage)
-        return
-    }
-
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // 折线图
-        item(key = "chart") {
-            ElectricityLineChartCard(
-                xLabels = records.map(xLabelTransform),
-                lines = listOf(
-                    LineData(stringResource(R.string.detail_chart_usage_kwh), records.map { it.consumeTotal }, Color(0xFF2196F3)),
-                    LineData(stringResource(R.string.detail_chart_cost_yuan), records.map { it.costTotal }, Color(0xFFE53935))
-                )
-            )
-        }
-
-        item {
-            SectionTitle(stringResource(R.string.detail_section_data))
-        }
-
-        items(records) { record ->
-            UsageRecordCard(record)
-        }
-    }
-}
-
-/**
- * 最近6个月用电记录内容（委托给 [UsageListWithChart]）
- */
-@Composable
-private fun SixMonthUsageContent(data: UsageResponse?) {
-    val resources = LocalResources.current
-    UsageListWithChart(
-        data = data,
-        emptyMessage = stringResource(R.string.detail_empty_record),
-        xLabelTransform = { it.costTime.takeLast(2) + resources.getString(R.string.detail_month_unit) }
-    )
-}
-
-/**
- * 本月每日用电内容（委托给 [UsageListWithChart]）
- */
-@Composable
-private fun MonthDailyUsageContent(data: UsageResponse?) {
-    UsageListWithChart(
-        data = data,
-        emptyMessage = stringResource(R.string.detail_empty_daily),
-        xLabelTransform = { it.costTime.takeLast(5) }
-    )
-}
-
-// ============================================================
-//  近24h用电明细（从 currentData.hourDataObj 读取）
-// ============================================================
-
-@Composable
-private fun HourlyUsageContent(data: CurrentDataResponse?) {
-    val records = data?.hourDataObj
-    if (records.isNullOrEmpty()) {
-        EmptyPlaceholder(stringResource(R.string.detail_empty_24h))
-        return
-    }
-
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // 折线图（单线：仅用电量）
-        item(key = "chart") {
-            ElectricityLineChartCard(
-                xLabels = records.map { it.dataTime.takeLast(5) },
-                lines = listOf(
-                    LineData(stringResource(R.string.detail_chart_usage_kwh), records.map { it.dataTotal }, Color(0xFF2196F3))
-                )
-            )
-        }
-
-        item {
-            SectionTitle(stringResource(R.string.detail_section_data))
-        }
-
-        items(records) { record ->
-            HourDataCard(record)
         }
     }
 }
@@ -372,38 +225,33 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         return
     }
 
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    // 统一为"左标签 — 右值"的紧凑横向列表，白底平铺，行间细分隔线（同"我的信息"）
+    val powerLabel = stringResource(R.string.detail_power_cumulative)
+    val statusLabel = stringResource(R.string.detail_power_status)
+    val rows = buildList {
+        currentItems.forEach { add(it.name to "${String.format(Locale.US, "%.3f", it.display)} A") }
+        voltageItems.forEach { add(it.name to "${String.format(Locale.US, "%.3f", it.display)} V") }
+        if (!data?.exp2.isNullOrBlank()) add(powerLabel to "${data.exp2} kWh")
+        if (!data?.exp5.isNullOrBlank()) add(statusLabel to data.exp5)
+    }
+
+    LazyColumn {
         item {
-            SectionTitle(stringResource(R.string.detail_section_meter_status))
-        }
-
-        // 电流 (exp4)
-        if (currentItems.isNotEmpty()) {
-            item {
-                MeterGroupCard(stringResource(R.string.detail_current), currentItems, "A")
-            }
-        }
-
-        // 电压 (exp3)
-        if (voltageItems.isNotEmpty()) {
-            item {
-                MeterGroupCard(stringResource(R.string.detail_voltage), voltageItems, "V")
-            }
-        }
-
-        // 当前功率/累计值 (exp2)
-        if (!data?.exp2.isNullOrBlank()) {
-            item {
-                SimpleValueCard(stringResource(R.string.detail_power_cumulative), data.exp2)
-            }
-        }
-
-        // 电源状态 (exp5)
-        if (!data?.exp5.isNullOrBlank()) {
-            item {
-                SimpleValueCard(stringResource(R.string.detail_power_status), data.exp5)
+            Column {
+                rows.forEachIndexed { index, (label, value) ->
+                    InfoRow(
+                        label = label,
+                        value = value,
+                        modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+                    )
+                    if (index < rows.size - 1) {
+                        HorizontalDivider(
+                            thickness = 0.5.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            modifier = Modifier.padding(start = 16.dp),
+                        )
+                    }
+                }
             }
         }
     }
@@ -412,17 +260,6 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
 // ============================================================
 //  可复用子组件
 // ============================================================
-
-@Composable
-private fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(bottom = 4.dp)
-    )
-}
 
 @Composable
 private fun EmptyPlaceholder(message: String) {
@@ -440,126 +277,6 @@ private fun EmptyPlaceholder(message: String) {
     }
 }
 
-/**
- * 用电记录卡片（用于6个月和本月每日）
- */
-@Composable
-private fun UsageRecordCard(record: UsageRecord) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = record.costTime,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        },
-        supportingContent = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.detail_power_consumption, String.format(Locale.US, "%.2f", record.consumeTotal)),
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Text(
-                    text = stringResource(R.string.detail_cost, String.format(Locale.US, "%.2f", record.costTotal)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        },
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
-    )
-}
-
-/**
- * 每小时数据卡片
- */
-@Composable
-private fun HourDataCard(record: HourDataRecord) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = record.dataTime,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        },
-        supportingContent = {
-            Text(
-                text = stringResource(R.string.detail_total_consumption, String.format(Locale.US, "%.2f", record.dataTotal)),
-                style = MaterialTheme.typography.bodySmall
-            )
-        },
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
-    )
-}
-
-/**
- * 电表参数分组卡片（用于电压/电流等列表数据）
- */
-@Composable
-private fun MeterGroupCard(groupName: String, items: List<MeterDataItem>, unit: String = "") {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-                shape = MaterialTheme.shapes.medium
-            )
-            .padding(12.dp)
-    ) {
-        Text(
-            text = groupName,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.secondary
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        items.forEachIndexed { index, item ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = "${String.format(Locale.US, "%.3f", item.display)} $unit",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            if (index < items.size - 1) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 2.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                )
-            }
-        }
-    }
-}
-
 // ============================================================
 //  三点菜单辅助函数（复制 / 导出）
 // ============================================================
@@ -572,54 +289,15 @@ private fun getDetailTextContent(detailType: DetailType, detailState: DetailStat
     return buildString {
         appendLine(getDetailTitle(detailType, resources))
         appendLine("=".repeat(40))
-
-        when (detailType) {
-            DetailType.SIX_MONTH_USAGE,
-            DetailType.MONTH_DAILY_USAGE -> {
-                val records = when (detailType) {
-                    DetailType.SIX_MONTH_USAGE -> detailState.sixMonthUsage?.costObj
-                    else -> detailState.monthDailyUsage?.costObj
-                }
-                appendLine(String.format("%-20s %-10s %-10s", resources.getString(R.string.detail_export_time), resources.getString(R.string.detail_export_usage), resources.getString(R.string.detail_export_cost)))
-                appendLine("-".repeat(40))
-                records?.forEach { record ->
-                    appendLine(
-                        String.format(Locale.US, "%-20s %-10.2f %-10.2f",
-                            record.costTime,
-                            record.consumeTotal,
-                            record.costTotal)
-                    )
-                }
-            }
-
-            DetailType.HOURLY_USAGE -> {
-                appendLine(String.format("%-20s %-10s", resources.getString(R.string.detail_export_time), resources.getString(R.string.detail_export_usage)))
-                appendLine("-".repeat(30))
-                detailState.currentData?.hourDataObj?.forEach { record ->
-                    appendLine(
-                        String.format(Locale.US, "%-20s %-10.2f",
-                            record.dataTime,
-                            record.dataTotal)
-                    )
-                }
-            }
-
-            DetailType.METER_STATUS -> {
-                appendMeterStatusText(detailState, resources)
-            }
-        }
+        appendMeterStatusText(detailState, resources)
     }
 }
 
 /**
  * 获取详情标题。
  */
-private fun getDetailTitle(detailType: DetailType, resources: Resources): String = when (detailType) {
-    DetailType.SIX_MONTH_USAGE -> resources.getString(R.string.detail_title_6months)
-    DetailType.MONTH_DAILY_USAGE -> resources.getString(R.string.detail_title_daily)
-    DetailType.HOURLY_USAGE -> resources.getString(R.string.detail_title_hourly)
-    DetailType.METER_STATUS -> resources.getString(R.string.detail_title_meter)
-}
+private fun getDetailTitle(detailType: DetailType, resources: Resources): String =
+    resources.getString(R.string.detail_title_meter)
 
 /**
  * 生成电表状态的纯文本内容。
@@ -645,10 +323,10 @@ private fun StringBuilder.appendMeterStatusText(detailState: DetailState, resour
         }
     }
 
-    // 功率/累计值
+    // 总用电量
     if (!data.exp2.isNullOrBlank()) {
         appendLine("\n" + resources.getString(R.string.detail_export_section_power))
-        appendLine("  ${data.exp2}")
+        appendLine("  ${data.exp2} kWh")
     }
 
     // 电源状态
@@ -661,33 +339,4 @@ private fun StringBuilder.appendMeterStatusText(detailState: DetailState, resour
         && data.exp2.isNullOrBlank() && data.exp5.isNullOrBlank()) {
         appendLine(resources.getString(R.string.detail_export_no_meter_data))
     }
-}
-
-/**
- * 简单文本值卡片（用于功率/状态等单值数据）
- */
-@Composable
-private fun SimpleValueCard(label: String, value: String) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = label,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
-        trailingContent = {
-            Text(
-                text = value,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        },
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
-    )
 }

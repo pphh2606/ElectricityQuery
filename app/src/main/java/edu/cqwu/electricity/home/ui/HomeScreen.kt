@@ -2,6 +2,7 @@
 
 package edu.cqwu.electricity.home.ui
 
+import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import androidx.compose.ui.res.stringResource
@@ -43,8 +44,6 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -479,7 +478,7 @@ private fun HomeSectionIndex(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item(key = "my_services") {
-                SectionIndexChip(
+                SectionFilterChip(
                     text = stringResource(R.string.home_my_services),
                     selected = activeIndex == 0,
                     onClick = { onSectionClick(0) },
@@ -489,7 +488,7 @@ private fun HomeSectionIndex(
                 count = categoryNames.size,
                 key = { index -> "category_$index" },
             ) { index ->
-                SectionIndexChip(
+                SectionFilterChip(
                     text = categoryNames[index],
                     selected = activeIndex == index + 1,
                     onClick = { onSectionClick(index + 1) },
@@ -503,30 +502,6 @@ private fun HomeSectionIndex(
             )
         }
     }
-}
-
-@Composable
-private fun SectionIndexChip(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        shape = CircleShape,
-        colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ),
-        border = null,
-        label = {
-            Text(
-                text = text,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-    )
 }
 
 /**

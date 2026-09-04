@@ -21,17 +21,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.CardGiftcard
 import androidx.compose.material3.CardDefaults
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.InfoRow
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -138,7 +139,9 @@ fun DashboardScreen(
             if (balance != null) {
                 item(key = "more_functions") {
                     MoreFunctionsSection(
-                        onNavigateToDetail = { detailType -> nav.navigate(Routes.detailRoute(detailType, room?.id ?: "")) },
+                        onNavigateToMeterStatus = { nav.navigate(Routes.detailRoute(DetailType.METER_STATUS, room?.id ?: "")) },
+                        onNavigateToUsageRecord = { nav.navigate(Routes.usageRecordRoute(room?.id ?: "")) },
+                        onNavigateToSubsidyRecord = { nav.navigate(Routes.subsidyRecordRoute(room?.id ?: "")) },
                         onNavigateToRechargeRecord = { nav.navigate(Routes.rechargeRecordRoute(room?.id ?: "")) }
                     )
                 }
@@ -234,27 +237,9 @@ private fun RoomInfoCard(room: BuildingNode?) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Outlined.Home,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.dashboard_room_info),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
             InfoRow(
                 label = stringResource(R.string.dashboard_room_name),
                 value = room?.displayName ?: stringResource(R.string.dashboard_unknown)
@@ -298,64 +283,90 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Outlined.Home,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.dashboard_power_info),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 剩余电量 — 大号数字
-            Box(
+            // 左右分栏：左剩余电量 ｜ 右现金余额（字体大小颜色均保持原样）
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.Center
+                // 左半：剩余电量（保持原大号数字样式，内容靠右贴向中线）
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.End
                 ) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = String.format(Locale.US, "%.2f", balance.remainEletricCapacity),
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.dashboard_unit_degree),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = String.format(Locale.US, "%.2f", balance.remainEletricCapacity),
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(R.string.dashboard_unit_degree),
-                        style = MaterialTheme.typography.titleMedium,
+                        text = stringResource(R.string.dashboard_remaining_power),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                // 中间竖线
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(72.dp)
+                        .padding(horizontal = 16.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
+                )
+
+                // 右半：现金余额（与剩余电量同款大号显示，内容靠左贴向中线）
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = String.format(Locale.US, "%.2f", balance.userBalance),
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.common_unit_yuan),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.dashboard_cash_balance),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(R.string.dashboard_remaining_power),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
@@ -368,7 +379,7 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -441,13 +452,15 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
  */
 @Composable
 private fun MoreFunctionsSection(
-    onNavigateToDetail: (DetailType) -> Unit,
+    onNavigateToMeterStatus: () -> Unit,
+    onNavigateToUsageRecord: () -> Unit,
+    onNavigateToSubsidyRecord: () -> Unit,
     onNavigateToRechargeRecord: () -> Unit
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -469,27 +482,21 @@ private fun MoreFunctionsSection(
             Spacer(modifier = Modifier.height(8.dp))
 
             NavItem(
-                text = stringResource(R.string.dashboard_recent_6months),
-                leadingIcon = Icons.Outlined.DateRange,
-                onClick = { onNavigateToDetail(DetailType.SIX_MONTH_USAGE) }
-            )
-            HorizontalDivider()
-            NavItem(
-                text = stringResource(R.string.dashboard_daily_this_month),
-                leadingIcon = Icons.Outlined.CalendarToday,
-                onClick = { onNavigateToDetail(DetailType.MONTH_DAILY_USAGE) }
-            )
-            HorizontalDivider()
-            NavItem(
-                text = stringResource(R.string.dashboard_24h_detail),
-                leadingIcon = Icons.Outlined.Schedule,
-                onClick = { onNavigateToDetail(DetailType.HOURLY_USAGE) }
-            )
-            HorizontalDivider()
-            NavItem(
                 text = stringResource(R.string.dashboard_meter_status),
                 leadingIcon = Icons.Outlined.Home,
-                onClick = { onNavigateToDetail(DetailType.METER_STATUS) }
+                onClick = onNavigateToMeterStatus
+            )
+            HorizontalDivider()
+            NavItem(
+                text = stringResource(R.string.dashboard_usage_record),
+                leadingIcon = Icons.Outlined.DateRange,
+                onClick = onNavigateToUsageRecord
+            )
+            HorizontalDivider()
+            NavItem(
+                text = stringResource(R.string.dashboard_subsidy_record),
+                leadingIcon = Icons.Outlined.CardGiftcard,
+                onClick = onNavigateToSubsidyRecord
             )
             HorizontalDivider()
             NavItem(
@@ -552,30 +559,6 @@ private fun NavItem(
 // ====================================================================
 //  辅助 Composable
 // ====================================================================
-
-/**
- * 信息行（标签 + 值）
- */
-@Composable
-private fun InfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
-}
 
 /**
  * 余额行（标签 + 金额 + 单位）

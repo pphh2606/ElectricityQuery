@@ -11,10 +11,9 @@
     <string name="dashboard_account_balance">Account Balance</string>
     <string name="dashboard_online_pay">Online Payment</string>
     <string name="dashboard_more_features">More Features</string>
-    <string name="dashboard_recent_6months">Last 6 Months Usage</string>
-    <string name="dashboard_daily_this_month">Daily Usage This Month</string>
-    <string name="dashboard_24h_detail">Last 24h Detail</string>
     <string name="dashboard_meter_status">Meter Status</string>
+    <string name="dashboard_usage_record">Usage Records</string>
+    <string name="dashboard_subsidy_record">Subsidy Records</string>
     <string name="dashboard_query_recharge_records">Recharge Records</string>
     <string name="dashboard_title">Electricity Query Result</string>
     <string name="dashboard_select_dorm">Select Dorm</string>
@@ -28,24 +27,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Electricity Detail                         -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="detail_empty_record">No usage records</string>
-    <string name="detail_empty_daily">No daily usage data</string>
-    <string name="detail_power_consumption">Consumption: %1$s kWh</string>
-    <string name="detail_cost">Cost: %1$s CNY</string>
-    <string name="detail_total_consumption">Consumption: %1$s kWh</string>
-    <string name="detail_title_6months">Past 6 Months Usage</string>
-    <string name="detail_title_daily">This Month\'s Usage</string>
-    <string name="detail_title_hourly">Last 24h Usage</string>
     <string name="detail_title_meter">Meter Status</string>
-    <string name="detail_chart_usage_kwh">Usage (kWh)</string>
-    <string name="detail_chart_cost_yuan">Cost (CNY)</string>
-    <string name="detail_section_data">Details</string>
-    <string name="detail_section_meter_status">Meter Status</string>
-    <string name="detail_current">Current</string>
-    <string name="detail_voltage">Voltage</string>
-    <string name="detail_power_cumulative">Power / Cumulative</string>
+    <string name="detail_power_cumulative">Total energy consumption</string>
     <string name="detail_power_status">Power Status</string>
-    <string name="detail_empty_24h">No 24h usage data</string>
     <string name="detail_empty_meter">No meter data</string>
     <string name="electricity_tab_query">Query</string>
     <string name="electricity_tab_recharge">Recharge</string>
@@ -70,12 +54,7 @@
     <string name="electricity_bind_account">Bind Account</string>
     <string name="electricity_unbind_account">Unbind Account</string>
 
-    <string name="detail_export_usage">Usage (kWh)</string>
-
     <string name="electricity_export_room_id">Room ID: %1$s</string>
-
-    <string name="detail_export_time">Time</string>
-
     <string name="electricity_user_not_registered">Failed to get user info, please register on the electricity platform first</string>
 
     <string name="electricity_export_usage_info">Electricity usage</string>
@@ -106,7 +85,7 @@
 
     <string name="electricity_export_payment_status">Payment status</string>
 
-    <string name="detail_export_section_power">Current power / cumulative value</string>
+    <string name="detail_export_section_power">Total energy consumption</string>
 
     <string name="electricity_balance_query_failed">Failed to query balance: %1$s</string>
 
@@ -116,15 +95,42 @@
 
     <string name="detail_export_section_power_status">Power status</string>
 
-    <string name="detail_export_cost">Cost (CNY)</string>
-
     <string name="detail_room_not_selected">No room selected</string>
 
     <string name="detail_query_failed">Query failed: %1$s</string>
-
-    <string name="detail_month_unit">month</string>
+    <string name="usage_record_v2_title">Usage Records</string>
+    <string name="usage_record_v2_begin_time">Start Date</string>
+    <string name="usage_record_v2_end_time">End Date</string>
+    <string name="usage_record_v2_hourly">Hourly</string>
+    <string name="usage_record_v2_daily">Daily</string>
+    <string name="usage_record_v2_monthly">Monthly</string>
+    <string name="usage_record_v2_header_time">Time</string>
+    <string name="usage_record_v2_header_usage">Usage</string>
+    <string name="usage_record_v2_header_cost">Cost</string>
+    <string name="usage_record_v2_total">Total</string>
+    <string name="usage_record_v2_export_title">Usage Records</string>
+    <string name="usage_record_v2_filter_desc">Filter: %1$s ~ %2$s | %3$s</string>
+    <string name="usage_record_v2_no_data">No data</string>
+    <string name="subsidy_record_title">Subsidy Records</string>
+    <string name="subsidy_record_begin_time">Start Date</string>
+    <string name="subsidy_record_end_time">End Date</string>
+    <string name="subsidy_record_header_time">Time</string>
+    <string name="subsidy_record_header_type">Type</string>
+    <string name="subsidy_record_header_quantity">Quantity</string>
+    <string name="subsidy_record_header_cost">Amount</string>
+    <string name="subsidy_record_total">Total</string>
+    <string name="subsidy_record_export_title">Subsidy Records</string>
+    <string name="subsidy_record_filter_desc">Filter: %1$s ~ %2$s</string>
+    <string name="subsidy_record_no_data">No data</string>
+    <string name="subsidy_type_electric">Electricity</string>
+    <string name="subsidy_type_water">Water</string>
+    <string name="subsidy_type_gas">Gas</string>
+    <string name="subsidy_type_heat">Heat</string>
+    <string name="subsidy_type_unknown">—</string>
 
     <string name="electricity_export_room_name">Room name/number: %1$s</string>
 
     <string name="detail_export_section_voltage">Voltage</string>
+    <string name="record_query_failed">Query failed</string>
+    <string name="record_error_no_room">Room not specified</string>
 </resources>

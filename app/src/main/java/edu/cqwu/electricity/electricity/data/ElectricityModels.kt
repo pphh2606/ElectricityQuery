@@ -67,32 +67,6 @@ enum class SelectionStep {
 }
 
 /**
- * 用电记录（6个月/本月每日共用）
- */
-data class UsageRecord(
-    @SerializedName("costTime") val costTime: String = "",
-    @SerializedName("consumeTotal") val consumeTotal: Double = 0.0,
-    @SerializedName("costTotal") val costTotal: Double = 0.0
-)
-
-/**
- * 用电记录 API 响应
- */
-data class UsageResponse(
-    @SerializedName("ifSuccess") val ifSuccess: String = "",
-    @SerializedName("resultMsg") val resultMsg: String? = null,
-    @SerializedName("costObj") val costObj: List<UsageRecord>? = null
-)
-
-/**
- * 小时级用电记录
- */
-data class HourDataRecord(
-    @SerializedName("dataTime") val dataTime: String = "",
-    @SerializedName("dataTotal") val dataTotal: Double = 0.0
-)
-
-/**
  * 电表数据项（电流/电压共用）
  */
 data class MeterDataItem(
@@ -106,7 +80,6 @@ data class MeterDataItem(
 data class CurrentDataResponse(
     @SerializedName("ifSuccess") val ifSuccess: String = "",
     @SerializedName("resultMsg") val resultMsg: String? = null,
-    @SerializedName("hourDataObj") val hourDataObj: List<HourDataRecord>? = null,
     @SerializedName("exp4") val exp4: List<MeterDataItem>? = null,  // 电流
     @SerializedName("exp3") val exp3: List<MeterDataItem>? = null,  // 电压
     @SerializedName("exp2") val exp2: String? = null,               // 功率/累计值
@@ -127,9 +100,6 @@ data class RechargeResponse(
  * 详情类型枚举
  */
 enum class DetailType {
-    SIX_MONTH_USAGE,    // 最近6个月用电记录
-    MONTH_DAILY_USAGE,  // 本月每日用电
-    HOURLY_USAGE,       // 近24h用电明细
     METER_STATUS        // 电表实时状态
 }
 
@@ -190,13 +160,6 @@ data class UserRoomInfo(
     @SerializedName("roomName") val roomName: String = ""
 )
 
-data class OrderStatusData(
-    val status: String?,
-    val returnUrl: String?,
-    val notifyUrl: String?,
-    val orderNo: String?,
-    val paymentOrderNo: String?
-)
 // ==================== 充值记录时间范围枚举 ====================
 
 /**

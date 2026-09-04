@@ -122,7 +122,14 @@ class ElectricityViewModel(
     fun loadAreas() = launchRequest(
         onStart = { copy(isLoading = true, isRefreshing = true, error = null) },
         onSuccess = { areas ->
-            copy(isLoading = false, isRefreshing = false, areas = areas, currentStep = SelectionStep.AREA)
+            // 校区列表加载成功后默认展开全部校区，便于直接浏览楼栋
+            copy(
+                isLoading = false,
+                isRefreshing = false,
+                areas = areas,
+                currentStep = SelectionStep.AREA,
+                expandedAreaIds = areas.mapTo(mutableSetOf()) { it.id },
+            )
         },
         onError = { msg -> copy(isLoading = false, isRefreshing = false, error = UiMessage(R.string.electricity_fetch_campuses_failed, listOf(msg))) },
         request = { api.getAreas() }

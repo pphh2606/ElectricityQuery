@@ -10,8 +10,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
 
 /**
@@ -26,13 +24,13 @@ class ElectricityApi {
         const val BASE_URL = "https://electricitypay.cqwu.edu.cn"
         const val BUILDING_API = "$BASE_URL/wechat/wx/wechatNode/getAddrByNode"
         const val BALANCE_API = "$BASE_URL/wechat/wx/wechatData/getLeftValue"
-        const val SIX_MONTH_API = "$BASE_URL/wechat/wx/wechatData/getSixMonthValue"
-        const val MONTH_DAILY_API = "$BASE_URL/wechat/wx/wechatData/getRoomUsedData"
         const val CURRENT_DATA_API = "$BASE_URL/wechat/wx/wechatData/getCurrentData"
         const val RECHARGE_API = "$BASE_URL/wechat/wx/getCQPayOrder"
         const val ROOM_LIST_API = "$BASE_URL/wechat/wx/findUserRoomList"
         const val GET_USER_API = "$BASE_URL/wechat/wx/getWechatUserByOpenId"
         const val BUY_LIST_API = "$BASE_URL/wechat/wx/wechatData/getRoomBuyList"
+        const val USAGE_DATA_API = "$BASE_URL/wechat/wx/wechatData/getRoomUsedData"
+        const val SUBSIDY_DATA_API = "$BASE_URL/wechat/wx/wechatData/getRoomSubsidyData"
         val HEADERS: Map<String, String> = mapOf(
             "Accept" to "*/*",
             "Origin" to "https://electricitypay.cqwu.edu.cn",
@@ -92,48 +90,7 @@ class ElectricityApi {
     }
 
     /**
-     * 查询最近6个月用电记录
-     * 对应 Python 的 query_six_month_usage(room_id)
-     */
-    suspend fun querySixMonthUsage(roomId: String, userId: String = "0"): Result<UsageResponse> {
-        return safeApiCall {
-            val urlString = "${SIX_MONTH_API}?roomId=$roomId&userId=$userId&nodeId=1&costType=0"
-            val authHeader = RSAEncrypt.buildAuthorization(urlString)
-
-            val json = executeGet(
-                url = urlString,
-                extraHeaders = mapOf("Authorization" to authHeader)
-            )
-            gson.fromJson(json, UsageResponse::class.java)
-        }
-    }
-
-    /**
-     * 查询本月每日用电记录
-     * 对应 Python 的 query_month_daily_usage(room_id)
-     */
-    suspend fun queryMonthDailyUsage(roomId: String, userId: String = "0"): Result<UsageResponse> {
-        return safeApiCall {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val calendar = Calendar.getInstance()
-            val endTime = dateFormat.format(calendar.time)
-            // 设置为本月1号
-            calendar.set(Calendar.DAY_OF_MONTH, 1)
-            val beginTime = dateFormat.format(calendar.time)
-
-            val urlString = "${MONTH_DAILY_API}?roomId=$roomId&userId=$userId&nodeId=1&costType=0&dataType=1&beginTime=$beginTime&endTime=$endTime"
-            val authHeader = RSAEncrypt.buildAuthorization(urlString)
-
-            val json = executeGet(
-                url = urlString,
-                extraHeaders = mapOf("Authorization" to authHeader)
-            )
-            gson.fromJson(json, UsageResponse::class.java)
-        }
-    }
-
-    /**
-     * 查询电表实时数据（用于近24h用电明细和电表实时状态）
+     * 查询电表实时数据（用于电表实时状态）
      * 对应 Python 的 query_current_data(room_id, meter_id)
      */
     suspend fun queryCurrentData(roomId: String, meterId: String? = null, userId: String = "0"): Result<CurrentDataResponse> {
@@ -270,6 +227,68 @@ class ElectricityApi {
                 extraHeaders = mapOf("Authorization" to authHeader)
             )
             gson.fromJson(json, BuyListResponse::class.java)
+        }
+    }
+
+    /**
+     * 查询房间用电记录（用量报表页）
+     * 对应 Python 的 query_month_daily_usage / getRoomUsedData
+     *
+     * GET /wechat/wx/wechatData/getRoomUsedData
+     *   ?roomId={roomId}&userId={userId}&nodeId=1&costType=0&dataType={dataType}&beginTime={beginTime}&endTime={endTime}
+     *
+     * @param roomId 房间号
+     * @param userId 用户 id（默认 "0"）
+     * @param dataType 数据粒度：0=小时数据, 1=每日数据, 2=每月数据
+     * @param beginTime 起始日期 yyyy-MM-dd
+     * @param endTime 结束日期 yyyy-MM-dd
+     */
+    suspend fun queryRoomUsageDataV2(
+        roomId: String,
+        userId: String = "0",
+        dataType: Int,
+        beginTime: String,
+        endTime: String
+    ): Result<UsageRecordV2Response> {
+        return safeApiCall {
+            val urlString = "$USAGE_DATA_API?roomId=$roomId&userId=$userId&nodeId=1&costType=0&dataType=$dataType&beginTime=$beginTime&endTime=$endTime"
+            val authHeader = RSAEncrypt.buildAuthorization(urlString)
+
+            val json = executeGet(
+                url = urlString,
+                extraHeaders = mapOf("Authorization" to authHeader)
+            )
+            gson.fromJson(json, UsageRecordV2Response::class.java)
+        }
+    }
+
+    /**
+     * 查询房间补助记录
+     * 对应 Python 的 getRoomSubsidyData
+     *
+     * GET /wechat/wx/wechatData/getRoomSubsidyData
+     *   ?roomId={roomId}&userId={userId}&nodeId=1&beginTime={beginTime}&endTime={endTime}
+     *
+     * @param roomId 房间号
+     * @param userId 用户 id（默认 "0"）
+     * @param beginTime 起始日期 yyyy-MM-dd
+     * @param endTime 结束日期 yyyy-MM-dd
+     */
+    suspend fun queryRoomSubsidyData(
+        roomId: String,
+        userId: String = "0",
+        beginTime: String,
+        endTime: String
+    ): Result<SubsidyRecordResponse> {
+        return safeApiCall {
+            val urlString = "$SUBSIDY_DATA_API?roomId=$roomId&userId=$userId&nodeId=1&beginTime=$beginTime&endTime=$endTime"
+            val authHeader = RSAEncrypt.buildAuthorization(urlString)
+
+            val json = executeGet(
+                url = urlString,
+                extraHeaders = mapOf("Authorization" to authHeader)
+            )
+            gson.fromJson(json, SubsidyRecordResponse::class.java)
         }
     }
 

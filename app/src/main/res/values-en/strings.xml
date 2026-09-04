@@ -15,12 +15,15 @@
     <string name="common_cancel">Cancel</string>
     <string name="common_delete">Delete</string>
     <string name="common_select_date">Select Date</string>
+    <string name="common_date_range_separator">to</string>
     <string name="common_save">Save</string>
     <string name="common_add">Add</string>
     <string name="common_edit">Edit</string>
     <string name="common_retry">Retry</string>
     <string name="common_loading">Loading…</string>
-    <string name="common_more_options">More</string>
+    <string name="common_more_options">More options</string>
+    <string name="common_toggle_chart">Switch to chart view</string>
+    <string name="common_toggle_table">Switch to table view</string>
     <string name="common_unknown_error">Unknown error</string>
     <string name="common_no_data">No data</string>
     <string name="common_swipe_load_more">Swipe up to load more</string>

@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -184,7 +186,9 @@ fun PersonSearchScreen(
                 when (val state = uiState) {
                     is PersonSearchViewModel.UiState.Idle -> {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
@@ -197,7 +201,7 @@ fun PersonSearchScreen(
 
                     is PersonSearchViewModel.UiState.Loading -> {
                         // 加载中不显示中心转圈，保持空白（下拉刷新指示器仍可用）
-                        Box(modifier = Modifier.fillMaxSize())
+                        Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()))
                     }
 
                     is PersonSearchViewModel.UiState.Error -> {

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
-import edu.cqwu.electricity.electricity.data.UsageResponse
 import edu.cqwu.electricity.electricity.data.ElectricityApi
 import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +22,6 @@ data class DetailState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val error: UiMessage? = null,
-    val sixMonthUsage: UsageResponse? = null,
-    val monthDailyUsage: UsageResponse? = null,
     val currentData: CurrentDataResponse? = null,
 )
 
@@ -54,59 +51,7 @@ class DetailViewModel(
     val detailState: StateFlow<DetailState> = _detailState.asStateFlow()
 
     /**
-     * 最近6个月用电记录
-     */
-    fun loadSixMonthUsage() {
-        if (roomId.isBlank()) {
-            _detailState.update { it.copy(error = UiMessage(R.string.detail_room_not_selected)) }
-            return
-        }
-        viewModelScope.launch {
-            _detailState.update {
-                it.copy(isLoading = true, isRefreshing = true, error = null, sixMonthUsage = null)
-            }
-            api.querySixMonthUsage(roomId)
-                .onSuccess { data ->
-                    _detailState.update {
-                        it.copy(isLoading = false, isRefreshing = false, sixMonthUsage = data)
-                    }
-                }
-                .onFailure { e ->
-                    _detailState.update {
-                        it.copy(isLoading = false, isRefreshing = false, error = UiMessage(R.string.detail_query_failed, listOf(e.localizedMessage ?: "")))
-                    }
-                }
-        }
-    }
-
-    /**
-     * 本月每日用电
-     */
-    fun loadMonthDailyUsage() {
-        if (roomId.isBlank()) {
-            _detailState.update { it.copy(error = UiMessage(R.string.detail_room_not_selected)) }
-            return
-        }
-        viewModelScope.launch {
-            _detailState.update {
-                it.copy(isLoading = true, isRefreshing = true, error = null, monthDailyUsage = null)
-            }
-            api.queryMonthDailyUsage(roomId)
-                .onSuccess { data ->
-                    _detailState.update {
-                        it.copy(isLoading = false, isRefreshing = false, monthDailyUsage = data)
-                    }
-                }
-                .onFailure { e ->
-                    _detailState.update {
-                        it.copy(isLoading = false, isRefreshing = false, error = UiMessage(R.string.detail_query_failed, listOf(e.localizedMessage ?: "")))
-                    }
-                }
-        }
-    }
-
-    /**
-     * 近24h用电明细 & 电表实时状态（共享同一个 API）
+     * 电表实时状态
      */
     fun loadCurrentData() {
         if (roomId.isBlank()) {

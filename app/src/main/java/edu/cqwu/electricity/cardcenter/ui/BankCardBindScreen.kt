@@ -150,7 +150,11 @@ fun BankCardBindScreen(
                 }
 
                 uiState.banks.isEmpty() -> {
-                    Box(modifier = Modifier.fillMaxSize())
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
                 }
 
                 else -> {

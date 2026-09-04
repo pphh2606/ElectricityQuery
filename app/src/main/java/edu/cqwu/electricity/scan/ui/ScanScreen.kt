@@ -95,6 +95,24 @@ private fun Context.findActivity(): Activity? {
     return null
 }
 
+/**
+ * 依据系统当前权限状态解析扫码页的权限状态机。
+ *
+ * 权限请求回调与 ON_RESUME 监听共用此判定，避免两处逻辑漂移——
+ * 尤其是修复 ON_RESUME 直接把「未授权」误判为仍可重新请求的 Denied，
+ * 从而把已永久拒绝的权限误显示成「需要相机权限才能扫码」。
+ */
+private fun resolveCameraPermissionState(context: Context): CameraPermissionState {
+    return when {
+        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED -> CameraPermissionState.Granted
+        context.findActivity()?.let {
+            ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.CAMERA)
+        } == true -> CameraPermissionState.Denied
+        else -> CameraPermissionState.PermanentlyDenied
+    }
+}
+
 private const val TAG = "ScanScreen"
 private const val SCAN_FRAME_RATIO = 0.7f
 private const val ANALYSIS_WIDTH = 1280
@@ -360,11 +378,7 @@ fun ScanScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                permissionState = when {
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                            == PackageManager.PERMISSION_GRANTED -> CameraPermissionState.Granted
-                    else -> CameraPermissionState.Denied
-                }
+                permissionState = resolveCameraPermissionState(context)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -392,20 +406,8 @@ fun ScanScreen(
     // ── 权限请求 Launcher ──
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        permissionState = if (granted) {
-            CameraPermissionState.Granted
-        } else {
-            val activity = context.findActivity()
-            val canRequestAgain = activity?.let {
-                ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.CAMERA)
-            } ?: false
-            if (canRequestAgain) {
-                CameraPermissionState.Denied
-            } else {
-                CameraPermissionState.PermanentlyDenied
-            }
-        }
+    ) { _ ->
+        permissionState = resolveCameraPermissionState(context)
     }
 
     // ★ P0 fix: 权限状态变化时在 LaunchedEffect 中触发请求，而非 UI 分支

@@ -11,10 +11,9 @@
     <string name="dashboard_account_balance">Solde du compte</string>
     <string name="dashboard_online_pay">Paiement en ligne</string>
     <string name="dashboard_more_features">Plus de fonctionnalités</string>
-    <string name="dashboard_recent_6months">Consommation des 6 derniers mois</string>
-    <string name="dashboard_daily_this_month">Consommation quotidienne du mois</string>
-    <string name="dashboard_24h_detail">Détail des dernières 24h</string>
     <string name="dashboard_meter_status">État du compteur en temps réel</string>
+    <string name="dashboard_usage_record">Historique de consommation</string>
+    <string name="dashboard_subsidy_record">Historique des subventions</string>
     <string name="dashboard_query_recharge_records">Historique de recharge</string>
     <string name="dashboard_title">Résultat de la consultation</string>
     <string name="dashboard_select_dorm">Choisir le dortoir</string>
@@ -28,24 +27,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  Détail                                     -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="detail_empty_record">Aucun historique de consommation</string>
-    <string name="detail_empty_daily">Aucune donnée quotidienne</string>
-    <string name="detail_power_consumption">Conso. : %1$s kWh</string>
-    <string name="detail_cost">Coût : %1$s ¥</string>
-    <string name="detail_total_consumption">Conso. : %1$s kWh</string>
-    <string name="detail_title_6months">Consommation des 6 derniers mois</string>
-    <string name="detail_title_daily">Consommation de ce mois</string>
-    <string name="detail_title_hourly">Consommation des dernières 24h</string>
     <string name="detail_title_meter">État du compteur</string>
-    <string name="detail_chart_usage_kwh">Conso.(kWh)</string>
-    <string name="detail_chart_cost_yuan">Coût(¥)</string>
-    <string name="detail_section_data">Données détaillées</string>
-    <string name="detail_section_meter_status">État du compteur</string>
-    <string name="detail_current">Courant</string>
-    <string name="detail_voltage">Tension</string>
-    <string name="detail_power_cumulative">Puissance actuelle / cumul</string>
+    <string name="detail_power_cumulative">Consommation totale</string>
     <string name="detail_power_status">État d\'alimentation</string>
-    <string name="detail_empty_24h">Aucune donnée 24h</string>
     <string name="detail_empty_meter">Aucune donnée compteur</string>
     <string name="electricity_tab_query">Consulter</string>
     <string name="electricity_tab_recharge">Recharger</string>
@@ -71,12 +55,7 @@
     <string name="electricity_bind_account">Lier le compte</string>
     <string name="electricity_unbind_account">Dissocier le compte</string>
 
-    <string name="detail_export_usage">Consommation (kWh)</string>
-
     <string name="electricity_export_room_id">ID de la chambre : %1$s</string>
-
-    <string name="detail_export_time">Heure</string>
-
     <string name="electricity_user_not_registered">Échec de la récupération des informations utilisateur, veuillez d\'abord vous inscrire</string>
 
     <string name="electricity_export_usage_info">Consommation d\'électricité</string>
@@ -107,7 +86,7 @@
 
     <string name="electricity_export_payment_status">Statut du paiement</string>
 
-    <string name="detail_export_section_power">Puissance / valeur cumulée</string>
+    <string name="detail_export_section_power">Consommation totale</string>
 
     <string name="electricity_balance_query_failed">Échec de la requête du solde : %1$s</string>
 
@@ -117,15 +96,42 @@
 
     <string name="detail_export_section_power_status">État de l\'alimentation</string>
 
-    <string name="detail_export_cost">Coût (CNY)</string>
-
     <string name="detail_room_not_selected">Aucune chambre sélectionnée</string>
 
     <string name="detail_query_failed">Échec de la requête : %1$s</string>
-
-    <string name="detail_month_unit">mois</string>
+    <string name="usage_record_v2_title">Historique de consommation</string>
+    <string name="usage_record_v2_begin_time">Date de début</string>
+    <string name="usage_record_v2_end_time">Date de fin</string>
+    <string name="usage_record_v2_hourly">Par heure</string>
+    <string name="usage_record_v2_daily">Par jour</string>
+    <string name="usage_record_v2_monthly">Par mois</string>
+    <string name="usage_record_v2_header_time">Heure</string>
+    <string name="usage_record_v2_header_usage">Consommation</string>
+    <string name="usage_record_v2_header_cost">Coût</string>
+    <string name="usage_record_v2_total">Total</string>
+    <string name="usage_record_v2_export_title">Historique de consommation</string>
+    <string name="usage_record_v2_filter_desc">Filtre : %1$s ~ %2$s | %3$s</string>
+    <string name="usage_record_v2_no_data">Aucune donnée</string>
+    <string name="subsidy_record_title">Historique des subventions</string>
+    <string name="subsidy_record_begin_time">Date de début</string>
+    <string name="subsidy_record_end_time">Date de fin</string>
+    <string name="subsidy_record_header_time">Heure</string>
+    <string name="subsidy_record_header_type">Type</string>
+    <string name="subsidy_record_header_quantity">Quantité</string>
+    <string name="subsidy_record_header_cost">Montant</string>
+    <string name="subsidy_record_total">Total</string>
+    <string name="subsidy_record_export_title">Historique des subventions</string>
+    <string name="subsidy_record_filter_desc">Filtre : %1$s ~ %2$s</string>
+    <string name="subsidy_record_no_data">Aucune donnée</string>
+    <string name="subsidy_type_electric">Électricité</string>
+    <string name="subsidy_type_water">Eau</string>
+    <string name="subsidy_type_gas">Gaz</string>
+    <string name="subsidy_type_heat">Chauffage</string>
+    <string name="subsidy_type_unknown">—</string>
 
     <string name="electricity_export_room_name">Nom/numéro de la chambre : %1$s</string>
 
     <string name="detail_export_section_voltage">Tension</string>
+    <string name="record_query_failed">Échec de la requête</string>
+    <string name="record_error_no_room">Pièce non spécifiée</string>
 </resources>

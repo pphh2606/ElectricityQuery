@@ -72,7 +72,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.data.BillPageInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.common.ui.DatePickerField
+import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -437,15 +437,14 @@ private fun FilterPanel(
             shape = RoundedCornerShape(8.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            DatePickerField(label = stringResource(R.string.bill_start_date), value = startDate, onValueChanged = onStartDateChange, modifier = Modifier.weight(1f))
-            Text(text = "~", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            DatePickerField(label = stringResource(R.string.bill_end_date), value = endDate, onValueChanged = onEndDateChange, modifier = Modifier.weight(1f))
-        }
+        DateRangeFilterRow(
+            beginLabel = stringResource(R.string.bill_start_date),
+            endLabel = stringResource(R.string.bill_end_date),
+            beginValue = startDate,
+            endValue = endDate,
+            onBeginChange = onStartDateChange,
+            onEndChange = onEndDateChange,
+        )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),

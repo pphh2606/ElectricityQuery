@@ -5,7 +5,7 @@ package edu.cqwu.electricity.feeservicehall.ui
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.common.ui.DatePickerField
+import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -107,7 +109,7 @@ internal fun FeeServiceHallOrderTab(
         ) {
             when {
                 uiState.isOrdersLoading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
@@ -120,7 +122,7 @@ internal fun FeeServiceHallOrderTab(
                     )
                 }
                 uiState.orders.isEmpty() -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
                         Text(stringResource(R.string.fee_hall_no_orders), style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
@@ -194,26 +196,14 @@ private fun OrderFilterPanel(
             shape = RoundedCornerShape(8.dp),
         )
         Spacer(Modifier.height(8.dp))
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            DatePickerField(
-                label = stringResource(R.string.bill_start_date),
-                value = startDate,
-                onValueChanged = onStartDateChange,
-                modifier = Modifier.weight(1f),
-            )
-            Text("~", style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            DatePickerField(
-                label = stringResource(R.string.bill_end_date),
-                value = endDate,
-                onValueChanged = onEndDateChange,
-                modifier = Modifier.weight(1f),
-            )
-        }
+        DateRangeFilterRow(
+            beginLabel = stringResource(R.string.bill_start_date),
+            endLabel = stringResource(R.string.bill_end_date),
+            beginValue = startDate,
+            endValue = endDate,
+            onBeginChange = onStartDateChange,
+            onEndChange = onEndDateChange,
+        )
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             TextButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_reset)) }

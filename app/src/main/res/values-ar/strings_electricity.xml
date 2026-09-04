@@ -11,10 +11,9 @@
     <string name="dashboard_account_balance">رصيد الحساب</string>
     <string name="dashboard_online_pay">الدفع عبر الإنترنت</string>
     <string name="dashboard_more_features">المزيد من الميزات</string>
-    <string name="dashboard_recent_6months">استهلاك آخر 6 أشهر</string>
-    <string name="dashboard_daily_this_month">الاستهلاك اليومي لهذا الشهر</string>
-    <string name="dashboard_24h_detail">تفاصيل آخر 24 ساعة</string>
     <string name="dashboard_meter_status">حالة العداد الفورية</string>
+    <string name="dashboard_usage_record">سجل الاستهلاك</string>
+    <string name="dashboard_subsidy_record">سجل الإعانات</string>
     <string name="dashboard_query_recharge_records">سجل الشحن</string>
     <string name="dashboard_title">نتيجة استعلام الكهرباء</string>
     <string name="dashboard_select_dorm">اختيار السكن</string>
@@ -28,24 +27,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  التفاصيل                                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="detail_empty_record">لا يوجد سجل استهلاك</string>
-    <string name="detail_empty_daily">لا توجد بيانات يومية</string>
-    <string name="detail_power_consumption">الاستهلاك: %1$s ك.و.س</string>
-    <string name="detail_cost">التكلفة: %1$s ¥</string>
-    <string name="detail_total_consumption">الاستهلاك: %1$s ك.و.س</string>
-    <string name="detail_title_6months">سجل آخر 6 أشهر</string>
-    <string name="detail_title_daily">استهلاك هذا الشهر</string>
-    <string name="detail_title_hourly">سجل آخر 24 ساعة</string>
     <string name="detail_title_meter">حالة العداد</string>
-    <string name="detail_chart_usage_kwh">الاستهلاك(ك.و.س)</string>
-    <string name="detail_chart_cost_yuan">التكلفة(¥)</string>
-    <string name="detail_section_data">البيانات التفصيلية</string>
-    <string name="detail_section_meter_status">حالة العداد</string>
-    <string name="detail_current">التيار</string>
-    <string name="detail_voltage">الجهد</string>
-    <string name="detail_power_cumulative">الطاقة الحالية / التراكمي</string>
+    <string name="detail_power_cumulative">إجمالي استهلاك الطاقة</string>
     <string name="detail_power_status">حالة الطاقة</string>
-    <string name="detail_empty_24h">لا توجد بيانات 24 ساعة</string>
     <string name="detail_empty_meter">لا توجد بيانات عداد</string>
     <string name="electricity_tab_query">استعلام</string>
     <string name="electricity_tab_recharge">شحن</string>
@@ -74,12 +58,7 @@
     <string name="electricity_bind_account">ربط الحساب</string>
     <string name="electricity_unbind_account">إلغاء ربط الحساب</string>
 
-    <string name="detail_export_usage">الاستهلاك (درجة)</string>
-
     <string name="electricity_export_room_id">معرف الغرفة: %1$s</string>
-
-    <string name="detail_export_time">الوقت</string>
-
     <string name="electricity_user_not_registered">فشل الحصول على معلومات المستخدم، يرجى التسجيل في منصة الكهرباء أولاً</string>
 
     <string name="electricity_export_usage_info">معلومات الاستهلاك</string>
@@ -110,7 +89,7 @@
 
     <string name="electricity_export_payment_status">حالة الدفع</string>
 
-    <string name="detail_export_section_power">الطاقة/القيمة التراكمية</string>
+    <string name="detail_export_section_power">إجمالي استهلاك الطاقة</string>
 
     <string name="electricity_balance_query_failed">فشل الاستعلام عن الرصيد: %1$s</string>
 
@@ -120,15 +99,42 @@
 
     <string name="detail_export_section_power_status">حالة الطاقة</string>
 
-    <string name="detail_export_cost">التكلفة (يوان)</string>
-
     <string name="detail_room_not_selected">لم يتم تحديد غرفة</string>
 
     <string name="detail_query_failed">فشل الاستعلام: %1$s</string>
-
-    <string name="detail_month_unit">شهر</string>
+    <string name="usage_record_v2_title">سجل الاستهلاك</string>
+    <string name="usage_record_v2_begin_time">تاريخ البدء</string>
+    <string name="usage_record_v2_end_time">تاريخ الانتهاء</string>
+    <string name="usage_record_v2_hourly">بيانات الساعة</string>
+    <string name="usage_record_v2_daily">بيانات يومية</string>
+    <string name="usage_record_v2_monthly">بيانات شهرية</string>
+    <string name="usage_record_v2_header_time">الوقت</string>
+    <string name="usage_record_v2_header_usage">الاستهلاك</string>
+    <string name="usage_record_v2_header_cost">التكلفة</string>
+    <string name="usage_record_v2_total">الإجمالي</string>
+    <string name="usage_record_v2_export_title">سجل الاستهلاك</string>
+    <string name="usage_record_v2_filter_desc">الفلتر: %1$s ~ %2$s | %3$s</string>
+    <string name="usage_record_v2_no_data">لا توجد بيانات</string>
+    <string name="subsidy_record_title">سجل الإعانات</string>
+    <string name="subsidy_record_begin_time">تاريخ البدء</string>
+    <string name="subsidy_record_end_time">تاريخ الانتهاء</string>
+    <string name="subsidy_record_header_time">الوقت</string>
+    <string name="subsidy_record_header_type">نوع الإعانة</string>
+    <string name="subsidy_record_header_quantity">الكمية</string>
+    <string name="subsidy_record_header_cost">المبلغ</string>
+    <string name="subsidy_record_total">الإجمالي</string>
+    <string name="subsidy_record_export_title">سجل الإعانات</string>
+    <string name="subsidy_record_filter_desc">الفلتر: %1$s ~ %2$s</string>
+    <string name="subsidy_record_no_data">لا توجد بيانات</string>
+    <string name="subsidy_type_electric">كهرباء</string>
+    <string name="subsidy_type_water">ماء</string>
+    <string name="subsidy_type_gas">غاز</string>
+    <string name="subsidy_type_heat">تدفئة</string>
+    <string name="subsidy_type_unknown">—</string>
 
     <string name="electricity_export_room_name">اسم/رقم الغرفة: %1$s</string>
 
     <string name="detail_export_section_voltage">الجهد</string>
+    <string name="record_query_failed">فشل الاستعلام</string>
+    <string name="record_error_no_room">الغرفة غير محددة</string>
 </resources>

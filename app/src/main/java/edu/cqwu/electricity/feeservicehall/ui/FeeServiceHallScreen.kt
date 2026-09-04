@@ -25,7 +25,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -38,8 +37,6 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -77,6 +74,8 @@ import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -382,7 +381,7 @@ private fun FeeServiceHallSectionIndex(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             itemsIndexed(sections, key = { _, section -> section.id }) { index, section ->
-                FeeServiceHallSectionChip(
+                SectionFilterChip(
                     text = section.name,
                     selected = activeIndex == index,
                     onClick = { onSectionClick(index) },
@@ -396,30 +395,6 @@ private fun FeeServiceHallSectionIndex(
             )
         }
     }
-}
-
-@Composable
-private fun FeeServiceHallSectionChip(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        shape = CircleShape,
-        colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ),
-        border = null,
-        label = {
-            Text(
-                text = text,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-    )
 }
 
 @Composable

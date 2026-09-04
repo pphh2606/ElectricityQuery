@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -32,20 +33,15 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreVert
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.SectionFilterChip
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import edu.cqwu.electricity.common.ui.AppScaledExposedDropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -58,7 +54,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -99,9 +94,6 @@ fun RechargeRecordScreen(
 ) {
     val recordState by viewModel.recordState.collectAsState()
     val topBarColors = currentTopBarColors()
-
-    // 下拉菜单状态
-    var dropdownExpanded by remember { mutableStateOf(false) }
 
     // 三点菜单状态
     var showMenu by remember { mutableStateOf(false) }
@@ -230,57 +222,30 @@ fun RechargeRecordScreen(
                     .padding(16.dp)
             ) {
 
-                // ========== 时间范围下拉菜单 ==========
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                // ========== 时间范围按钮选择（切换即刷新） ==========
+                // ========== 时间范围按钮选择（切换即刷新） ==========
+                Column {
                     Text(
                         text = stringResource(R.string.recharge_record_time_range),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyMedium
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    ExposedDropdownMenuBox(
-                        expanded = dropdownExpanded,
-                        onExpandedChange = { dropdownExpanded = !dropdownExpanded }
+                    Row(
+                        modifier = Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        TextField(
-                            value = timeRangeOptions[recordState.timeRange],
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
-                            modifier = Modifier
-                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = !recordState.isQuerying)
-                                .width(160.dp),
-                            enabled = !recordState.isQuerying,
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
+                        timeRangeOptions.forEachIndexed { index, option ->
+                            SectionFilterChip(
+                                text = option,
+                                selected = recordState.timeRange == index,
+                                onClick = { viewModel.setRechargeRecordTimeRange(index) },
+                                enabled = !recordState.isQuerying,
                             )
-                        )
-
-                        AppScaledExposedDropdownMenu(
-                            expanded = dropdownExpanded,
-                            onDismissRequest = { dropdownExpanded = false }
-                        ) {
-                            timeRangeOptions.forEachIndexed { index, option ->
-                                DropdownMenuItem(
-                                    text = { Text(option) },
-                                    onClick = {
-                                        viewModel.setRechargeRecordTimeRange(index)
-                                        dropdownExpanded = false
-                                    }
-                                )
-                            }
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                HorizontalDivider()
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -330,7 +295,9 @@ fun RechargeRecordScreen(
                     else -> {
                         // 初始状态或已查询但无结果
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -353,7 +320,10 @@ fun RechargeRecordScreen(
         title = stringResource(R.string.recharge_hint)
     ) {
             Column {
-                Text(stringResource(R.string.recharge_record_hint_item1))
+                Text(
+                    text = stringResource(R.string.recharge_record_hint_item1),
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 val infoText = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {

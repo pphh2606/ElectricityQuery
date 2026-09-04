@@ -15,12 +15,15 @@
     <string name="common_cancel">取消</string>
     <string name="common_delete">删除</string>
     <string name="common_select_date">选择日期</string>
+    <string name="common_date_range_separator">至</string>
     <string name="common_save">保存</string>
     <string name="common_add">添加</string>
     <string name="common_edit">编辑</string>
     <string name="common_retry">重试</string>
     <string name="common_loading">加载中…</string>
     <string name="common_more_options">更多选项</string>
+    <string name="common_toggle_chart">切换为图表视图</string>
+    <string name="common_toggle_table">切换为表格视图</string>
     <string name="common_unknown_error">未知错误</string>
     <string name="common_no_data">暂无数据</string>
     <string name="common_swipe_load_more">上滑加载更多</string>

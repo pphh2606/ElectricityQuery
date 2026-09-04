@@ -11,10 +11,9 @@
     <string name="dashboard_account_balance">帳戶餘額</string>
     <string name="dashboard_online_pay">線上支付</string>
     <string name="dashboard_more_features">更多功能</string>
-    <string name="dashboard_recent_6months">最近6個月用電記錄</string>
-    <string name="dashboard_daily_this_month">本月每日用電</string>
-    <string name="dashboard_24h_detail">近24h用電明細</string>
     <string name="dashboard_meter_status">電表即時狀態</string>
+    <string name="dashboard_usage_record">用量報表</string>
+    <string name="dashboard_subsidy_record">補助記錄</string>
     <string name="dashboard_query_recharge_records">查詢加值記錄</string>
     <string name="dashboard_title">電費查詢結果</string>
     <string name="dashboard_select_dorm">選取寢室</string>
@@ -28,24 +27,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  詳情                                       -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="detail_empty_record">暫無用電記錄</string>
-    <string name="detail_empty_daily">暫無每日用電資料</string>
-    <string name="detail_power_consumption">用電量: %1$s 度</string>
-    <string name="detail_cost">費用: %1$s 元</string>
-    <string name="detail_total_consumption">用電量: %1$s 度</string>
-    <string name="detail_title_6months">近半年用電記錄</string>
-    <string name="detail_title_daily">本月用電記錄</string>
-    <string name="detail_title_hourly">近24h用電記錄</string>
     <string name="detail_title_meter">電表即時狀態</string>
-    <string name="detail_chart_usage_kwh">用電量(度)</string>
-    <string name="detail_chart_cost_yuan">費用(元)</string>
-    <string name="detail_section_data">明細資料</string>
-    <string name="detail_section_meter_status">電表即時狀態</string>
-    <string name="detail_current">電流</string>
-    <string name="detail_voltage">電壓</string>
-    <string name="detail_power_cumulative">目前功率/累計值</string>
+    <string name="detail_power_cumulative">總用電量</string>
     <string name="detail_power_status">電源狀態</string>
-    <string name="detail_empty_24h">暫無24h用電資料</string>
     <string name="detail_empty_meter">暫無電表資料</string>
     <string name="electricity_tab_query">查詢</string>
     <string name="electricity_tab_recharge">加值</string>
@@ -69,12 +53,7 @@
     <string name="electricity_bind_account">戶號綁定</string>
     <string name="electricity_unbind_account">戶號解綁</string>
 
-    <string name="detail_export_usage">用電量（度）</string>
-
     <string name="electricity_export_room_id">房間 ID: %1$s</string>
-
-    <string name="detail_export_time">時間</string>
-
     <string name="electricity_user_not_registered">取得使用者資訊失敗，請先在電費平台註冊</string>
 
     <string name="electricity_export_usage_info">用電資訊</string>
@@ -105,7 +84,7 @@
 
     <string name="electricity_export_payment_status">支付狀態</string>
 
-    <string name="detail_export_section_power">目前功率/累計值</string>
+    <string name="detail_export_section_power">總用電量</string>
 
     <string name="electricity_balance_query_failed">查詢餘額失敗: %1$s</string>
 
@@ -115,15 +94,42 @@
 
     <string name="detail_export_section_power_status">電源狀態</string>
 
-    <string name="detail_export_cost">費用（元）</string>
-
     <string name="detail_room_not_selected">未指定房間</string>
 
     <string name="detail_query_failed">查詢失敗: %1$s</string>
-
-    <string name="detail_month_unit">月</string>
+    <string name="usage_record_v2_title">用量報表</string>
+    <string name="usage_record_v2_begin_time">起始時間</string>
+    <string name="usage_record_v2_end_time">結束時間</string>
+    <string name="usage_record_v2_hourly">小時資料</string>
+    <string name="usage_record_v2_daily">每日資料</string>
+    <string name="usage_record_v2_monthly">每月資料</string>
+    <string name="usage_record_v2_header_time">時間</string>
+    <string name="usage_record_v2_header_usage">用量</string>
+    <string name="usage_record_v2_header_cost">金額</string>
+    <string name="usage_record_v2_total">總計</string>
+    <string name="usage_record_v2_export_title">用量報表</string>
+    <string name="usage_record_v2_filter_desc">篩選條件：%1$s ~ %2$s | %3$s</string>
+    <string name="usage_record_v2_no_data">暫無資料</string>
+    <string name="subsidy_record_title">補助記錄</string>
+    <string name="subsidy_record_begin_time">起始時間</string>
+    <string name="subsidy_record_end_time">結束時間</string>
+    <string name="subsidy_record_header_time">時間</string>
+    <string name="subsidy_record_header_type">補助類型</string>
+    <string name="subsidy_record_header_quantity">補助量</string>
+    <string name="subsidy_record_header_cost">金額</string>
+    <string name="subsidy_record_total">總計</string>
+    <string name="subsidy_record_export_title">補助記錄</string>
+    <string name="subsidy_record_filter_desc">篩選條件：%1$s ~ %2$s</string>
+    <string name="subsidy_record_no_data">暫無資料</string>
+    <string name="subsidy_type_electric">電費</string>
+    <string name="subsidy_type_water">水費</string>
+    <string name="subsidy_type_gas">氣費</string>
+    <string name="subsidy_type_heat">熱費</string>
+    <string name="subsidy_type_unknown">—</string>
 
     <string name="electricity_export_room_name">房間名稱/編號: %1$s</string>
 
     <string name="detail_export_section_voltage">電壓</string>
+    <string name="record_query_failed">查詢失敗</string>
+    <string name="record_error_no_room">未指定房間</string>
 </resources>

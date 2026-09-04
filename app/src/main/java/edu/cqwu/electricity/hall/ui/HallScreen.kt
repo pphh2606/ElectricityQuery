@@ -20,11 +20,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,8 +37,6 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -78,6 +77,7 @@ import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.SectionFilterChip
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -264,7 +264,7 @@ private fun HallSearchTab(
                     )
                 }
                 uiState.isSearchLoading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
@@ -278,7 +278,7 @@ private fun HallSearchTab(
                 }
                 else -> {
                     if (uiState.searchResults.isEmpty()) {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
                             Text(
                                 text = stringResource(R.string.hall_no_search_results),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -362,14 +362,14 @@ private fun HallSearchLabelRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item(key = "all") {
-            HallSectionChip(
+            SectionFilterChip(
                 text = stringResource(R.string.hall_tab_all),
                 selected = selectedLabelId == null,
                 onClick = { onSelect(null) },
             )
         }
         items(labels, key = { it.labelId }) { label ->
-            HallSectionChip(
+            SectionFilterChip(
                 text = label.lableName,
                 selected = selectedLabelId == label.labelId,
                 onClick = { onSelect(label.labelId) },
@@ -477,7 +477,7 @@ private fun HallSectionIndex(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             itemsIndexed(categories, key = { _, category -> category.categoryId }) { index, category ->
-                HallSectionChip(
+                SectionFilterChip(
                     text = category.categoryName,
                     selected = activeIndex == index,
                     onClick = { onSectionClick(index) },
@@ -491,30 +491,6 @@ private fun HallSectionIndex(
             )
         }
     }
-}
-
-@Composable
-private fun HallSectionChip(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        shape = CircleShape,
-        colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ),
-        border = null,
-        label = {
-            Text(
-                text = text,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-    )
 }
 
 @Composable
@@ -572,7 +548,9 @@ private fun FavoriteAppsContent(
     when {
         isLoading -> {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
@@ -596,7 +574,9 @@ private fun FavoriteAppsContent(
         }
         items.isEmpty() -> {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(

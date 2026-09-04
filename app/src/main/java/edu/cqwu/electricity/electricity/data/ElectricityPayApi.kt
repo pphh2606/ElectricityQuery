@@ -289,3 +289,17 @@ internal data class GotToPayResponseData(
     @SerializedName("mwebUrl") val mwebUrl: String?,
     @SerializedName("paymentOrderNo") val paymentOrderNo: String?,
 )
+
+/**
+ * 支付订单状态查询响应
+ *
+ * GET /pay/cashier/getOrderById/{orderId} 的 data 字段。
+ * 由 [queryOrderStatus] 解析返回。
+ */
+data class OrderStatusData(
+    val status: String?,
+    val returnUrl: String?,
+    val notifyUrl: String?,
+    val orderNo: String?,
+    val paymentOrderNo: String?,
+)

@@ -20,15 +20,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,9 +53,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.common.ui.DatePickerField
+import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.common.ui.LabeledFieldRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -158,7 +157,7 @@ fun LoginLogScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         operOptions.forEach { (value, label) ->
-                            AuthLogFilterChip(
+                            SectionFilterChip(
                                 text = label,
                                 selected = state.tempOperType == value,
                                 onClick = { viewModel.onTempOperTypeChange(value) },
@@ -171,7 +170,7 @@ fun LoginLogScreen(
                     // 结果单选
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         resultOptions.forEach { (value, label) ->
-                            AuthLogFilterChip(
+                            SectionFilterChip(
                                 text = label,
                                 selected = state.tempResult == value,
                                 onClick = { viewModel.onTempResultChange(value) },
@@ -182,29 +181,14 @@ fun LoginLogScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // 起止时间
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        DatePickerField(
-                            label = stringResource(R.string.login_log_start_time),
-                            value = state.tempStartTime,
-                            onValueChanged = viewModel::onTempStartDateChange,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Text(
-                            text = "~",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        DatePickerField(
-                            label = stringResource(R.string.login_log_end_time),
-                            value = state.tempEndTime,
-                            onValueChanged = viewModel::onTempEndDateChange,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
+                    DateRangeFilterRow(
+                        beginLabel = stringResource(R.string.login_log_start_time),
+                        endLabel = stringResource(R.string.login_log_end_time),
+                        beginValue = state.tempStartTime,
+                        endValue = state.tempEndTime,
+                        onBeginChange = viewModel::onTempStartDateChange,
+                        onEndChange = viewModel::onTempEndDateChange,
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -242,13 +226,17 @@ fun LoginLogScreen(
                     )
                     // 首屏加载中：显示加载指示，避免误显"暂无日志记录"
                     state.isRefreshing && state.records.isEmpty() -> Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
                         contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator()
                     }
                     state.records.isEmpty() -> Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
@@ -465,32 +453,4 @@ private fun LoginLogFooter(
             )
         }
     }
-}
-
-/**
- * 筛选按钮：大厅搜索筛选按钮同款样式（HallScreen.HallSectionChip）。
- * 圆形 + surfaceContainerHigh 底色 + 无边框。
- */
-@Composable
-private fun AuthLogFilterChip(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        shape = CircleShape,
-        colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ),
-        border = null,
-        label = {
-            Text(
-                text = text,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-    )
 }

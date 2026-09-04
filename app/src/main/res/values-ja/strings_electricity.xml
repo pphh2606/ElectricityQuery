@@ -11,10 +11,9 @@
     <string name="dashboard_account_balance">アカウント残高</string>
     <string name="dashboard_online_pay">オンライン支払い</string>
     <string name="dashboard_more_features">その他の機能</string>
-    <string name="dashboard_recent_6months">最近6ヶ月の電力使用記録</string>
-    <string name="dashboard_daily_this_month">今月の日別使用量</string>
-    <string name="dashboard_24h_detail">過去24時間の詳細</string>
     <string name="dashboard_meter_status">メーターリアルタイム状態</string>
+    <string name="dashboard_usage_record">使用量レポート</string>
+    <string name="dashboard_subsidy_record">補助記録</string>
     <string name="dashboard_query_recharge_records">チャージ記録を照会</string>
     <string name="dashboard_title">電気料金照会結果</string>
     <string name="dashboard_select_dorm">寮室を選択</string>
@@ -28,24 +27,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!--  詳細                                       -->
     <!-- ═══════════════════════════════════════════ -->
-    <string name="detail_empty_record">電力使用記録がありません</string>
-    <string name="detail_empty_daily">日別使用データがありません</string>
-    <string name="detail_power_consumption">使用量: %1$s 度</string>
-    <string name="detail_cost">費用: %1$s 円</string>
-    <string name="detail_total_consumption">使用量: %1$s 度</string>
-    <string name="detail_title_6months">過去6か月の電力使用記録</string>
-    <string name="detail_title_daily">今月の電力使用記録</string>
-    <string name="detail_title_hourly">過去24時間の電力使用記録</string>
     <string name="detail_title_meter">メーターリアルタイム状態</string>
-    <string name="detail_chart_usage_kwh">使用量(度)</string>
-    <string name="detail_chart_cost_yuan">費用(円)</string>
-    <string name="detail_section_data">明細データ</string>
-    <string name="detail_section_meter_status">メーターリアルタイム状態</string>
-    <string name="detail_current">電流</string>
-    <string name="detail_voltage">電圧</string>
-    <string name="detail_power_cumulative">現在電力/累計値</string>
+    <string name="detail_power_cumulative">総消費電力量</string>
     <string name="detail_power_status">電源状態</string>
-    <string name="detail_empty_24h">24時間データがありません</string>
     <string name="detail_empty_meter">メーターデータがありません</string>
     <string name="electricity_tab_query">照会</string>
     <string name="electricity_tab_recharge">チャージ</string>
@@ -69,12 +53,7 @@
     <string name="electricity_bind_account">口座紐付け</string>
     <string name="electricity_unbind_account">口座紐付け解除</string>
 
-    <string name="detail_export_usage">使用量 (kWh)</string>
-
     <string name="electricity_export_room_id">部屋 ID: %1$s</string>
-
-    <string name="detail_export_time">時間</string>
-
     <string name="electricity_user_not_registered">ユーザー情報の取得に失敗しました。先に電気料金プラットフォームで登録してください</string>
 
     <string name="electricity_export_usage_info">電気使用量</string>
@@ -105,7 +84,7 @@
 
     <string name="electricity_export_payment_status">支払い状況</string>
 
-    <string name="detail_export_section_power">現在の電力/累計値</string>
+    <string name="detail_export_section_power">総消費電力量</string>
 
     <string name="electricity_balance_query_failed">残高の照会に失敗しました: %1$s</string>
 
@@ -115,15 +94,42 @@
 
     <string name="detail_export_section_power_status">電源状態</string>
 
-    <string name="detail_export_cost">料金 (元)</string>
-
     <string name="detail_room_not_selected">部屋が選択されていません</string>
 
     <string name="detail_query_failed">照会に失敗しました: %1$s</string>
-
-    <string name="detail_month_unit">月</string>
+    <string name="usage_record_v2_title">使用量レポート</string>
+    <string name="usage_record_v2_begin_time">開始日</string>
+    <string name="usage_record_v2_end_time">終了日</string>
+    <string name="usage_record_v2_hourly">時間データ</string>
+    <string name="usage_record_v2_daily">日別データ</string>
+    <string name="usage_record_v2_monthly">月別データ</string>
+    <string name="usage_record_v2_header_time">時間</string>
+    <string name="usage_record_v2_header_usage">使用量</string>
+    <string name="usage_record_v2_header_cost">金額</string>
+    <string name="usage_record_v2_total">合計</string>
+    <string name="usage_record_v2_export_title">使用量レポート</string>
+    <string name="usage_record_v2_filter_desc">フィルター：%1$s ~ %2$s | %3$s</string>
+    <string name="usage_record_v2_no_data">データがありません</string>
+    <string name="subsidy_record_title">補助記録</string>
+    <string name="subsidy_record_begin_time">開始日</string>
+    <string name="subsidy_record_end_time">終了日</string>
+    <string name="subsidy_record_header_time">時間</string>
+    <string name="subsidy_record_header_type">補助タイプ</string>
+    <string name="subsidy_record_header_quantity">補助量</string>
+    <string name="subsidy_record_header_cost">金額</string>
+    <string name="subsidy_record_total">合計</string>
+    <string name="subsidy_record_export_title">補助記録</string>
+    <string name="subsidy_record_filter_desc">フィルター：%1$s ~ %2$s</string>
+    <string name="subsidy_record_no_data">データがありません</string>
+    <string name="subsidy_type_electric">電気代</string>
+    <string name="subsidy_type_water">水道</string>
+    <string name="subsidy_type_gas">ガス</string>
+    <string name="subsidy_type_heat">暖房</string>
+    <string name="subsidy_type_unknown">—</string>
 
     <string name="electricity_export_room_name">部屋名/番号: %1$s</string>
 
     <string name="detail_export_section_voltage">電圧</string>
+    <string name="record_query_failed">クエリが失敗しました</string>
+    <string name="record_error_no_room">部屋が指定されていません</string>
 </resources>

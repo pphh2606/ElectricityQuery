@@ -61,6 +61,10 @@ import edu.cqwu.electricity.electricity.ui.MyRoomViewModel
 import edu.cqwu.electricity.electricity.ui.PaymentSelectionScreen
 import edu.cqwu.electricity.electricity.ui.RechargeRecordScreen
 import edu.cqwu.electricity.electricity.ui.RechargeViewModel
+import edu.cqwu.electricity.electricity.ui.SubsidyRecordScreen
+import edu.cqwu.electricity.electricity.ui.SubsidyRecordViewModel
+import edu.cqwu.electricity.electricity.ui.UsageRecordScreenV2
+import edu.cqwu.electricity.electricity.ui.UsageRecordViewModelV2
 import edu.cqwu.electricity.feedback.ui.FeedbackScreen
 import edu.cqwu.electricity.feeservicehall.ui.FeeServiceHallScreen
 import edu.cqwu.electricity.login.ui.LoginScreen
@@ -119,6 +123,8 @@ object Routes {
     const val DETAIL = "detail/{detailType}/{roomId}"
     const val PAYMENT_SELECTION = "payment_selection"
     const val RECHARGE_RECORD = "recharge_record/{roomId}"
+    const val USAGE_RECORD = "usage_record/{roomId}"
+    const val SUBSIDY_RECORD = "subsidy_record/{roomId}"
 
     /** 扫码页面 */
     const val SCAN = "scan"
@@ -188,6 +194,16 @@ object Routes {
     /** 构建充值记录页路径 */
     fun rechargeRecordRoute(roomId: String): String {
         return "recharge_record/$roomId"
+    }
+
+    /** 构建用量报表页路径 */
+    fun usageRecordRoute(roomId: String): String {
+        return "usage_record/$roomId"
+    }
+
+    /** 构建补助记录页路径 */
+    fun subsidyRecordRoute(roomId: String): String {
+        return "subsidy_record/$roomId"
     }
 
     /** 构建详情页路径 */
@@ -533,17 +549,12 @@ fun AppNavGraph(
                 navArgument("roomId") { type = NavType.StringType },
             ),
         ) { backStackEntry ->
-            val detailTypeStr = backStackEntry.arguments?.getString("detailType") ?: ""
-            val detailType = remember(detailTypeStr) {
-                DetailType.entries.firstOrNull { it.name.lowercase() == detailTypeStr }
-                    ?: DetailType.SIX_MONTH_USAGE
-            }
             val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
             val detailViewModel: DetailViewModel = viewModel(
-                key = "detail_${detailType.name}_$roomId",
+                key = "detail_${DetailType.METER_STATUS.name}_$roomId",
                 factory = DetailViewModel.Factory(roomId)
             )
-            DetailScreen(viewModel = detailViewModel, detailType = detailType, onBack = { navController.popBackStack() })
+            DetailScreen(viewModel = detailViewModel, detailType = DetailType.METER_STATUS, onBack = { navController.popBackStack() })
         }
 
 
@@ -564,6 +575,38 @@ fun AppNavGraph(
             RechargeRecordScreen(
                 viewModel = rechargeViewModel,
                 roomId = roomId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        animatedComposable(
+            settings = appSettings,
+            route = Routes.USAGE_RECORD,
+            arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+            val usageRecordViewModel: UsageRecordViewModelV2 = viewModel(
+                key = "usage_record_$roomId",
+                factory = UsageRecordViewModelV2.Factory(roomId)
+            )
+            UsageRecordScreenV2(
+                viewModel = usageRecordViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        animatedComposable(
+            settings = appSettings,
+            route = Routes.SUBSIDY_RECORD,
+            arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+            val subsidyRecordViewModel: SubsidyRecordViewModel = viewModel(
+                key = "subsidy_record_$roomId",
+                factory = SubsidyRecordViewModel.Factory(roomId)
+            )
+            SubsidyRecordScreen(
+                viewModel = subsidyRecordViewModel,
                 onBack = { navController.popBackStack() }
             )
         }
