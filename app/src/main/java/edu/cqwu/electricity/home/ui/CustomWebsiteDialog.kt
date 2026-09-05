@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.home.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
@@ -223,6 +224,7 @@ private fun isValidUrl(url: String): Boolean {
         val uri = URI(normalized)
         uri.host != null && uri.host.contains(".")
     } catch (_: Exception) {
+        AppLog.w("CustomWebsiteDialog", "自定义网站校验失败")
         false
     }
 }

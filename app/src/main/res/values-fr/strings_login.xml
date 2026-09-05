@@ -34,8 +34,6 @@
     <string name="login_show_password">Afficher</string>
     <string name="login_hide_password">Masquer</string>
     <string name="login_login_button">Connexion</string>
-    <string name="login_export_credential">Exporter les identifiants</string>
-    <string name="login_import_credential">Importer les identifiants</string>
     <string name="login_copy_to_clipboard">Copier</string>
     <string name="login_import_and_login">Importer et se connecter</string>
     <string name="login_import_title">Importer les identifiants</string>
@@ -51,7 +49,7 @@
     <!-- ── Autres méthodes de connexion ── -->
     <string name="login_other_login">Autre connexion</string>
     <string name="login_method_qr_scan">Connexion QR</string>
-    <string name="login_method_credential">Connexion par identifiant</string>
+    <string name="login_other_import">Importer cookies ou identifiants</string>
     <string name="login_method_phone_recovery">Récupération par téléphone</string>
     <string name="login_method_email_recovery">Récupération par e-mail</string>
     <string name="login_password_recovery">Récupération du mot de passe</string>
@@ -95,7 +93,6 @@
 
     <string name="login_error_invalid_credentials">Échec de la connexion : identifiant ou mot de passe incorrect</string>
 
-    <string name="login_error_no_account_to_export">Aucun compte à exporter, veuillez d\'abord vous connecter</string>
 
     <string name="login_error_password_required">Veuillez saisir votre mot de passe</string>
 
@@ -105,7 +102,6 @@
 
     <string name="login_error_captcha_required">Code de vérification requis, veuillez terminer la connexion manuellement</string>
 
-    <string name="login_error_password_too_short">Le mot de passe doit contenir au moins 4 caractères</string>
 
     <string name="login_error_timeout">Délai de requête réseau dépassé, connexion instable, réessayez plus tard</string>
 

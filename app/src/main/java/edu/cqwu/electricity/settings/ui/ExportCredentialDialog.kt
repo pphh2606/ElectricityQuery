@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.login.ui
+package edu.cqwu.electricity.settings.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

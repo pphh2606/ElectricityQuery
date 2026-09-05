@@ -3,6 +3,7 @@
 package edu.cqwu.electricity.home.ui
 
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import androidx.compose.ui.res.stringResource
@@ -980,6 +981,7 @@ private fun getFaviconUrl(url: String): String? {
         if (port != -1) "${scheme}://${host}:${port}/favicon.ico"
         else "${scheme}://${host}/favicon.ico"
     } catch (e: Exception) {
+        AppLog.w("HomeScreen", "生成 favicon 地址失败: ${e.message}")
         null
     }
 }

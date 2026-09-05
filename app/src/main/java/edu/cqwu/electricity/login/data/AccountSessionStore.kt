@@ -7,11 +7,6 @@ import androidx.security.crypto.MasterKey
 import edu.cqwu.electricity.common.net.CookieParser
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.login.model.AuthSessionCommitV2
-import edu.cqwu.electricity.login.model.SessionStateV2
-import edu.cqwu.electricity.login.model.sessionStateOf
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
@@ -47,7 +42,7 @@ data class SavedAccount(
  * - 单一数据源：账号列表（登录用户名、密码、登录状态）+ 当前激活账号全部持久化（加密存储），进程重启后可恢复。
  * - 系统 CookieManager 始终只反映当前激活账号的登录态：切换账号 = 清空系统 cookie + WebView DOM 存储，再写入目标账号的 cookie。
  * - 登录/切换成功之前不改动当前任何登录状态：登录过程使用隔离的临时 UserCookieStore，
- *   仅在成功后才通过 [commitLogin] 原子激活。
+ *   仅在成功后才通过统一提交入口 [commitSession] 原子激活。
  *
  * 使用方式：在 [edu.cqwu.electricity.app.ElectricityApp.onCreate] 调用 [init]，启动时调用 [restoreActiveSession]。
  */
@@ -61,22 +56,15 @@ object AccountSessionStore {
     @Volatile
     private var storage: KeyValueStoreV2? = null
 
-    private val _sessionState = MutableStateFlow<SessionStateV2>(SessionStateV2.LoggedOut)
-
-    /** 当前会话状态（可观察；激活账号维度，见 [SessionStateV2]） */
-    val sessionState: StateFlow<SessionStateV2> = _sessionState.asStateFlow()
-
     /**
      * 初始化（幂等）。首次调用创建 EncryptedSharedPreferences（耗时 ~100ms），应在 Application.onCreate 中调用。
      */
     fun init(context: Context) {
         if (storage != null) {
-            publishSessionState()
             return
         }
         synchronized(this) {
             if (storage != null) {
-                publishSessionState()
                 return
             }
             val masterKey = MasterKey.Builder(context)
@@ -91,7 +79,6 @@ object AccountSessionStore {
             )
             storage = SharedPrefsStoreV2(encPrefs)
         }
-        publishSessionState()
     }
 
     /**
@@ -99,13 +86,6 @@ object AccountSessionStore {
      */
     internal fun initForTesting(fake: KeyValueStoreV2) {
         storage = fake
-        publishSessionState()
-    }
-
-    /** 依据当前激活账号重新发布会话状态（各状态变更入口调用，保证观察者最新） */
-    private fun publishSessionState() {
-        if (storage == null) return
-        _sessionState.value = sessionStateOf(getActiveAccount())
     }
 
     private fun store(): KeyValueStoreV2 =
@@ -146,9 +126,9 @@ object AccountSessionStore {
     // ═══════════════════════════════════════════
 
     /**
-     * 登录成功后提交：持久化账号信息并原子激活该账号。
+     * 登录提交内部实现：持久化账号信息并原子激活该账号（仅被 [commitSession] 调用）。
      *
-     * 登录成功之前当前登录态保持不变（登录过程使用隔离的临时 store，调用方仅在成功后调用本方法）。
+     * 登录成功之前当前登录态保持不变（登录过程使用隔离的临时 store，调用方仅在成功后提交）。
      *
      * @param username 登录用户名（学号或登录别名）
      * @param password 密码；仅当 [rememberPassword] 为 true 时才落盘（扫码登录传 null + false）
@@ -156,7 +136,7 @@ object AccountSessionStore {
      * @param cookies 登录过程中收集的完整 cookie 集合（domain → name→value）
      * @param studentId 数字学号（扫码登录时已在手可传；账号密码登录可后补，见 [updateStudentId]）
      */
-    fun commitLogin(
+    private fun commitLogin(
         username: String,
         password: String?,
         rememberPassword: Boolean,
@@ -179,8 +159,8 @@ object AccountSessionStore {
     }
 
     /**
-     * 统一提交"登录成功后的账号会话"（账密/扫码/快捷登录共用），
-     * 内容与 [commitLogin] 等价，仅参数收敛为领域值对象 [AuthSessionCommitV2]。
+     * 统一提交"登录成功后的账号会话"（账密/扫码登录共用入口）：
+     * 登录结果收敛为领域值对象 [AuthSessionCommitV2]，由门面 [edu.cqwu.electricity.login.domain.SessionCoordinatorV2.commitAndActivate] 转调。
      */
     fun commitSession(input: AuthSessionCommitV2) {
         commitLogin(
@@ -225,7 +205,6 @@ object AccountSessionStore {
         writeCookiesToSystem(account.cookies)
         store().putString(KEY_ACTIVE_ACCOUNT_ID, accountId)
         AppLog.d("AccountSessionStore", "激活账号: ${account.username}, cookie域数=${account.cookies.size}")
-        publishSessionState()
     }
 
     /**
@@ -269,7 +248,6 @@ object AccountSessionStore {
         accounts[idx] = old.copy(cookies = mergedMap)
         saveAccounts(accounts)
         AppLog.d("AccountSessionStore", "合并 cookie 到 ${old.username}: ${cookies.keys}")
-        publishSessionState()
     }
 
     /**
@@ -281,6 +259,7 @@ object AccountSessionStore {
         val cookieString = try {
             CookieManager.getInstance().getCookie(domain)
         } catch (e: Exception) {
+            AppLog.w("AccountSessionStore", "读取系统 Cookie 失败，跳过合并: ${e.message}")
             null
         } ?: return
         val parsed = CookieParser.parse(cookieString)
@@ -307,6 +286,20 @@ object AccountSessionStore {
         AppLog.d("AccountSessionStore", "导入 Cookie 备份账号数: ${imported.size}")
     }
 
+    /**
+     * 账密凭据导入：把草稿作为**新条目**追加（重新生成 UUID）。
+     *
+     * 与 [importAccounts]（Cookie 备份，密码恒空）的区别：保留草稿的密码与
+     * [SavedAccount.rememberPassword]（账密加密文件含密码）。同样不激活任何条目、
+     * 不改动系统 CookieManager——用户之后在账号/登录设置页手动切换登录。
+     */
+    fun importCredentials(drafts: List<SavedAccount>) {
+        if (drafts.isEmpty()) return
+        val imported = drafts.map { it.copy(id = UUID.randomUUID().toString()) }
+        saveAccounts(getAllAccounts() + imported)
+        AppLog.d("AccountSessionStore", "导入账密账号数: ${imported.size}")
+    }
+
     // ═══════════════════════════════════════════
     //  删除 / 清除
     // ═══════════════════════════════════════════
@@ -324,7 +317,6 @@ object AccountSessionStore {
             store().remove(KEY_ACTIVE_ACCOUNT_ID)
         }
         AppLog.d("AccountSessionStore", "删除账号: $accountId")
-        publishSessionState()
     }
 
     /** 清空所有账号数据与登录态（设置页"清除存储空间"用）。 */
@@ -332,7 +324,6 @@ object AccountSessionStore {
         SessionCleaner.clearAll()
         store().clear()
         AppLog.d("AccountSessionStore", "清空全部账号数据")
-        publishSessionState()
     }
 
     /**
@@ -347,7 +338,6 @@ object AccountSessionStore {
         saveAccounts(accounts.map { it.copy(cookies = emptyMap()) })
         SessionCleaner.clearSystemCookies()
         AppLog.d("AccountSessionStore", "已清除所有账号的登录状态，保留账号与密码")
-        publishSessionState()
     }
 
     // ═══════════════════════════════════════════
@@ -406,6 +396,7 @@ object AccountSessionStore {
                 studentId = if (obj.has("s")) obj.getString("s") else null,
             )
         } catch (e: Exception) {
+            AppLog.w("AccountSessionStore", "解析账号条目失败: ${e.message}")
             null
         }
     }

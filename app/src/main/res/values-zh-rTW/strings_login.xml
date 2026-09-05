@@ -34,8 +34,6 @@
     <string name="login_show_password">顯示密碼</string>
     <string name="login_hide_password">隱藏密碼</string>
     <string name="login_login_button">登  入</string>
-    <string name="login_export_credential">匯出憑證</string>
-    <string name="login_import_credential">匯入憑證</string>
     <string name="login_copy_to_clipboard">複製到剪貼簿</string>
     <string name="login_import_and_login">匯入並登入</string>
     <string name="login_import_title">匯入憑證</string>
@@ -51,7 +49,7 @@
     <!-- ── 其他登入方式彈窗 ── -->
     <string name="login_other_login">其他登入</string>
     <string name="login_method_qr_scan">掃碼登入</string>
-    <string name="login_method_credential">憑證登入</string>
+    <string name="login_other_import">匯入Cookie或帳號密碼</string>
     <string name="login_method_phone_recovery">手機號找回</string>
     <string name="login_method_email_recovery">郵箱找回</string>
     <string name="login_password_recovery">找回密碼</string>
@@ -95,7 +93,6 @@
 
     <string name="login_error_invalid_credentials">登入失敗：帳號或密碼錯誤</string>
 
-    <string name="login_error_no_account_to_export">沒有可匯出的帳號，請先登入一次</string>
 
     <string name="login_error_password_required">請輸入密碼</string>
 
@@ -105,7 +102,6 @@
 
     <string name="login_error_captcha_required">需要驗證碼，請手動完成登入</string>
 
-    <string name="login_error_password_too_short">密碼長度不能少於4位</string>
 
     <string name="login_error_timeout">網路請求逾時，伺服器連線不穩定，請稍後重試</string>
 

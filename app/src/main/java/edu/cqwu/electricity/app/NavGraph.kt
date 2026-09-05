@@ -656,7 +656,14 @@ fun AppNavGraph(
             arguments = listOf(navArgument("qrCodeType") { type = NavType.StringType }),
         ) { backStackEntry ->
             val typeStr = backStackEntry.arguments?.getString("qrCodeType") ?: "PAY"
-            val qrCodeType = remember(typeStr) { try { QrCodeType.valueOf(typeStr) } catch (_: Exception) { QrCodeType.PAY } }
+            val qrCodeType = remember(typeStr) {
+                try {
+                    QrCodeType.valueOf(typeStr)
+                } catch (_: Exception) {
+                    edu.cqwu.electricity.logging.AppLog.w("NavGraph", "未知二维码类型: $typeStr，回退 PAY")
+                    QrCodeType.PAY
+                }
+            }
             val title = when (qrCodeType) { QrCodeType.PAY -> stringResource(R.string.card_center_payment_code); QrCodeType.BUS -> stringResource(R.string.card_center_transit_code) }
             QrCodeDisplayScreen(
                 qrCodeType = qrCodeType, title = title,

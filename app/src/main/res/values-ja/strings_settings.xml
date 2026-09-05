@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  設定                                       -->
@@ -363,6 +363,10 @@
     <string name="settings_cookie_item">Cookieのインポート/エクスポート</string>
     <string name="settings_cookie_sheet_export">Cookieをエクスポート</string>
     <string name="settings_cookie_sheet_import">Cookieをインポート</string>
+    <string name="settings_credential_item">ログイン資格情報のインポート/エクスポート</string>
+    <string name="settings_credential_sheet_export">ログイン資格情報をエクスポート</string>
+    <string name="settings_credential_sheet_import">ログイン資格情報をインポート</string>
+    <string name="settings_credential_import_done">%1$d件のアカウントをインポートしました。アカウント管理で切り替えられます</string>
     <string name="settings_cookie_export_title">Cookieをエクスポート</string>
     <string name="settings_cookie_import_title">Cookieをインポート</string>
     <string name="settings_cookie_import_ok">Cookieをインポートしました。アカウント/ログイン設定で切り替えて使用できます</string></resources>

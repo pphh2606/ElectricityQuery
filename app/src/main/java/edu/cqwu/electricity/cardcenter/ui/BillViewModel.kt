@@ -221,6 +221,7 @@ class BillViewModel : ViewModel() {
                     _scrollToTop.trySend(Unit)
                 }
             } catch (e: SessionExpiredException) {
+                AppLog.d("BillViewModel", "H5 接口会话过期，等待 HTML 请求兜底")
                 // 不报错，等 HTML 请求兜底
             } catch (e: CancellationException) {
                 throw e

@@ -5,7 +5,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.CredentialExporter
 import edu.cqwu.electricity.login.data.CasAuthApi
 import edu.cqwu.electricity.login.data.CasLoginException
 import edu.cqwu.electricity.login.data.SessionManager
@@ -190,80 +189,11 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-    // ==================== 凭据导出 ====================
-
-    fun exportCredentials(exportPassword: String) {
-        viewModelScope.launch {
-            if (exportPassword.length < 4) {
-                _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_password_too_short)))
-                return@launch
-            }
-            val state = _uiState.value
-            val currentUsername = state.username.trim()
-            // 占位状态下从预填条目读取实际密码用于导出
-            val currentPassword = if (state.hasSavedPassword) {
-                state.accountId?.let { SessionCoordinatorV2.accountById(it)?.password } ?: ""
-            } else {
-                state.password
-            }
-
-            val accounts = SessionCoordinatorV2.allAccounts()
-                .filter { it.rememberPassword && !it.password.isNullOrBlank() }
-                .map { it.username to it.password!! }
-                .toMutableList()
-
-            if (currentUsername.isNotBlank() && currentPassword.isNotBlank()) {
-                val exists = accounts.any { it.first == currentUsername }
-                if (!exists) {
-                    accounts.add(currentUsername to currentPassword)
-                }
-            }
-
-            if (accounts.isEmpty()) {
-                _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_no_account_to_export)))
-                return@launch
-            }
-
-            try {
-                val encrypted = CredentialExporter.export(accounts, exportPassword)
-                _events.send(LoginEvent.ExportSuccess(encrypted))
-            } catch (e: Exception) {
-                _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_export_failed, e.message ?: "")))
-            }
-        }
-    }
-
-    // ==================== 凭据导入 ====================
-
-    fun importAndLogin(encryptedData: String, exportPassword: String) {
-        val accounts = try {
-            CredentialExporter.import(encryptedData, exportPassword)
-        } catch (e: Exception) {
-            viewModelScope.launch { _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_parse_credential, e.message ?: ""))) }
-            return
-        }
-        if (accounts.isNullOrEmpty()) {
-            viewModelScope.launch { _events.send(LoginEvent.Error(getApplication<Application>().getString(R.string.login_error_import_credential))) }
-            return
-        }
-
-        val (username, password) = accounts.first()
-        _uiState.update {
-            it.copy(
-                username = username,
-                password = password,
-            )
-        }
-
-        login()
-    }
 }
 
 sealed interface LoginEvent {
     data class Error(val msg: String) : LoginEvent
     data class LoginSuccess(val cookie: String) : LoginEvent
-    data class ExportSuccess(val encryptedData: String) : LoginEvent
 }
 
 /**

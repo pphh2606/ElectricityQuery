@@ -34,8 +34,6 @@
     <string name="login_show_password">Show password</string>
     <string name="login_hide_password">Hide password</string>
     <string name="login_login_button">Login</string>
-    <string name="login_export_credential">Export Credentials</string>
-    <string name="login_import_credential">Import Credentials</string>
     <string name="login_copy_to_clipboard">Copy to Clipboard</string>
     <string name="login_import_and_login">Import and Login</string>
     <string name="login_import_title">Import Credentials</string>
@@ -51,7 +49,7 @@
     <!-- ── Other Login Methods Sheet ── -->
     <string name="login_other_login">Other Login</string>
     <string name="login_method_qr_scan">QR Login</string>
-    <string name="login_method_credential">Credential Login</string>
+    <string name="login_other_import">Import cookies or credentials</string>
     <string name="login_method_phone_recovery">Phone Recovery</string>
     <string name="login_method_email_recovery">Email Recovery</string>
     <string name="login_password_recovery">Password Recovery</string>
@@ -95,7 +93,6 @@
 
     <string name="login_error_invalid_credentials">Login failed: incorrect username or password</string>
 
-    <string name="login_error_no_account_to_export">No accounts available to export, please log in once first</string>
 
     <string name="login_error_password_required">Please enter your password</string>
 
@@ -105,7 +102,6 @@
 
     <string name="login_error_captcha_required">Verification code required, please complete login manually</string>
 
-    <string name="login_error_password_too_short">Password must be at least 4 characters</string>
 
     <string name="login_error_timeout">Network request timed out, the connection is unstable, please try again later</string>
 

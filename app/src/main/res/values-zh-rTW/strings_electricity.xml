@@ -55,6 +55,7 @@
 
     <string name="electricity_export_room_id">房間 ID: %1$s</string>
     <string name="electricity_user_not_registered">取得使用者資訊失敗，請先在電費平台註冊</string>
+    <string name="electricity_student_id_unready">帳號學號尚未就緒，請稍後重試</string>
 
     <string name="electricity_export_usage_info">用電資訊</string>
 

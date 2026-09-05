@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  Settings                                   -->
@@ -364,6 +364,10 @@
     <string name="settings_cookie_item">Import/export cookies</string>
     <string name="settings_cookie_sheet_export">Export cookies</string>
     <string name="settings_cookie_sheet_import">Import cookies</string>
+    <string name="settings_credential_item">Import/export account credentials</string>
+    <string name="settings_credential_sheet_export">Export account credentials</string>
+    <string name="settings_credential_sheet_import">Import account credentials</string>
+    <string name="settings_credential_import_done">Imported %1$d account(s). Switch under Account Manager</string>
     <string name="settings_cookie_export_title">Export cookies</string>
     <string name="settings_cookie_import_title">Import cookies</string>
     <string name="settings_cookie_import_ok">Cookies imported. Switch to the account in account/login settings to use them.</string></resources>

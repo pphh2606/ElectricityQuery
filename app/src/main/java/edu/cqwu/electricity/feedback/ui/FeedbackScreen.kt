@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.feedback.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
@@ -114,6 +115,7 @@ fun FeedbackScreen(
         try {
             context.packageManager.getPackageInfo(context.packageName, 0)
         } catch (_: Exception) {
+            AppLog.w("FeedbackScreen", "获取应用版本信息失败")
             null
         }
     }

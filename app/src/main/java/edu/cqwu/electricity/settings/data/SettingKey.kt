@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.settings.data
+import edu.cqwu.electricity.logging.AppLog
 
 import android.content.SharedPreferences
 import android.os.Build
@@ -92,6 +93,7 @@ fun <T> jsonSetting(
             try {
                 gson.fromJson<T>(raw, type)
             } catch (_: Exception) {
+                AppLog.w("SettingKey", "设置值解析失败，使用默认值")
                 default
             }
         }

@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.common.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,6 +63,7 @@ fun DatePickerField(
                     .parse(value)?.time
                 datePickerState.selectedDateMillis = millis
             } catch (_: Exception) {
+                AppLog.w("DatePickerField", "日期解析失败，清空选中")
                 datePickerState.selectedDateMillis = null
             }
         } else if (showDialog) {

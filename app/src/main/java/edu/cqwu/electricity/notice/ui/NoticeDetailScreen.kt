@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.notice.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
@@ -99,6 +100,7 @@ fun NoticeDetailScreen(
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         } catch (_: ActivityNotFoundException) {
+            AppLog.d("NoticeDetailScreen", "无浏览器可打开链接，已忽略")
             // 无可用浏览器，忽略
         }
     }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  设置                                       -->
@@ -333,6 +333,10 @@
     <string name="settings_cookie_item">导入/导出cookie</string>
     <string name="settings_cookie_sheet_export">导出cookie</string>
     <string name="settings_cookie_sheet_import">导入cookie</string>
+    <string name="settings_credential_item">导入/导出登录凭据</string>
+    <string name="settings_credential_sheet_export">导出登录凭据</string>
+    <string name="settings_credential_sheet_import">导入登录凭据</string>
+    <string name="settings_credential_import_done">已导入 %1$d 个账号，可在账号管理切换登录</string>
     <string name="settings_cookie_export_title">导出cookie</string>
     <string name="settings_cookie_import_title">导入cookie</string>
     <string name="settings_cookie_import_ok">cookie 已导入，可在账号/登录设置页切换使用</string></resources>

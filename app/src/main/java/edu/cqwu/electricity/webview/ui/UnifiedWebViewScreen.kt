@@ -555,7 +555,9 @@ fun UnifiedWebViewScreen(
                                             if (!host.isNullOrBlank()) {
                                                 pageDomain = host
                                             }
-                                        } catch (_: Exception) { }
+                                        } catch (_: Exception) {
+                                            AppLog.d("UnifiedWebViewScreen", "解析页面域名失败，忽略")
+                                        }
                                     }
                                 }
 

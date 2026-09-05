@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  الإعدادات                                 -->
@@ -363,6 +363,10 @@
     <string name="settings_cookie_item">استيراد/تصدير ملفات الارتباط</string>
     <string name="settings_cookie_sheet_export">تصدير ملفات الارتباط</string>
     <string name="settings_cookie_sheet_import">استيراد ملفات الارتباط</string>
+    <string name="settings_credential_item">استيراد/تصدير بيانات اعتماد تسجيل الدخول</string>
+    <string name="settings_credential_sheet_export">تصدير بيانات اعتماد تسجيل الدخول</string>
+    <string name="settings_credential_sheet_import">استيراد بيانات اعتماد تسجيل الدخول</string>
+    <string name="settings_credential_import_done">تم استيراد %1$d حسابًا؛ يمكنك التبديل في إدارة الحسابات</string>
     <string name="settings_cookie_export_title">تصدير ملفات الارتباط</string>
     <string name="settings_cookie_import_title">استيراد ملفات الارتباط</string>
     <string name="settings_cookie_import_ok">تم استيراد ملفات الارتباط. قم بالتبديل إلى الحساب في إعدادات الحساب/تسجيل الدخول لاستخدامها</string></resources>

@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.login.data
+import edu.cqwu.electricity.logging.AppLog
 
 import android.util.Base64
 import org.json.JSONArray
@@ -108,6 +109,7 @@ object CredentialExporter {
             // 4. 解析 JSON
             parseJson(json)
         } catch (e: Exception) {
+            AppLog.w("CredentialExporter", "凭据解密/解析失败: ${e.message}")
             // 密码错误、数据被篡改、格式不合法等均返回 null
             null
         }

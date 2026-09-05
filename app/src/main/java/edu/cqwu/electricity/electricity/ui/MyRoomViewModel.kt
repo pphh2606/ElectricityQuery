@@ -1,4 +1,4 @@
-﻿package edu.cqwu.electricity.electricity.ui
+package edu.cqwu.electricity.electricity.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -83,7 +83,7 @@ class MyRoomViewModel(
                 _uiState.update {
                     it.copy(
                         isMyRoomQuerying = false,
-                        queryError = UiMessage(R.string.common_query_failed, listOf("账号学号未就绪，请稍后重试")),
+                        queryError = UiMessage(R.string.electricity_student_id_unready),
                     )
                 }
                 return@launch

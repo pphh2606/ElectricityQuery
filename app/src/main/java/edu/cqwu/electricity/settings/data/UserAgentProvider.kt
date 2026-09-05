@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.settings.data
+import edu.cqwu.electricity.logging.AppLog
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -98,6 +99,7 @@ object UserAgentProvider {
             val type = object : TypeToken<List<UserAgentEntry>>() {}.type
             gson.fromJson(json, type) ?: emptyList()
         } catch (_: Exception) {
+            AppLog.w("UserAgentProvider", "自定义 UA 列表解析失败，回退为空")
             emptyList()
         }
     }

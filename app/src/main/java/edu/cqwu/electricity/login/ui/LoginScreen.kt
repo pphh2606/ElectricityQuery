@@ -5,13 +5,7 @@ import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
-import android.app.Activity
-import android.app.KeyguardManager
-import android.content.ClipData
 import android.content.Context
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
@@ -30,15 +24,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.QrCodeScanner
-import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
@@ -46,8 +37,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.ui.semantics.Role
-import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,7 +58,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -101,7 +89,8 @@ import kotlinx.coroutines.flow.catch
  * - 记住密码复选框
  * - 登录按钮
  * - 登录结果 Toast 提示
- * - 标题栏三点菜单：导入Cookie / 导出Cookie
+ *
+ * 凭据（账号+密码）的导出/导入已迁至「设置 → 备份与恢复」。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,17 +107,12 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         loginViewModel.resetState(clearForm = clearForm, initialAccountId = initialAccountId)
     }
-    val context = LocalContext.current
     val resources = LocalResources.current
     val focusManager = LocalFocusManager.current
     val nav = LocalNavController.current
 
     val topBarColors = currentTopBarColors()
 
-    // 三点菜单与凭据导入导出
-    var showMenu by remember { mutableStateOf(false) }
-    var showImportDialog by remember { mutableStateOf(false) }
-    var showExportDialog by remember { mutableStateOf(false) }
     // 安全说明弹窗
     var showSecurityNotice by remember { mutableStateOf(false) }
     // 其他登录方式弹窗
@@ -140,19 +124,12 @@ fun LoginScreen(
     var webViewTitle by remember { mutableStateOf("") }
     val snackbar = LocalSnackbarController.current
 
-    // 锁屏验证启动器
-    val authLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            showExportDialog = true
-        }
-    }
-
     // 收集一次性事件（替代 LaunchedEffect(uiState.error/loginResult/autoLoginResult)）
     // 使用 Channel 确保事件不会被重复消费，避免配置变更后 Snackbar 再次弹出
     LaunchedEffect(Unit) {
-        loginViewModel.events.catch { /* 忽略 Channel 异常 */ }.collect { event ->
+        loginViewModel.events.catch {
+            edu.cqwu.electricity.logging.AppLog.d("LoginScreen", "登录事件流异常，已忽略")
+        }.collect { event ->
             when (event) {
                 is LoginEvent.Error -> {
                     snackbar.show(event.msg, ToastUtils.Type.ERROR)
@@ -162,21 +139,9 @@ fun LoginScreen(
                     delay(1500)
                     onLoginSuccess()
                 }
-                is LoginEvent.ExportSuccess -> {
-                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)
-                        as android.content.ClipboardManager
-                    val clip = ClipData.newPlainText(
-                        resources.getString(R.string.login_export_credential),
-                        event.encryptedData
-                    )
-                    clipboard.setPrimaryClip(clip)
-                    snackbar.show(resources.getString(R.string.login_credential_copied), ToastUtils.Type.SUCCESS)
-                    showExportDialog = false
-                }
             }
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -195,7 +160,7 @@ fun LoginScreen(
                         )
                     }
                 },
-                // 安全说明 + 三点菜单
+                // 安全说明
                 actions = {
                     // 语言切换图标
                     LanguageSwitchButton()
@@ -209,55 +174,6 @@ fun LoginScreen(
                         )
                     }
 
-                    // 三点菜单
-                    Box {
-                        IconButton(onClick = { showMenu = true }) {
-                            Icon(
-                                imageVector = Icons.Outlined.MoreVert,
-                                contentDescription = stringResource(R.string.common_more_options),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        AppScaledDropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
-                        ) {
-                            val authTitle = stringResource(R.string.login_device_auth_title)
-                            val authDesc = stringResource(R.string.login_device_auth_desc)
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.login_export_credential)) },
-                                leadingIcon = { Icon(Icons.Outlined.UploadFile, contentDescription = null) },
-                                onClick = {
-                                    showMenu = false
-                                    val km = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                                    @Suppress("DEPRECATION")
-                                    val deviceSecure = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        km.isDeviceSecure
-                                    } else {
-                                        km.isKeyguardSecure
-                                    }
-                                    if (deviceSecure) {
-                                        @Suppress("DEPRECATION")
-                                        val intent = km.createConfirmDeviceCredentialIntent(
-                                            authTitle,
-                                            authDesc
-                                        )
-                                        authLauncher.launch(intent)
-                                    } else {
-                                        showExportDialog = true
-                                    }
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.login_import_credential)) },
-                                leadingIcon = { Icon(Icons.Outlined.CloudDownload, contentDescription = null) },
-                                onClick = {
-                                    showMenu = false
-                                    showImportDialog = true
-                                }
-                            )
-                        }
-                    }
                 },
                 colors = topBarColors
             )
@@ -293,7 +209,6 @@ fun LoginScreen(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -514,11 +429,11 @@ fun LoginScreen(
             }
         )
         BottomSheetItem(
-            icon = Icons.Outlined.Key,
-            title = stringResource(R.string.login_method_credential),
+            icon = Icons.Outlined.FileUpload,
+            title = stringResource(R.string.login_other_import),
             onClick = {
                 showOtherLoginSheet = false
-                showImportDialog = true
+                nav.navigate(Routes.SETTINGS_BACKUP_RESTORE)
             }
         )
     }
@@ -558,26 +473,4 @@ fun LoginScreen(
         url = webViewUrl ?: "",
         title = webViewTitle
     )
-
-    // ========== 导入凭据对话框 ==========
-    ImportCredentialDialog(
-        show = showImportDialog,
-        onDismiss = { showImportDialog = false },
-        onConfirm = { data, password ->
-            loginViewModel.importAndLogin(data, password)
-            showImportDialog = false
-        },
-    )
-
-    // ========== 导出凭据对话框 ==========
-    ExportCredentialDialog(
-        show = showExportDialog,
-        currentUsername = uiState.username,
-        onDismiss = { showExportDialog = false },
-        onConfirm = { password ->
-            loginViewModel.exportCredentials(password)
-            showExportDialog = false
-        },
-    )
-
 }

@@ -34,8 +34,6 @@
     <string name="login_show_password">显示密码</string>
     <string name="login_hide_password">隐藏密码</string>
     <string name="login_login_button">登  录</string>
-    <string name="login_export_credential">导出凭据</string>
-    <string name="login_import_credential">导入凭据</string>
     <string name="login_copy_to_clipboard">复制到剪贴板</string>
     <string name="login_import_and_login">导入并登录</string>
     <string name="login_import_title">导入凭据</string>
@@ -51,7 +49,7 @@
     <!-- ── 其他登录方式弹窗 ── -->
     <string name="login_other_login">其他登录</string>
     <string name="login_method_qr_scan">扫码登录</string>
-    <string name="login_method_credential">凭据登录</string>
+    <string name="login_other_import">导入Cookie或账密</string>
     <string name="login_method_phone_recovery">手机号找回</string>
     <string name="login_method_email_recovery">邮箱找回</string>
     <string name="login_password_recovery">找回密码</string>
@@ -90,8 +88,6 @@
     <string name="login_error_timeout">网络请求超时，服务器连接不稳定，请稍后重试</string>
     <string name="login_error_unknown">登录失败，未知错误</string>
     <string name="login_error_exception">登录异常：%1$s</string>
-    <string name="login_error_password_too_short">密码长度不能少于4位</string>
-    <string name="login_error_no_account_to_export">没有可导出的账号，请先登录一次</string>
     <string name="login_error_export_failed">导出失败：%1$s</string>
     <string name="login_error_parse_credential">凭据解析失败：%1$s</string>
     <string name="login_error_import_credential">凭据导入失败：密码错误或数据已损坏</string>

@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.settings.util
+import edu.cqwu.electricity.logging.AppLog
 
 import android.content.Context
 import android.webkit.CookieManager
@@ -69,6 +70,7 @@ class StorageManager(private val context: Context) {
             }
             if (allCookies.isEmpty()) 0L else allCookies.toString().toByteArray().size.toLong()
         } catch (_: Exception) {
+            AppLog.w("StorageManager", "Cookie 数据大小估算失败，按 0 处理")
             0
         }
     }
@@ -163,6 +165,7 @@ class StorageManager(private val context: Context) {
             }
             size
         } catch (_: Exception) {
+            AppLog.w("StorageManager", "目录大小计算失败，按 0L 处理")
             0L
         }
     }
@@ -187,6 +190,7 @@ class StorageManager(private val context: Context) {
                 }
             }
         } catch (_: Exception) {
+            AppLog.d("StorageManager", "删除文件异常，继续清理其他文件")
             // 单个文件删除失败，继续处理其他文件
         }
     }

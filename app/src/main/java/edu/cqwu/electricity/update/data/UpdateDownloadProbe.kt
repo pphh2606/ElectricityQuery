@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.update.data
+import edu.cqwu.electricity.logging.AppLog
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +57,7 @@ object UpdateDownloadProbe {
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
+            AppLog.w("UpdateDownloadProbe", "下载探测失败，按不可用处理")
             UpdateDownloadProbeResult(
                 ok = false,
                 latencyMs = null,

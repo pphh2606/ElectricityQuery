@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  Paramètres                                 -->
@@ -364,6 +364,10 @@
     <string name="settings_cookie_item">Importer/Exporter les cookies</string>
     <string name="settings_cookie_sheet_export">Exporter les cookies</string>
     <string name="settings_cookie_sheet_import">Importer les cookies</string>
+    <string name="settings_credential_item">Importer/Exporter les identifiants de connexion</string>
+    <string name="settings_credential_sheet_export">Exporter les identifiants de connexion</string>
+    <string name="settings_credential_sheet_import">Importer les identifiants de connexion</string>
+    <string name="settings_credential_import_done">%1$d compte(s) importé(s). Basculez dans Gestion des comptes</string>
     <string name="settings_cookie_export_title">Exporter les cookies</string>
     <string name="settings_cookie_import_title">Importer les cookies</string>
     <string name="settings_cookie_import_ok">Cookies importés. Basculez de compte dans les réglages de compte/connexion pour les utiliser.</string></resources>

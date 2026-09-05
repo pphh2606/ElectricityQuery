@@ -34,8 +34,6 @@
     <string name="login_show_password">パスワードを表示</string>
     <string name="login_hide_password">パスワードを非表示</string>
     <string name="login_login_button">ログイン</string>
-    <string name="login_export_credential">資格情報をエクスポート</string>
-    <string name="login_import_credential">資格情報をインポート</string>
     <string name="login_copy_to_clipboard">クリップボードにコピー</string>
     <string name="login_import_and_login">インポートしてログイン</string>
     <string name="login_import_title">資格情報をインポート</string>
@@ -51,7 +49,7 @@
     <!-- ── その他のログイン方法 ── -->
     <string name="login_other_login">他のログイン</string>
     <string name="login_method_qr_scan">QRログイン</string>
-    <string name="login_method_credential">資格情報ログイン</string>
+    <string name="login_other_import">Cookieまたはログイン情報をインポート</string>
     <string name="login_method_phone_recovery">電話番号で復旧</string>
     <string name="login_method_email_recovery">メールで復旧</string>
     <string name="login_password_recovery">パスワード復旧</string>
@@ -95,7 +93,6 @@
 
     <string name="login_error_invalid_credentials">ログイン失敗: ユーザー名またはパスワードが正しくありません</string>
 
-    <string name="login_error_no_account_to_export">エクスポートできるアカウントがありません。先に一度ログインしてください</string>
 
     <string name="login_error_password_required">パスワードを入力してください</string>
 
@@ -105,7 +102,6 @@
 
     <string name="login_error_captcha_required">認証コードが必要です。手動でログインを完了してください</string>
 
-    <string name="login_error_password_too_short">パスワードは4文字以上必要です</string>
 
     <string name="login_error_timeout">ネットワークリクエストがタイムアウトしました。接続が不安定です。後でもう一度お試しください</string>
 

@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.profile.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ private fun isValidUrl(url: String): Boolean {
         val uri = URI(normalized)
         uri.host != null && uri.host.contains(".")
     } catch (_: Exception) {
+        AppLog.w("OpenUrlDialog", "自定义 scheme 校验失败")
         false
     }
 }

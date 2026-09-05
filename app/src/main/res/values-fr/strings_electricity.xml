@@ -57,6 +57,7 @@
 
     <string name="electricity_export_room_id">ID de la chambre : %1$s</string>
     <string name="electricity_user_not_registered">Échec de la récupération des informations utilisateur, veuillez d\'abord vous inscrire</string>
+    <string name="electricity_student_id_unready">Numéro d\'étudiant non prêt. Veuillez réessayer plus tard</string>
 
     <string name="electricity_export_usage_info">Consommation d\'électricité</string>
 

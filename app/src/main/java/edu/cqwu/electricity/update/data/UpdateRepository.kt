@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.update.data
+import edu.cqwu.electricity.logging.AppLog
 
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
@@ -87,6 +88,7 @@ class UpdateRepository(
                                     try {
                                         gson.fromJson(it.body.string(), UpdateInfo::class.java)
                                     } catch (_: Exception) {
+                                        AppLog.w("UpdateRepository", "更新信息 JSON 解析失败")
                                         null
                                     }
                                 } else {
@@ -95,6 +97,7 @@ class UpdateRepository(
                                 continuation.resumeIfActive(info)
                             }
                         } catch (e: Exception) {
+                            AppLog.w("UpdateRepository", "更新请求处理失败: ${e.message}")
                             continuation.resumeIfActive(null)
                         }
                     }

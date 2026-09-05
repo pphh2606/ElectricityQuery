@@ -261,7 +261,7 @@ class QrLoginApi {
                 LoginResult(
                     username = username,
                     cookieString = cookieString,
-                    // 临时 Cookie 存储交由调用方通过 AccountSessionStore.commitLogin 提交（持久化 + 原子激活）
+                    // 临时 Cookie 存储交由调用方在登录成功后提交到持久存储并原子激活
                     cookieStore = cookieStore,
                 )
             )

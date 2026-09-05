@@ -1,6 +1,9 @@
 package edu.cqwu.electricity.common.net
 
+import edu.cqwu.electricity.logging.AppLog
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.webkit.CookieManager
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -9,6 +12,8 @@ import java.util.concurrent.TimeUnit
  * Bridge over android.webkit.CookieManager for shared cookies.
  */
 object CookieStore {
+
+    private const val TAG = "CookieStore"
 
     private var isInitialized = false
 
@@ -32,25 +37,48 @@ object CookieStore {
     /**
      * 清除系统 CookieManager 中的所有 cookie。
      *
-     * 使用回调 + CountDownLatch 同步等待删除完成（最多 3 秒，超时按已尽力处理继续），
-     * 确保后续写入新 cookie 时旧 cookie 已被完全清除。
+     * WebKit 的 removeAllCookies(callback) 要求运行在**带 Looper 的线程**（后台协程会抛
+     * IllegalStateException），因此统一投递到主线程执行；本方法同步等待删除与 flush 完成
+     * （最多 5 秒），确保后续写入新 cookie 时旧 cookie 已被完全清除。
+     * 已在主线程调用时直接执行，避免自锁。
      */
     fun removeAllCookies() {
         checkInitialized()
         val latch = CountDownLatch(1)
-        try {
-            CookieManager.getInstance().removeAllCookies { latch.countDown() }
-        } catch (e: Exception) {
-            latch.countDown()
+
+        val doClear = {
+            try {
+                CookieManager.getInstance().removeAllCookies {
+                    try {
+                        CookieManager.getInstance().flush()
+                    } catch (e: Exception) {
+                        AppLog.w(TAG, "removeAllCookies flush 异常", e)
+                    }
+                    latch.countDown()
+                }
+            } catch (e: Exception) {
+                AppLog.w(TAG, "removeAllCookies 调用异常", e)
+                try {
+                    CookieManager.getInstance().flush()
+                } catch (_: Exception) {
+                }
+                latch.countDown()
+            }
         }
-        try {
-            CookieManager.getInstance().flush()
-        } catch (_: Exception) {
+
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            doClear()
+        } else {
+            Handler(Looper.getMainLooper()).post { doClear() }
         }
+
         try {
-            latch.await(3, TimeUnit.SECONDS)
+            if (!latch.await(5, TimeUnit.SECONDS)) {
+                AppLog.w(TAG, "removeAllCookies 等待超时（5s）")
+            }
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
+            AppLog.w(TAG, "removeAllCookies 等待被中断", e)
         }
     }
 
@@ -112,6 +140,7 @@ class UserCookieStore {
             val uri = Uri.parse(url)
             "${uri.scheme}://${uri.host}"
         } catch (e: Exception) {
+            AppLog.w("UserCookieStore", "URL 解析失败，原样返回: $url")
             url
         }
     }

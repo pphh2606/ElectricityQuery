@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.login.data
+import edu.cqwu.electricity.logging.AppLog
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -39,6 +40,7 @@ object CookiesBackup {
         val root = try {
             JsonParser.parseString(json).asJsonObject
         } catch (e: Exception) {
+            AppLog.w("CookiesBackup", "备份 JSON 解析失败: ${e.message}")
             return null
         }
         if (root.get("type")?.asString != TYPE) return null
@@ -64,6 +66,7 @@ object CookiesBackup {
                     )
                 )
             } catch (e: Exception) {
+                AppLog.d("CookiesBackup", "跳过解析失败的账号条目")
                 // 单条异常跳过，不影响其它账号
             }
         }

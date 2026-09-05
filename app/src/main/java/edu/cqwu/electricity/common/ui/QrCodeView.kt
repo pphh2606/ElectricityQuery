@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.common.ui
+import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +49,7 @@ fun QrCodeView(
                 BooleanArray(w) { y -> bitMatrix[x, y] }
             }
         } catch (_: Exception) {
+            AppLog.w("QrCodeView", "二维码编码失败，返回空矩阵")
             // 内容为空或编码失败时返回空矩阵
             emptyArray<BooleanArray>()
         }

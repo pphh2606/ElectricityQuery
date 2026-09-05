@@ -60,6 +60,7 @@
 
     <string name="electricity_export_room_id">معرف الغرفة: %1$s</string>
     <string name="electricity_user_not_registered">فشل الحصول على معلومات المستخدم، يرجى التسجيل في منصة الكهرباء أولاً</string>
+    <string name="electricity_student_id_unready">رقم الطالب غير جاهز بعد. يرجى المحاولة لاحقًا</string>
 
     <string name="electricity_export_usage_info">معلومات الاستهلاك</string>
 

@@ -34,8 +34,6 @@
     <string name="login_show_password">إظهار كلمة المرور</string>
     <string name="login_hide_password">إخفاء كلمة المرور</string>
     <string name="login_login_button">تسجيل الدخول</string>
-    <string name="login_export_credential">تصدير بيانات الاعتماد</string>
-    <string name="login_import_credential">استيراد بيانات الاعتماد</string>
     <string name="login_copy_to_clipboard">نسخ إلى الحافظة</string>
     <string name="login_import_and_login">استيراد وتسجيل الدخول</string>
     <string name="login_import_title">استيراد بيانات الاعتماد</string>
@@ -51,7 +49,7 @@
     <!-- ── طرق تسجيل الدخول الأخرى ── -->
     <string name="login_other_login">طرق أخرى</string>
     <string name="login_method_qr_scan">تسجيل الدخول عبر QR</string>
-    <string name="login_method_credential">تسجيل الدخول بالبيانات</string>
+    <string name="login_other_import">استيراد ملفات الارتباط أو بيانات الاعتماد</string>
     <string name="login_method_phone_recovery">استعادة برقم الهاتف</string>
     <string name="login_method_email_recovery">استعادة بالبريد الإلكتروني</string>
     <string name="login_password_recovery">استعادة كلمة المرور</string>
@@ -95,7 +93,6 @@
 
     <string name="login_error_invalid_credentials">فشل تسجيل الدخول: اسم المستخدم أو كلمة المرور غير صحيحة</string>
 
-    <string name="login_error_no_account_to_export">لا توجد حسابات قابلة للتصدير، يرجى تسجيل الدخول مرة واحدة أولاً</string>
 
     <string name="login_error_password_required">يرجى إدخال كلمة المرور</string>
 
@@ -105,7 +102,6 @@
 
     <string name="login_error_captcha_required">مطلوب رمز تحقق، يرجى إكمال تسجيل الدخول يدوياً</string>
 
-    <string name="login_error_password_too_short">كلمة المرور يجب ألا تقل عن 4 أحرف</string>
 
     <string name="login_error_timeout">انتهت مهلة طلب الشبكة، الاتصال غير مستقر، يرجى المحاولة لاحقاً</string>
 

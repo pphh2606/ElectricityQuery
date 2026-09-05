@@ -55,6 +55,7 @@
 
     <string name="electricity_export_room_id">部屋 ID: %1$s</string>
     <string name="electricity_user_not_registered">ユーザー情報の取得に失敗しました。先に電気料金プラットフォームで登録してください</string>
+    <string name="electricity_student_id_unready">学籍番号が未準備です。後でもう一度お試しください</string>
 
     <string name="electricity_export_usage_info">電気使用量</string>
 

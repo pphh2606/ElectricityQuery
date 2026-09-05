@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.webview.util
+import edu.cqwu.electricity.logging.AppLog
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -43,6 +44,7 @@ internal fun WebView.applyWebViewDarkMode(enabled: Boolean) {
                 )
             }
         } catch (_: Throwable) {
+            AppLog.d("WebViewDarkMode", "WebView 深色模式设置不支持，已忽略")
             // 部分 WebView 实现可能不支持，忽略即可
         }
     } else {

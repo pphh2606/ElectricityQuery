@@ -1,4 +1,5 @@
 package edu.cqwu.electricity.settings.data
+import edu.cqwu.electricity.logging.AppLog
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -92,6 +93,7 @@ object SettingsBackup {
         val root = try {
             JsonParser.parseString(json).asJsonObject
         } catch (e: Exception) {
+            AppLog.w("SettingsBackup", "备份 JSON 解析失败: ${e.message}")
             return null
         }
         if (root.get("v")?.asInt != FORMAT_VERSION) return null
@@ -119,6 +121,7 @@ object SettingsBackup {
                     }
                 }
             } catch (e: Exception) {
+                AppLog.d("SettingsBackup", "跳过格式异常的设置项")
                 // 单条格式异常时跳过，不影响其它条目
             }
         }
