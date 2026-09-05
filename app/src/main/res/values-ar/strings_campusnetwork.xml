@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <string name="campus_network_title">شبكة الحرم الجامعي</string>
+    <string name="campus_network_accessor_title">معلومات الوصول</string>
+    <string name="campus_network_coming_soon">قريباً</string>
+    <string name="campus_network_fetching">جارٍ جلب معلومات الوصول…</string>
+    <string name="campus_network_error_need_campus">تعذّر الاتصال بخدمة قياس سرعة شبكة الحرم الجامعي. يُرجى الاتصال بشبكة الحرم الجامعي وتسجيل الدخول إليها (إكمال التحقق من الشبكة)، ثم إعادة المحاولة.</string>
+    <string name="campus_network_error_no_network">الشبكة غير متاحة. تحقق من اتصالك ثم أعد المحاولة.</string>
+    <string name="campus_network_error_parse">فشل تحليل معلومات الوصول. يُرجى إعادة المحاولة لاحقاً.</string>
+    <string name="campus_network_error_generic">فشل الطلب. يُرجى إعادة المحاولة لاحقاً.</string>
+    <string name="campus_network_empty">لا توجد معلومات وصول متاحة.</string>
+    <string name="campus_network_sam_not_hit">لم يتم التعرف على هوية شبكة الحرم الجامعي. يُرجى الاتصال بشبكة الحرم الجامعي وتسجيل الدخول إليها (إكمال التحقق من الشبكة).</string>
+
+    <!-- اختبار السرعة (نصوص الواجهة فقط) -->
+    <string name="speed_test_title">اختبار سرعة الشبكة</string>
+    <string name="speed_test_idle_hint">اضغط للبدء</string>
+    <string name="speed_test_queued">في قائمة الانتظار، يرجى الانتظار…</string>
+    <string name="speed_test_queue_position">في قائمة الانتظار، أمامك %1$d شخص(أشخاص)</string>
+    <string name="speed_test_dl_hint">جارٍ اختبار سرعة التنزيل…</string>
+    <string name="speed_test_ping_hint">جارٍ اختبار زمن الوصول…</string>
+    <string name="speed_test_ul_hint">جارٍ اختبار سرعة الرفع…</string>
+    <string name="speed_test_done">اكتمل</string>
+    <string name="speed_test_done_with_id">اكتمل · معرف النتيجة %1$s</string>
+    <string name="speed_test_start">ابدأ</string>
+    <string name="speed_test_stop">إيقاف</string>
+    <string name="speed_test_retry">إعادة الاختبار</string>
+    <string name="speed_test_retry_btn">إعادة المحاولة</string>
+    <string name="speed_test_active_session">الجلسات النشطة</string>
+    <string name="speed_test_queue_wait">الانتظار</string>
+    <string name="speed_test_label_download">تنزيل</string>
+    <string name="speed_test_label_upload">رفع</string>
+    <string name="speed_test_label_ping">زمن الوصول</string>
+    <string name="speed_test_label_jitter">الارتعاش</string>
+    <string name="speed_test_unit_mbps">MBPS</string>
+    <string name="speed_test_unit_ms">ms</string>
+    <string name="speed_test_banner">تعكس النتيجة نطاق شبكة الحرم الجامعي فقط</string>
+</resources>

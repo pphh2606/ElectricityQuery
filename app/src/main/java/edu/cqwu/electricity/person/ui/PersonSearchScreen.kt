@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.person.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -293,6 +294,8 @@ private fun PersonCard(person: PersonRow) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                // 仅提供轻触涟漪反馈（ripple），本项暂无跳转等业务行为
+                .clickable(onClick = {})
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -357,24 +360,20 @@ private fun PersonCard(person: PersonRow) {
 
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // 第二行：部门/学院（或工号兜底）
+                // 第二行：部门/学院（或工号兜底）；过长自动换行完整显示
                 Text(
                     text = person.deptName ?: person.id ?: "",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
 
-                // 第三行：职务（可空）
+                // 第三行：职务（可空）；过长自动换行完整显示
                 if (!person.positions.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = person.positions,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

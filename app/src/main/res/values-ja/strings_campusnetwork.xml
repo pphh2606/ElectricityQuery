@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <string name="campus_network_title">キャンパスネットワーク</string>
+    <string name="campus_network_accessor_title">アクセス者情報</string>
+    <string name="campus_network_coming_soon">近日公開</string>
+    <string name="campus_network_fetching">アクセス情報を取得中…</string>
+    <string name="campus_network_error_need_campus">キャンパスネットワークの測速サービスに接続できません。キャンパスネットワークに接続してログイン（ネットワーク認証を完了）してから再試行してください。</string>
+    <string name="campus_network_error_no_network">ネットワークが利用できません。接続を確認して再試行してください。</string>
+    <string name="campus_network_error_parse">アクセス情報の解析に失敗しました。しばらくしてから再試行してください。</string>
+    <string name="campus_network_error_generic">リクエストに失敗しました。しばらくしてから再試行してください。</string>
+    <string name="campus_network_empty">アクセス情報はまだありません。</string>
+    <string name="campus_network_sam_not_hit">キャンパスネットワークの身元情報が見つかりません。キャンパスネットワークに接続してログイン（ネットワーク認証を完了）してください。</string>
+
+    <!-- スピードテスト（フレーム文言のみ） -->
+    <string name="speed_test_title">ネットワーク速度テスト</string>
+    <string name="speed_test_idle_hint">タップして開始</string>
+    <string name="speed_test_queued">順番待ち、しばらくお待ちください…</string>
+    <string name="speed_test_queue_position">順番待ち、あと %1$d 人です</string>
+    <string name="speed_test_dl_hint">ダウンロード速度を測定中…</string>
+    <string name="speed_test_ping_hint">ネットワーク遅延を測定中…</string>
+    <string name="speed_test_ul_hint">アップロード速度を測定中…</string>
+    <string name="speed_test_done">測定完了</string>
+    <string name="speed_test_done_with_id">測定完了 · 結果 ID %1$s</string>
+    <string name="speed_test_start">開始</string>
+    <string name="speed_test_stop">停止</string>
+    <string name="speed_test_retry">再測定</string>
+    <string name="speed_test_retry_btn">再試行</string>
+    <string name="speed_test_active_session">アクティブセッション</string>
+    <string name="speed_test_queue_wait">待ち行列</string>
+    <string name="speed_test_label_download">ダウンロード</string>
+    <string name="speed_test_label_upload">アップロード</string>
+    <string name="speed_test_label_ping">遅延</string>
+    <string name="speed_test_label_jitter">ジッター</string>
+    <string name="speed_test_unit_mbps">MBPS</string>
+    <string name="speed_test_unit_ms">ms</string>
+    <string name="speed_test_banner">結果はキャンパス内ネットワークのみを反映します</string>
+</resources>

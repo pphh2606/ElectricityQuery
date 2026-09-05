@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -292,6 +293,11 @@ fun ProfilePageContent(
                         icon = Icons.Outlined.PersonSearch,
                         title = stringResource(R.string.person_search_title),
                         onClick = { nav.navigate(Routes.PERSON_SEARCH) },
+                    )
+                    ProfileEntry(
+                        icon = Icons.Outlined.Wifi,
+                        title = stringResource(R.string.campus_network_title),
+                        onClick = { nav.navigate(Routes.CAMPUS_NETWORK) },
                     )
                 }
             }

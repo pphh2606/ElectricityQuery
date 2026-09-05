@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <string name="campus_network_title">Campus Network</string>
+    <string name="campus_network_accessor_title">Access Info</string>
+    <string name="campus_network_coming_soon">Coming Soon</string>
+    <string name="campus_network_fetching">Fetching access info…</string>
+    <string name="campus_network_error_need_campus">Cannot reach the campus network service. Please connect to and sign in to the campus network (complete the network authentication), then retry.</string>
+    <string name="campus_network_error_no_network">Network unavailable. Check your connection and retry.</string>
+    <string name="campus_network_error_parse">Failed to parse access info. Please try again later.</string>
+    <string name="campus_network_error_generic">Request failed. Please try again later.</string>
+    <string name="campus_network_empty">No access info available.</string>
+    <string name="campus_network_sam_not_hit">Campus network identity not matched. Please connect to and sign in to the campus network (complete the network authentication).</string>
+
+    <!-- Speed test (framework strings only) -->
+    <string name="speed_test_title">Network Speed Test</string>
+    <string name="speed_test_idle_hint">Tap to start</string>
+    <string name="speed_test_queued">Queued, please wait…</string>
+    <string name="speed_test_queue_position">Queued, %1$d person(s) ahead of you</string>
+    <string name="speed_test_dl_hint">Testing download…</string>
+    <string name="speed_test_ping_hint">Testing latency…</string>
+    <string name="speed_test_ul_hint">Testing upload…</string>
+    <string name="speed_test_done">Done</string>
+    <string name="speed_test_done_with_id">Done · Result ID %1$s</string>
+    <string name="speed_test_start">Start</string>
+    <string name="speed_test_stop">Stop</string>
+    <string name="speed_test_retry">Test again</string>
+    <string name="speed_test_retry_btn">Retry</string>
+    <string name="speed_test_active_session">Active sessions</string>
+    <string name="speed_test_queue_wait">Queued</string>
+    <string name="speed_test_label_download">Download</string>
+    <string name="speed_test_label_upload">Upload</string>
+    <string name="speed_test_label_ping">Latency</string>
+    <string name="speed_test_label_jitter">Jitter</string>
+    <string name="speed_test_unit_mbps">MBPS</string>
+    <string name="speed_test_unit_ms">ms</string>
+    <string name="speed_test_banner">Results reflect only the campus intranet bandwidth</string>
+</resources>

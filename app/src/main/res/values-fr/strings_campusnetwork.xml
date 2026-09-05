@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <string name="campus_network_title">Réseau du campus</string>
+    <string name="campus_network_accessor_title">Infos d\'accès</string>
+    <string name="campus_network_coming_soon">Bientôt disponible</string>
+    <string name="campus_network_fetching">Récupération des infos d\'accès…</string>
+    <string name="campus_network_error_need_campus">Impossible de joindre le service de débit du réseau du campus. Connectez-vous et authentifiez-vous au réseau du campus, puis réessayez.</string>
+    <string name="campus_network_error_no_network">Réseau indisponible. Vérifiez votre connexion puis réessayez.</string>
+    <string name="campus_network_error_parse">Échec de l\'analyse des infos d\'accès. Réessayez plus tard.</string>
+    <string name="campus_network_error_generic">Échec de la requête. Réessayez plus tard.</string>
+    <string name="campus_network_empty">Aucune info d\'accès disponible.</string>
+    <string name="campus_network_sam_not_hit">Identité du réseau du campus non reconnue. Connectez-vous et authentifiez-vous au réseau du campus.</string>
+
+    <!-- Test de vitesse (textes d\'interface uniquement) -->
+    <string name="speed_test_title">Test de vitesse réseau</string>
+    <string name="speed_test_idle_hint">Appuyez pour démarrer</string>
+    <string name="speed_test_queued">En file d\'attente, veuillez patienter…</string>
+    <string name="speed_test_queue_position">En file d\'attente, %1$d personne(s) avant vous</string>
+    <string name="speed_test_dl_hint">Test du débit descendant…</string>
+    <string name="speed_test_ping_hint">Test de la latence…</string>
+    <string name="speed_test_ul_hint">Test du débit montant…</string>
+    <string name="speed_test_done">Terminé</string>
+    <string name="speed_test_done_with_id">Terminé · ID de résultat %1$s</string>
+    <string name="speed_test_start">Démarrer</string>
+    <string name="speed_test_stop">Arrêter</string>
+    <string name="speed_test_retry">Refaire le test</string>
+    <string name="speed_test_retry_btn">Réessayer</string>
+    <string name="speed_test_active_session">Sessions actives</string>
+    <string name="speed_test_queue_wait">En attente</string>
+    <string name="speed_test_label_download">Téléchargement</string>
+    <string name="speed_test_label_upload">Envoi</string>
+    <string name="speed_test_label_ping">Latence</string>
+    <string name="speed_test_label_jitter">Gigue</string>
+    <string name="speed_test_unit_mbps">MBPS</string>
+    <string name="speed_test_unit_ms">ms</string>
+    <string name="speed_test_banner">Le résultat reflète uniquement la bande passante du réseau du campus</string>
+</resources>

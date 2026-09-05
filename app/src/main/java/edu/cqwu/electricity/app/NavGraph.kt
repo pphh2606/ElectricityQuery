@@ -50,6 +50,10 @@ import edu.cqwu.electricity.cardcenter.ui.BillViewModel
 import edu.cqwu.electricity.cardcenter.ui.CardCenterScreen
 import edu.cqwu.electricity.cardcenter.ui.CardLostScreen
 import edu.cqwu.electricity.cardcenter.ui.CardPaymentScreen
+import edu.cqwu.electricity.campusnetwork.ui.CampusNetworkScreen
+import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui.ClientContextScreen
+import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui.ClientContextViewModel
+import edu.cqwu.electricity.campusnetwork.speedtest.ui.SpeedTestScreen
 import edu.cqwu.electricity.cardcenter.ui.CardRechargeScreen
 import edu.cqwu.electricity.cardcenter.ui.CardRechargeViewModel
 import edu.cqwu.electricity.electricity.data.DetailType
@@ -290,6 +294,15 @@ object Routes {
 
     /** 查找人员（原生页面） */
     const val PERSON_SEARCH = "person_search"
+
+    /** 校园网络（campusnetwork 模块，入口页） */
+    const val CAMPUS_NETWORK = "campus_network"
+
+    /** 校园网络 — 接入者信息 */
+    const val CAMPUS_NETWORK_ACCESSOR_INFO = "campus_network_accessor_info"
+
+    /** 校园网络 — 网速测试 */
+    const val CAMPUS_NETWORK_SPEED_TEST = "campus_network_speed_test"
 }
 
 /**
@@ -917,6 +930,30 @@ fun AppNavGraph(
             PersonSearchScreen(
                 onBack = { navController.popBackStack() },
                 onReLogin = { navController.navigate(Routes.loginRoute()) },
+            )
+        }
+
+        // 校园网络（入口页）
+        animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK) {
+            CampusNetworkScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 校园网络 — 接入者信息
+        animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK_ACCESSOR_INFO) {
+            // viewModel() 在此处调用，作用域绑定到本路由条目，离开页面即销毁
+            val clientContextViewModel: ClientContextViewModel = viewModel()
+            ClientContextScreen(
+                viewModel = clientContextViewModel,
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 校园网络 — 网速测试
+        animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK_SPEED_TEST) {
+            SpeedTestScreen(
+                onBack = { navController.popBackStack() },
             )
         }
 

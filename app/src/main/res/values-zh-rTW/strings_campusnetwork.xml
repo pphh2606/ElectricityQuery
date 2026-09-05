@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 校園網路（campusnetwork 模組）：僅框架文案；欄位標籤缺省回退到預設 values/ 中文 -->
+    <string name="campus_network_title">校園網路</string>
+    <string name="campus_network_accessor_title">接入者資訊</string>
+    <string name="campus_network_coming_soon">敬請期待</string>
+    <string name="campus_network_fetching">正在取得接入者資訊…</string>
+    <string name="campus_network_error_need_campus">無法連線校園網路測速服務。請確認已連上並登入校園網路（完成上網認證）後再試一次。</string>
+    <string name="campus_network_error_no_network">網路不可用，請檢查網路連線後重試。</string>
+    <string name="campus_network_error_parse">接入者資訊解析失敗，請稍後再試。</string>
+    <string name="campus_network_error_generic">請求失敗，請稍後再試。</string>
+    <string name="campus_network_empty">暫未取得接入者資訊。</string>
+    <string name="campus_network_sam_not_hit">未命中校園網路檔案，請確認已連上並登入校園網路（完成上網認證）。</string>
+
+    <!-- 网速测试（僅框架文案） -->
+    <string name="speed_test_title">網速測試</string>
+    <string name="speed_test_idle_hint">點擊開始測速</string>
+    <string name="speed_test_queued">排隊中，請稍候…</string>
+    <string name="speed_test_queue_position">排隊中，前面還有 %1$d 人</string>
+    <string name="speed_test_dl_hint">正在測試下載速度…</string>
+    <string name="speed_test_ping_hint">正在測試網路延遲…</string>
+    <string name="speed_test_ul_hint">正在測試上傳速度…</string>
+    <string name="speed_test_done">測速完成</string>
+    <string name="speed_test_done_with_id">測速完成 · 結果 ID %1$s</string>
+    <string name="speed_test_start">開始測速</string>
+    <string name="speed_test_stop">停止測速</string>
+    <string name="speed_test_retry">重新測速</string>
+    <string name="speed_test_retry_btn">重試</string>
+    <string name="speed_test_active_session">活躍會話</string>
+    <string name="speed_test_queue_wait">排隊等候</string>
+    <string name="speed_test_label_download">下載</string>
+    <string name="speed_test_label_upload">上傳</string>
+    <string name="speed_test_label_ping">延遲</string>
+    <string name="speed_test_label_jitter">抖動</string>
+    <string name="speed_test_unit_mbps">MBPS</string>
+    <string name="speed_test_unit_ms">ms</string>
+    <string name="speed_test_banner">測速結果僅代表校園網內網頻寬</string>
+</resources>
