@@ -3,8 +3,8 @@ package edu.cqwu.electricity.payment.data
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import edu.cqwu.electricity.login.data.PaySessionManager
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.HttpClientFactory
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
 import kotlinx.coroutines.CancellationException
 import okhttp3.Request

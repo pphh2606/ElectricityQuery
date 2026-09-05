@@ -1,12 +1,8 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.settings.data
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import edu.cqwu.electricity.app.ElectricityApp
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
-import okhttp3.Interceptor
-import okhttp3.Response
 
 /**
  * 浏览器标识（User-Agent）运行时提供者。
@@ -147,28 +143,6 @@ object UserAgentProvider {
         if (prefs.get(SettingsKeys.UA_SELECTED_ID) == id) {
             prefs.set(SettingsKeys.UA_SELECTED_ID, "preset_default")
         }
-    }
-}
-
-/**
- * OkHttp 拦截器，自动将请求的 User-Agent header 替换为 [UserAgentProvider] 中用户选中的值。
- *
- * 使用方式：
- * ```kotlin
- * OkHttpClient.Builder()
- *     .addInterceptor(UserAgentInterceptor)
- *     .build()
- * ```
- */
-object UserAgentInterceptor : Interceptor {
-
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-        val ua = UserAgentProvider.getActiveUserAgent()
-        val newRequest = request.newBuilder()
-            .header("User-Agent", ua)
-            .build()
-        return chain.proceed(newRequest)
     }
 }
 

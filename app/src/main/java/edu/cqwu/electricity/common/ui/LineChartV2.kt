@@ -4,18 +4,14 @@ import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -76,9 +72,6 @@ private val ChartPadX = 8.dp
 private val ChartPadTop = 8.dp
 private val ChartPadBottom = 26.dp
 
-/** 详情行高度（按压时显示时间与各线数值，常驻避免布局跳动） */
-private val ChartDetailRowHeight = 26.dp
-
 /**
  * 通用折线统计图 v2（纯 Compose Canvas 自绘，无第三方依赖）。
  *
@@ -86,12 +79,12 @@ private val ChartDetailRowHeight = 26.dp
  * - Y 轴自动缩放；全平线（min==max）画在中间；数据点少时画圆点辅助读数
  * - **X 轴只显示最左、最右两个标签**（单点只显示一个），避免重合
  * - **按压拖动显示数据详情（股票式）**：手指按住后出现竖参考线与高亮点，
- *   图例下方详情行实时显示该点时间与各线数值，拖动跟踪最近点，松手消失
+ *   顶部图例行实时追加各线数值、x 轴日期靠右显示，拖动跟踪最近点，松手消失
  * - 网格/文字颜色取自主题，自动适配深浅色
  *
  * @param data 图表数据（调用方保证有可画点，见 [chartDataHasPointsV2]）
  * @param showGestureDetails 是否启用按压查看详情（默认开启）
- * @param modifier 修饰符（内部图例行 + 详情行 + 画布纵向分配）
+ * @param modifier 修饰符（内部为单行图例/提示 + 画布，纵向分配）
  */
 @Composable
 fun LineChartV2(
@@ -128,15 +121,17 @@ fun LineChartV2(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        // ── 图例行 ──
+        val hovered = hoverIndex?.takeIf { it in data.xLabels.indices }
+
+        // ── 图例 / 按压提示单行 ──
+        // 平时仅显示图例；按压后图例追加当前数值、右侧显示当前 x 轴日期（行高恒定不跳动）
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            data.series.forEach { line ->
+            data.series.forEachIndexed { index, line ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
                         modifier = Modifier.size(10.dp),
@@ -144,26 +139,22 @@ fun LineChartV2(
                         color = line.color,
                     ) {}
                     Spacer(modifier = Modifier.width(4.dp))
+                    val valueText = hovered?.let { line.values.getOrNull(it) }
                     Text(
-                        text = line.label,
+                        text = if (valueText != null) "${line.label} ${formatValue(valueText)}" else line.label,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                     )
                 }
+                if (index < data.series.lastIndex) {
+                    Spacer(modifier = Modifier.width(20.dp))
+                }
             }
-        }
 
-        // ── 详情行（按压时显示当前点时间与各线数值；常驻高度避免布局跳动） ──
-        val hovered = hoverIndex?.takeIf { it in data.xLabels.indices }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(ChartDetailRowHeight)
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+            // 弹性空隙：把按压时的时间挤到行右侧
+            Spacer(modifier = Modifier.weight(1f))
+
             if (hovered != null) {
                 Text(
                     text = data.xLabels[hovered],
@@ -172,28 +163,10 @@ fun LineChartV2(
                     color = onSurface,
                     maxLines = 1,
                 )
-                data.series.forEach { line ->
-                    val value = line.values.getOrNull(hovered) ?: return@forEach
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            modifier = Modifier.size(8.dp),
-                            shape = RoundedCornerShape(2.dp),
-                            color = line.color,
-                        ) {}
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "${line.label} ${formatValue(value)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                        )
-                    }
-                }
             }
         }
 
-        // ── 画布（含按压十字线/高亮点），占图例与详情行之外的剩余高度 ──
-        val hoveredPoint = hovered
+        // ── 画布（含按压十字线/高亮点），占图例行之外的剩余高度 ──
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
@@ -258,8 +231,8 @@ fun LineChartV2(
             }
 
             // 按压指示：竖参考线 + 各线高亮点
-            if (hoveredPoint != null) {
-                val lineX = xAt(hoveredPoint)
+            if (hovered != null) {
+                val lineX = xAt(hovered)
                 drawLine(
                     color = onSurface.copy(alpha = 0.45f),
                     start = Offset(lineX, padTop),
@@ -267,7 +240,7 @@ fun LineChartV2(
                     strokeWidth = 1.5f,
                 )
                 data.series.forEach { line ->
-                    val value = line.values.getOrNull(hoveredPoint) ?: return@forEach
+                    val value = line.values.getOrNull(hovered) ?: return@forEach
                     drawCircle(
                         color = line.color,
                         radius = 5f,

@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.login.data
 
 import android.webkit.WebStorage
+import edu.cqwu.electricity.common.net.CookieStore
 import edu.cqwu.electricity.logging.AppLog
 
 /**

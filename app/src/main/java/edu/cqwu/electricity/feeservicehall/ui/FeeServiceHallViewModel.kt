@@ -6,7 +6,7 @@ import edu.cqwu.electricity.feeservicehall.data.FeeCategory
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 import edu.cqwu.electricity.feeservicehall.data.UserProfile
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

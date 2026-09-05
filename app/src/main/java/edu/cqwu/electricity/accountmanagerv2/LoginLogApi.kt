@@ -1,9 +1,9 @@
 package edu.cqwu.electricity.accountmanagerv2
 
-import edu.cqwu.electricity.login.data.HtmlFormParser
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.HtmlFormParser
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

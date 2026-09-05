@@ -1,12 +1,15 @@
 package edu.cqwu.electricity.login.data
 
 import android.graphics.BitmapFactory
+import edu.cqwu.electricity.common.net.UserAwareCookieJar
+import edu.cqwu.electricity.common.net.UserCookieStore
 import edu.cqwu.electricity.logging.AppLog
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HtmlFormParser
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody

@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.common.net
 
 import android.net.Uri
 import android.webkit.CookieManager

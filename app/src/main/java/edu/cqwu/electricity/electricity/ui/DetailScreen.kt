@@ -62,6 +62,7 @@ import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.theme.util.copyToClipboard
 
 /**
  * 详情展示页面

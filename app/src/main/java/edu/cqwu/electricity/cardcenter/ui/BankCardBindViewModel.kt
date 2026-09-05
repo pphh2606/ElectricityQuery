@@ -9,7 +9,7 @@ import edu.cqwu.electricity.cardcenter.data.BankCardBindApi
 import edu.cqwu.electricity.cardcenter.data.BankCardBindResult
 import edu.cqwu.electricity.cardcenter.data.BankCardBindStatus
 import edu.cqwu.electricity.cardcenter.data.BankOption
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

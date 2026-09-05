@@ -59,14 +59,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.LogoutApi
 import edu.cqwu.electricity.login.data.SessionManager
-import edu.cqwu.electricity.login.data.SessionValidationResult
+import edu.cqwu.electricity.common.net.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.LoadingDialog
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
@@ -103,20 +103,20 @@ fun AccountManagerScreen(
     val scope = rememberCoroutineScope()
     val snackbar = LocalSnackbarController.current
 
-    var accounts by remember { mutableStateOf(AccountSessionStore.getAllAccounts()) }
-    var activeAccount by remember { mutableStateOf(AccountSessionStore.getActiveAccount()) }
+    var accounts by remember { mutableStateOf(SessionCoordinatorV2.allAccounts()) }
+    var activeAccount by remember { mutableStateOf(SessionCoordinatorV2.currentAccount()) }
     var isEditMode by remember { mutableStateOf(false) }
     var accountToDelete by remember { mutableStateOf<String?>(null) }
     var pendingReLoginId by remember { mutableStateOf<String?>(null) }
     var isSwitching by remember { mutableStateOf(false) }
 
     fun refresh() {
-        accounts = AccountSessionStore.getAllAccounts()
-        activeAccount = AccountSessionStore.getActiveAccount()
+        accounts = SessionCoordinatorV2.allAccounts()
+        activeAccount = SessionCoordinatorV2.currentAccount()
     }
 
     fun switchToAccount(accountId: String) {
-        val account = AccountSessionStore.getAccountById(accountId) ?: return
+        val account = SessionCoordinatorV2.accountById(accountId) ?: return
         if (!account.hasLoginState) {
             // 无登录状态 → 直接进登录页预填该条目
             onNavigateToLogin(account.id)
@@ -132,7 +132,7 @@ fun AccountManagerScreen(
                     var activated = false
                     withContext(Dispatchers.IO) {
                         try {
-                            AccountSessionStore.activate(account.id)
+                            SessionCoordinatorV2.activate(account.id)
                             activated = true
                         } catch (e: Exception) {
                             AppLog.w("AccountManagerScreen", "切换账号失败", e)
@@ -282,7 +282,7 @@ fun AccountManagerScreen(
     // 删除账号确认弹窗
     if (accountToDelete != null) {
         val accountId = accountToDelete!!
-        val deletingUsername = AccountSessionStore.getAccountById(accountId)?.username
+        val deletingUsername = SessionCoordinatorV2.accountById(accountId)?.username
         AppScaledAlertDialog(
             onDismissRequest = { accountToDelete = null },
             title = { Text(text = stringResource(R.string.login_delete_account_title)) },
@@ -290,13 +290,13 @@ fun AccountManagerScreen(
             confirmButton = {
                 TextButton(onClick = {
                     scope.launch {
-                        val account = AccountSessionStore.getAccountById(accountId)
+                        val account = SessionCoordinatorV2.accountById(accountId)
                         withContext(Dispatchers.IO) {
                             // 先调用服务端退出登录注销该账号会话（302 视为成功），
                             // 登出失败不阻塞本地删除（尽力而为，API 内部已记录日志）
                             LogoutApi.logout(account?.username ?: "", account?.cookies ?: emptyMap())
                             // 删除账号条目；删当前激活条目时内部清空系统登录态回到未登录
-                            AccountSessionStore.deleteAccount(accountId)
+                            SessionCoordinatorV2.delete(accountId)
                         }
                         accountToDelete = null
                         refresh()

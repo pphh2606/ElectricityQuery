@@ -1,7 +1,10 @@
 package edu.cqwu.electricity.login.data
 
+import edu.cqwu.electricity.common.net.CookieParser
+import edu.cqwu.electricity.common.net.UserAwareCookieJar
+import edu.cqwu.electricity.common.net.UserCookieStore
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

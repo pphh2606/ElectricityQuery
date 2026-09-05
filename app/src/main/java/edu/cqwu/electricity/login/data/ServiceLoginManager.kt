@@ -1,7 +1,10 @@
 package edu.cqwu.electricity.login.data
 
+import edu.cqwu.electricity.common.net.CookieStore
+import edu.cqwu.electricity.common.net.RedirectChainFollower
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HttpClientFactory
 
 /**
  * Ensures a third-party service session using the saved CAS CASTGC cookie.

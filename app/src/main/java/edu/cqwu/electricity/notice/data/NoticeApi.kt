@@ -2,7 +2,7 @@ package edu.cqwu.electricity.notice.data
 
 import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request

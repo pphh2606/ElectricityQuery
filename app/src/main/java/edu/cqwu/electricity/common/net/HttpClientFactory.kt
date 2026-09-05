@@ -1,10 +1,5 @@
-package edu.cqwu.electricity.payment.data
+package edu.cqwu.electricity.common.net
 
-import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
-import edu.cqwu.electricity.login.data.UserAgentInterceptor
-import edu.cqwu.electricity.login.data.UserAwareCookieJar
-import edu.cqwu.electricity.login.data.UserCookieStore
-import edu.cqwu.electricity.webvpn.WebVpnInterceptor
 import okhttp3.CookieJar
 import okhttp3.Dns
 import okhttp3.OkHttpClient
@@ -21,10 +16,27 @@ object HttpClientFactory {
     private const val DEFAULT_TIMEOUT_SECONDS = 15L
 
     /**
+     * 网络运行时依赖（组合根在 App 启动时注入一次，须先于任何 client 的首次创建）：
+     * - [webVpnLogin]：WebVPN 会话自动登录（检测到需登录时为受保护 URL 建立会话）。
+     * - [userAgent]：当前生效的 User-Agent（由用户设置驱动，见 settings.data.UserAgentProvider）。
+     */
+    @Volatile
+    private var webVpnLogin: ((String) -> Unit)? = null
+
+    @Volatile
+    private var userAgent: (() -> String)? = null
+
+    /** 由 [edu.cqwu.electricity.app.ElectricityApp] 启动时调用，注入网络栈所需的业务回调。 */
+    fun initRuntime(webVpnLogin: (String) -> Unit, userAgent: () -> String) {
+        this.webVpnLogin = webVpnLogin
+        this.userAgent = userAgent
+    }
+
+    /**
      * pay.cqwu.edu.cn 业务 API 专用客户端。
      *
      * 注意：刻意不挂 CookieJar —— pay 业务 API 的鉴权凭证是 JWT（`X-Token` 头，
-     * 由 [edu.cqwu.electricity.login.data.PaySessionManager] 统一管理），不依赖 cookie；
+     * 由 [PaySessionManager] 统一管理），不依赖 cookie；
      * token 交换链路（/casLogin/ → dlyscas）走 [shared]（共享 CookieJar 桥接 CookieManager）。
      */
     val payClient: OkHttpClient by lazy {
@@ -90,14 +102,34 @@ object HttpClientFactory {
             .readTimeout(readTimeout, TimeUnit.SECONDS)
             .writeTimeout(writeTimeout, TimeUnit.SECONDS)
             .dns(PreferIPv4Dns)
-            .addInterceptor(UserAgentInterceptor)
             .followRedirects(followRedirects)
             .followSslRedirects(followRedirects)
+
+        // UA 注入：读取组合根注入的当前 User-Agent；未注入时保持 okhttp 默认，不覆盖
+        builder.addInterceptor { chain ->
+            val ua = userAgent?.invoke()
+            if (ua != null) {
+                chain.proceed(chain.request().newBuilder().header("User-Agent", ua).build())
+            } else {
+                chain.proceed(chain.request())
+            }
+        }
 
         if (includeWebVpn) {
             val webVpnInterceptor = WebVpnInterceptor(
                 cookieJar = cookieJar,
                 swallowSessionExpired = swallowSessionExpired,
+                sessionAuthenticator = { protectedUrl ->
+                    val login = webVpnLogin
+                    if (login != null) {
+                        login(protectedUrl)
+                    } else {
+                        throw SessionExpiredException(
+                            "WebVPN 自动登录不可用（未在启动时注入会话登录器）",
+                            SessionExpiryReason.LOGIN_REJECTED,
+                        )
+                    }
+                },
             )
             builder.addInterceptor(webVpnInterceptor)
             builder.addNetworkInterceptor(webVpnInterceptor)

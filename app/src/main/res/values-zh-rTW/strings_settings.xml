@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  設定                                       -->
@@ -255,7 +255,7 @@
 
     <string name="settings_topbar_surface_container_high">深強調</string>
 
-    <string name="settings_reduce_motion_off">始終開啟</string>
+    <string name="settings_reduce_motion_off">開啟頁面動畫與滑動切換</string>
 
     <string name="settings_page_transition_fade">淡入淡出</string>
 
@@ -283,7 +283,7 @@
 
     <string name="settings_topbar_surface_container">中等強調</string>
 
-    <string name="settings_reduce_motion_on">始終關閉</string>
+    <string name="settings_reduce_motion_on">關閉頁面動畫與滑動切換</string>
 
     <string name="settings_page_transition_slide_vertical">垂直滑動</string>
 
@@ -340,4 +340,29 @@
     <string name="update_skip_version">不再提示此版本</string>
     <string name="update_download_latency">%1$d ms</string>
     <string name="update_download_probe_failed">連接失敗</string>
-</resources>
+    <string name="settings_backup_restore">備份與恢復</string>
+    <string name="settings_backup_restore_desc">備份恢復應用程式設定、登入資訊等</string>
+    <string name="settings_backup_sheet_export">匯出備份</string>
+    <string name="settings_backup_sheet_import">匯入備份</string>
+    <string name="settings_backup_export_title">匯出備份</string>
+    <string name="settings_backup_import_title">匯入備份</string>
+    <string name="settings_backup_export_hint">備份內容</string>
+    <string name="settings_backup_import_hint">輸入備份內容</string>
+    <string name="settings_backup_export_clipboard">匯出至剪貼簿</string>
+    <string name="settings_backup_export_file">匯出至本機檔案</string>
+    <string name="settings_backup_import_clipboard">從剪貼簿匯入</string>
+    <string name="settings_backup_import_file">從檔案匯入</string>
+    <string name="settings_backup_confirm">確定</string>
+    <string name="settings_backup_copied">備份已複製到剪貼簿</string>
+    <string name="settings_backup_saved">備份已匯出至本機檔案</string>
+    <string name="settings_backup_import_ok">設定匯入成功，部分設定需重新啟動後生效</string>
+    <string name="settings_backup_invalid">備份內容無效或版本不受支援</string>
+    <string name="settings_backup_restart">重新啟動應用程式</string>
+    <string name="settings_backup_later">稍後</string>
+<string name="settings_backup_settings_item">備份/恢復設定項目</string>
+    <string name="settings_cookie_item">匯入/匯出cookie</string>
+    <string name="settings_cookie_sheet_export">匯出cookie</string>
+    <string name="settings_cookie_sheet_import">匯入cookie</string>
+    <string name="settings_cookie_export_title">匯出cookie</string>
+    <string name="settings_cookie_import_title">匯入cookie</string>
+    <string name="settings_cookie_import_ok">cookie 已匯入，可在帳號/登入設定頁切換使用</string></resources>

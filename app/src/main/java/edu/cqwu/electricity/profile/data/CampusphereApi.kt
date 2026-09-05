@@ -4,11 +4,11 @@ import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
 import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.CookieStore
-import edu.cqwu.electricity.login.data.HtmlFormParser
-import edu.cqwu.electricity.login.data.ServiceLoginManager
-import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.CookieStore
+import edu.cqwu.electricity.common.net.HtmlFormParser
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -61,10 +61,10 @@ class CampusphereApi {
     }
 
     /**
-     * 执行 CAS ticket 交换（委托给 ServiceLoginManager）。
+     * 执行 CAS ticket 交换（委托给 [AutoLoginCoordinatorV2]）。
      */
     private fun doCasTicketExchange() {
-        ServiceLoginManager.ensureLogin(
+        AutoLoginCoordinatorV2.ensureService(
             protectedUrl = INDEX_URL,
             serviceDomain = BASE,
             expectedCookie = "MOD_AUTH_CAS"

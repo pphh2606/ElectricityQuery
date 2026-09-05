@@ -5,11 +5,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CredentialExporter
 import edu.cqwu.electricity.login.data.CasAuthApi
 import edu.cqwu.electricity.login.data.CasLoginException
 import edu.cqwu.electricity.login.data.SessionManager
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
+import edu.cqwu.electricity.login.model.AuthSessionCommitV2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -66,8 +67,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      * UI 层将显示占位圆点而非实际密码，防止密码被眼睛按钮查看。
      */
     private fun autoFillFromStorage(initialAccountId: String?) {
-        val target = initialAccountId?.let { AccountSessionStore.getAccountById(it) }
-            ?: AccountSessionStore.getActiveAccount()
+        val target = initialAccountId?.let { SessionCoordinatorV2.accountById(it) }
+            ?: SessionCoordinatorV2.currentAccount()
         val rememberPwd = target?.rememberPassword ?: true
         val hasSaved = target?.password != null && rememberPwd
         val state = LoginUiState(
@@ -130,7 +131,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         val username = state.username.trim()
         // 占位状态下从预填条目读取实际密码
         val password = if (state.hasSavedPassword) {
-            state.accountId?.let { AccountSessionStore.getAccountById(it)?.password } ?: ""
+            state.accountId?.let { SessionCoordinatorV2.accountById(it)?.password } ?: ""
         } else {
             state.password
         }
@@ -155,17 +156,19 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         result.cookieStore?.let { tempStore ->
                             val cookies = tempStore.getAllCookies()
                             // 登录后获取数字学号（一次性网络请求；失败传 null，
-                            // 由启动验证回填兜底，不影响登录成功），随 commitLogin 直接落盘
+                            // 由启动验证回填兜底，不影响登录成功），随会话提交直接落盘
                             val studentId = withContext(Dispatchers.IO) {
                                 SessionManager.fetchUserInfo(cookies).getOrNull()?.first
                             }
                             withContext(Dispatchers.IO) {
-                                AccountSessionStore.commitLogin(
-                                    username = username,
-                                    password = password,
-                                    rememberPassword = rememberPwd,
-                                    cookies = cookies,
-                                    studentId = studentId,
+                                SessionCoordinatorV2.commitAndActivate(
+                                    AuthSessionCommitV2(
+                                        username = username,
+                                        password = password,
+                                        rememberPassword = rememberPwd,
+                                        cookies = cookies,
+                                        studentId = studentId,
+                                    )
                                 )
                             }
                         }
@@ -174,19 +177,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         _events.send(LoginEvent.LoginSuccess(result.cookieString))
                     }
                     .onFailure { e ->
-                        val errorMsg = when {
-                            e is CasLoginException.CaptchaRequired -> getApplication<Application>().getString(R.string.login_error_captcha_required)
-                            e is CasLoginException.LoginRejected -> getApplication<Application>().getString(R.string.login_error_invalid_credentials)
-                            e is CasLoginException.MissingField -> getApplication<Application>().getString(R.string.login_error_fetch_params)
-                            e.message?.contains("无法获取加密 salt") == true -> getApplication<Application>().getString(R.string.login_error_fetch_params_network)
-                            e.message?.contains("无法获取 lt") == true -> getApplication<Application>().getString(R.string.login_error_fetch_params)
-                            e.message?.contains("未能获取到 CASTGC") == true -> getApplication<Application>().getString(R.string.login_error_invalid_credentials)
-                            e.message?.contains("无法连接到") == true -> getApplication<Application>().getString(R.string.login_error_network)
-                            e.message?.contains("SocketTimeout") == true || e.message?.contains("Socket closed") == true -> {
-                                getApplication<Application>().getString(R.string.login_error_timeout)
-                            }
-                            else -> e.message ?: getApplication<Application>().getString(R.string.login_error_unknown)
-                        }
+                        // 已知异常/关键词 → 统一本地文案；未命中回退服务端原始 message
+                        val errorMsg = e.toLoginErrorResId()?.let { getApplication<Application>().getString(it) }
+                            ?: e.message ?: getApplication<Application>().getString(R.string.login_error_unknown)
                         _uiState.update { it.copy(isLoading = false) }
                         _events.send(LoginEvent.Error(errorMsg))
                     }
@@ -210,12 +203,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             val currentUsername = state.username.trim()
             // 占位状态下从预填条目读取实际密码用于导出
             val currentPassword = if (state.hasSavedPassword) {
-                state.accountId?.let { AccountSessionStore.getAccountById(it)?.password } ?: ""
+                state.accountId?.let { SessionCoordinatorV2.accountById(it)?.password } ?: ""
             } else {
                 state.password
             }
 
-            val accounts = AccountSessionStore.getAllAccounts()
+            val accounts = SessionCoordinatorV2.allAccounts()
                 .filter { it.rememberPassword && !it.password.isNullOrBlank() }
                 .map { it.username to it.password!! }
                 .toMutableList()
@@ -271,4 +264,23 @@ sealed interface LoginEvent {
     data class Error(val msg: String) : LoginEvent
     data class LoginSuccess(val cookie: String) : LoginEvent
     data class ExportSuccess(val encryptedData: String) : LoginEvent
+}
+
+/**
+ * 账密登录异常 → 用户文案资源 id 的纯映射（不依赖 Android，可 JVM 单测）。
+ *
+ * 命中已知异常类型或消息关键词时返回对应资源 id；未命中返回 null，
+ * 由调用方回退为服务端原始 [Throwable.message]（[R.string.login_error_unknown] 兜底）。
+ */
+internal fun Throwable.toLoginErrorResId(): Int? = when {
+    this is CasLoginException.CaptchaRequired -> R.string.login_error_captcha_required
+    this is CasLoginException.LoginRejected -> R.string.login_error_invalid_credentials
+    this is CasLoginException.MissingField -> R.string.login_error_fetch_params
+    message?.contains("无法获取加密 salt") == true -> R.string.login_error_fetch_params_network
+    message?.contains("无法获取 lt") == true -> R.string.login_error_fetch_params
+    message?.contains("未能获取到 CASTGC") == true -> R.string.login_error_invalid_credentials
+    message?.contains("无法连接到") == true -> R.string.login_error_network
+    message?.contains("SocketTimeout") == true || message?.contains("Socket closed") == true ->
+        R.string.login_error_timeout
+    else -> null
 }

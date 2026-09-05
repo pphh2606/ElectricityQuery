@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.webvpn
+package edu.cqwu.electricity.common.net
 
 /**
  * WebVPN 全局开关的运行状态。

@@ -9,7 +9,7 @@ import edu.cqwu.electricity.hall.data.HallCategory
 import edu.cqwu.electricity.hall.data.HallItem
 import edu.cqwu.electricity.hall.data.HallSearchApi
 import edu.cqwu.electricity.hall.data.HallServiceLabel
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.hall.data.HallFavoriteApi
 import edu.cqwu.electricity.hall.data.HallJsonLoader
 import edu.cqwu.electricity.hall.data.HallServiceCenterApi

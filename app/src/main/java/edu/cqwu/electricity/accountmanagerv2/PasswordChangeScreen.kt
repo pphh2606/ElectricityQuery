@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -81,6 +82,10 @@ fun PasswordChangeScreen(
     }
 
     Scaffold(
+        // 键盘弹出时让出 IME 高度，避免遮挡右下角"保存"按钮
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding(),
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.password_change_title), fontWeight = FontWeight.Bold) },

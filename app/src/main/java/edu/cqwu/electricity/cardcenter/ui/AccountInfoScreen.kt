@@ -56,7 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.cardcenter.data.AccountInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

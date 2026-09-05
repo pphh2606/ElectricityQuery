@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.common.net
 
 /**
  * Cookie 验证结果密封类。

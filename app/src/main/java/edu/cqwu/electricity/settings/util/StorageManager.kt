@@ -2,8 +2,8 @@ package edu.cqwu.electricity.settings.util
 
 import android.content.Context
 import android.webkit.CookieManager
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.SessionCleaner
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import java.io.File
 import java.util.Locale
 
@@ -129,7 +129,7 @@ class StorageManager(private val context: Context) {
      * 保留账号管理弹窗中的账号和密码。
      */
     fun clearCookieData() {
-        AccountSessionStore.clearAllLoginStates()
+        SessionCoordinatorV2.clearLoginStates()
     }
 
     /** 清除应用设置（恢复默认） */
@@ -140,7 +140,7 @@ class StorageManager(private val context: Context) {
 
     /** 清除账号数据（所有账号的学号/密码/登录状态 + 当前登录态） */
     fun clearAccountData() {
-        AccountSessionStore.clearAllData()
+        SessionCoordinatorV2.clearAll()
     }
 
     // ═══════════════════════════════════════════════════

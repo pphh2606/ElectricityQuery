@@ -6,13 +6,16 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.CookieStore
+import edu.cqwu.electricity.common.net.CookieStore
+import edu.cqwu.electricity.common.net.HttpClientFactory
+import edu.cqwu.electricity.common.net.WebVpnSettings
+import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.webvpn.WebVpnSettings
-import edu.cqwu.electricity.payment.data.HttpClientFactory
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.settings.data.UserAgentProvider
 
 /**
  * 自定义 Application，配置 Coil ImageLoader
@@ -35,8 +38,14 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         // 预初始化登录会话仓库（EncryptedSharedPreferences 初始化耗时 ~100ms），
         // 避免在 UI 组合线程中首次调用时阻塞滑动动画
         AccountSessionStore.init(this)
-        // 恢复上次激活账号的登录态到系统 CookieManager
-        AccountSessionStore.restoreActiveSession()
+        // 恢复上次激活账号的登录态到系统 CookieManager（经会话协调器）
+        SessionCoordinatorV2.restoreActive()
+        // 网络运行时依赖注入（组合根）：WebVPN 自动登录回调 + 当前 UA。
+        // 必须先于任何 client 的首次创建（HttpClientFactory 各 client 为 lazy，首次访问在 Activity 期）。
+        HttpClientFactory.initRuntime(
+            webVpnLogin = { AutoLoginCoordinatorV2.ensureWebVpn(it) },
+            userAgent = { UserAgentProvider.getActiveUserAgent() },
+        )
     }
 
     companion object {

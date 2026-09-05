@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.profile.ui
 
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import edu.cqwu.electricity.logging.AppLog
@@ -62,8 +63,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.webvpn.WebVpnEncoder
+import edu.cqwu.electricity.common.net.WebVpnEncoder
 import edu.cqwu.electricity.settings.data.NightMode
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalNavController
@@ -151,7 +151,7 @@ fun ProfilePageContent(
 
     val username = remember(usernameRefreshKey) {
         val t0 = System.currentTimeMillis()
-        val result = AccountSessionStore.getActiveAccount()?.username
+        val result = SessionCoordinatorV2.currentAccount()?.username
         AppLog.d("TabPerf", "ProfilePageContent username lookup cost=${System.currentTimeMillis() - t0}ms")
         result
     }

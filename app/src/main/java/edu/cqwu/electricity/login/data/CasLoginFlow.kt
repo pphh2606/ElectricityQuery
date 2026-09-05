@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.login.data
 
+import edu.cqwu.electricity.common.net.HtmlFormParser
 import okhttp3.FormBody
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient

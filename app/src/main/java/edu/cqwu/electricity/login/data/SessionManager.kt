@@ -1,7 +1,12 @@
 package edu.cqwu.electricity.login.data
 
+import edu.cqwu.electricity.common.net.HtmlFormParser
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionValidationResult
+import edu.cqwu.electricity.common.net.UserAwareCookieJar
+import edu.cqwu.electricity.common.net.UserCookieStore
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,7 +23,7 @@ import java.net.UnknownHostException
  * 提供以下能力：
  * 1. **Cookie 验证**：[validateCookie] — 验证 CASTGC 是否有效，提取用户ID（数字学号）/实名
  * 2. **学号获取**：[fetchUserInfo] — 带账号 cookie 请求 index.do 提取用户ID（数字学号）/实名
- * 3. **会话检测**：响应为 CAS 登录页时抛 [SessionExpiredException]（[HtmlFormParser.checkAndThrow]）
+ * 3. **会话检测**：响应为 CAS 登录页时抛 [edu.cqwu.electricity.common.net.SessionExpiredException]（[edu.cqwu.electricity.common.net.HtmlFormParser.checkAndThrow]）
  */
 object SessionManager {
 
@@ -47,7 +52,7 @@ object SessionManager {
      * 并顺手回填该账号的数字学号（[AccountSessionStore.updateStudentId]，启动验证场景零额外请求）。
      *
      * @param cookies 该账号持久化的 cookie 集合（domain → name→value），为空直接判定无效。
-     * @return [SessionValidationResult.Valid]、[SessionValidationResult.Invalid]、[SessionValidationResult.NetworkError]
+     * @return [edu.cqwu.electricity.common.net.SessionValidationResult.Valid]、[edu.cqwu.electricity.common.net.SessionValidationResult.Invalid]、[edu.cqwu.electricity.common.net.SessionValidationResult.NetworkError]
      */
     suspend fun validateCookie(
         cookies: Map<String, Map<String, String>>,

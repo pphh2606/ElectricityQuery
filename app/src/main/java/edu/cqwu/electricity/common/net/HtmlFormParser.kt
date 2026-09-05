@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.common.net
 
 /**
  * 统一的 HTML 表单解析工具。

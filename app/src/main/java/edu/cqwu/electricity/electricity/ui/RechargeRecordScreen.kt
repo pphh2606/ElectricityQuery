@@ -73,6 +73,7 @@ import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.theme.util.copyToClipboard
 
 /**
  * 充值记录查询页面

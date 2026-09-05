@@ -2,7 +2,7 @@ package edu.cqwu.electricity.person.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.person.data.PersonRow
 import edu.cqwu.electricity.person.data.PersonSearchApi
 import kotlinx.coroutines.Job

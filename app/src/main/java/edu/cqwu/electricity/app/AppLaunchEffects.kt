@@ -13,10 +13,10 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeAppLauncher
 import edu.cqwu.electricity.home.ui.ExternalAppConfirmDialog
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.SessionManager
-import edu.cqwu.electricity.login.data.SessionValidationResult
+import edu.cqwu.electricity.common.net.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.settings.ui.UpdateFoundSheet
@@ -81,7 +81,7 @@ fun AppLaunchEffects(
     LaunchedEffect(Unit) {
         if (!startupCookieValidationDone) {
             startupCookieValidationDone = true
-            val activeAccount = AccountSessionStore.getActiveAccount()
+            val activeAccount = SessionCoordinatorV2.currentAccount()
             val cookies = activeAccount?.cookies ?: emptyMap()
             when (val result = SessionManager.validateCookie(cookies)) {
                 is SessionValidationResult.Valid -> {

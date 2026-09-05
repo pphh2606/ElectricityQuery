@@ -5,8 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -80,7 +80,7 @@ class LoginLogViewModel(application: Application) : AndroidViewModel(application
 
     /** 统一刷新入口（首次进入、下拉刷新、应用筛选后）— 重置到第 1 页并替换列表 */
     fun refresh() {
-        val account = AccountSessionStore.getActiveAccount()
+        val account = SessionCoordinatorV2.currentAccount()
         if (account == null || !account.hasLoginState) {
             _uiState.update {
                 it.copy(isRefreshing = false, loadError = getString(R.string.login_log_no_account))
@@ -115,7 +115,7 @@ class LoginLogViewModel(application: Application) : AndroidViewModel(application
     fun loadMore() {
         val state = _uiState.value
         if (state.isLoadingMore || !state.hasMore || state.isRefreshing) return
-        val account = AccountSessionStore.getActiveAccount() ?: return
+        val account = SessionCoordinatorV2.currentAccount() ?: return
         val nextPage = state.pageCurrent + 1
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingMore = true) }

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.ManageAccounts
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Tune
@@ -109,6 +110,13 @@ fun SettingsScreen(
                     )
 
                     SettingsEntry(
+                        icon = Icons.Outlined.Backup,
+                        title = stringResource(R.string.settings_backup_restore),
+                        subtitle = stringResource(R.string.settings_backup_restore_desc),
+                        onClick = { nav.navigate(Routes.SETTINGS_BACKUP_RESTORE) },
+                    )
+
+                    SettingsEntry(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.settings_about),
                         subtitle = stringResource(R.string.settings_about_desc),
@@ -121,13 +129,14 @@ fun SettingsScreen(
 }
 
 /**
- * 设置条目 — 自定义 Row 布局确保图标始终垂直居中
+ * 设置条目 — 自定义 Row 布局确保图标始终垂直居中。
+ * 同包子页（如备份与恢复）可复用该行样式以保持观感一致。
  */
 @Composable
-private fun SettingsEntry(
+internal fun SettingsEntry(
     icon: ImageVector,
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
     onClick: () -> Unit,
 ) {
     Row(
@@ -158,12 +167,14 @@ private fun SettingsEntry(
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (subtitle != null) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(16.dp))

@@ -67,7 +67,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import edu.cqwu.electricity.webvpn.WebVpnEncoder
+import edu.cqwu.electricity.common.net.WebVpnEncoder
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.WebViewErrorOverlay
@@ -352,7 +352,7 @@ fun UnifiedWebViewScreen(
                             settings.setSupportZoom(true)
                             settings.builtInZoomControls = true
                             settings.displayZoomControls = true
-                            settings.userAgentString = edu.cqwu.electricity.login.data.UserAgentProvider.getActiveUserAgent()
+                            settings.userAgentString = edu.cqwu.electricity.settings.data.UserAgentProvider.getActiveUserAgent()
 
                             fun updateLoginRequiredOverlay(url: String?) {
                                 loginRequiredOverlayVisible = WebViewUrlUtil.shouldShowLoginRequired(url, webErrorState != null)

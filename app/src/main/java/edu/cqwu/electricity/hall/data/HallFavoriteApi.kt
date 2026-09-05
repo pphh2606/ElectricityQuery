@@ -4,9 +4,9 @@ import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.EHALL_APP_SHOW_URL
 import edu.cqwu.electricity.hall.data.HallFavoriteApi.Companion.FAVORITE_APPS_URL
-import edu.cqwu.electricity.login.data.ServiceLoginManager
-import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -44,12 +44,12 @@ class HallFavoriteApi {
     /**
      * 触发 ehall CAS ticket 交换，建立已认证的 ehall JSESSIONID。
      *
-     * 委托 [ServiceLoginManager.ensureLogin] 完成标准 CAS ticket 交换。
+     * 委托 [AutoLoginCoordinatorV2.ensureService] 完成标准 CAS ticket 交换。
      *
      * @throws SessionExpiredException 用户未登录或 Cookie 过期
      */
     fun initEhallSession() {
-        ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_SHOW_URL)
+        AutoLoginCoordinatorV2.ensureService(protectedUrl = EHALL_APP_SHOW_URL)
     }
 
     /**

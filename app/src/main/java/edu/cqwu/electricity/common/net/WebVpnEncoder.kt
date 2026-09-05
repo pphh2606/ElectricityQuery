@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.webvpn
+package edu.cqwu.electricity.common.net
 
 import java.net.URI
 import javax.crypto.Cipher

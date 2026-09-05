@@ -23,7 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import edu.cqwu.electricity.login.data.UserAgentProvider
+import edu.cqwu.electricity.settings.data.UserAgentProvider
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil

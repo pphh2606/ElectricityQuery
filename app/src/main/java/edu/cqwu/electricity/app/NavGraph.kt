@@ -77,8 +77,13 @@ import edu.cqwu.electricity.qrcode.data.QrCodeType
 import edu.cqwu.electricity.qrcode.ui.QrCodeDisplayScreen
 import edu.cqwu.electricity.scan.ui.ScanScreen
 import edu.cqwu.electricity.settings.data.PageTransition
+import edu.cqwu.electricity.settings.data.CookiesBackupPayloadV2
 import edu.cqwu.electricity.settings.data.ReduceMotion
+import edu.cqwu.electricity.settings.data.SettingsBackupPayloadV2
 import edu.cqwu.electricity.settings.ui.AboutScreen
+import edu.cqwu.electricity.settings.ui.BackupRestoreScreen
+import edu.cqwu.electricity.settings.ui.BackupTransferModeV2
+import edu.cqwu.electricity.settings.ui.BackupTransferScreen
 import edu.cqwu.electricity.settings.ui.ConfigScreen
 import edu.cqwu.electricity.settings.ui.PersonalizationScreen
 import edu.cqwu.electricity.settings.ui.QrCodeSettingsScreen
@@ -211,6 +216,21 @@ object Routes {
         return "detail/${detailType.name.lowercase()}/$roomId"
     }
 
+    /** 备份与恢复子页 */
+    const val SETTINGS_BACKUP_RESTORE = "settings_backup_restore"
+
+    /** 设置备份：导出页 */
+    const val SETTINGS_BACKUP_EXPORT = "settings_backup_export"
+
+    /** 设置备份：导入页 */
+    const val SETTINGS_BACKUP_IMPORT = "settings_backup_import"
+
+    /** Cookie 备份：导出页 */
+    const val SETTINGS_COOKIE_EXPORT = "settings_cookie_export"
+
+    /** Cookie 备份：导入页 */
+    const val SETTINGS_COOKIE_IMPORT = "settings_cookie_import"
+
     /** 关于页 */
     const val ABOUT = "about"
 
@@ -272,11 +292,16 @@ object Routes {
     const val PERSON_SEARCH = "person_search"
 }
 
-/** 从动画设置生成过渡 EnterTransition */
-private fun enterAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? {
-    if (settings.reduceMotion == ReduceMotion.ON) return { EnterTransition.None }
-    val d = 300
-    return {
+/**
+ * 从动画设置生成过渡 EnterTransition。
+ * 注意：减少动画的判断放在过渡 lambda 内部（每次转场计算时读取当前设置），
+ * 切换"减少动画"后下一次页面切换即生效，无需重启应用。
+ */
+private fun enterAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? = {
+    if (settings.reduceMotion == ReduceMotion.ON) {
+        EnterTransition.None
+    } else {
+        val d = 300
         when (settings.pageTransition) {
             PageTransition.NONE -> EnterTransition.None
             PageTransition.SLIDE -> slideInHorizontally(tween(d)) { it }
@@ -288,10 +313,11 @@ private fun enterAnim(settings: AppSettingsState): AnimatedContentTransitionScop
     }
 }
 
-private fun exitAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? {
-    if (settings.reduceMotion == ReduceMotion.ON) return { ExitTransition.None }
-    val d = 300
-    return {
+private fun exitAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? = {
+    if (settings.reduceMotion == ReduceMotion.ON) {
+        ExitTransition.None
+    } else {
+        val d = 300
         when (settings.pageTransition) {
             PageTransition.NONE -> ExitTransition.None
             PageTransition.SLIDE -> slideOutHorizontally(tween(d)) { -it / 5 } + fadeOut(tween(d))
@@ -303,10 +329,12 @@ private fun exitAnim(settings: AppSettingsState): AnimatedContentTransitionScope
     }
 }
 
-private fun popEnterAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? {
-    if (settings.reduceMotion == ReduceMotion.ON) return { EnterTransition.None }
-    val d = 300
-    return {
+private fun popEnterAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? = {
+    // 减少动画开启时，返回不做任何过渡（直接切换）
+    if (settings.reduceMotion == ReduceMotion.ON) {
+        EnterTransition.None
+    } else {
+        val d = 300
         when (settings.pageTransition) {
             PageTransition.NONE -> EnterTransition.None
             PageTransition.SLIDE -> slideInHorizontally(tween(d)) { -it / 5 } + fadeIn(tween(d))
@@ -318,10 +346,12 @@ private fun popEnterAnim(settings: AppSettingsState): AnimatedContentTransitionS
     }
 }
 
-private fun popExitAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? {
-    if (settings.reduceMotion == ReduceMotion.ON) return { ExitTransition.None }
-    val d = 300
-    return {
+private fun popExitAnim(settings: AppSettingsState): AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? = {
+    // 减少动画开启时，返回不做任何过渡（直接切换）
+    if (settings.reduceMotion == ReduceMotion.ON) {
+        ExitTransition.None
+    } else {
+        val d = 300
         when (settings.pageTransition) {
             PageTransition.NONE -> ExitTransition.None
             PageTransition.SLIDE -> slideOutHorizontally(tween(d)) { it }
@@ -742,6 +772,49 @@ fun AppNavGraph(
         // 关于页面
         animatedComposable(settings = appSettings, route = Routes.ABOUT) {
             AboutScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 备份与恢复子页
+        animatedComposable(settings = appSettings, route = Routes.SETTINGS_BACKUP_RESTORE) {
+            BackupRestoreScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 设置备份：导出
+        animatedComposable(settings = appSettings, route = Routes.SETTINGS_BACKUP_EXPORT) {
+            BackupTransferScreen(
+                mode = BackupTransferModeV2.EXPORT,
+                payload = SettingsBackupPayloadV2,
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 设置备份：导入
+        animatedComposable(settings = appSettings, route = Routes.SETTINGS_BACKUP_IMPORT) {
+            BackupTransferScreen(
+                mode = BackupTransferModeV2.IMPORT,
+                payload = SettingsBackupPayloadV2,
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // Cookie 备份：导出
+        animatedComposable(settings = appSettings, route = Routes.SETTINGS_COOKIE_EXPORT) {
+            BackupTransferScreen(
+                mode = BackupTransferModeV2.EXPORT,
+                payload = CookiesBackupPayloadV2,
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // Cookie 备份：导入
+        animatedComposable(settings = appSettings, route = Routes.SETTINGS_COOKIE_IMPORT) {
+            BackupTransferScreen(
+                mode = BackupTransferModeV2.IMPORT,
+                payload = CookiesBackupPayloadV2,
                 onBack = { navController.popBackStack() },
             )
         }

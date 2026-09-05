@@ -62,9 +62,9 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.login.data.CasAuthApi
-import edu.cqwu.electricity.login.data.CookieParser
-import edu.cqwu.electricity.login.data.CookieStore
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.CookieParser
+import edu.cqwu.electricity.common.net.CookieStore
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.qrcode.data.QrCodeApi
 import edu.cqwu.electricity.qrcode.data.QrCodeType
 import edu.cqwu.electricity.settings.data.QrCodeColorMode

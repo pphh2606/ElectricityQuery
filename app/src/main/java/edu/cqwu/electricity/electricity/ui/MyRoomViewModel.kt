@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.electricity.ui
+﻿package edu.cqwu.electricity.electricity.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,9 +7,9 @@ import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.electricity.data.ElectricityApi
-import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,7 +71,7 @@ class MyRoomViewModel(
             }
 
             // 获取当前登录账号的数字学号（登录时缓存，本地读取零网络）
-            val account = AccountSessionStore.getActiveAccount()
+            val account = SessionCoordinatorV2.currentAccount()
             if (account == null) {
                 AppLog.d("MyRoomVM", "fastQueryMyRoom: 未登录")
                 _uiState.update { it.copy(isMyRoomQuerying = false, requiresReLogin = true) }

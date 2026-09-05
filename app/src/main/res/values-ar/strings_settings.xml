@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  الإعدادات                                 -->
@@ -255,7 +255,7 @@
 
     <string name="settings_topbar_surface_container_high">تمييز غامق</string>
 
-    <string name="settings_reduce_motion_off">تشغيل دائمًا</string>
+    <string name="settings_reduce_motion_off">تمكين حركات الصفحة والتمرير للتبديل</string>
 
     <string name="settings_page_transition_fade">تلاشي</string>
 
@@ -283,7 +283,7 @@
 
     <string name="settings_topbar_surface_container">تمييز متوسط</string>
 
-    <string name="settings_reduce_motion_on">إيقاف دائمًا</string>
+    <string name="settings_reduce_motion_on">تعطيل حركات الصفحة والتمرير للتبديل</string>
 
     <string name="settings_page_transition_slide_vertical">انزلاق عمودي</string>
 
@@ -340,4 +340,29 @@
     <string name="update_skip_version">لا تعرض هذا الإصدار مرة أخرى</string>
     <string name="update_download_latency">%1$d ms</string>
     <string name="update_download_probe_failed">فشل الاتصال</string>
-</resources>
+    <string name="settings_backup_restore">النسخ الاحتياطي والاستعادة</string>
+    <string name="settings_backup_restore_desc">نسخ واستعادة إعدادات التطبيق ومعلومات تسجيل الدخول وغيرها</string>
+    <string name="settings_backup_sheet_export">تصدير النسخة الاحتياطية</string>
+    <string name="settings_backup_sheet_import">استيراد النسخة الاحتياطية</string>
+    <string name="settings_backup_export_title">تصدير النسخة الاحتياطية</string>
+    <string name="settings_backup_import_title">استيراد النسخة الاحتياطية</string>
+    <string name="settings_backup_export_hint">محتوى النسخة الاحتياطية</string>
+    <string name="settings_backup_import_hint">أدخل محتوى النسخة الاحتياطية</string>
+    <string name="settings_backup_export_clipboard">نسخ إلى الحافظة</string>
+    <string name="settings_backup_export_file">حفظ في ملف محلي</string>
+    <string name="settings_backup_import_clipboard">استيراد من الحافظة</string>
+    <string name="settings_backup_import_file">استيراد من ملف</string>
+    <string name="settings_backup_confirm">موافق</string>
+    <string name="settings_backup_copied">تم نسخ النسخة الاحتياطية إلى الحافظة</string>
+    <string name="settings_backup_saved">تم حفظ النسخة الاحتياطية في ملف</string>
+    <string name="settings_backup_import_ok">تم استيراد الإعدادات؛ بعضها يسري بعد إعادة التشغيل</string>
+    <string name="settings_backup_invalid">محتوى غير صالح أو إصدار غير مدعوم</string>
+    <string name="settings_backup_restart">إعادة تشغيل التطبيق</string>
+    <string name="settings_backup_later">لاحقًا</string>
+<string name="settings_backup_settings_item">عنصر النسخ الاحتياطي والاستعادة</string>
+    <string name="settings_cookie_item">استيراد/تصدير ملفات الارتباط</string>
+    <string name="settings_cookie_sheet_export">تصدير ملفات الارتباط</string>
+    <string name="settings_cookie_sheet_import">استيراد ملفات الارتباط</string>
+    <string name="settings_cookie_export_title">تصدير ملفات الارتباط</string>
+    <string name="settings_cookie_import_title">استيراد ملفات الارتباط</string>
+    <string name="settings_cookie_import_ok">تم استيراد ملفات الارتباط. قم بالتبديل إلى الحساب في إعدادات الحساب/تسجيل الدخول لاستخدامها</string></resources>

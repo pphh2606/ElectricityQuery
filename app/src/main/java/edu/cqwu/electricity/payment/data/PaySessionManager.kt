@@ -1,18 +1,21 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.payment.data
 
+import edu.cqwu.electricity.common.net.CookieParser
+import edu.cqwu.electricity.common.net.CookieStore
+import edu.cqwu.electricity.common.net.HttpClientFactory
+import edu.cqwu.electricity.common.net.RedirectChainFollower
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.payment.data.HttpClientFactory
-import edu.cqwu.electricity.payment.data.PayApiBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.text.iterator
 
 /**
- * pay.cqwu.edu.cn 域 JWT 凭证管理器（对齐 [ServiceLoginManager]）。
+ * pay.cqwu.edu.cn 域 JWT 凭证管理器（对齐 [edu.cqwu.electricity.login.data.ServiceLoginManager]）。
  *
  * pay 业务 API 的鉴权凭证是短期 JWT（`datalook_reimbursement_token`，约 24 小时有效），
- * 通过 dlyscas 302 Location 的 `token=` 参数获取（见 [RedirectChainFollower.followToLocationToken]），
+ * 通过 dlyscas 302 Location 的 `token=` 参数获取（见 [edu.cqwu.electricity.common.net.RedirectChainFollower.followToLocationToken]），
  * 与 ePay/ehall 等"ticket 交换后 Set-Cookie JSESSIONID"的 cookie 凭证机制不同。
  *
  * [ensureToken] 幂等获取有效 token：本地读取 → 解析 JWT `exp` 判断是否过期（**过期判定基于
@@ -41,7 +44,7 @@ object PaySessionManager {
      * 幂等获取有效 token。
      *
      * @return 未过期的 JWT
-     * @throws SessionExpiredException 未登录（CAS 会话失效，重定向链被引导到 CAS 登录页）
+     * @throws edu.cqwu.electricity.common.net.SessionExpiredException 未登录（CAS 会话失效，重定向链被引导到 CAS 登录页）
      */
     suspend fun ensureToken(): String {
         // 快速路径 + 锁内双检（避免并发重复刷新）

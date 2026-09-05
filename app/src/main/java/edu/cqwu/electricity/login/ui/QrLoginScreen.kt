@@ -43,11 +43,10 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,11 +57,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.QrLoginApi
 import edu.cqwu.electricity.settings.data.QrCodeColorMode
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -70,33 +68,15 @@ import edu.cqwu.electricity.common.ui.QrCodeView
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * 扫码登录页面 UI 状态
- */
-private sealed class QrLoginUiState {
-    data object Initializing : QrLoginUiState()        // 初始化中（由 PullToRefreshBox 指示器替代加载动画）
-    data object Ready : QrLoginUiState()  // 已获取二维码
-    data object Scanned : QrLoginUiState()             // 已扫码，待确认
-    data object Confirmed : QrLoginUiState()           // 已确认，正在提交
-    data class Error(val message: String) : QrLoginUiState()  // 错误
-}
-
-/**
- * 扫码登录页面。
+ * 扫码登录页面（纯 UI）。
  *
- * 流程：
- * 1. 获取登录页 → 解析 lt/execution
- * 2. 获取二维码 UUID
- * 3. 显示二维码图片
- * 4. 每 1 秒轮询扫码状态
- * 5. 确认后提交认证 → 获取 CASTGC
- * 6. 登录成功，自动返回
+ * 取码 → 轮询 → 提交会话的流程与状态见 [QrLoginViewModel]；
+ * 本页面只负责渲染状态、下拉刷新重启流程、处理登录成功事件。
  *
- * 支持下拉刷新重新获取二维码。
  * 下拉刷新覆盖区域 = Scaffold 内容区（标题栏以下全部区域），确保加载失败时仍可下拉重试。
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,18 +85,27 @@ fun QrLoginScreen(
     onBack: () -> Unit,
     onLoginSuccess: () -> Unit = {},
     onNavigateToQrCodeSettings: () -> Unit = {},
+    viewModel: QrLoginViewModel = viewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val resources = LocalResources.current
-    val api = remember { QrLoginApi() }
     val topBarColors = currentTopBarColors()
     val snackbar = LocalSnackbarController.current
 
-    var uiState by remember { mutableStateOf<QrLoginUiState>(QrLoginUiState.Initializing) }
-    var isRefreshing by remember { mutableStateOf(false) }
-    // 解码后的二维码内容字符串（用于本地 QrCodeView 渲染）
-    var qrCodeDecodedContent by remember { mutableStateOf<String?>(null) }
+    // 状态与流程统一由 ViewModel 驱动（取码/轮询/提交会话在其内部完成）
+    val uiState by viewModel.uiState.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+
+    // 一次性事件：登录成功 → 提示并返回上一页
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            if (event == QrLoginEvent.LoginSuccess) {
+                snackbar.show(resources.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
+                onLoginSuccess()
+            }
+        }
+    }
 
     // ── 二维码主题设置（与支付码页面一致）──
     val appSettings = LocalAppSettingsState.current
@@ -157,110 +146,6 @@ fun QrLoginScreen(
         }
     }
 
-    /**
-     * 启动/重启扫码登录流程。
-     * 被 LaunchedEffect(Unit) 首次自动调用，
-     * 也被下拉刷新的 onRefresh 回调调用。
-     */
-    fun startQrLogin() {
-        scope.launch {
-            isRefreshing = true
-            uiState = QrLoginUiState.Initializing
-            qrCodeDecodedContent = null
-
-            // Step 1: 获取登录页，解析 lt/execution
-            val pageResult = api.fetchLoginPage()
-            if (pageResult.isFailure) {
-                uiState = QrLoginUiState.Error(pageResult.exceptionOrNull()?.message ?: resources.getString(R.string.login_get_page_failed))
-                isRefreshing = false
-                return@launch
-            }
-            val pageData = pageResult.getOrThrow()
-
-            // Step 2: 获取二维码 UUID
-            val uuidResult = api.fetchQrCodeUuid()
-            if (uuidResult.isFailure) {
-                uiState = QrLoginUiState.Error(uuidResult.exceptionOrNull()?.message ?: resources.getString(R.string.qrcode_fetch_failed))
-                isRefreshing = false
-                return@launch
-            }
-            val uuid = uuidResult.getOrThrow()
-
-            // Step 2.5: 下载二维码图片并解码为内容字符串
-            val decodeResult = api.downloadAndDecodeQrCode(uuid)
-            if (decodeResult.isFailure) {
-                uiState = QrLoginUiState.Error(decodeResult.exceptionOrNull()?.message ?: resources.getString(R.string.qrcode_decode_failed))
-                isRefreshing = false
-                return@launch
-            }
-            qrCodeDecodedContent = decodeResult.getOrThrow()
-
-            uiState = QrLoginUiState.Ready
-            isRefreshing = false
-
-            // Step 3: 轮询扫码状态（与 uiState 解耦，始终运行直到 break）
-            while (true) {
-                delay(1000) // 每 1 秒轮询一次
-                val statusResult = api.pollQrCodeStatus(uuid)
-                if (statusResult.isFailure) continue
-
-                val status = statusResult.getOrThrow()
-                when (status) {
-                    "0" -> { /* 等待扫码，继续轮询 */ }
-                    "2" -> {
-                        uiState = QrLoginUiState.Scanned
-                        // 继续等待确认（轮询不停止，等待 status 变为 "1"）
-                    }
-                    "1" -> {
-                        uiState = QrLoginUiState.Confirmed
-                        val submitResult = api.submitQrLogin(pageData.lt, uuid, pageData.execution)
-                        if (submitResult.isSuccess) {
-                            val loginResult = submitResult.getOrThrow()
-                            if (loginResult.username.isNotBlank()) {
-                                try {
-                                    loginResult.cookieStore?.let { tempStore ->
-                                        withContext(Dispatchers.IO) {
-                                            AccountSessionStore.commitLogin(
-                                                username = loginResult.username,
-                                                password = null,
-                                                rememberPassword = false,
-                                                cookies = tempStore.getAllCookies(),
-                                                // 扫码登录提取的 data-name="id" 即数字学号，直接随账号缓存
-                                                studentId = loginResult.username,
-                                            )
-                                        }
-                                    }
-                                } catch (e: Exception) {
-                                    AppLog.w("QrLoginScreen", "保存用户到 AccountSessionStore 失败", e)
-                                }
-                            }
-                            snackbar.show(resources.getString(R.string.login_success), ToastUtils.Type.SUCCESS)
-                            onLoginSuccess()
-                        } else {
-                            uiState = QrLoginUiState.Error(
-                                submitResult.exceptionOrNull()?.message ?: resources.getString(R.string.login_failed)
-                            )
-                        }
-                        break
-                    }
-                    "3" -> {
-                        uiState = QrLoginUiState.Error(resources.getString(R.string.login_qr_expired))
-                        break
-                    }
-                }
-            }
-        }
-    }
-
-    // ═══ 首次启动：自动开始扫码登录流程 ═══
-    var firstStart by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
-        if (firstStart) {
-            firstStart = false
-            startQrLogin()
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -296,7 +181,7 @@ fun QrLoginScreen(
         // 确保在 Initializing / Error 状态下下拉也生效
         PullToRefreshBox(
             isRefreshing = isRefreshing,
-            onRefresh = { startQrLogin() },
+            onRefresh = viewModel::startQrLogin,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -356,15 +241,13 @@ fun QrLoginScreen(
                                     .size(320.dp),
                                 contentAlignment = Alignment.Center,
                             ) {
-                                qrCodeDecodedContent?.let { content ->
-                                    QrCodeView(
-                                        content = content,
-                                        modifier = Modifier.fillMaxSize(),
-                                        squareCornerFraction = qrCornerFraction,
-                                        primaryColor = qrEffectivePrimaryColor,
-                                        backgroundColor = qrBackgroundColor,
-                                    )
-                                }
+                                QrCodeView(
+                                    content = state.content,
+                                    modifier = Modifier.fillMaxSize(),
+                                    squareCornerFraction = qrCornerFraction,
+                                    primaryColor = qrEffectivePrimaryColor,
+                                    backgroundColor = qrBackgroundColor,
+                                )
                             }
 
                             Spacer(modifier = Modifier.height(12.dp))
@@ -372,7 +255,7 @@ fun QrLoginScreen(
                             // 二维码网址内容（灰色小字，居中，长按可复制）
                             SelectionContainer {
                                 Text(
-                                    text = qrCodeDecodedContent ?: "",
+                                    text = state.content,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                     textAlign = TextAlign.Center,
@@ -390,21 +273,17 @@ fun QrLoginScreen(
                                 // 保存到相册
                                 TextButton(
                                     onClick = {
-                                        val content = qrCodeDecodedContent
-                                        if (!content.isNullOrBlank()) {
-                                            scope.launch {
-                                                val success = withContext(Dispatchers.IO) {
-                                                    saveQrCodeToGallery(context, content)
-                                                }
-                                                if (success) {
-                                                    snackbar.show(resources.getString(R.string.qrcode_save_success), ToastUtils.Type.SUCCESS)
-                                                } else {
-                                                    snackbar.show(resources.getString(R.string.qrcode_save_failed), ToastUtils.Type.ERROR)
-                                                }
+                                        scope.launch {
+                                            val success = withContext(Dispatchers.IO) {
+                                                saveQrCodeToGallery(context, state.content)
+                                            }
+                                            if (success) {
+                                                snackbar.show(resources.getString(R.string.qrcode_save_success), ToastUtils.Type.SUCCESS)
+                                            } else {
+                                                snackbar.show(resources.getString(R.string.qrcode_save_failed), ToastUtils.Type.ERROR)
                                             }
                                         }
                                     },
-                                    enabled = !qrCodeDecodedContent.isNullOrBlank(),
                                 ) {
                                     Text(
                                         stringResource(R.string.scan_save_to_album),
@@ -421,20 +300,16 @@ fun QrLoginScreen(
                                 // 分享网址
                                 TextButton(
                                     onClick = {
-                                        val url = qrCodeDecodedContent?.trim()
-                                        if (!url.isNullOrBlank()) {
-                                            try {
-                                                val intent = Intent(Intent.ACTION_SEND).apply {
-                                                    type = "text/plain"
-                                                    putExtra(Intent.EXTRA_TEXT, url)
-                                                }
-                                                context.startActivity(Intent.createChooser(intent, null))
-                                            } catch (e: Exception) {
-                                                AppLog.w("QrLoginScreen", "分享URL失败", e)
+                                        try {
+                                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                                type = "text/plain"
+                                                putExtra(Intent.EXTRA_TEXT, state.content)
                                             }
+                                            context.startActivity(Intent.createChooser(intent, null))
+                                        } catch (e: Exception) {
+                                            AppLog.w("QrLoginScreen", "分享URL失败", e)
                                         }
                                     },
-                                    enabled = !qrCodeDecodedContent.isNullOrBlank(),
                                 ) {
                                     Text(
                                         stringResource(R.string.scan_open_external),
@@ -486,7 +361,7 @@ fun QrLoginScreen(
                             errorMessage = state.message,
                             requiresReLogin = false,
                             onReLogin = {},
-                            onRetry = { startQrLogin() },
+                            onRetry = viewModel::startQrLogin,
                         )
                     }
                 }

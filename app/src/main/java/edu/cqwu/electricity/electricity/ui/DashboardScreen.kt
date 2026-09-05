@@ -69,6 +69,7 @@ import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.UiMessage
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.theme.util.copyToClipboard
 import java.util.Locale
 
 /**
@@ -619,20 +620,4 @@ fun getDashboardTextContent(room: BuildingNode?, balance: BalanceResponse?, reso
     }
 
     return sb.toString()
-}
-
-/**
- * 将文本复制到系统剪贴板并显示提示（通过 ToastOverlay）
- */
-fun copyToClipboard(
-    context: android.content.Context,
-    text: String,
-    label: String,
-    snackbar: edu.cqwu.electricity.theme.ui.SnackbarController
-) {
-    val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
-        as android.content.ClipboardManager
-    val clip = android.content.ClipData.newPlainText(label, text)
-    clipboard.setPrimaryClip(clip)
-    snackbar.show(context.getString(R.string.common_copied_to_clipboard), ToastUtils.Type.SUCCESS)
 }

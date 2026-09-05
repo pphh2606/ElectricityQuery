@@ -13,7 +13,7 @@ import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.electricity.data.ElectricityApi
 import edu.cqwu.electricity.electricity.data.ElectricityPayApi
 import edu.cqwu.electricity.electricity.data.ShowselectPageData
-import edu.cqwu.electricity.login.data.AccountSessionStore
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.payment.ui.PaymentFlowDelegate
 import edu.cqwu.electricity.payment.ui.PaymentState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -400,14 +400,14 @@ class RechargeViewModel(application: Application) : AndroidViewModel(application
      * 从当前登录账号自动填充数字学号并查询房间列表。
      *
      * 登录用户名可能是登录别名（非学号），而电费系统只认数字学号；
-     * 学号在登录时获取并随账号缓存（[AccountSessionStore.getActiveStudentId]，本地读取零网络）。
+     * 学号在登录时获取并随账号缓存（本地读取零网络）。
      *
      * 仅在充值输入框为空时填充（避免覆盖用户已手动输入的内容）；
      * 未登录或本地无学号（未回填）时静默跳过，不打扰用户。
      */
     fun autoFillStudentIdFromLogin() {
         viewModelScope.launch {
-            val studentId = AccountSessionStore.getActiveStudentId()
+            val studentId = SessionCoordinatorV2.currentAccount()?.studentId
             if (studentId.isNullOrBlank()) {
                 AppLog.d("RechargeVM", "autoFillStudentIdFromLogin: 本地无学号（未登录或未回填），跳过自动填充")
                 return@launch

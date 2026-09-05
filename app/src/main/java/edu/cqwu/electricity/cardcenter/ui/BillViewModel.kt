@@ -7,7 +7,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.data.BillFilter
 import edu.cqwu.electricity.cardcenter.data.BillPageInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job

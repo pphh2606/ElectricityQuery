@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.common.net
 
 import edu.cqwu.electricity.logging.AppLog
 import okhttp3.HttpUrl.Companion.toHttpUrl

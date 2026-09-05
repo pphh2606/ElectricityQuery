@@ -5,8 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,7 +48,7 @@ class UserNameEditViewModel(application: Application) : AndroidViewModel(applica
 
     /** 统一刷新入口（首次进入、下拉刷新、保存成功后）— 刷新期间由 UI 顶部下拉动画指示 */
     fun refresh() {
-        val account = AccountSessionStore.getActiveAccount()
+        val account = SessionCoordinatorV2.currentAccount()
         if (account == null || !account.hasLoginState) {
             _uiState.update { it.copy(isRefreshing = false, loadError = getString(R.string.user_name_edit_no_account)) }
             return
@@ -86,7 +86,7 @@ class UserNameEditViewModel(application: Application) : AndroidViewModel(applica
             }
             return
         }
-        val account = AccountSessionStore.getActiveAccount() ?: return
+        val account = SessionCoordinatorV2.currentAccount() ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true, aliasError = null) }
             api.checkAlias(account.cookies, alias)
@@ -129,7 +129,7 @@ class UserNameEditViewModel(application: Application) : AndroidViewModel(applica
     private fun validateAlias(alias: String) {
         val trimmed = alias.trim()
         if (trimmed.isEmpty()) return
-        val account = AccountSessionStore.getActiveAccount() ?: return
+        val account = SessionCoordinatorV2.currentAccount() ?: return
         viewModelScope.launch {
             api.checkAlias(account.cookies, trimmed)
                 .onSuccess { available ->

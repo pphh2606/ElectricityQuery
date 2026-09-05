@@ -3,7 +3,7 @@ package edu.cqwu.electricity.electricity.data
 import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

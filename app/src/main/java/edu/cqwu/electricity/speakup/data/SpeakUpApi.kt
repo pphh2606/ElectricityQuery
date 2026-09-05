@@ -2,9 +2,9 @@ package edu.cqwu.electricity.speakup.data
 
 import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
-import edu.cqwu.electricity.login.data.ServiceLoginManager
-import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
@@ -14,7 +14,7 @@ import okhttp3.Request
  * 「有话要说」API 请求封装。
  *
  * 流程与 [HallFavoriteApi] 一致：
- * 1. 先通过 [ServiceLoginManager.ensureLogin] 完成 ehall CAS ticket 交换
+ * 1. 先通过 [AutoLoginCoordinatorV2.ensureService] 完成 ehall CAS ticket 交换
  * 2. 再调用业务 API 获取咨询区列表
  *
  * 使用 [HttpClientFactory.shared]（共享 CookieJar，自动携带登录态 Cookie）。
@@ -62,7 +62,7 @@ class SpeakUpApi {
             try {
                 // 步骤 1：确保 ehall session 已初始化
                 AppLog.d(TAG, "[fetchConsultationAreas] 开始，初始化 ehall session")
-                ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_URL)
+                AutoLoginCoordinatorV2.ensureService(protectedUrl = EHALL_APP_URL)
                 AppLog.d(TAG, "[fetchConsultationAreas] ehall session 初始化完成")
 
                 // 步骤 2：POST getZxq.do
@@ -116,7 +116,7 @@ class SpeakUpApi {
     suspend fun preSetupEhallRole(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             AppLog.d(TAG, "[preSetupEhallRole] 开始")
-            ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_URL)
+            AutoLoginCoordinatorV2.ensureService(protectedUrl = EHALL_APP_URL)
 
             // 步骤 1：获取用户角色
             val rolesBody = FormBody.Builder()
@@ -183,7 +183,7 @@ class SpeakUpApi {
         pageSize: Int = 10
     ): Result<List<ConsultationMessage>> = withContext(Dispatchers.IO) {
         try {
-            ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_URL)
+            AutoLoginCoordinatorV2.ensureService(protectedUrl = EHALL_APP_URL)
 
             val dataJson = """{"pageNumber":$pageNumber,"pageSize":$pageSize,"ZXLXDM":"100","ZXBT":"","ZXQDM":"$areaCode"}"""
             val formBody = FormBody.Builder()
@@ -225,7 +225,7 @@ class SpeakUpApi {
      */
     suspend fun fetchMessageDetail(wid: String): Result<ConsultationMessage> = withContext(Dispatchers.IO) {
         try {
-            ServiceLoginManager.ensureLogin(protectedUrl = EHALL_APP_URL)
+            AutoLoginCoordinatorV2.ensureService(protectedUrl = EHALL_APP_URL)
 
             val dataJson = """{"WID":"$wid"}"""
             val formBody = FormBody.Builder()

@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.login.data
+package edu.cqwu.electricity.common.net
 
 /**
  * Shared parsing for `name=value; name2=value2` cookie strings.

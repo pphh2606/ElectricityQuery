@@ -3,9 +3,9 @@ package edu.cqwu.electricity.person.data
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.login.data.ServiceLoginManager
-import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -17,7 +17,7 @@ import java.net.URLEncoder
  * 调用 ehall 通用人员选择组件 `choose_person.do`，按姓名关键字搜索校内人员。
  *
  * 流程与 [edu.cqwu.electricity.speakup.data.SpeakUpApi] 一致：
- * 1. 先通过 [ServiceLoginManager.ensureLogin] 完成 ehall CAS ticket 交换
+ * 1. 先通过 [AutoLoginCoordinatorV2.ensureService] 完成 ehall CAS ticket 交换
  * 2. 再调用业务 API 获取人员列表
  *
  * 使用 [HttpClientFactory.shared]（共享 CookieJar，自动携带登录态 Cookie）。
@@ -70,7 +70,7 @@ class PersonSearchApi {
     ): Result<PersonSearchResult> = withContext(Dispatchers.IO) {
         try {
             // 步骤 1：确保 ehall session 已初始化（choose_person 受 CAS 保护）
-            ServiceLoginManager.ensureLogin(protectedUrl = CHOOSE_PERSON_URL)
+            AutoLoginCoordinatorV2.ensureService(protectedUrl = CHOOSE_PERSON_URL)
 
             // 步骤 2：GET choose_person.do
             val url = buildString {

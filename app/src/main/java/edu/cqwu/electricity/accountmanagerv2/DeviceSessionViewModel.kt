@@ -5,8 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,7 +51,7 @@ class DeviceSessionViewModel(application: Application) : AndroidViewModel(applic
 
     /** 统一刷新入口（首次进入、下拉刷新、踢出成功后） */
     fun refresh() {
-        val account = AccountSessionStore.getActiveAccount()
+        val account = SessionCoordinatorV2.currentAccount()
         if (account == null || !account.hasLoginState) {
             _uiState.update {
                 it.copy(
@@ -79,7 +79,7 @@ class DeviceSessionViewModel(application: Application) : AndroidViewModel(applic
 
     /** 踢出指定会话：确认后由 UI 调用，成功提示并刷新列表，失败提示错误 */
     fun removeSession(sessionId: String) {
-        val account = AccountSessionStore.getActiveAccount() ?: return
+        val account = SessionCoordinatorV2.currentAccount() ?: return
         if (_uiState.value.kickingSessionId != null) return // 已有踢出进行中，防重复
         viewModelScope.launch {
             _uiState.update { it.copy(kickingSessionId = sessionId) }

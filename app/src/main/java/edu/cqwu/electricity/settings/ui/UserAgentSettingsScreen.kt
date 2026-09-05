@@ -44,8 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.UserAgentEntry
-import edu.cqwu.electricity.login.data.UserAgentProvider
+import edu.cqwu.electricity.settings.data.UserAgentEntry
+import edu.cqwu.electricity.settings.data.UserAgentProvider
 
 /**
  * 浏览器标识设置页 — 列表展示所有条目，支持选择和删除。

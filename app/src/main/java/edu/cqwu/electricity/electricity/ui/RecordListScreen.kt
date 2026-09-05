@@ -52,6 +52,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.theme.util.copyToClipboard
 import kotlinx.coroutines.launch
 
 /**

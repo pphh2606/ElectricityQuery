@@ -1,11 +1,17 @@
 package edu.cqwu.electricity.login.data
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.webkit.CookieManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import edu.cqwu.electricity.common.net.CookieParser
 import edu.cqwu.electricity.logging.AppLog
+import edu.cqwu.electricity.login.model.AuthSessionCommitV2
+import edu.cqwu.electricity.login.model.SessionStateV2
+import edu.cqwu.electricity.login.model.sessionStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
@@ -53,30 +59,57 @@ object AccountSessionStore {
     private const val KEY_ACTIVE_ACCOUNT_ID = "active_account_id"
 
     @Volatile
-    private var prefs: SharedPreferences? = null
+    private var storage: KeyValueStoreV2? = null
+
+    private val _sessionState = MutableStateFlow<SessionStateV2>(SessionStateV2.LoggedOut)
+
+    /** 当前会话状态（可观察；激活账号维度，见 [SessionStateV2]） */
+    val sessionState: StateFlow<SessionStateV2> = _sessionState.asStateFlow()
 
     /**
      * 初始化（幂等）。首次调用创建 EncryptedSharedPreferences（耗时 ~100ms），应在 Application.onCreate 中调用。
      */
     fun init(context: Context) {
-        if (prefs != null) return
+        if (storage != null) {
+            publishSessionState()
+            return
+        }
         synchronized(this) {
-            if (prefs != null) return
+            if (storage != null) {
+                publishSessionState()
+                return
+            }
             val masterKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
-            prefs = EncryptedSharedPreferences.create(
+            val encPrefs = EncryptedSharedPreferences.create(
                 context,
                 PREF_NAME,
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
+            storage = SharedPrefsStoreV2(encPrefs)
         }
+        publishSessionState()
     }
 
-    private fun prefs(): SharedPreferences =
-        prefs ?: throw IllegalStateException("AccountSessionStore 未初始化，请先调用 init(context)")
+    /**
+     * 以内存实现初始化（仅 JVM 单测使用）：跳过 Android 加密存储。
+     */
+    internal fun initForTesting(fake: KeyValueStoreV2) {
+        storage = fake
+        publishSessionState()
+    }
+
+    /** 依据当前激活账号重新发布会话状态（各状态变更入口调用，保证观察者最新） */
+    private fun publishSessionState() {
+        if (storage == null) return
+        _sessionState.value = sessionStateOf(getActiveAccount())
+    }
+
+    private fun store(): KeyValueStoreV2 =
+        storage ?: throw IllegalStateException("AccountSessionStore 未初始化，请先调用 init(context)")
 
     // ═══════════════════════════════════════════
     //  读取
@@ -84,7 +117,7 @@ object AccountSessionStore {
 
     /** 所有账号，按最后登录时间降序 */
     fun getAllAccounts(): List<SavedAccount> {
-        val json = prefs().getString(KEY_ACCOUNTS, null) ?: return emptyList()
+        val json = store().getString(KEY_ACCOUNTS) ?: return emptyList()
         return try {
             val arr = JSONArray(json)
             val list = mutableListOf<SavedAccount>()
@@ -104,7 +137,7 @@ object AccountSessionStore {
 
     /** 当前激活的账号条目（按持久化的条目 id 定位） */
     fun getActiveAccount(): SavedAccount? {
-        val id = prefs().getString(KEY_ACTIVE_ACCOUNT_ID, null)?.takeIf { it.isNotBlank() } ?: return null
+        val id = store().getString(KEY_ACTIVE_ACCOUNT_ID)?.takeIf { it.isNotBlank() } ?: return null
         return getAccountById(id)
     }
 
@@ -146,6 +179,20 @@ object AccountSessionStore {
     }
 
     /**
+     * 统一提交"登录成功后的账号会话"（账密/扫码/快捷登录共用），
+     * 内容与 [commitLogin] 等价，仅参数收敛为领域值对象 [AuthSessionCommitV2]。
+     */
+    fun commitSession(input: AuthSessionCommitV2) {
+        commitLogin(
+            username = input.username,
+            password = input.password,
+            rememberPassword = input.rememberPassword,
+            cookies = input.cookies,
+            studentId = input.studentId,
+        )
+    }
+
+    /**
      * 回填/更新指定账号的数字学号（登录成功后获取、启动验证回填等场景）。
      */
     fun updateStudentId(accountId: String, studentId: String?) {
@@ -176,8 +223,9 @@ object AccountSessionStore {
             ?: throw IllegalStateException("账号不存在: $accountId")
         SessionCleaner.clearAll()
         writeCookiesToSystem(account.cookies)
-        prefs().edit().putString(KEY_ACTIVE_ACCOUNT_ID, accountId).apply()
+        store().putString(KEY_ACTIVE_ACCOUNT_ID, accountId)
         AppLog.d("AccountSessionStore", "激活账号: ${account.username}, cookie域数=${account.cookies.size}")
+        publishSessionState()
     }
 
     /**
@@ -221,6 +269,7 @@ object AccountSessionStore {
         accounts[idx] = old.copy(cookies = mergedMap)
         saveAccounts(accounts)
         AppLog.d("AccountSessionStore", "合并 cookie 到 ${old.username}: ${cookies.keys}")
+        publishSessionState()
     }
 
     /**
@@ -239,6 +288,25 @@ object AccountSessionStore {
         mergeCookies(active.id, mapOf(domain to parsed))
     }
 
+    /**
+     * Cookie 备份导入：把草稿作为**新条目**追加（重新生成 UUID）。
+     *
+     * 侵入最小化：不激活任何条目、不改动系统 CookieManager、
+     * 不联网校验；密码字段强制为空（备份不含密码）。用户可在账号/登录设置页手动切换。
+     */
+    fun importAccounts(drafts: List<SavedAccount>) {
+        if (drafts.isEmpty()) return
+        val imported = drafts.map { draft ->
+            draft.copy(
+                id = UUID.randomUUID().toString(),
+                password = null,
+                rememberPassword = false,
+            )
+        }
+        saveAccounts(getAllAccounts() + imported)
+        AppLog.d("AccountSessionStore", "导入 Cookie 备份账号数: ${imported.size}")
+    }
+
     // ═══════════════════════════════════════════
     //  删除 / 清除
     // ═══════════════════════════════════════════
@@ -253,16 +321,18 @@ object AccountSessionStore {
         saveAccounts(accounts)
         if (getActiveAccount()?.id == accountId) {
             SessionCleaner.clearAll()
-            prefs().edit().remove(KEY_ACTIVE_ACCOUNT_ID).apply()
+            store().remove(KEY_ACTIVE_ACCOUNT_ID)
         }
         AppLog.d("AccountSessionStore", "删除账号: $accountId")
+        publishSessionState()
     }
 
     /** 清空所有账号数据与登录态（设置页"清除存储空间"用）。 */
     fun clearAllData() {
         SessionCleaner.clearAll()
-        prefs().edit().clear().apply()
+        store().clear()
         AppLog.d("AccountSessionStore", "清空全部账号数据")
+        publishSessionState()
     }
 
     /**
@@ -277,6 +347,7 @@ object AccountSessionStore {
         saveAccounts(accounts.map { it.copy(cookies = emptyMap()) })
         SessionCleaner.clearSystemCookies()
         AppLog.d("AccountSessionStore", "已清除所有账号的登录状态，保留账号与密码")
+        publishSessionState()
     }
 
     // ═══════════════════════════════════════════
@@ -302,7 +373,7 @@ object AccountSessionStore {
             obj.put("c", cookiesObj)
             arr.put(obj)
         }
-        prefs().edit().putString(KEY_ACCOUNTS, arr.toString()).apply()
+        store().putString(KEY_ACCOUNTS, arr.toString())
     }
 
     private fun parseAccount(obj: JSONObject): SavedAccount? {

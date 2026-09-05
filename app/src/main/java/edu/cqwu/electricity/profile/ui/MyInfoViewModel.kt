@@ -8,7 +8,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.profile.data.StudentInfo
 import edu.cqwu.electricity.profile.data.CampusphereApi
 import edu.cqwu.electricity.profile.data.MenuCategory
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

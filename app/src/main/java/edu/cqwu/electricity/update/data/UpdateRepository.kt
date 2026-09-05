@@ -2,7 +2,7 @@ package edu.cqwu.electricity.update.data
 
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume

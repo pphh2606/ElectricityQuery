@@ -1,16 +1,18 @@
 package edu.cqwu.electricity.webvpn
 
+import edu.cqwu.electricity.common.net.CookieParser
+import edu.cqwu.electricity.common.net.CookieStoreOkHttpJar
 import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager
 import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.CasLoginException
 import edu.cqwu.electricity.login.data.CasLoginFlow
-import edu.cqwu.electricity.login.data.CookieParser
-import edu.cqwu.electricity.login.data.CookieStoreOkHttpJar
-import edu.cqwu.electricity.login.data.RedirectChainFollower
-import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.login.data.SessionExpiryReason
-import edu.cqwu.electricity.payment.data.HttpClientFactory
+import edu.cqwu.electricity.common.net.RedirectChainFollower
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiryReason
+import edu.cqwu.electricity.common.net.WebVpnEncoder
+import edu.cqwu.electricity.common.net.WebVpnSettings
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import okhttp3.CookieJar
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap

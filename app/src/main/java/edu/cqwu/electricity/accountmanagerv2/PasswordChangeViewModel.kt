@@ -5,9 +5,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.data.LogoutApi
-import edu.cqwu.electricity.login.data.SessionExpiredException
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,7 +66,7 @@ class PasswordChangeViewModel(application: Application) : AndroidViewModel(appli
 
     /** 统一刷新入口（首次进入、下拉刷新、修改成功后）— 重新加载页面取得新盐值 */
     fun refresh() {
-        val account = AccountSessionStore.getActiveAccount()
+        val account = SessionCoordinatorV2.currentAccount()
         if (account == null || !account.hasLoginState) {
             _uiState.update { it.copy(isRefreshing = false, loadError = getString(R.string.password_change_no_account)) }
             return
@@ -149,7 +149,7 @@ class PasswordChangeViewModel(application: Application) : AndroidViewModel(appli
             return
         }
 
-        val account = AccountSessionStore.getActiveAccount() ?: return
+        val account = SessionCoordinatorV2.currentAccount() ?: return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true, passwordError = null, confirmError = null, captchaError = null) }

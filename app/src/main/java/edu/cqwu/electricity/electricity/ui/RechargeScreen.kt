@@ -113,7 +113,7 @@ fun RechargeScreen(
 
     // ── 自动填充当前登录账号的数字学号并查询 ──
     // 登录用户名可能是登录别名（非学号），电费系统只认数字学号；
-    // 学号在登录时获取并随账号缓存（AccountSessionStore.getActiveStudentId，本地读取零网络）
+    // 学号在登录时获取并随账号缓存（本地读取零网络）
     LaunchedEffect(Unit) {
         viewModel.autoFillStudentIdFromLogin()
     }

@@ -58,7 +58,7 @@ private data class UserProfileResponse(
 /**
  * 缴费大厅（pay.cqwu.edu.cn）API 封装。
  *
- * 认证复用 [PayApiBase]：X-Token 由 [edu.cqwu.electricity.login.data.PaySessionManager] 统一管理
+ * 认证复用 [PayApiBase]：X-Token 由 [edu.cqwu.electricity.payment.data.PaySessionManager] 统一管理
  * （JWT 本地 exp 校验 + 过期静默刷新），业务请求前保证 token 新鲜。
  */
 class FeeServiceHallApi : PayApiBase() {

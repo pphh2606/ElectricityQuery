@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  設定                                       -->
@@ -255,7 +255,7 @@
 
     <string name="settings_topbar_surface_container_high">濃いアクセント</string>
 
-    <string name="settings_reduce_motion_off">常にオン</string>
+    <string name="settings_reduce_motion_off">ページのアニメーションとスワイプ切り替えを有効化</string>
 
     <string name="settings_page_transition_fade">フェード</string>
 
@@ -283,7 +283,7 @@
 
     <string name="settings_topbar_surface_container">中間アクセント</string>
 
-    <string name="settings_reduce_motion_on">常にオフ</string>
+    <string name="settings_reduce_motion_on">ページのアニメーションとスワイプ切り替えを無効化</string>
 
     <string name="settings_page_transition_slide_vertical">垂直スライド</string>
 
@@ -340,4 +340,29 @@
     <string name="update_skip_version">このバージョンを再表示しない</string>
     <string name="update_download_latency">%1$d ms</string>
     <string name="update_download_probe_failed">接続に失敗しました</string>
-</resources>
+    <string name="settings_backup_restore">バックアップと復元</string>
+    <string name="settings_backup_restore_desc">アプリ設定やログイン情報などをバックアップ・復元</string>
+    <string name="settings_backup_sheet_export">バックアップを書き出す</string>
+    <string name="settings_backup_sheet_import">バックアップを取り込む</string>
+    <string name="settings_backup_export_title">バックアップの書き出し</string>
+    <string name="settings_backup_import_title">バックアップの取り込み</string>
+    <string name="settings_backup_export_hint">バックアップ内容</string>
+    <string name="settings_backup_import_hint">バックアップ内容を入力</string>
+    <string name="settings_backup_export_clipboard">クリップボードにコピー</string>
+    <string name="settings_backup_export_file">ローカルファイルに保存</string>
+    <string name="settings_backup_import_clipboard">クリップボードから取り込む</string>
+    <string name="settings_backup_import_file">ファイルから取り込む</string>
+    <string name="settings_backup_confirm">決定</string>
+    <string name="settings_backup_copied">バックアップをクリップボードにコピーしました</string>
+    <string name="settings_backup_saved">バックアップをファイルに保存しました</string>
+    <string name="settings_backup_import_ok">設定を取り込みました。一部は再起動後に有効です</string>
+    <string name="settings_backup_invalid">無効な内容または未対応のバージョンです</string>
+    <string name="settings_backup_restart">アプリを再起動</string>
+    <string name="settings_backup_later">後で</string>
+<string name="settings_backup_settings_item">バックアップ/復元の設定項目</string>
+    <string name="settings_cookie_item">Cookieのインポート/エクスポート</string>
+    <string name="settings_cookie_sheet_export">Cookieをエクスポート</string>
+    <string name="settings_cookie_sheet_import">Cookieをインポート</string>
+    <string name="settings_cookie_export_title">Cookieをエクスポート</string>
+    <string name="settings_cookie_import_title">Cookieをインポート</string>
+    <string name="settings_cookie_import_ok">Cookieをインポートしました。アカウント/ログイン設定で切り替えて使用できます</string></resources>

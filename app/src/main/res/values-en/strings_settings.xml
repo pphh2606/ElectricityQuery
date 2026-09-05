@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  Settings                                   -->
@@ -256,7 +256,7 @@
 
     <string name="settings_topbar_surface_container_high">Dark accent</string>
 
-    <string name="settings_reduce_motion_off">Always on</string>
+    <string name="settings_reduce_motion_off">Enable page animations and swipe switching</string>
 
     <string name="settings_page_transition_fade">Fade</string>
 
@@ -284,7 +284,7 @@
 
     <string name="settings_topbar_surface_container">Medium accent</string>
 
-    <string name="settings_reduce_motion_on">Always off</string>
+    <string name="settings_reduce_motion_on">Disable page animations and swipe switching</string>
 
     <string name="settings_page_transition_slide_vertical">Vertical slide</string>
 
@@ -341,4 +341,29 @@
     <string name="update_skip_version">Don\'t show this version again</string>
     <string name="update_download_latency">%1$d ms</string>
     <string name="update_download_probe_failed">Connection failed</string>
-</resources>
+    <string name="settings_backup_restore">Backup &amp; Restore</string>
+    <string name="settings_backup_restore_desc">Back up and restore app settings, login info, etc.</string>
+    <string name="settings_backup_sheet_export">Export backup</string>
+    <string name="settings_backup_sheet_import">Import backup</string>
+    <string name="settings_backup_export_title">Export backup</string>
+    <string name="settings_backup_import_title">Import backup</string>
+    <string name="settings_backup_export_hint">Backup content</string>
+    <string name="settings_backup_import_hint">Enter backup content</string>
+    <string name="settings_backup_export_clipboard">Copy to clipboard</string>
+    <string name="settings_backup_export_file">Save to local file</string>
+    <string name="settings_backup_import_clipboard">Import from clipboard</string>
+    <string name="settings_backup_import_file">Import from file</string>
+    <string name="settings_backup_confirm">OK</string>
+    <string name="settings_backup_copied">Backup copied to clipboard</string>
+    <string name="settings_backup_saved">Backup saved to local file</string>
+    <string name="settings_backup_import_ok">Settings imported; some take effect after restart</string>
+    <string name="settings_backup_invalid">Invalid or unsupported backup content</string>
+    <string name="settings_backup_restart">Restart app</string>
+    <string name="settings_backup_later">Later</string>
+<string name="settings_backup_settings_item">Backup &amp; restore settings</string>
+    <string name="settings_cookie_item">Import/export cookies</string>
+    <string name="settings_cookie_sheet_export">Export cookies</string>
+    <string name="settings_cookie_sheet_import">Import cookies</string>
+    <string name="settings_cookie_export_title">Export cookies</string>
+    <string name="settings_cookie_import_title">Import cookies</string>
+    <string name="settings_cookie_import_ok">Cookies imported. Switch to the account in account/login settings to use them.</string></resources>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ═══════════════════════════════════════════ -->
     <!--  Paramètres                                 -->
@@ -256,7 +256,7 @@
 
     <string name="settings_topbar_surface_container_high">Accent foncé</string>
 
-    <string name="settings_reduce_motion_off">Toujours activé</string>
+    <string name="settings_reduce_motion_off">Activer les animations de page et le glissement</string>
 
     <string name="settings_page_transition_fade">Fondu</string>
 
@@ -284,7 +284,7 @@
 
     <string name="settings_topbar_surface_container">Accent moyen</string>
 
-    <string name="settings_reduce_motion_on">Toujours désactivé</string>
+    <string name="settings_reduce_motion_on">Désactiver les animations de page et le glissement</string>
 
     <string name="settings_page_transition_slide_vertical">Glissement vertical</string>
 
@@ -341,4 +341,29 @@
     <string name="update_skip_version">Ne plus afficher cette version</string>
     <string name="update_download_latency">%1$d ms</string>
     <string name="update_download_probe_failed">Échec de connexion</string>
-</resources>
+    <string name="settings_backup_restore">Sauvegarde et restauration</string>
+    <string name="settings_backup_restore_desc">Sauvegarde et restauration des réglages, infos de connexion, etc.</string>
+    <string name="settings_backup_sheet_export">Exporter la sauvegarde</string>
+    <string name="settings_backup_sheet_import">Importer la sauvegarde</string>
+    <string name="settings_backup_export_title">Exporter la sauvegarde</string>
+    <string name="settings_backup_import_title">Importer la sauvegarde</string>
+    <string name="settings_backup_export_hint">Contenu de sauvegarde</string>
+    <string name="settings_backup_import_hint">Saisissez le contenu de sauvegarde</string>
+    <string name="settings_backup_export_clipboard">Copier dans le presse-papiers</string>
+    <string name="settings_backup_export_file">Enregistrer dans un fichier local</string>
+    <string name="settings_backup_import_clipboard">Importer depuis le presse-papiers</string>
+    <string name="settings_backup_import_file">Importer depuis un fichier</string>
+    <string name="settings_backup_confirm">OK</string>
+    <string name="settings_backup_copied">Sauvegarde copiée dans le presse-papiers</string>
+    <string name="settings_backup_saved">Sauvegarde enregistrée dans un fichier</string>
+    <string name="settings_backup_import_ok">Réglages importés ; certains prennent effet après redémarrage</string>
+    <string name="settings_backup_invalid">Contenu invalide ou version non prise en charge</string>
+    <string name="settings_backup_restart">Redémarrer l’application</string>
+    <string name="settings_backup_later">Plus tard</string>
+<string name="settings_backup_settings_item">Sauvegarde/récupération des réglages</string>
+    <string name="settings_cookie_item">Importer/Exporter les cookies</string>
+    <string name="settings_cookie_sheet_export">Exporter les cookies</string>
+    <string name="settings_cookie_sheet_import">Importer les cookies</string>
+    <string name="settings_cookie_export_title">Exporter les cookies</string>
+    <string name="settings_cookie_import_title">Importer les cookies</string>
+    <string name="settings_cookie_import_ok">Cookies importés. Basculez de compte dans les réglages de compte/connexion pour les utiliser.</string></resources>

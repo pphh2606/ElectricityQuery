@@ -1,10 +1,7 @@
-package edu.cqwu.electricity.webvpn
+package edu.cqwu.electricity.common.net
 
 import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager
-import edu.cqwu.electricity.login.data.HtmlFormParser
-import edu.cqwu.electricity.login.data.SessionExpiredException
-import edu.cqwu.electricity.login.data.SessionExpiryReason
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -31,9 +28,7 @@ internal object ManualCasFlowTag
 class WebVpnInterceptor(
     private val cookieJar: CookieJar?,
     private val swallowSessionExpired: Boolean = false,
-    private val sessionAuthenticator: (String) -> Unit = { protectedUrl ->
-        WebVpnSessionManager.authenticate(protectedUrl, cookieJar)
-    },
+    private val sessionAuthenticator: (String) -> Unit,
 ) : Interceptor {
 
     private object AppLayerTag
