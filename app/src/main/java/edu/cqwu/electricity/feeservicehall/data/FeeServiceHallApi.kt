@@ -66,6 +66,7 @@ class FeeServiceHallApi : PayApiBase() {
     private val jsonMediaType = "application/json;charset=UTF-8".toMediaType()
 
     companion object {
+        private const val TAG = "FeeServiceHallApi"
         private const val PROJECT_LIST_URL =
             "https://pay.cqwu.edu.cn/api/pay/pay/cos/merchant/getProjectTypeAndProjectInfoListInit/datalook"
         private const val ORDER_LIST_URL =
@@ -95,8 +96,10 @@ class FeeServiceHallApi : PayApiBase() {
                 val body = response.body.string()
                 gson.parseApiResponse<FeeProjectResponse>(body).map { it.data ?: emptyList() }
             } catch (e: ApiBusinessException) {
+                AppLog.e(TAG, "缴费大厅项目列表业务失败", e)
                 Result.failure(e)
             } catch (e: Exception) {
+                AppLog.e(TAG, "缴费大厅项目列表加载失败", e)
                 Result.failure(e)
             }
         }
@@ -139,8 +142,10 @@ class FeeServiceHallApi : PayApiBase() {
                 val body = response.body.string()
                 gson.parseApiResponse<OrderListResponse>(body).map { it.data ?: OrderPageData(emptyList(), null, null, null) }
             } catch (e: ApiBusinessException) {
+                AppLog.e(TAG, "缴费大厅订单列表业务失败", e)
                 Result.failure(e)
             } catch (e: Exception) {
+                AppLog.e(TAG, "缴费大厅订单列表加载失败", e)
                 Result.failure(e)
             }
         }
@@ -164,8 +169,10 @@ class FeeServiceHallApi : PayApiBase() {
                 val body = response.body.string()
                 gson.parseApiResponse<UserProfileResponse>(body).map { it.data ?: UserProfile(null, null, null) }
             } catch (e: ApiBusinessException) {
+                AppLog.e(TAG, "缴费大厅个人信息业务失败", e)
                 Result.failure(e)
             } catch (e: Exception) {
+                AppLog.e(TAG, "缴费大厅个人信息加载失败", e)
                 Result.failure(e)
             }
         }
@@ -191,8 +198,10 @@ class FeeServiceHallApi : PayApiBase() {
                     Result.failure(ApiBusinessException(base.message))
                 }
             } catch (e: ApiBusinessException) {
+                AppLog.e(TAG, "缴费大厅关闭订单业务失败", e)
                 Result.failure(e)
             } catch (e: Exception) {
+                AppLog.e(TAG, "缴费大厅关闭订单失败", e)
                 Result.failure(e)
             }
         }

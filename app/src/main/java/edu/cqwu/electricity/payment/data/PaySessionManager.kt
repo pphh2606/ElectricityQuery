@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import kotlin.text.iterator
 
 /**
- * pay.cqwu.edu.cn 域 JWT 凭证管理器（对齐 [edu.cqwu.electricity.login.data.ServiceLoginManager]）。
+ * pay.cqwu.edu.cn 域 JWT 凭证管理器（对齐 [edu.cqwu.electricity.login.domain.CasAuthFlow]）。
  *
  * pay 业务 API 的鉴权凭证是短期 JWT（`datalook_reimbursement_token`，约 24 小时有效），
  * 通过 dlyscas 302 Location 的 `token=` 参数获取（见 [edu.cqwu.electricity.common.net.RedirectChainFollower.followToLocationToken]），

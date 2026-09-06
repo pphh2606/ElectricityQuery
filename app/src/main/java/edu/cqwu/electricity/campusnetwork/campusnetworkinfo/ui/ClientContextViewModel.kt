@@ -1,11 +1,9 @@
-﻿package edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui
+package edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.cqwu.electricity.R
 import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.data.CampusNetworkApi
-import edu.cqwu.electricity.campusnetwork.common.CampusNetworkErrorKind
-import edu.cqwu.electricity.campusnetwork.common.CampusNetworkException
+import edu.cqwu.electricity.campusnetwork.common.toCampusUiMessage
 import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.data.ClientContextData
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.UiMessage
@@ -73,28 +71,11 @@ class ClientContextViewModel(
                         it.copy(
                             isLoading = false,
                             isRefreshing = false,
-                            error = e.toUiMessage(),
+                            error = e.toCampusUiMessage(),
                         )
                     }
                 }
         }
-    }
-
-    /** 把异常映射为界面提示（分类决定文案；服务端消息优先原样展示） */
-    private fun Throwable.toUiMessage(): UiMessage = when (this) {
-        is CampusNetworkException -> when (kind) {
-            CampusNetworkErrorKind.CAMPUS_OFFLINE ->
-                UiMessage(res = R.string.campus_network_error_need_campus)
-            CampusNetworkErrorKind.NO_NETWORK ->
-                UiMessage(res = R.string.campus_network_error_no_network)
-            CampusNetworkErrorKind.SERVER ->
-                UiMessage(res = R.string.campus_network_error_generic, raw = userMessage)
-            CampusNetworkErrorKind.PARSE ->
-                UiMessage(res = R.string.campus_network_error_parse)
-            CampusNetworkErrorKind.UNKNOWN ->
-                UiMessage(res = R.string.campus_network_error_generic)
-        }
-        else -> UiMessage(res = R.string.campus_network_error_generic)
     }
 
     private companion object {

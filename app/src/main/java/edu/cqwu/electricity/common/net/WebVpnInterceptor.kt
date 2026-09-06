@@ -1,195 +1,61 @@
 package edu.cqwu.electricity.common.net
 
-import edu.cqwu.electricity.logging.AppLog
 import android.webkit.CookieManager
+import edu.cqwu.electricity.logging.AppLog
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 
 /**
- * 标记手动 CAS 登录流程的请求，WebVPN 拦截器只做 URL 转换，不再触发自动登录。
- */
-internal object ManualCasFlowTag
-
-/**
- * WebVPN 请求转换与自动登录拦截器。
+ * WebVPN 网络层拦截器 —— 检测"需要登录"，**绝不二次 proceed**。
  *
- * 每个 OkHttpClient 使用自己的实例，保证 WebVPN Cookie 与客户端 CookieJar 隔离。
- * 同一实例同时作为应用层和网络层拦截器：
- * - 应用层负责 URL 转换、Origin/Referer 重写和代理 Cookie 注入。
- * - 网络层负责逐跳检测 401/403、302 自循环和 CAS 登录页，并在必要时登录后重试一次。
+ * OkHttp 约束：网络层拦截器只能调用一次 [chain.proceed]（URL 改写已在应用层完成，
+ * host 已固定为 clientvpn）。因此本层职责只限：
+ * 1. 对已是 clientvpn 代理 URL 的请求执行**一次** proceed；
+ * 2. 无 CookieJar 客户端在此持久化代理 Set-Cookie；
+ * 3. 响应命中"需要登录"（401/403、302 自循环/authserver、HTML 登录页）时，触发一次
+ *    [sessionAuthenticator]（会话层单飞去重），随后抛 [WebVpnRetryException]，
+ *    由应用层 [WebVpnUrlTransformer] 带新 cookie 重试一次。
+ *
+ * 登录失败抛出的 [SessionExpiredException] 原样上抛（swallow 语义由应用层统一处理）。
  */
 class WebVpnInterceptor(
     private val cookieJar: CookieJar?,
-    private val swallowSessionExpired: Boolean = false,
     private val sessionAuthenticator: (String) -> Unit,
 ) : Interceptor {
 
-    private object AppLayerTag
-
-    private val autoLoginAttempted = ThreadLocal<Boolean>()
-
     override fun intercept(chain: Interceptor.Chain): Response {
-        return try {
-            interceptInternal(chain)
-        } catch (e: SessionExpiredException) {
-            if (swallowSessionExpired) {
-                sessionExpiredResponse(chain.request())
-            } else {
-                throw e
-            }
-        }
-    }
-
-    private fun interceptInternal(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        if (!WebVpnSettings.enabled) return chain.proceed(original)
-
-        return when {
-            shouldTransform(original.url.toString()) -> {
-                transformRequest(chain, original)
-            }
-            WebVpnEncoder.isWebVpnUrl(original.url.toString()) -> {
-                if (original.tag(ManualCasFlowTag::class.java) != null) {
-                    chain.proceed(original)
-                } else if (original.tag(AppLayerTag::class.java) != null) {
-                    handleProxyResponse(original) { chain.proceed(it) }
-                } else {
-                    executeWithLoginRetry(
-                        original.newBuilder().tag(AppLayerTag::class.java, AppLayerTag).build(),
-                    ) {
-                        chain.proceed(it)
-                    }
-                }
-            }
-            else -> chain.proceed(original)
+        if (!WebVpnSettings.enabled || !WebVpnEncoder.isWebVpnUrl(original.url.toString())) {
+            return chain.proceed(original)
         }
-    }
 
-    private fun sessionExpiredResponse(request: Request): Response {
-        return Response.Builder()
-            .request(request)
-            .protocol(Protocol.HTTP_1_1)
-            .code(502)
-            .message("WebVPN session expired")
-            .body("WebVPN session expired".toResponseBody("text/plain; charset=utf-8".toMediaType()))
-            .build()
-    }
-
-    private fun transformRequest(chain: Interceptor.Chain, original: Request): Response {
-        val transformedUrl = runCatching {
-            WebVpnEncoder.transform(original.url.toString())
-        }.getOrNull() ?: return chain.proceed(original)
-
-        AppLog.url(
-            TAG,
-            "WebVPN 转换: ${original.url} -> $transformedUrl",
-        )
-        val response = executeWithLoginRetry(buildTransformedRequest(original, transformedUrl)) {
-            chain.proceed(it)
-        }
+        // 恰好一次 proceed（网络层禁止重试）
+        val response = chain.proceed(original)
         if (cookieJar == null) {
-            saveProxyCookies(response)
+            saveProxyCookies(response) // 无 jar：手动持久化代理 cookie
         }
-        return response
-    }
+        if (!needsWebVpnLogin(response, original)) return response
 
-    internal fun handleProxyResponse(
-        request: Request,
-        proceed: (Request) -> Response,
-    ): Response {
-        val response = proceed(request)
-        if (cookieJar == null) {
-            saveProxyCookies(response)
-        }
-        if (needsWebVpnLogin(response, request)) {
-            AppLog.w(
-                TAG,
-                "WebVPN 响应仍需要登录: HTTP ${response.code}, location=${response.header("Location")}",
-            )
-            response.close()
-            loginAndRetry(request)
-        }
-        return response
-    }
-
-    internal fun executeWithLoginRetry(
-        transformedRequest: Request,
-        proceed: (Request) -> Response,
-    ): Response {
-        return try {
-            proceed(transformedRequest)
-        } catch (e: WebVpnRetryException) {
-            retryAfterLogin(transformedRequest, proceed)
-        }
-    }
-
-    private fun retryAfterLogin(
-        transformedRequest: Request,
-        proceed: (Request) -> Response,
-    ): Response {
-        if (autoLoginAttempted.get() == true) {
-            AppLog.w(TAG, "WebVPN 自动登录后仍需要登录（已在本次请求尝试过）")
-            throw SessionExpiredException(
-                "WebVPN 自动登录后仍需要登录",
-                SessionExpiryReason.LOGIN_REJECTED,
-            )
-        }
-
-        autoLoginAttempted.set(true)
-        try {
-            return try {
-                proceed(buildRetryRequest(transformedRequest))
-            } catch (e: WebVpnRetryException) {
-                AppLog.w(TAG, "WebVPN 自动登录后重试仍返回需要登录")
-                throw SessionExpiredException(
-                    "WebVPN 自动登录后仍需要登录",
-                    SessionExpiryReason.LOGIN_REJECTED,
-                )
-            }
-        } finally {
-            autoLoginAttempted.remove()
-        }
-    }
-
-    internal fun loginAndRetry(request: Request): Nothing {
-        if (autoLoginAttempted.get() == true) {
-            AppLog.w(TAG, "WebVPN 重试请求仍需要登录，放弃自动登录")
-            throw SessionExpiredException(
-                "WebVPN 自动登录后仍需要登录",
-                SessionExpiryReason.LOGIN_REJECTED,
-            )
-        }
-
-        val protectedUrl = runCatching {
-            WebVpnEncoder.decode(request.url.toString())
-        }.getOrNull() ?: request.url.toString()
-        AppLog.url(TAG, "WebVPN 检测到需要登录，开始自动登录: $protectedUrl")
-        sessionAuthenticator(protectedUrl)
+        // 需要登录：关闭当前响应、触发一次认证（会话层单飞）、通知应用层重试
+        AppLog.w(TAG, "WebVPN 响应需要登录，触发自动登录: HTTP ${response.code}")
+        response.close()
+        sessionAuthenticator(decodeIfWebVpn(original.url.toString()))
         throw WebVpnRetryException()
     }
 
-    private fun buildRetryRequest(original: Request): Request {
-        val freshCookies = loadProxyCookies(original.url)
-        return if (freshCookies.isNullOrBlank()) {
-            original.newBuilder()
-                .removeHeader("Cookie")
-                .tag(AppLayerTag::class.java, AppLayerTag)
-                .build()
-        } else {
-            original.newBuilder()
-                .header("Cookie", freshCookies)
-                .tag(AppLayerTag::class.java, AppLayerTag)
-                .build()
+    private fun saveProxyCookies(response: Response) {
+        val cookieManager = CookieManager.getInstance()
+        response.headers("Set-Cookie").forEach { cookie ->
+            cookieManager.setCookie(WebVpnEncoder.PROXY_BASE, cookie)
         }
+        cookieManager.flush()
     }
 
+    /** 响应是否表示"需要登录"：401/403、302 自循环或指向 authserver、HTML 为 CAS 登录页 */
     internal fun needsWebVpnLogin(response: Response, request: Request): Boolean {
         if (response.code == 401 || response.code == 403) return true
 
@@ -205,61 +71,7 @@ class WebVpnInterceptor(
             val body = response.peekBody(MAX_LOGIN_PAGE_BYTES.toLong()).string()
             return HtmlFormParser.isCasLoginPage(body)
         }
-
         return false
-    }
-
-    private fun buildTransformedRequest(original: Request, transformedUrl: String): Request {
-        val builder = original.newBuilder()
-            .url(transformedUrl)
-            .tag(AppLayerTag::class.java, AppLayerTag)
-        if (original.tag(ManualCasFlowTag::class.java) != null) {
-            builder.tag(ManualCasFlowTag::class.java, ManualCasFlowTag)
-        }
-
-        rewriteOriginHeader(builder, original, "Origin")
-        rewriteOriginHeader(builder, original, "Referer")
-
-        val transformedHttpUrl = transformedUrl.toHttpUrlOrNull()
-        if (transformedHttpUrl != null) {
-            val proxyCookies = loadProxyCookies(transformedHttpUrl)
-            if (proxyCookies.isNullOrBlank()) {
-                builder.removeHeader("Cookie")
-            } else {
-                builder.header("Cookie", proxyCookies)
-            }
-        }
-
-        return builder.build()
-    }
-
-    internal fun loadProxyCookies(url: HttpUrl): String? {
-        if (cookieJar != null) {
-            val cookies = cookieJar.loadForRequest(url)
-            if (cookies.isEmpty()) return null
-            return cookies.joinToString("; ") { "${it.name}=${it.value}" }
-        }
-        return CookieManager.getInstance().getCookie(WebVpnEncoder.PROXY_BASE)
-    }
-
-    private fun rewriteOriginHeader(
-        builder: Request.Builder,
-        original: Request,
-        name: String,
-    ) {
-        val value = original.header(name) ?: return
-        val headerUrl = runCatching { value.toHttpUrlOrNull() }.getOrNull() ?: return
-        if (headerUrl.host == original.url.host) {
-            builder.header(name, WebVpnEncoder.PROXY_BASE)
-        }
-    }
-
-    private fun saveProxyCookies(response: Response) {
-        val cookieManager = CookieManager.getInstance()
-        response.headers("Set-Cookie").forEach { cookie ->
-            cookieManager.setCookie(WebVpnEncoder.PROXY_BASE, cookie)
-        }
-        cookieManager.flush()
     }
 
     private fun isHtmlResponse(response: Response): Boolean {
@@ -283,6 +95,10 @@ class WebVpnInterceptor(
             a.encodedQuery == b.encodedQuery
     }
 
+    private fun decodeIfWebVpn(urlString: String): String {
+        return runCatching { WebVpnEncoder.decode(urlString) }.getOrDefault(urlString)
+    }
+
     companion object {
         private const val TAG = "WebVpnInterceptor"
         private const val MAX_LOGIN_PAGE_BYTES = 512 * 1024
@@ -295,7 +111,7 @@ class WebVpnInterceptor(
         )
 
         /**
-         * 纯判定逻辑，便于单元测试。
+         * 纯判定逻辑：WebVPN 开启、http(s)、非放行域名、且尚未是代理 URL 时执行转换。
          */
         @JvmStatic
         fun shouldTransform(urlString: String): Boolean {
@@ -309,6 +125,7 @@ class WebVpnInterceptor(
 }
 
 /**
- * 网络层检测到 WebVPN 需要登录后抛给应用层，由应用层刷新 Cookie 并重试一次。
+ * 网络层检测到 WebVPN 需要登录后抛给应用层，由应用层带新 cookie 重试一次。
+ * 仅作控制流信号，不携带数据。
  */
 internal class WebVpnRetryException : Exception()

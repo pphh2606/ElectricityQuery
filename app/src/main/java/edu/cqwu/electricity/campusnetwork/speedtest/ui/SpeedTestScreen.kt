@@ -1,4 +1,4 @@
-﻿package edu.cqwu.electricity.campusnetwork.speedtest.ui
+package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Info
@@ -36,6 +38,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,10 +54,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestRecord
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestPhase
+import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestStats
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestTick
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
+import kotlin.math.ceil
 
 /**
  * 网速测试页 —— 原生复刻官方移动端测速 UI（白底扁平、胶囊按钮、2×2 指标四宫格）。
@@ -66,6 +74,7 @@ fun SpeedTestScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
     val tick by viewModel.tick.collectAsState()
+    val recent by viewModel.recent.collectAsState()
     val resources = LocalResources.current
     val palette = speedTestPalette()
     val topBarColors = currentTopBarColors()
@@ -124,6 +133,12 @@ fun SpeedTestScreen(
 
             // ── 提示横幅 ──
             InfoBanner(palette = palette)
+
+            // ── 最近测速（仅获取到数据时渲染）──
+            if (recent.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(20.dp))
+                RecentRecordsSection(records = recent, palette = palette)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -343,7 +358,7 @@ private fun MetricsSection(
             MetricCell(
                 label = stringResource(R.string.speed_test_label_download),
                 letter = "DL",
-                valueText = if (showValues) formatMetric(tick.downloadMbps) else "0",
+                valueText = if (showValues) SpeedTestStats.formatMbps(tick.downloadMbps) else "0",
                 unit = stringResource(R.string.speed_test_unit_mbps),
                 color = palette.download,
                 icon = Icons.Outlined.ArrowDownward,
@@ -353,7 +368,7 @@ private fun MetricsSection(
             MetricCell(
                 label = stringResource(R.string.speed_test_label_upload),
                 letter = "UL",
-                valueText = if (showValues) formatMetric(tick.uploadMbps) else "0",
+                valueText = if (showValues) SpeedTestStats.formatMbps(tick.uploadMbps) else "0",
                 unit = stringResource(R.string.speed_test_unit_mbps),
                 color = palette.upload,
                 icon = Icons.Outlined.ArrowUpward,
@@ -369,7 +384,7 @@ private fun MetricsSection(
             MetricCell(
                 label = stringResource(R.string.speed_test_label_ping),
                 letter = null,
-                valueText = if (showValues) tick.pingMs.roundToInt().toString() else "0",
+                valueText = if (showValues) SpeedTestStats.formatMs(tick.pingMs) else "0",
                 unit = stringResource(R.string.speed_test_unit_ms),
                 color = palette.ping,
                 icon = null,
@@ -379,7 +394,7 @@ private fun MetricsSection(
             MetricCell(
                 label = stringResource(R.string.speed_test_label_jitter),
                 letter = null,
-                valueText = if (showValues) tick.jitterMs.roundToInt().toString() else "0",
+                valueText = if (showValues) SpeedTestStats.formatMs(tick.jitterMs) else "0",
                 unit = stringResource(R.string.speed_test_unit_ms),
                 color = palette.jitter,
                 icon = null,
@@ -388,11 +403,6 @@ private fun MetricsSection(
         }
     }
 }
-
-private fun Double.roundToInt(): Int = kotlin.math.round(this).toInt()
-
-/** Mbps 大数字：1 位小数 */
-private fun formatMetric(value: Double): String = String.format(java.util.Locale.US, "%.1f", value)
 
 /** 左标签右值类型的单元格（活跃会话/排队等候） */
 @Composable
@@ -513,5 +523,234 @@ private fun InfoBanner(palette: SpeedTestPalette) {
             color = palette.bannerText,
             fontFamily = FontFamily.Serif,
         )
+    }
+}
+
+// ══════════════════════════════════════════════
+//  最近测速记录
+// ══════════════════════════════════════════════
+
+/** 最近测速每页条数（用户指定：一次拉 50 条、每页 10 条，左右箭头翻页） */
+private const val RECENT_PAGE_SIZE = 10
+
+@Composable
+private fun RecentRecordsSection(
+    records: List<SpeedTestRecord>,
+    palette: SpeedTestPalette,
+) {
+    val totalPages = maxOf(1, ceil(records.size / RECENT_PAGE_SIZE.toDouble()).toInt())
+    var page by remember { mutableIntStateOf(1) }
+    val safePage = page.coerceIn(1, totalPages)
+    val start = (safePage - 1) * RECENT_PAGE_SIZE
+    val pageRecords = records.drop(start).take(RECENT_PAGE_SIZE)
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(vertical = 4.dp),
+    ) {
+        // ── 标题 ──
+        Text(
+            text = stringResource(R.string.speed_test_recent_title),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = palette.label,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+        )
+
+        // ── 记录列表 ──
+        pageRecords.forEachIndexed { index, record ->
+            RecentRecordRow(record = record, palette = palette)
+            if (index != pageRecords.lastIndex) {
+                HorizontalDivider(color = palette.divider)
+            }
+        }
+
+        // ── 分页脚条 ──
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 6.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = "$safePage / $totalPages",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontFamily = FontFamily.Serif,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PageArrowButton(
+                    onClick = { page = (safePage - 1).coerceAtLeast(1) },
+                    enabled = safePage > 1,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = if (safePage > 1) {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
+                        },
+                    )
+                }
+                PageArrowButton(
+                    onClick = { page = (safePage + 1).coerceAtMost(totalPages) },
+                    enabled = safePage < totalPages,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = if (safePage < totalPages) {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentRecordRow(
+    record: SpeedTestRecord,
+    palette: SpeedTestPalette,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        // 第一行：时间(左) + IP(右)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = formatTimestamp(record.timestamp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontFamily = FontFamily.Serif,
+            )
+            Text(
+                text = record.ipAddress ?: "--",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontFamily = FontFamily.Serif,
+            )
+        }
+
+        // 第二行：DL | UL + ping ms
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SpeedValue(
+                    label = "DL",
+                    value = SpeedTestStats.formatMbps(value1(record.download)),
+                    color = palette.download,
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(14.dp)
+                        .background(palette.divider),
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                SpeedValue(
+                    label = "UL",
+                    value = SpeedTestStats.formatMbps(value1(record.upload)),
+                    color = palette.upload,
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = SpeedTestStats.formatMs(value1(record.ping)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.Serif,
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(
+                    text = stringResource(R.string.speed_test_unit_ms),
+                    fontSize = 9.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.Serif,
+                )
+            }
+        }
+    }
+}
+
+/** 小标签(如 DL/UL) + 色值 */
+@Composable
+private fun SpeedValue(
+    label: String,
+    value: String,
+    color: Color,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = label,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Bold,
+            color = color.copy(alpha = 0.7f),
+            fontFamily = FontFamily.Serif,
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            color = color,
+            fontFamily = FontFamily.Serif,
+        )
+    }
+}
+
+@Composable
+private fun PageArrowButton(
+    onClick: () -> Unit,
+    enabled: Boolean,
+    content: @Composable () -> Unit,
+) {
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.size(30.dp),
+    ) {
+        content()
+    }
+}
+
+/** 字符串数值 → Double（非法/空回退 0.0） */
+private fun value1(value: String?): Double = value?.toDoubleOrNull() ?: 0.0
+
+/** ISO8601 时间戳 → 本地时区 `yyyy-MM-dd HH:mm:ss`；解析失败回退原始串（与前端 rte 行为一致） */
+private fun formatTimestamp(raw: String?): String {
+    if (raw.isNullOrBlank()) return "--"
+    return try {
+        val ldt = java.time.OffsetDateTime.parse(raw)
+            .atZoneSameInstant(java.time.ZoneId.systemDefault())
+            .toLocalDateTime()
+        String.format(
+            java.util.Locale.US,
+            "%04d-%02d-%02d %02d:%02d:%02d",
+            ldt.year, ldt.monthValue, ldt.dayOfMonth,
+            ldt.hour, ldt.minute, ldt.second,
+        )
+    } catch (e: Exception) {
+        raw
     }
 }

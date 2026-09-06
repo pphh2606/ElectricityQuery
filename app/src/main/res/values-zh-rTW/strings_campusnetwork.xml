@@ -35,4 +35,5 @@
     <string name="speed_test_unit_mbps">MBPS</string>
     <string name="speed_test_unit_ms">ms</string>
     <string name="speed_test_banner">測速結果僅代表校園網內網頻寬</string>
+    <string name="speed_test_recent_title">最近測速</string>
 </resources>

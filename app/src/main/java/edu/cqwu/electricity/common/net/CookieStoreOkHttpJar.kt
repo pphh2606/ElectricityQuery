@@ -21,6 +21,8 @@ internal class CookieJarBridge(
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         val baseUrl = url.newBuilder().query(null).build().toString()
         for (cookie in cookies) {
+            // 写库前检查非 ASCII：OkHttp Cookie 值只允许可见 ASCII，先在这里定位谁种下的非法 cookie
+            logNonAsciiIfPresent("save", baseUrl, cookie.name, cookie.value)
             writeCookie(baseUrl, buildSetCookieString(cookie))
         }
     }
@@ -33,6 +35,9 @@ internal class CookieJarBridge(
         return cookiesMap.mapNotNull { (name, value) ->
             try {
                 if (value.isEmpty()) return@mapNotNull null
+                // 出库拼头前检查：非 ASCII 值会导致 OkHttp BridgeInterceptor 组装 Cookie 头时抛
+                // IllegalArgumentException(Unexpected char ... in Cookie value)，这里先定位元凶
+                logNonAsciiIfPresent("load", url.toString(), name, value)
 
                 Cookie.Builder()
                     .name(name)
@@ -48,6 +53,26 @@ internal class CookieJarBridge(
                 AppLog.w("CookieJarBridge", "解析 Cookie 失败: $name=****", e)
                 null
             }
+        }
+    }
+
+    /**
+     * 排查用日志：cookie 名/值只允许可见 ASCII（0x20..0x7E），一旦出现其它字符，
+     * OkHttp 在把 Cookie 写入请求头时会抛 IllegalArgumentException（复现日志中的
+     * "Unexpected char ... in Cookie value"）。
+     * 注意：不打印 cookie 值内容（可能含 token/隐私），只输出域名、cookie 名、长度与
+     * 每个非 ASCII 字符的码点（U+xxxx）与下标，便于定位元凶且不泄密。
+     */
+    private fun logNonAsciiIfPresent(phase: String, url: String, name: String, value: String) {
+        val offenders = value.mapIndexedNotNull { index, c ->
+            val code = c.code
+            if (code < 0x20 || code > 0x7E) "U+${code.toString(16).uppercase()}@$index" else null
+        }
+        if (offenders.isNotEmpty()) {
+            AppLog.w(
+                "CookieJarBridge",
+                "非 ASCII Cookie 值 [phase=$phase] url=$url cookie=$name 长度=${value.length} offenders=[${offenders.joinToString(", ")}]",
+            )
         }
     }
 

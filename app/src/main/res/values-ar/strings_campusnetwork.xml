@@ -35,4 +35,5 @@
     <string name="speed_test_unit_mbps">MBPS</string>
     <string name="speed_test_unit_ms">ms</string>
     <string name="speed_test_banner">تعكس النتيجة نطاق شبكة الحرم الجامعي فقط</string>
+    <string name="speed_test_recent_title">الاختبارات الأخيرة</string>
 </resources>

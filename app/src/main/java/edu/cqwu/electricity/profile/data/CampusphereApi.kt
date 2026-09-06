@@ -20,13 +20,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 /**
  * campusphere.net 学生信息服务 API。
  *
- * 流程：
- *   1. 直接 POST {} → getStuMainMustInfos
- *   2. 若响应 JSON 中包含 WEC-HASLOGIN:false（未登录）:
- *      a. 访问 /student/mobile/index.html 触发 CAS ticket 交换
- *      b. OkHttp 自动跟随 302 → authserver(携带CASTGC) → 获得 MOD_AUTH_CAS
- *      c. 重试 POST {} → getStuMainMustInfos
- *   3. 成功 → 返回 StudentInfo
+ * 流程：POST {} → 接口；若响应含 WEC-HASLOGIN:false（未登录），访问
+ * /student/mobile/index.html 触发 CAS ticket 交换（经 [AutoLoginCoordinatorV2]），
+ * 成功后重试一次原请求。认证去重由会话层 single-flight 承担。
  */
 class CampusphereApi {
 
@@ -47,7 +43,7 @@ class CampusphereApi {
         /** 未登录响应体（WEC-HASLOGIN=false）的检测 */
         private fun isNotLoggedIn(responseBody: String): Boolean {
             return responseBody.contains("WEC-HASLOGIN") &&
-                   (responseBody.contains("\"WEC-HASLOGIN\":false") ||
+                (responseBody.contains("\"WEC-HASLOGIN\":false") ||
                     responseBody.contains("WEC-HASLOGIN\":false"))
         }
     }
@@ -60,9 +56,7 @@ class CampusphereApi {
         return HttpClientFactory.shared to { CookieStore.getCookie(it) }
     }
 
-    /**
-     * 执行 CAS ticket 交换（委托给 [AutoLoginCoordinatorV2]）。
-     */
+    /** 执行 CAS ticket 交换（委托给 [AutoLoginCoordinatorV2]）。 */
     private fun doCasTicketExchange() {
         AutoLoginCoordinatorV2.ensureService(
             protectedUrl = INDEX_URL,
@@ -72,53 +66,29 @@ class CampusphereApi {
     }
 
     /**
-     * 获取学生个人信息。
-     * 直接 POST {} → getStuMainMustInfos。
-     * 若未登录（WEC-HASLOGIN:false），自动执行 CAS ticket 交换后重试一次。
+     * 获取学生个人信息。直接 POST {} → getStuMainMustInfos；
+     * 未登录（WEC-HASLOGIN:false）时自动执行 CAS ticket 交换后重试一次。
      */
-    suspend fun fetchStudentInfo(): Result<StudentInfo> = withContext(Dispatchers.IO) {
-        try {
+    suspend fun fetchStudentInfo(): Result<StudentInfo> = fetchWithAutoLogin("学生信息") {
+        doFetchStudentInfo()
+    }
+
+    /** 内部：执行一次学生信息请求，不重试 */
+    private suspend fun doFetchStudentInfo(): Result<StudentInfo> {
+        return try {
             val (client, cookieReader) = createClient()
 
             if (BuildConfig.DEBUG) {
                 val campusCookie = cookieReader(BASE)
                 val authCookie = cookieReader(AUTH_SERVER)
-                AppLog.d(TAG,
+                AppLog.d(
+                    TAG,
                     "activeUser=${AccountSessionStore.getActiveAccount()?.username}, " +
-                    "campusphere=${campusCookie != null}(len=${campusCookie?.length ?: 0}), " +
-                    "auth=${authCookie != null}(len=${authCookie?.length ?: 0})")
+                        "campusphere=${campusCookie != null}(len=${campusCookie?.length ?: 0}), " +
+                        "auth=${authCookie != null}(len=${authCookie?.length ?: 0})",
+                )
             }
 
-            // ── 第 1 次请求 ──
-            var result = doFetchStudentInfo(client)
-            if (result.isSuccess) return@withContext result
-
-            // ── 如果失败原因是未登录 → 执行 CAS ticket 交换 ──
-            val cause = result.exceptionOrNull()
-            if (cause is NotLoggedInException) {
-                AppLog.d(TAG, "未登录，执行 CAS ticket 交换后重试")
-                doCasTicketExchange()
-                // ── 第 2 次请求（重试） ──
-                result = doFetchStudentInfo(client)
-                if (result.isSuccess) return@withContext result
-            }
-
-            // 最终失败
-            result
-        } catch (e: SessionExpiredException) {
-            AppLog.e(TAG, "会话已过期", e)
-            Result.failure(e)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            AppLog.e(TAG, "获取学生信息失败", e)
-            Result.failure(e)
-        }
-    }
-
-    /** 内部：执行一次 POST 请求，不重试 */
-    private fun doFetchStudentInfo(client: OkHttpClient): Result<StudentInfo> {
-        return try {
             val bodyJson = "{}"
             val request = Request.Builder()
                 .url(INFO_API)
@@ -139,36 +109,26 @@ class CampusphereApi {
                     AppLog.w(TAG, "API 返回 WEC-HASLOGIN:false，未登录")
                     throw NotLoggedInException()
                 }
-
                 if (HtmlFormParser.isCasLoginPage(responseBody)) {
                     throw SessionExpiredException("会话已过期，请重新登录")
                 }
-
                 if (!response.isSuccessful) {
                     val msg = "HTTP ${response.code}: ${response.message}"
-                    if (response.code in listOf(401, 403)) {
-                        throw SessionExpiredException(msg)
-                    }
+                    if (response.code in listOf(401, 403)) throw SessionExpiredException(msg)
                     throw Exception(msg)
                 }
 
                 val infoResponse = gson.fromJson(responseBody, StudentInfoResponse::class.java)
-                if (infoResponse.code != "0") {
-                    throw Exception("获取学生信息失败: ${infoResponse.message}")
-                }
-
+                if (infoResponse.code != "0") throw Exception("获取学生信息失败: ${infoResponse.message}")
                 infoResponse.datas?.firstOrNull()
                     ?: throw Exception("学生信息为空")
             }
 
-            AppLog.d(
-                TAG,
-                "学生信息获取成功: userName=${info.userName}, userId=${info.userId}",
-            )
+            AppLog.d(TAG, "学生信息获取成功: userName=${info.userName}, userId=${info.userId}")
             Result.success(info)
-        } catch (e: NotLoggedInException) {
-            Result.failure(e)
         } catch (e: SessionExpiredException) {
+            Result.failure(e)
+        } catch (e: NotLoggedInException) {
             Result.failure(e)
         } catch (e: Exception) {
             Result.failure(e)
@@ -176,18 +136,16 @@ class CampusphereApi {
     }
 
     /**
-     * 获取菜单列表。
-     * 先调用 fetchStudentInfo() 确保已登录，再请求菜单。
+     * 获取菜单列表。与 [fetchStudentInfo] 相同：未登录时触发 CAS ticket 交换后重试一次；
+     * 不内部调用 fetchStudentInfo 全流程，避免与主页信息加载并发重复登录。
      */
-    suspend fun fetchMenuList(): Result<List<MenuCategory>> = withContext(Dispatchers.IO) {
-        try {
-            // 先确保已登录（复用 fetchStudentInfo 的认证逻辑）
-            val authResult = fetchStudentInfo()
-            if (authResult.isFailure && authResult.exceptionOrNull() !is NotLoggedInException) {
-                // 如果不是未登录错误，直接返回失败
-                return@withContext Result.failure(authResult.exceptionOrNull()!!)
-            }
+    suspend fun fetchMenuList(): Result<List<MenuCategory>> = fetchWithAutoLogin("菜单列表") {
+        doFetchMenuList()
+    }
 
+    /** 内部：执行一次菜单列表请求，不重试 */
+    private suspend fun doFetchMenuList(): Result<List<MenuCategory>> = withContext(Dispatchers.IO) {
+        try {
             val (client, _) = createClient()
             val bodyJson = "{}"
             val request = Request.Builder()
@@ -210,19 +168,35 @@ class CampusphereApi {
                 }
 
                 val menuResponse = gson.fromJson(responseBody, MenuListResponse::class.java)
-                if (menuResponse.code != "0") {
-                    throw Exception("获取菜单失败: ${menuResponse.message}")
-                }
+                if (menuResponse.code != "0") throw Exception("获取菜单失败: ${menuResponse.message}")
                 menuResponse.datas ?: emptyList()
             }
 
             Result.success(list)
-        } catch (e: CancellationException) {
-            throw e
+        } catch (e: SessionExpiredException) {
+            Result.failure(e)
+        } catch (e: NotLoggedInException) {
+            Result.failure(e)
         } catch (e: Exception) {
-            AppLog.e(TAG, "获取菜单列表失败", e)
             Result.failure(e)
         }
+    }
+
+    /**
+     * 共享骨架：执行一次 [request]；若失败仅为"未登录"，完成一次 CAS ticket 交换后重试一次。
+     * 网络失败（非未登录）原样返回。认证去重由会话层 single-flight 承担，并发调用不重复登录。
+     */
+    private suspend fun <T> fetchWithAutoLogin(
+        subject: String,
+        request: suspend () -> Result<T>,
+    ): Result<T> = withContext(Dispatchers.IO) {
+        var result = request()
+        if (result.isFailure && result.exceptionOrNull() is NotLoggedInException) {
+            AppLog.d(TAG, "$subject 未登录，执行 CAS ticket 交换后重试")
+            doCasTicketExchange()
+            result = request()
+        }
+        result
     }
 }
 

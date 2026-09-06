@@ -18,7 +18,7 @@ import java.net.UnknownHostException
  * 会话管理器（Step 1：认证验证）。
  *
  * 负责验证 CAS 登录态是否有效，不涉及服务级授权。
- * 服务级 CAS ticket 交换已迁移到 [edu.cqwu.electricity.login.data.ServiceLoginManager]。
+ * 服务级 CAS ticket 交换已迁移到 [edu.cqwu.electricity.login.domain.CasAuthFlow]。
  *
  * 提供以下能力：
  * 1. **Cookie 验证**：[validateCookie] — 验证 CASTGC 是否有效，提取用户ID（数字学号）/实名

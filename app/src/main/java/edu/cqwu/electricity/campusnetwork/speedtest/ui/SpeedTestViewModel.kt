@@ -1,11 +1,12 @@
-﻿package edu.cqwu.electricity.campusnetwork.speedtest.ui
+package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.cqwu.electricity.R
 import edu.cqwu.electricity.campusnetwork.common.CampusNetworkErrorKind
 import edu.cqwu.electricity.campusnetwork.common.CampusNetworkException
+import edu.cqwu.electricity.campusnetwork.common.toCampusUiMessage
 import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestApi
+import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestRecord
 import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestSessionData
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestEngine
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestStats
@@ -75,7 +76,26 @@ class SpeedTestViewModel(
     /** 引擎实时采样（UI 用） */
     val tick = engine.tick
 
+    /** 最近测速记录（rank/stats）；为空时 UI 隐藏该区域 */
+    private val _recent = MutableStateFlow<List<SpeedTestRecord>>(emptyList())
+    val recent: StateFlow<List<SpeedTestRecord>> = _recent.asStateFlow()
+
     private var runJob: Job? = null
+
+    init {
+        loadRecent()
+    }
+
+    /** 拉取最近测速记录；失败仅记录日志、保留空列表（区域隐藏），不阻塞测速主流程 */
+    fun loadRecent() {
+        viewModelScope.launch {
+            api.fetchRankStats(limit = RECENT_LIMIT)
+                .onSuccess { _recent.value = it }
+                .onFailure { e ->
+                    AppLog.e(TAG, "加载最近测速失败: ${e.message}", e)
+                }
+        }
+    }
 
     @Volatile
     private var sessionId: String? = null
@@ -205,10 +225,11 @@ class SpeedTestViewModel(
                 )
             }
             AppLog.d(TAG, "测速完成 resultId=${comp.resultId}")
+            loadRecent()
         }.onFailure { e ->
             AppLog.e(TAG, "结果上报失败: ${e.message}", e)
             _state.update {
-                it.copy(status = SpeedTestRunStatus.ERROR, error = e.toUiMessage())
+                it.copy(status = SpeedTestRunStatus.ERROR, error = e.toCampusUiMessage())
             }
         }
     }
@@ -216,7 +237,7 @@ class SpeedTestViewModel(
     private suspend fun failWith(e: Throwable) {
         AppLog.e(TAG, "测速流程失败: ${e.message}", e)
         _state.update {
-            it.copy(status = SpeedTestRunStatus.ERROR, error = e.toUiMessage())
+            it.copy(status = SpeedTestRunStatus.ERROR, error = e.toCampusUiMessage())
         }
     }
 
@@ -228,23 +249,6 @@ class SpeedTestViewModel(
                 position = s.position ?: it.position,
             )
         }
-    }
-
-    /** 异常 → 界面提示（分类文案；服务端消息优先原样展示） */
-    private fun Throwable.toUiMessage(): UiMessage = when (this) {
-        is CampusNetworkException -> when (kind) {
-            CampusNetworkErrorKind.CAMPUS_OFFLINE ->
-                UiMessage(res = R.string.campus_network_error_need_campus)
-            CampusNetworkErrorKind.NO_NETWORK ->
-                UiMessage(res = R.string.campus_network_error_no_network)
-            CampusNetworkErrorKind.SERVER ->
-                UiMessage(res = R.string.campus_network_error_generic, raw = userMessage)
-            CampusNetworkErrorKind.PARSE ->
-                UiMessage(res = R.string.campus_network_error_parse)
-            CampusNetworkErrorKind.UNKNOWN ->
-                UiMessage(res = R.string.campus_network_error_generic)
-        }
-        else -> UiMessage(res = R.string.campus_network_error_generic)
     }
 
     override fun onCleared() {
@@ -264,5 +268,8 @@ class SpeedTestViewModel(
 
     private companion object {
         const val TAG = "SpeedTestViewModel"
+
+        /** 最近测速一次拉取的条数 */
+        const val RECENT_LIMIT = 50
     }
 }

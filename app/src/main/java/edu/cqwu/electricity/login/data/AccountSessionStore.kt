@@ -231,7 +231,9 @@ object AccountSessionStore {
 
     /**
      * 将新 cookie 合并进指定条目的持久化登录状态（WebVPN 自动登录、服务 ticket 交换等场景）。
+     * 同步方法：合并为"读-改-写"原子操作，防止并发登录（如双线程同时写会话）丢更新。
      */
+    @Synchronized
     fun mergeCookies(accountId: String, cookies: Map<String, Map<String, String>>) {
         if (cookies.isEmpty()) return
         val accounts = getAllAccounts().toMutableList()

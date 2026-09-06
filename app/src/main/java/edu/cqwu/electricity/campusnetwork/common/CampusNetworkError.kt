@@ -2,6 +2,8 @@ package edu.cqwu.electricity.campusnetwork.common
 
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
+import edu.cqwu.electricity.R
+import edu.cqwu.electricity.theme.ui.UiMessage
 import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -54,4 +56,24 @@ internal fun Throwable.toCampusNetworkException(): CampusNetworkException {
         else -> CampusNetworkErrorKind.UNKNOWN
     }
     return CampusNetworkException(kind, cause = this)
+}
+
+/**
+ * 校园网错误 → 界面提示。分类决定文案；服务端消息（[CampusNetworkException.userMessage]）优先原样展示。
+ * 供 speedtest 与 campusnetworkinfo 两个功能的 ViewModel 共用，避免各写一份。
+ */
+fun Throwable.toCampusUiMessage(): UiMessage = when (this) {
+    is CampusNetworkException -> when (kind) {
+        CampusNetworkErrorKind.CAMPUS_OFFLINE ->
+            UiMessage(res = R.string.campus_network_error_need_campus)
+        CampusNetworkErrorKind.NO_NETWORK ->
+            UiMessage(res = R.string.campus_network_error_no_network)
+        CampusNetworkErrorKind.SERVER ->
+            UiMessage(res = R.string.campus_network_error_generic, raw = userMessage)
+        CampusNetworkErrorKind.PARSE ->
+            UiMessage(res = R.string.campus_network_error_parse)
+        CampusNetworkErrorKind.UNKNOWN ->
+            UiMessage(res = R.string.campus_network_error_generic)
+    }
+    else -> UiMessage(res = R.string.campus_network_error_generic)
 }

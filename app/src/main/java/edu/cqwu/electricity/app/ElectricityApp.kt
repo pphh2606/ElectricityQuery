@@ -9,13 +9,13 @@ import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.common.net.CookieStore
 import edu.cqwu.electricity.common.net.HttpClientFactory
 import edu.cqwu.electricity.common.net.WebVpnSettings
+import edu.cqwu.electricity.login.domain.CasAuthFlow
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.settings.data.SettingsKeys
 import edu.cqwu.electricity.settings.data.SettingsPreferences
 import edu.cqwu.electricity.settings.data.UserAgentProvider
-import edu.cqwu.electricity.webvpn.WebVpnSessionManager
 
 /**
  * 自定义 Application，配置 Coil ImageLoader
@@ -43,7 +43,7 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         // 网络运行时依赖注入（组合根）：WebVPN 自动登录回调 + 当前 UA。
         // 必须先于任何 client 的首次创建（HttpClientFactory 各 client 为 lazy，首次访问在 Activity 期）。
         HttpClientFactory.initRuntime(
-            webVpnLogin = { WebVpnSessionManager.authenticate(it) },
+            webVpnLogin = { protectedUrl -> CasAuthFlow.ensureClientVpnActive(protectedUrl) },
             userAgent = { UserAgentProvider.getActiveUserAgent() },
         )
     }

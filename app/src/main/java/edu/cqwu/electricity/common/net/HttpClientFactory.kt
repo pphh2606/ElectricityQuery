@@ -35,12 +35,14 @@ object HttpClientFactory {
     /**
      * pay.cqwu.edu.cn 业务 API 专用客户端。
      *
-     * 注意：刻意不挂 CookieJar —— pay 业务 API 的鉴权凭证是 JWT（`X-Token` 头，
-     * 由 [PaySessionManager] 统一管理），不依赖 cookie；
-     * token 交换链路（/casLogin/ → dlyscas）走 [shared]（共享 CookieJar 桥接 CookieManager）。
+     * 与其余 WebVPN 客户端一致，统一挂 CookieStoreOkHttpJar（桥接系统 CookieManager）：
+     * pay 业务 API 的鉴权凭证是 JWT（`X-Token` 头，由 [PaySessionManager] 统一管理），
+     * token 本身也以 cookie（datalook_reimbursement_token）存于 CookieManager 供网页端使用，
+     * 统一 CookieJar 便于管理且不影响业务调用。
      */
     val payClient: OkHttpClient by lazy {
         create(
+            cookieJar = CookieStoreOkHttpJar,
             connectTimeout = 10,
             readTimeout = 10,
             writeTimeout = 10,
@@ -116,23 +118,25 @@ object HttpClientFactory {
         }
 
         if (includeWebVpn) {
-            val webVpnInterceptor = WebVpnInterceptor(
-                cookieJar = cookieJar,
-                swallowSessionExpired = swallowSessionExpired,
-                sessionAuthenticator = { protectedUrl ->
-                    val login = webVpnLogin
-                    if (login != null) {
-                        login(protectedUrl)
-                    } else {
-                        throw SessionExpiredException(
-                            "WebVPN 自动登录不可用（未在启动时注入会话登录器）",
-                            SessionExpiryReason.LOGIN_REJECTED,
-                        )
-                    }
-                },
+            // 应用层：URL 改写（可换 host）+ 登录后重试一次 + 过期吞没（图片等异步场景）
+            builder.addInterceptor(WebVpnUrlTransformer(cookieJar, swallowSessionExpired))
+            // 网络层：只 proceed 一次，检测需登录时触发会话登录并抛重试信号
+            builder.addNetworkInterceptor(
+                WebVpnInterceptor(
+                    cookieJar = cookieJar,
+                    sessionAuthenticator = { protectedUrl ->
+                        val login = webVpnLogin
+                        if (login != null) {
+                            login(protectedUrl)
+                        } else {
+                            throw SessionExpiredException(
+                                "WebVPN 自动登录不可用（未在启动时注入会话登录器）",
+                                SessionExpiryReason.LOGIN_REJECTED,
+                            )
+                        }
+                    },
+                ),
             )
-            builder.addInterceptor(webVpnInterceptor)
-            builder.addNetworkInterceptor(webVpnInterceptor)
         }
 
         if (cookieJar != null) {
