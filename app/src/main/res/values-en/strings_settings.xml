@@ -362,11 +362,7 @@
     <string name="settings_backup_later">Later</string>
 <string name="settings_backup_settings_item">Backup &amp; restore settings</string>
     <string name="settings_cookie_item">Import/export cookies</string>
-    <string name="settings_cookie_sheet_export">Export cookies</string>
-    <string name="settings_cookie_sheet_import">Import cookies</string>
     <string name="settings_credential_item">Import/export account credentials</string>
-    <string name="settings_credential_sheet_export">Export account credentials</string>
-    <string name="settings_credential_sheet_import">Import account credentials</string>
     <string name="settings_credential_import_done">Imported %1$d account(s). Switch under Account Manager</string>
     <string name="settings_cookie_export_title">Export cookies</string>
     <string name="settings_cookie_import_title">Import cookies</string>

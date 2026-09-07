@@ -361,11 +361,7 @@
     <string name="settings_backup_later">稍後</string>
 <string name="settings_backup_settings_item">備份/恢復設定項目</string>
     <string name="settings_cookie_item">匯入/匯出cookie</string>
-    <string name="settings_cookie_sheet_export">匯出cookie</string>
-    <string name="settings_cookie_sheet_import">匯入cookie</string>
     <string name="settings_credential_item">匯入/匯出登入憑證</string>
-    <string name="settings_credential_sheet_export">匯出登入憑證</string>
-    <string name="settings_credential_sheet_import">匯入登入憑證</string>
     <string name="settings_credential_import_done">已匯入 %1$d 個帳號，可至帳號管理切換登入</string>
     <string name="settings_cookie_export_title">匯出cookie</string>
     <string name="settings_cookie_import_title">匯入cookie</string>

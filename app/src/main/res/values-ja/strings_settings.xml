@@ -361,11 +361,7 @@
     <string name="settings_backup_later">後で</string>
 <string name="settings_backup_settings_item">バックアップ/復元の設定項目</string>
     <string name="settings_cookie_item">Cookieのインポート/エクスポート</string>
-    <string name="settings_cookie_sheet_export">Cookieをエクスポート</string>
-    <string name="settings_cookie_sheet_import">Cookieをインポート</string>
     <string name="settings_credential_item">ログイン資格情報のインポート/エクスポート</string>
-    <string name="settings_credential_sheet_export">ログイン資格情報をエクスポート</string>
-    <string name="settings_credential_sheet_import">ログイン資格情報をインポート</string>
     <string name="settings_credential_import_done">%1$d件のアカウントをインポートしました。アカウント管理で切り替えられます</string>
     <string name="settings_cookie_export_title">Cookieをエクスポート</string>
     <string name="settings_cookie_import_title">Cookieをインポート</string>

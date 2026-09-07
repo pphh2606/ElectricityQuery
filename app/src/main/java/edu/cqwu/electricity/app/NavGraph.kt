@@ -524,6 +524,7 @@ fun AppNavGraph(
                 viewModel = noticeViewModel,
                 onBack = { noticeViewModel.listRefreshEnabled = true; navController.popBackStack() },
                 onNavigateToNoticeDetail = { wid -> navController.navigate(Routes.noticeDetailRoute(wid)) },
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 
@@ -540,7 +541,8 @@ fun AppNavGraph(
                 onOpenInBrowser = { url, title ->
                     navController.navigate(Routes.unifiedWebViewRoute(url, title))
                 },
-                viewModel = noticeViewModel
+                viewModel = noticeViewModel,
+                onReLogin = { navController.navigate(Routes.loginRoute()) },
             )
         }
 

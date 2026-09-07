@@ -36,4 +36,11 @@
     <string name="speed_test_unit_ms">ms</string>
     <string name="speed_test_banner">Results reflect only the campus intranet bandwidth</string>
     <string name="speed_test_recent_title">Recent tests</string>
+
+    <!-- Network services -->
+    <string name="speed_test_network_service">Network Services</string>
+    <string name="speed_test_service_plan">Switch plan / Log out</string>
+    <string name="speed_test_service_plan_desc">Manage your campus network account plan</string>
+    <string name="speed_test_service_self">Self-service</string>
+    <string name="speed_test_service_self_desc">Open the SAM self-service page</string>
 </resources>

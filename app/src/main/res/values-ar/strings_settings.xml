@@ -361,11 +361,7 @@
     <string name="settings_backup_later">لاحقًا</string>
 <string name="settings_backup_settings_item">عنصر النسخ الاحتياطي والاستعادة</string>
     <string name="settings_cookie_item">استيراد/تصدير ملفات الارتباط</string>
-    <string name="settings_cookie_sheet_export">تصدير ملفات الارتباط</string>
-    <string name="settings_cookie_sheet_import">استيراد ملفات الارتباط</string>
     <string name="settings_credential_item">استيراد/تصدير بيانات اعتماد تسجيل الدخول</string>
-    <string name="settings_credential_sheet_export">تصدير بيانات اعتماد تسجيل الدخول</string>
-    <string name="settings_credential_sheet_import">استيراد بيانات اعتماد تسجيل الدخول</string>
     <string name="settings_credential_import_done">تم استيراد %1$d حسابًا؛ يمكنك التبديل في إدارة الحسابات</string>
     <string name="settings_cookie_export_title">تصدير ملفات الارتباط</string>
     <string name="settings_cookie_import_title">استيراد ملفات الارتباط</string>

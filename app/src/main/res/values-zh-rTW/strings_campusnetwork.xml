@@ -36,4 +36,11 @@
     <string name="speed_test_unit_ms">ms</string>
     <string name="speed_test_banner">測速結果僅代表校園網內網頻寬</string>
     <string name="speed_test_recent_title">最近測速</string>
+
+    <!-- 網路服務 -->
+    <string name="speed_test_network_service">網路服務</string>
+    <string name="speed_test_service_plan">切換套餐 / 下線</string>
+    <string name="speed_test_service_plan_desc">校園網帳號套餐操作</string>
+    <string name="speed_test_service_self">自助服務</string>
+    <string name="speed_test_service_self_desc">開啟 SAM 自助服務頁</string>
 </resources>

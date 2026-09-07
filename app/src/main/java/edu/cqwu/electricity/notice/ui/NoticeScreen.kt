@@ -75,7 +75,8 @@ import kotlinx.coroutines.launch
 fun NoticeScreen(
     viewModel: NoticeViewModel,
     onBack: () -> Unit,
-    onNavigateToNoticeDetail: (wid: String) -> Unit
+    onNavigateToNoticeDetail: (wid: String) -> Unit,
+    onReLogin: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -242,11 +243,11 @@ fun NoticeScreen(
                 }
             }
 
-            viewModel.errorMessage != null && viewModel.items.isEmpty() -> {
+            (viewModel.errorMessage != null || viewModel.requiresReLogin) && viewModel.items.isEmpty() -> {
                 ReLoginContent(
                     errorMessage = viewModel.errorMessage,
-                    requiresReLogin = false,
-                    onReLogin = {},
+                    requiresReLogin = viewModel.requiresReLogin,
+                    onReLogin = onReLogin,
                     onRetry = {
                         scope.launch {
                             val keyword = viewModel.searchKeyword.ifBlank { null }

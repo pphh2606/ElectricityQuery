@@ -45,8 +45,6 @@ fun BackupRestoreSheet(
     onDismiss: () -> Unit,
     onExport: () -> Unit,
     onImport: () -> Unit,
-    @androidx.annotation.StringRes exportLabelRes: Int = R.string.settings_backup_sheet_export,
-    @androidx.annotation.StringRes importLabelRes: Int = R.string.settings_backup_sheet_import,
 ) {
     BottomSheetDialogV2(
         visible = visible,
@@ -60,14 +58,14 @@ fun BackupRestoreSheet(
         ) {
             BackupActionButton(
                 icon = Icons.Outlined.FileDownload,
-                text = stringResource(exportLabelRes),
-                onClick = onExport,
+                text = stringResource(R.string.settings_backup_sheet_import),
+                onClick = onImport,
                 modifier = Modifier.weight(1f),
             )
             BackupActionButton(
                 icon = Icons.Outlined.FileUpload,
-                text = stringResource(importLabelRes),
-                onClick = onImport,
+                text = stringResource(R.string.settings_backup_sheet_export),
+                onClick = onExport,
                 modifier = Modifier.weight(1f),
             )
         }

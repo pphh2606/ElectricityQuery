@@ -58,24 +58,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
-import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.settings.data.isDark
+import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.compose.ui.graphics.Color as ComposeColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("SetJavaScriptEnabled")
@@ -84,7 +86,8 @@ fun NoticeDetailScreen(
     wid: String,
     onBack: () -> Unit,
     onOpenInBrowser: (url: String, title: String) -> Unit,
-    viewModel: NoticeViewModel? = null
+    viewModel: NoticeViewModel? = null,
+    onReLogin: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     var detail by remember { mutableStateOf<NoticeDetailQp?>(null) }
@@ -92,6 +95,7 @@ fun NoticeDetailScreen(
     val topBarColors = currentTopBarColors()
     var isRefreshing by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var requiresReLogin by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val resources = LocalResources.current
 
@@ -122,6 +126,7 @@ fun NoticeDetailScreen(
                 isLoading = true
             }
             errorMessage = null
+            requiresReLogin = false
 
             if (!isRefresh && viewModel != null) {
                 val cached = withContext(Dispatchers.IO) { viewModel.getDetail(wid) }
@@ -141,7 +146,8 @@ fun NoticeDetailScreen(
                 isLoading = false
                 isRefreshing = false
             }.onFailure { e ->
-                errorMessage = e.message ?: resources.getString(R.string.notice_load_failed)
+                requiresReLogin = e is SessionExpiredException
+                errorMessage = if (requiresReLogin) null else e.message ?: resources.getString(R.string.notice_load_failed)
                 isLoading = false
                 isRefreshing = false
             }
@@ -261,11 +267,11 @@ fun NoticeDetailScreen(
                         )
                     }
                 }
-                errorMessage != null && detail == null -> {
+                (errorMessage != null || requiresReLogin) && detail == null -> {
                     ReLoginContent(
                         errorMessage = errorMessage,
-                        requiresReLogin = false,
-                        onReLogin = {},
+                        requiresReLogin = requiresReLogin,
+                        onReLogin = onReLogin,
                         onRetry = { loadDetail(isRefresh = true) },
                         modifier = Modifier.heightIn(min = screenHeightDp.dp),
                     )

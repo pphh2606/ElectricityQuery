@@ -10,6 +10,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
 import edu.cqwu.electricity.notice.data.NoticeItem
+import edu.cqwu.electricity.common.net.SessionExpiredException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -34,6 +35,9 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         private set
     var errorMessage by mutableStateOf<String?>(null)
         private set
+    /** 是否因登录过期而失败（SessionExpiredException），UI 据此显示「重新登录」引导 */
+    var requiresReLogin by mutableStateOf(false)
+        private set
 
     val hasMore: Boolean get() = items.size < totalItem
 
@@ -57,6 +61,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
     suspend fun loadPage(pageNo: Int, isRefresh: Boolean = false, keyword: String? = null) {
         if (isRefresh) isLoading = true else isLoadingMore = true
         errorMessage = null
+        requiresReLogin = false
 
         val result = withContext(Dispatchers.IO) {
             api.fetchNoticePage(pageNo, keyword)
@@ -75,7 +80,8 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         }.onFailure { error ->
             isLoading = false
             isLoadingMore = false
-            errorMessage = error.message ?: getApplication<Application>().getString(R.string.notice_list_load_failed)
+            requiresReLogin = error is SessionExpiredException
+            errorMessage = if (requiresReLogin) null else error.message ?: getApplication<Application>().getString(R.string.notice_list_load_failed)
         }
     }
 
@@ -88,6 +94,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         currentPage = 0
         totalItem = 0
         errorMessage = null
+        requiresReLogin = false
     }
 
     /**
@@ -99,6 +106,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         currentPage = 0
         totalItem = 0
         errorMessage = null
+        requiresReLogin = false
     }
 
     // ── 详情缓存 ──
@@ -144,6 +152,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         isLoading = true
         isLoadingMore = false
         errorMessage = null
+        requiresReLogin = false
         detailCache.clear()
     }
 }

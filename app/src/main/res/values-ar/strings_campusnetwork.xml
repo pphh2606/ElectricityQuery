@@ -36,4 +36,11 @@
     <string name="speed_test_unit_ms">ms</string>
     <string name="speed_test_banner">تعكس النتيجة نطاق شبكة الحرم الجامعي فقط</string>
     <string name="speed_test_recent_title">الاختبارات الأخيرة</string>
+
+    <!-- خدمات الشبكة -->
+    <string name="speed_test_network_service">خدمات الشبكة</string>
+    <string name="speed_test_service_plan">تغيير الباقة / تسجيل الخروج</string>
+    <string name="speed_test_service_plan_desc">إدارة باقة حساب شبكة الحرم الجامعي</string>
+    <string name="speed_test_service_self">الخدمة الذاتية</string>
+    <string name="speed_test_service_self_desc">فتح صفحة الخدمة الذاتية في SAM</string>
 </resources>

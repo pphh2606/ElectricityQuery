@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,9 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -54,13 +58,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestRecord
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestPhase
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestStats
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestTick
+import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 import kotlin.math.ceil
+
+/** 网络服务：切换套餐/下线 */
+private const val PLAN_SWITCH_URL = "http://222.179.99.144:8080/"
+
+/** 网络服务：自助服务（SAM 自助服务页） */
+private const val SELF_SERVICE_URL = "https://speedtest.cqwu.edu.cn/self-service"
 
 /**
  * 网速测试页 —— 原生复刻官方移动端测速 UI（白底扁平、胶囊按钮、2×2 指标四宫格）。
@@ -78,6 +90,7 @@ fun SpeedTestScreen(
     val resources = LocalResources.current
     val palette = speedTestPalette()
     val topBarColors = currentTopBarColors()
+    val nav = LocalNavController.current
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -134,6 +147,19 @@ fun SpeedTestScreen(
             // ── 提示横幅 ──
             InfoBanner(palette = palette)
 
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // ── 网络服务 ──
+            NetworkServicesSection(
+                palette = palette,
+                onPlanSwitch = {
+                    nav.navigate(Routes.unifiedWebViewRoute(PLAN_SWITCH_URL, resources.getString(R.string.speed_test_service_plan)))
+                },
+                onSelfService = {
+                    nav.navigate(Routes.unifiedWebViewRoute(SELF_SERVICE_URL, resources.getString(R.string.speed_test_service_self)))
+                },
+            )
+
             // ── 最近测速（仅获取到数据时渲染）──
             if (recent.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
@@ -185,7 +211,9 @@ private fun StatusLine(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = {}),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (isActive) {
@@ -326,7 +354,9 @@ private fun MetricsSection(
     val showValues = state.status == SpeedTestRunStatus.RUNNING ||
         state.status == SpeedTestRunStatus.COMPLETED
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = {})) {
         // 1) 活跃会话 | 排队等候（Row 用 IntrinsicSize.Max 支撑纵向分隔线高度）
         Row(
             modifier = Modifier
@@ -506,6 +536,7 @@ private fun InfoBanner(palette: SpeedTestPalette) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(palette.bannerBackground)
+            .clickable(onClick = {})
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -522,6 +553,102 @@ private fun InfoBanner(palette: SpeedTestPalette) {
             style = MaterialTheme.typography.bodySmall,
             color = palette.bannerText,
             fontFamily = FontFamily.Serif,
+        )
+    }
+}
+
+// ══════════════════════════════════════════════
+//  网络服务
+// ══════════════════════════════════════════════
+
+/** 网络服务：标题 + 两行入口（切换套餐/下线、自助服务），点击经内部浏览器打开对应 URL */
+@Composable
+private fun NetworkServicesSection(
+    palette: SpeedTestPalette,
+    onPlanSwitch: () -> Unit,
+    onSelfService: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface),
+    ) {
+        // ── 标题 ──
+        Text(
+            text = stringResource(R.string.speed_test_network_service),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = palette.label,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+        ServiceRow(
+            icon = Icons.Outlined.Bolt,
+            title = stringResource(R.string.speed_test_service_plan),
+            subtitle = stringResource(R.string.speed_test_service_plan_desc),
+            onClick = onPlanSwitch,
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+        ServiceRow(
+            icon = Icons.Outlined.Language,
+            title = stringResource(R.string.speed_test_service_self),
+            subtitle = stringResource(R.string.speed_test_service_self_desc),
+            onClick = onSelfService,
+        )
+    }
+}
+
+/** 网络服务单行：圆形底色图标 + 标题/副标题 + 右箭头（对齐 CampusNetworkScreen 圆形图标项） */
+@Composable
+private fun ServiceRow(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+        Spacer(modifier = Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(modifier = Modifier.width(14.dp))
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            modifier = Modifier.size(22.dp),
         )
     }
 }
@@ -562,10 +689,11 @@ private fun RecentRecordsSection(
 
         // ── 记录列表 ──
         pageRecords.forEachIndexed { index, record ->
-            RecentRecordRow(record = record, palette = palette)
-            if (index != pageRecords.lastIndex) {
-                HorizontalDivider(color = palette.divider)
-            }
+            RecentRecordRow(
+                record = record,
+                palette = palette,
+                showBottomDivider = index != pageRecords.lastIndex,
+            )
         }
 
         // ── 分页脚条 ──
@@ -620,75 +748,85 @@ private fun RecentRecordsSection(
 private fun RecentRecordRow(
     record: SpeedTestRecord,
     palette: SpeedTestPalette,
+    showBottomDivider: Boolean,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+            .clickable(onClick = {}),
     ) {
-        // 第一行：时间(左) + IP(右)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            Text(
-                text = formatTimestamp(record.timestamp),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontFamily = FontFamily.Serif,
-            )
-            Text(
-                text = record.ipAddress ?: "--",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontFamily = FontFamily.Serif,
-            )
-        }
+            // 第一行：时间(左) + IP(右)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = formatTimestamp(record.timestamp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.Serif,
+                )
+                Text(
+                    text = record.ipAddress ?: "--",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.Serif,
+                )
+            }
 
-        // 第二行：DL | UL + ping ms
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                SpeedValue(
-                    label = "DL",
-                    value = SpeedTestStats.formatMbps(value1(record.download)),
-                    color = palette.download,
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(14.dp)
-                        .background(palette.divider),
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                SpeedValue(
-                    label = "UL",
-                    value = SpeedTestStats.formatMbps(value1(record.upload)),
-                    color = palette.upload,
-                )
+            // 第二行：DL | UL + ping ms
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SpeedValue(
+                        label = "DL",
+                        value = SpeedTestStats.formatMbps(value1(record.download)),
+                        color = palette.download,
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(14.dp)
+                            .background(palette.divider),
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    SpeedValue(
+                        label = "UL",
+                        value = SpeedTestStats.formatMbps(value1(record.upload)),
+                        color = palette.upload,
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = SpeedTestStats.formatMs(value1(record.ping)),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontFamily = FontFamily.Serif,
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = stringResource(R.string.speed_test_unit_ms),
+                        fontSize = 9.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontFamily = FontFamily.Serif,
+                    )
+                }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = SpeedTestStats.formatMs(value1(record.ping)),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontFamily = FontFamily.Serif,
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(
-                    text = stringResource(R.string.speed_test_unit_ms),
-                    fontSize = 9.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontFamily = FontFamily.Serif,
-                )
-            }
+        }
+        if (showBottomDivider) {
+            HorizontalDivider(color = palette.divider)
         }
     }
 }

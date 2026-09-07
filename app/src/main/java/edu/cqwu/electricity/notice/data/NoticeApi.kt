@@ -2,6 +2,7 @@ package edu.cqwu.electricity.notice.data
 
 import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
+import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -63,6 +64,9 @@ class NoticeApi {
 
             AppLog.body(TAG, "通知公告响应: $body")
 
+            // 未登录时 ehall 会 302 到 CAS 登录页（shared 自动跟随后落到登录页 HTML），先识别再解析
+            HtmlFormParser.checkAndThrow(body)
+
             val noticeResponse = gson.fromJson(body, NoticeResponse::class.java)
             val qp = noticeResponse.qp
             val items = qp?.aList ?: emptyList()
@@ -107,6 +111,9 @@ class NoticeApi {
             }
 
             AppLog.body(TAG, "通知详情响应: $body")
+
+            // 未登录时同样落到 CAS 登录页 HTML，先识别再解析
+            HtmlFormParser.checkAndThrow(body)
 
             val detailResponse = gson.fromJson(body, NoticeDetailResponse::class.java)
             val detail = detailResponse.list?.firstOrNull()

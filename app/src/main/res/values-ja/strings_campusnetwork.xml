@@ -36,4 +36,11 @@
     <string name="speed_test_unit_ms">ms</string>
     <string name="speed_test_banner">結果はキャンパス内ネットワークのみを反映します</string>
     <string name="speed_test_recent_title">最近のテスト</string>
+
+    <!-- ネットワークサービス -->
+    <string name="speed_test_network_service">ネットワークサービス</string>
+    <string name="speed_test_service_plan">プラン変更 / ログアウト</string>
+    <string name="speed_test_service_plan_desc">キャンパスネットワークのプランを管理</string>
+    <string name="speed_test_service_self">セルフサービス</string>
+    <string name="speed_test_service_self_desc">SAM セルフサービスページを開く</string>
 </resources>

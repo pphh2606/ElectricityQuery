@@ -36,4 +36,11 @@
     <string name="speed_test_unit_ms">ms</string>
     <string name="speed_test_banner">Le résultat reflète uniquement la bande passante du réseau du campus</string>
     <string name="speed_test_recent_title">Tests récents</string>
+
+    <!-- Services réseau -->
+    <string name="speed_test_network_service">Services réseau</string>
+    <string name="speed_test_service_plan">Changer de forfait / Déconnexion</string>
+    <string name="speed_test_service_plan_desc">Gérer le forfait du compte réseau du campus</string>
+    <string name="speed_test_service_self">Libre-service</string>
+    <string name="speed_test_service_self_desc">Ouvrir la page libre-service SAM</string>
 </resources>

@@ -179,8 +179,6 @@ fun BackupRestoreScreen(
             showCookieSheet = false
             nav.navigate(Routes.SETTINGS_COOKIE_IMPORT)
         },
-        exportLabelRes = R.string.settings_cookie_sheet_export,
-        importLabelRes = R.string.settings_cookie_sheet_import,
     )
     // 登录凭据选择弹窗
     BackupRestoreSheet(
@@ -207,8 +205,6 @@ fun BackupRestoreScreen(
             showCredentialSheet = false
             showCredentialImportDialog = true
         },
-        exportLabelRes = R.string.settings_credential_sheet_export,
-        importLabelRes = R.string.settings_credential_sheet_import,
     )
 
     // ========== 登录凭据导入对话框 ==========
