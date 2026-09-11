@@ -2,6 +2,9 @@ package edu.cqwu.electricity.profile.ui
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
+import edu.cqwu.electricity.common.ui.InfoLabelWidth
+import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -360,20 +363,14 @@ private fun CollapsibleCategoryCard(
     }
 }
 
+/** 我的信息字段行：复用通用键值行，仅统一本页行距 */
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = value.ifBlank { "-" },
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1, overflow = TextOverflow.Ellipsis)
-    }
+    CommonInfoRow(
+        label = label,
+        value = value,
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+        labelWidth = InfoLabelWidth,
+        maxLines = Int.MAX_VALUE,
+    )
 }

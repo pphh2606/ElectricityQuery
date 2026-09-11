@@ -34,6 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.InfoLabelWidth
+import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 
 /**
@@ -211,28 +213,14 @@ private fun OrderInfoSection(order: OrderRecord) {
     }
 }
 
+/** 订单字段行：复用通用键值行，仅统一本页行距 */
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(80.dp),
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(1f),
-        )
-    }
+    CommonInfoRow(
+        label = label,
+        value = value,
+        modifier = Modifier.padding(vertical = 6.dp),
+        labelWidth = InfoLabelWidth,
+        maxLines = Int.MAX_VALUE,
+    )
 }

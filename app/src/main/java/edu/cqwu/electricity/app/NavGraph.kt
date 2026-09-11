@@ -54,6 +54,7 @@ import edu.cqwu.electricity.campusnetwork.ui.CampusNetworkScreen
 import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui.ClientContextScreen
 import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui.ClientContextViewModel
 import edu.cqwu.electricity.campusnetwork.speedtest.ui.SpeedTestScreen
+import edu.cqwu.electricity.campusnetwork.portal.ui.PortalServiceScreen
 import edu.cqwu.electricity.cardcenter.ui.CardRechargeScreen
 import edu.cqwu.electricity.cardcenter.ui.CardRechargeViewModel
 import edu.cqwu.electricity.electricity.data.DetailType
@@ -303,6 +304,9 @@ object Routes {
 
     /** 校园网络 — 网速测试 */
     const val CAMPUS_NETWORK_SPEED_TEST = "campus_network_speed_test"
+
+    /** 校园网络 — 网络服务（认证网关 eportal 本地化页） */
+    const val CAMPUS_NETWORK_PORTAL_SERVICE = "campus_network_portal_service"
 }
 
 /**
@@ -955,6 +959,13 @@ fun AppNavGraph(
         // 校园网络 — 网速测试
         animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK_SPEED_TEST) {
             SpeedTestScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 校园网络 — 网络服务（认证网关会话，本地化）
+        animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK_PORTAL_SERVICE) {
+            PortalServiceScreen(
                 onBack = { navController.popBackStack() },
             )
         }

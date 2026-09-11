@@ -43,4 +43,11 @@
     <string name="speed_test_service_plan_desc">校園網帳號套餐操作</string>
     <string name="speed_test_service_self">自助服務</string>
     <string name="speed_test_service_self_desc">開啟 SAM 自助服務頁</string>
+
+    <!-- 國際學術資源 -->
+    <string name="speed_test_academic_title">國際學術資源</string>
+    <string name="speed_test_academic_apply">發起申請</string>
+    <string name="speed_test_academic_apply_desc">提交國際學術資源存取申請</string>
+    <string name="speed_test_academic_records">申請記錄</string>
+    <string name="speed_test_academic_records_desc">檢視已提交申請的審核進度</string>
 </resources>

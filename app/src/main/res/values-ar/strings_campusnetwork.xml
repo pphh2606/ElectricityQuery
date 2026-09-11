@@ -43,4 +43,11 @@
     <string name="speed_test_service_plan_desc">إدارة باقة حساب شبكة الحرم الجامعي</string>
     <string name="speed_test_service_self">الخدمة الذاتية</string>
     <string name="speed_test_service_self_desc">فتح صفحة الخدمة الذاتية في SAM</string>
+
+    <!-- موارد أكاديمية دولية -->
+    <string name="speed_test_academic_title">موارد أكاديمية دولية</string>
+    <string name="speed_test_academic_apply">تقديم الطلب</string>
+    <string name="speed_test_academic_apply_desc">تقديم طلب الوصول إلى الموارد الأكاديمية الدولية</string>
+    <string name="speed_test_academic_records">سجل الطلبات</string>
+    <string name="speed_test_academic_records_desc">عرض حالة مراجعة الطلبات المقدمة</string>
 </resources>

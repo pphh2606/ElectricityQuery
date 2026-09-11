@@ -1,4 +1,4 @@
-﻿package edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui
+package edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui
 
 import android.content.res.Resources
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.data.ClientContextData
+import edu.cqwu.electricity.common.ui.InfoLabelWidth
+import edu.cqwu.electricity.common.ui.InfoRow
+import edu.cqwu.electricity.common.ui.InfoRowDivider
+import edu.cqwu.electricity.common.ui.InfoSectionTitle
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
@@ -173,63 +176,23 @@ private fun ClientContextContent(
         item(key = "client_context_sections") {
             Column {
                 sections.forEach { section ->
-                    Text(
-                        text = section.title,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 4.dp),
-                    )
+                    InfoSectionTitle(text = section.title)
                     section.rows.forEachIndexed { index, field ->
                         // 所有值统一可换行完整展示，避免长文本被省略截断
-                        FieldRow(
+                        InfoRow(
                             label = field.label,
                             value = field.value,
                             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                            labelWidth = InfoLabelWidth,
+                            maxLines = Int.MAX_VALUE,
                         )
                         if (index < section.rows.size - 1) {
-                            HorizontalDivider(
-                                thickness = 0.5.dp,
-                                color = MaterialTheme.colorScheme.outlineVariant,
-                                modifier = Modifier.padding(start = 16.dp),
-                            )
+                            InfoRowDivider()
                         }
                     }
                 }
             }
         }
-    }
-}
-
-/**
- * 字段行：左标签右值，值允许多行换行完整展示（不省略）。
- * 视觉对齐「电表实时状态」的 InfoRow，但值不受单行省略限制。
- */
-@Composable
-private fun FieldRow(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(104.dp),
-        )
-        Text(
-            text = value.ifBlank { "-" },
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(1f),
-        )
     }
 }
 

@@ -43,4 +43,11 @@
     <string name="speed_test_service_plan_desc">Manage your campus network account plan</string>
     <string name="speed_test_service_self">Self-service</string>
     <string name="speed_test_service_self_desc">Open the SAM self-service page</string>
+
+    <!-- International academic resources -->
+    <string name="speed_test_academic_title">International Academic Resources</string>
+    <string name="speed_test_academic_apply">Submit application</string>
+    <string name="speed_test_academic_apply_desc">Submit an international academic resource access application</string>
+    <string name="speed_test_academic_records">Application records</string>
+    <string name="speed_test_academic_records_desc">Track the review progress of submitted applications</string>
 </resources>

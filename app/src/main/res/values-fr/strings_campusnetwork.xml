@@ -43,4 +43,11 @@
     <string name="speed_test_service_plan_desc">Gérer le forfait du compte réseau du campus</string>
     <string name="speed_test_service_self">Libre-service</string>
     <string name="speed_test_service_self_desc">Ouvrir la page libre-service SAM</string>
+
+    <!-- Ressources académiques internationales -->
+    <string name="speed_test_academic_title">Ressources académiques internationales</string>
+    <string name="speed_test_academic_apply">Déposer une demande</string>
+    <string name="speed_test_academic_apply_desc">Soumettre une demande d\'accès aux ressources académiques internationales</string>
+    <string name="speed_test_academic_records">Historique des demandes</string>
+    <string name="speed_test_academic_records_desc">Suivre l\'avancement des demandes déposées</string>
 </resources>

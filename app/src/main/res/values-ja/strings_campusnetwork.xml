@@ -43,4 +43,11 @@
     <string name="speed_test_service_plan_desc">キャンパスネットワークのプランを管理</string>
     <string name="speed_test_service_self">セルフサービス</string>
     <string name="speed_test_service_self_desc">SAM セルフサービスページを開く</string>
+
+    <!-- 国際学術リソース -->
+    <string name="speed_test_academic_title">国際学術リソース</string>
+    <string name="speed_test_academic_apply">申請する</string>
+    <string name="speed_test_academic_apply_desc">国際学術リソースへのアクセス申請を提出</string>
+    <string name="speed_test_academic_records">申請履歴</string>
+    <string name="speed_test_academic_records_desc">提出済み申請の審査状況を確認</string>
 </resources>
