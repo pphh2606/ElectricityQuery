@@ -1,14 +1,14 @@
-package edu.cqwu.electricity.campusnetwork.campusnetworkinfo.data
+package edu.cqwu.electricity.campusnetwork.accessor.data
 
 import com.google.gson.annotations.SerializedName
 
 /**
  * 接入者信息响应模型（GET /api/speedlyst/client-context 的 data 部分）。
- * 统一响应包装 `{code,message,data}` 已收敛到 common（CampusNetworkJson），此处仅保留 data 业务形状。
+ * 统一响应包装 `{code,message,data}` 已收敛到 common（CampusNetworkHttp），此处仅保留 data 业务形状。
  * 字段清单对照 `fortest/校园网测速API文档.md` §1 整理，全部可空，
  * 避免后端某字段缺失/为 null 时 Gson 解析崩溃。未知新字段会被忽略，不影响展示。
  */
-data class ClientContextData(
+data class AccessorData(
     /** 请求方 IP */
     @SerializedName("ip") val ip: String? = null,
     /** 识别来源：sam（校园网 SAM 命中）/ ip2region（公网归属地）等 */

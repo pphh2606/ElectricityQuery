@@ -32,9 +32,9 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.InfoRow
+import edu.cqwu.electricity.common.ui.InfoRowDivider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -246,11 +246,7 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
                         modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
                     )
                     if (index < rows.size - 1) {
-                        HorizontalDivider(
-                            thickness = 0.5.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            modifier = Modifier.padding(start = 16.dp),
-                        )
+                        InfoRowDivider()
                     }
                 }
             }

@@ -92,7 +92,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
             .fillMaxWidth()
             .padding(16.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -167,7 +167,7 @@ private fun OrderInfoSection(order: OrderRecord) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .padding(16.dp),
     ) {
         Text(
@@ -219,7 +219,7 @@ private fun InfoRow(label: String, value: String) {
     CommonInfoRow(
         label = label,
         value = value,
-        modifier = Modifier.padding(vertical = 6.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         labelWidth = InfoLabelWidth,
         maxLines = Int.MAX_VALUE,
     )

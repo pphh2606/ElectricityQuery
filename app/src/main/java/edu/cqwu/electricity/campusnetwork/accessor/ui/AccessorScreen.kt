@@ -1,17 +1,12 @@
-package edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui
+package edu.cqwu.electricity.campusnetwork.accessor.ui
 
-import android.content.res.Resources
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,11 +35,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.data.ClientContextData
-import edu.cqwu.electricity.common.ui.InfoLabelWidth
-import edu.cqwu.electricity.common.ui.InfoRow
-import edu.cqwu.electricity.common.ui.InfoRowDivider
-import edu.cqwu.electricity.common.ui.InfoSectionTitle
+import edu.cqwu.electricity.campusnetwork.accessor.data.AccessorData
+import edu.cqwu.electricity.campusnetwork.ui.Field
+import edu.cqwu.electricity.campusnetwork.ui.FieldSection
+import edu.cqwu.electricity.campusnetwork.ui.FieldSectionList
+import edu.cqwu.electricity.campusnetwork.ui.field
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
@@ -53,15 +48,17 @@ import edu.cqwu.electricity.theme.ui.resolve
  * 接入者信息页面（校园网络 - 接入者信息）。
  *
  * 访问 GET /api/speedlyst/client-context 并把返回的全部字段分组展示，
- * 行样式参考「电表实时状态」界面（common InfoRow 左标签右值 + 细分隔线）。
+ * 行样式沿用「电表实时状态」界面（`common/ui` InfoRow 左标签右值 + 细分隔线，行距 8dp），
+ * 字段表由 [buildSections] 以纯数据列举，渲染交给 `campusnetwork/ui` 的
+ * [edu.cqwu.electricity.campusnetwork.ui.FieldSectionList]。
  *
  * 注意：响应含个人档案（姓名/手机号/学号等），仅界面展示，不写日志、不做缓存。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClientContextScreen(
+fun AccessorScreen(
     onBack: () -> Unit,
-    viewModel: ClientContextViewModel = viewModel(),
+    viewModel: AccessorViewModel = viewModel(),
 ) {
     val uiState by viewModel.state.collectAsState()
     val resources = LocalResources.current
@@ -138,7 +135,7 @@ fun ClientContextScreen(
                 }
 
                 else -> {
-                    ClientContextContent(data = uiState.data!!)
+                    AccessorContent(data = uiState.data!!)
                 }
             }
         }
@@ -149,49 +146,20 @@ fun ClientContextScreen(
 //  内容区：分组字段列表（参考电表实时状态：InfoRow + 细分隔线）
 // ====================================================================
 
-/** 展示分组：标题 + 若干「左标签 - 右值」行 */
-private data class InfoSection(
-    val title: String,
-    val rows: List<InfoField>,
-)
-
-/** 单行字段；值统一支持换行完整展示（不省略截断） */
-private data class InfoField(
-    val label: String,
-    val value: String,
-)
-
 @Composable
-private fun ClientContextContent(
-    data: ClientContextData,
+private fun AccessorContent(
+    data: AccessorData,
     modifier: Modifier = Modifier,
 ) {
-    val resources = LocalResources.current
-    val sections = remember(data) { buildSections(data, resources) }
+    // 字段表是纯数据，用 remember 避免每次重组重建
+    val sections = remember(data) { buildSections(data) }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
         item(key = "client_context_sections") {
-            Column {
-                sections.forEach { section ->
-                    InfoSectionTitle(text = section.title)
-                    section.rows.forEachIndexed { index, field ->
-                        // 所有值统一可换行完整展示，避免长文本被省略截断
-                        InfoRow(
-                            label = field.label,
-                            value = field.value,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                            labelWidth = InfoLabelWidth,
-                            maxLines = Int.MAX_VALUE,
-                        )
-                        if (index < section.rows.size - 1) {
-                            InfoRowDivider()
-                        }
-                    }
-                }
-            }
+            FieldSectionList(sections = sections)
         }
     }
 }
@@ -220,116 +188,116 @@ private fun EmptyContent(message: String) {
 
 /**
  * 把 client-context 响应转成展示分组。字段全集对照 API 文档，逐行固定顺序，
- * 缺失值为空（InfoRow 统一显示 "-"），保证"所有字段都有位置"。
+ * 缺失值传 null（[Field] 统一显示 "-"），保证"所有字段都有位置"。
+ *
+ * 纯函数、不依赖 `Resources` 与 Composable —— 字段表可脱离 UI 单测，
+ * 渲染由 [edu.cqwu.electricity.campusnetwork.ui.FieldSectionList] 承担。
  */
-private fun buildSections(data: ClientContextData, resources: Resources): List<InfoSection> {
-    val sections = mutableListOf<InfoSection>()
-    val s = { res: Int -> resources.getString(res) }
-
-    // 构造单行字段（lambda 不支持默认参数，故用局部函数）
-    fun f(res: Int, value: String?): InfoField =
-        InfoField(label = s(res), value = value.orEmpty())
-
+private fun buildSections(data: AccessorData): List<FieldSection> = buildList {
     // ── 识别概览 ──
-    val overviewRows = mutableListOf<InfoField>()
-    overviewRows += f(R.string.cn_label_request_ip, data.ip)
-    overviewRows += f(R.string.cn_label_source, displaySource(data.source))
-    overviewRows += f(R.string.cn_label_processed, data.processedString)
-    overviewRows += f(R.string.cn_label_matched, displayMatchedBy(data.matchedBy))
-    if (data.samError != null) {
-        overviewRows += f(R.string.cn_label_sam_error, data.samError)
-    }
-    // 未命中 SAM 档案时的提示（理论上校园网在线时会命中）
-    if (data.row == null) {
-        overviewRows += f(
-            R.string.cn_label_identity_hit,
-            resources.getString(R.string.campus_network_sam_not_hit),
-        )
-    }
-    sections += InfoSection(title = s(R.string.cn_group_overview), rows = overviewRows)
+    add(
+        FieldSection(
+            title = R.string.cn_group_overview,
+            fields = buildList {
+                add(field(R.string.cn_label_request_ip, data.ip))
+                add(field(R.string.cn_label_source, displaySource(data.source)))
+                add(field(R.string.cn_label_processed, data.processedString))
+                add(field(R.string.cn_label_matched, displayMatchedBy(data.matchedBy)))
+                if (data.samError != null) add(field(R.string.cn_label_sam_error, data.samError))
+                // 未命中 SAM 档案时的提示（理论上校园网在线时会命中）
+                if (data.row == null) {
+                    add(Field(R.string.cn_label_identity_hit, null, R.string.campus_network_sam_not_hit))
+                }
+            },
+        ),
+    )
 
     // ── 网络运营商信息（rawIspInfo）──
     data.rawIspInfo?.let { isp ->
-        sections += InfoSection(
-            title = s(R.string.cn_group_isp),
-            rows = listOfNotNull(
-                f(R.string.cn_label_isp_source, isp.source),
-                f(R.string.cn_label_region, isp.region),
-                f(R.string.cn_label_city, isp.city),
-                f(R.string.cn_label_isp_name, isp.isp),
-                f(R.string.cn_label_isp_provider, isp.provider),
-                f(R.string.cn_label_isp_org, isp.organization),
-                f(R.string.cn_label_label, isp.label),
+        add(
+            FieldSection(
+                title = R.string.cn_group_isp,
+                fields = listOf(
+                    field(R.string.cn_label_isp_source, isp.source),
+                    field(R.string.cn_label_region, isp.region),
+                    field(R.string.cn_label_city, isp.city),
+                    field(R.string.cn_label_isp_name, isp.isp),
+                    field(R.string.cn_label_isp_provider, isp.provider),
+                    field(R.string.cn_label_isp_org, isp.organization),
+                    field(R.string.cn_label_label, isp.label),
+                ),
             ),
         )
     }
 
     // ── 用户档案（SAM，row）──
     data.row?.let { row ->
-        sections += InfoSection(
-            title = s(R.string.cn_group_profile),
-            rows = listOfNotNull(
-                f(R.string.cn_label_user_type, displayUserType(row.userType)),
-                f(R.string.cn_label_user_no, row.userNo),
-                f(R.string.cn_label_name, row.name),
-                f(R.string.cn_label_sex, displaySex(row.sex)),
-                f(R.string.cn_label_phone, row.phone),
-                f(R.string.cn_label_dept_id, row.deptId),
-                f(R.string.cn_label_dept_name, row.deptName),
-                f(R.string.cn_label_source_id, row.sourceId),
-                f(R.string.cn_label_title, row.title),
-                f(R.string.cn_label_major_code, row.majorCode),
-                f(R.string.cn_label_major_name, row.majorName),
-                f(R.string.cn_label_grade, row.grade),
-                f(R.string.cn_label_class, row.className),
-                f(R.string.cn_label_archive_user_id, row.archiveUserId),
-                f(R.string.cn_label_archive_user_name, row.archiveUserName),
-                f(R.string.cn_label_archive_user_group, row.archiveUserGroupName),
-                f(R.string.cn_label_archive_template, row.archiveUserTemplateName),
-                f(R.string.cn_label_archive_package, row.archiveUserPackageName),
-                f(R.string.cn_label_archive_policy, row.archivePolicyId),
-                f(R.string.cn_label_archive_state, row.archiveStateFlag?.toString()),
-                f(R.string.cn_label_archive_online_state, displayOnlineState(row.archiveOnlineState)),
-                f(R.string.cn_label_archive_created, row.archiveCreatedAt),
-                f(R.string.cn_label_archive_logout, row.archiveLastLogoutAt),
-                f(R.string.cn_label_archive_next_billing, row.archiveNextBillingAt),
-                f(R.string.cn_label_archive_free_auth, displayYesNo(row.archiveFreeAuth)),
-                f(R.string.cn_label_archive_ip, row.archiveIp),
-                f(R.string.cn_label_archive_self_permission, row.archiveSelfServicePermission),
-                f(R.string.cn_label_online_mac, row.onlineMac),
-                f(R.string.cn_label_online_ipv4, row.onlineIpv4),
-                f(R.string.cn_label_online_nas_ip, row.onlineNasIp),
-                f(R.string.cn_label_online_nas_port, row.onlineNasPort?.toString()),
-                f(R.string.cn_label_online_connected, row.onlineConnectedAt),
-                f(R.string.cn_label_online_access_type, row.onlineAccessType?.toString()),
-                f(R.string.cn_label_online_group_id, row.onlineGroupId),
-                f(R.string.cn_label_online_template_id, row.onlineTemplateId),
-                f(R.string.cn_label_online_package, row.onlinePackageName),
-                f(R.string.cn_label_online_policy, row.onlinePolicyId),
-                f(R.string.cn_label_online_service_id, row.onlineServiceId),
-                f(R.string.cn_label_online_area, row.onlineAreaName),
+        add(
+            FieldSection(
+                title = R.string.cn_group_profile,
+                fields = listOf(
+                    field(R.string.cn_label_user_type, displayUserType(row.userType)),
+                    field(R.string.cn_label_user_no, row.userNo),
+                    field(R.string.cn_label_name, row.name),
+                    field(R.string.cn_label_sex, displaySex(row.sex)),
+                    field(R.string.cn_label_phone, row.phone),
+                    field(R.string.cn_label_dept_id, row.deptId),
+                    field(R.string.cn_label_dept_name, row.deptName),
+                    field(R.string.cn_label_source_id, row.sourceId),
+                    field(R.string.cn_label_title, row.title),
+                    field(R.string.cn_label_major_code, row.majorCode),
+                    field(R.string.cn_label_major_name, row.majorName),
+                    field(R.string.cn_label_grade, row.grade),
+                    field(R.string.cn_label_class, row.className),
+                    field(R.string.cn_label_archive_user_id, row.archiveUserId),
+                    field(R.string.cn_label_archive_user_name, row.archiveUserName),
+                    field(R.string.cn_label_archive_user_group, row.archiveUserGroupName),
+                    field(R.string.cn_label_archive_template, row.archiveUserTemplateName),
+                    field(R.string.cn_label_archive_package, row.archiveUserPackageName),
+                    field(R.string.cn_label_archive_policy, row.archivePolicyId),
+                    field(R.string.cn_label_archive_state, row.archiveStateFlag?.toString()),
+                    field(R.string.cn_label_archive_online_state, displayOnlineState(row.archiveOnlineState)),
+                    field(R.string.cn_label_archive_created, row.archiveCreatedAt),
+                    field(R.string.cn_label_archive_logout, row.archiveLastLogoutAt),
+                    field(R.string.cn_label_archive_next_billing, row.archiveNextBillingAt),
+                    field(R.string.cn_label_archive_free_auth, displayYesNo(row.archiveFreeAuth)),
+                    field(R.string.cn_label_archive_ip, row.archiveIp),
+                    field(R.string.cn_label_archive_self_permission, row.archiveSelfServicePermission),
+                    field(R.string.cn_label_online_mac, row.onlineMac),
+                    field(R.string.cn_label_online_ipv4, row.onlineIpv4),
+                    field(R.string.cn_label_online_nas_ip, row.onlineNasIp),
+                    field(R.string.cn_label_online_nas_port, row.onlineNasPort?.toString()),
+                    field(R.string.cn_label_online_connected, row.onlineConnectedAt),
+                    field(R.string.cn_label_online_access_type, row.onlineAccessType?.toString()),
+                    field(R.string.cn_label_online_group_id, row.onlineGroupId),
+                    field(R.string.cn_label_online_template_id, row.onlineTemplateId),
+                    field(R.string.cn_label_online_package, row.onlinePackageName),
+                    field(R.string.cn_label_online_policy, row.onlinePolicyId),
+                    field(R.string.cn_label_online_service_id, row.onlineServiceId),
+                    field(R.string.cn_label_online_area, row.onlineAreaName),
+                ),
             ),
         )
     }
 
     // ── 公网归属地（region；校园网在线时通常不出现，作为健壮性兜底）──
     data.region?.let { region ->
-        sections += InfoSection(
-            title = s(R.string.cn_group_region),
-            rows = listOfNotNull(
-                f(R.string.cn_label_country, region.country),
-                f(R.string.cn_label_province, region.province),
-                f(R.string.cn_label_city, region.city),
-                f(R.string.cn_label_region, region.region),
-                f(R.string.cn_label_isp_name, region.isp),
-                f(R.string.cn_label_country_code, region.countryCode),
-                f(R.string.cn_label_label, region.label),
-                f(R.string.cn_label_is_public, displayYesNoBoolean(region.isPublic)),
+        add(
+            FieldSection(
+                title = R.string.cn_group_region,
+                fields = listOf(
+                    field(R.string.cn_label_country, region.country),
+                    field(R.string.cn_label_province, region.province),
+                    field(R.string.cn_label_city, region.city),
+                    field(R.string.cn_label_region, region.region),
+                    field(R.string.cn_label_isp_name, region.isp),
+                    field(R.string.cn_label_country_code, region.countryCode),
+                    field(R.string.cn_label_label, region.label),
+                    field(R.string.cn_label_is_public, displayYesNoBoolean(region.isPublic)),
+                ),
             ),
         )
     }
-
-    return sections
 }
 
 // ====================================================================

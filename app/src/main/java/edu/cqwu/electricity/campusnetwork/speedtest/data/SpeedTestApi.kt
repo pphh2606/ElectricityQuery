@@ -1,8 +1,8 @@
 package edu.cqwu.electricity.campusnetwork.speedtest.data
 
-import edu.cqwu.electricity.campusnetwork.common.CampusNetworkClients
-import edu.cqwu.electricity.campusnetwork.common.CampusNetworkJson
-import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestSettings
+import edu.cqwu.electricity.campusnetwork.common.CampusNetworkHttp
+import edu.cqwu.electricity.campusnetwork.common.SpeedTestStation
+import edu.cqwu.electricity.common.net.HttpClientFactory
 import okhttp3.Call
 import okhttp3.MediaType
 import okhttp3.Request
@@ -13,12 +13,12 @@ import okio.BufferedSink
  * 测速会话与探测流量接口封装。
  *
  * - 会话链 JSON（POST /session → GET → claim → complete → DELETE）与 rank/stats 全部
- *   委托 common 的 [CampusNetworkJson]（统一信封解析 / 错误归类 / 日志），本类只声明路径与类型；
- * - probe 三类探测请求（流式大流量，非 JSON）由 [edu.cqwu.electricity.campusnetwork.engine.SpeedTestEngine]
- *   使用本类构造的 Call 执行，客户端复用 [CampusNetworkClients.direct]（无 Cookie / 无 WebVPN）。
+ *   委托 [CampusNetworkHttp]（统一信封解析 / 错误归类 / 日志），本类只声明路径与类型；
+ * - probe 三类探测请求（流式大流量，非 JSON）由 [edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestEngine]
+ *   使用本类构造的 Call 执行，客户端复用 [HttpClientFactory.campusClient]（与认证网关同一实例）。
  */
 class SpeedTestApi internal constructor(
-    private val json: CampusNetworkJson = CampusNetworkJson(),
+    private val json: CampusNetworkHttp = CampusNetworkHttp(),
 ) {
 
     private companion object {
@@ -74,18 +74,18 @@ class SpeedTestApi internal constructor(
     //  probe 探测请求构造（执行与取消由 SpeedTestEngine 管理）
     // ══════════════════════════════════════════════
 
-    private fun probeUrl(kind: String) = "${CampusNetworkClients.BASE_URL}/probe/$kind"
+    private fun probeUrl(kind: String) = "${SpeedTestStation.BASE_URL}/probe/$kind"
 
-    /** 下载探测：GET garbage?r=<随机>&ckSize=<chunk> */
-    fun newDownloadCall(r: String): Call {
-        val url = probeUrl("garbage") + "?r=$r&ckSize=${SpeedTestSettings.GARBAGE_CK_SIZE}"
-        return CampusNetworkClients.direct.newCall(Request.Builder().url(url).get().build())
+    /** 下载探测：GET garbage?r=<随机>&ckSize=<chunk>；chunk 值由引擎按协议常量传入 */
+    fun newDownloadCall(r: String, ckSize: Int): Call {
+        val url = probeUrl("garbage") + "?r=$r&ckSize=$ckSize"
+        return HttpClientFactory.campusClient.newCall(Request.Builder().url(url).get().build())
     }
 
     /** 延迟探测：GET empty?r=<随机> */
     fun newPingCall(r: String): Call {
         val url = probeUrl("empty") + "?r=$r"
-        return CampusNetworkClients.direct.newCall(Request.Builder().url(url).get().build())
+        return HttpClientFactory.campusClient.newCall(Request.Builder().url(url).get().build())
     }
 
     /** 上传探测：POST empty?r=<随机>，body 为随机载荷，写出过程逐块回调计数 */
@@ -110,6 +110,6 @@ class SpeedTestApi internal constructor(
             .post(body)
             .header("Content-Encoding", "identity") // 与官网请求一致
             .build()
-        return CampusNetworkClients.direct.newCall(request)
+        return HttpClientFactory.campusClient.newCall(request)
     }
 }

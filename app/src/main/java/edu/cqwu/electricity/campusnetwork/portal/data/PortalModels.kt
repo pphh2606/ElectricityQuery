@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 /**
  * eportal（Dr.COM 认证网关，`222.179.99.144`）响应模型。
  *
- * 与测速站（`speedtest.cqwu.edu.cn`，见 `common/CampusNetworkJson`）**不是同一套协议**：
+ * 与测速站（`speedtest.cqwu.edu.cn`，见 `common/CampusHttp`）**不是同一套协议**：
  * 网关响应没有 `{code,message,data}` 信封，成败由顶层 `result` 决定，且存在第三态 `wait`
  * ——字段不完整但仍带身份的过渡态，**不是失败**。
  *

@@ -12,7 +12,7 @@ import java.net.UnknownHostException
 /**
  * 校园网络（campusnetwork）模块共享的错误分类。
  *
- * 抽到 common 包，避免 speedtest 与 campusnetworkinfo 两个功能相互依赖；
+ * 抽到 common 包，避免 speedtest 与 accessor 两个功能相互依赖；
  * 供两个功能的 API 层共用以归一化的错误类型上抛，
  * 原始异常由 [toCampusNetworkException] 归类，技术细节进 AppLog，不静默吞掉。
  */
@@ -60,7 +60,7 @@ internal fun Throwable.toCampusNetworkException(): CampusNetworkException {
 
 /**
  * 校园网错误 → 界面提示。分类决定文案；服务端消息（[CampusNetworkException.userMessage]）优先原样展示。
- * 供 speedtest 与 campusnetworkinfo 两个功能的 ViewModel 共用，避免各写一份。
+ * 供 speedtest 与 accessor 两个功能的 ViewModel 共用，避免各写一份。
  */
 fun Throwable.toCampusUiMessage(): UiMessage = when (this) {
     is CampusNetworkException -> when (kind) {

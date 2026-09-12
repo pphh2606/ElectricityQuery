@@ -184,7 +184,7 @@ fun AddShortcutScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { showFunctionSheet = true },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
                     ) {
                         Row(

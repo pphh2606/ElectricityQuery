@@ -62,11 +62,10 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.app.Routes
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalClient
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalOnlineInfo
+import edu.cqwu.electricity.campusnetwork.ui.KeyValueRows
+import edu.cqwu.electricity.campusnetwork.ui.field
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
-import edu.cqwu.electricity.common.ui.InfoLabelWidth
-import edu.cqwu.electricity.common.ui.InfoRow
-import edu.cqwu.electricity.common.ui.InfoRowDivider
 import edu.cqwu.electricity.common.ui.InfoSectionTitle
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalNavController
@@ -99,7 +98,8 @@ private val RowPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
  * 是两个不同服务器的来源，因此页面顶部固定标注来源，不与另一页面合并展示。
  *
  * 版式与「接入者信息」一致：**白底平铺**，分组标题 + 键值行 + 行间细分隔线，
- * 字段行统一使用 `common/ui` 的 [InfoRow] 三件套（同一套标签宽度与换行策略）。
+ * 字段行统一走 `campusnetwork/ui` 的 [KeyValueRows]（内部即 `common/ui` 的 InfoRow 三件套，
+ * 同一套标签宽度与换行策略，行距沿用本页原有的 10dp）。
  *
  * 本地化范围：会话状态、切换服务、断开网络、本机无感认证开关、自助服务免密入口；
  * 账号密码认证不在此页（保持跳官方认证页）。
@@ -310,61 +310,16 @@ private fun OnlineContent(
     OnlineStatusRow(info = info)
     RemainingBlock(seconds = state.remainingSeconds)
 
-    InfoRowDivider()
-    InfoRow(
-        label = stringResource(R.string.portal_field_traffic),
-        value = trafficText(info.maxFlow).orEmpty(),
-        modifier = Modifier.padding(RowPadding),
-        labelWidth = InfoLabelWidth,
-        maxLines = Int.MAX_VALUE,
-    )
-    InfoRowDivider()
-    InfoRow(
-        label = stringResource(R.string.portal_field_ip),
-        value = info.userIp.orEmpty(),
-        modifier = Modifier.padding(RowPadding),
-        labelWidth = InfoLabelWidth,
-        maxLines = Int.MAX_VALUE,
-    )
-    InfoRowDivider()
-    InfoRow(
-        label = stringResource(R.string.portal_field_mac),
-        value = formatMac(info.userMac).orEmpty(),
-        modifier = Modifier.padding(RowPadding),
-        labelWidth = InfoLabelWidth,
-        maxLines = Int.MAX_VALUE,
-    )
-    InfoRowDivider()
-    InfoRow(
-        label = stringResource(R.string.portal_field_gateway),
-        value = info.webGateIp.orEmpty(),
-        modifier = Modifier.padding(RowPadding),
-        labelWidth = InfoLabelWidth,
-        maxLines = Int.MAX_VALUE,
-    )
-    InfoRowDivider()
-    InfoRow(
-        label = stringResource(R.string.portal_field_login_type),
-        value = loginTypeText(info.loginType).orEmpty(),
-        modifier = Modifier.padding(RowPadding),
-        labelWidth = InfoLabelWidth,
-        maxLines = Int.MAX_VALUE,
-    )
-    InfoRowDivider()
-    InfoRow(
-        label = stringResource(R.string.portal_field_package),
-        value = info.userPackage.orEmpty(),
-        modifier = Modifier.padding(RowPadding),
-        labelWidth = InfoLabelWidth,
-        maxLines = Int.MAX_VALUE,
-    )
-    InfoRowDivider()
-    InfoRow(
-        label = stringResource(R.string.portal_field_group),
-        value = info.userGroup.orEmpty(),
-        modifier = Modifier.padding(RowPadding),
-        labelWidth = InfoLabelWidth,
-        maxLines = Int.MAX_VALUE,
+    KeyValueRows(
+        fields = listOf(
+            field(R.string.portal_field_traffic, trafficText(info.maxFlow)),
+            field(R.string.portal_field_ip, info.userIp),
+            field(R.string.portal_field_mac, formatMac(info.userMac)),
+            field(R.string.portal_field_gateway, info.webGateIp),
+            field(R.string.portal_field_login_type, loginTypeText(info.loginType)),
+            field(R.string.portal_field_package, info.userPackage),
+            field(R.string.portal_field_group, info.userGroup),
+        ),
     )
 
     // 网关通知放在会话状态之后、服务之前

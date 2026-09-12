@@ -1,4 +1,4 @@
-﻿package edu.cqwu.electricity.campusnetwork.speedtest.engine
+package edu.cqwu.electricity.campusnetwork.speedtest.engine
 
 import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestApi
 import edu.cqwu.electricity.logging.AppLog
@@ -53,7 +53,7 @@ data class SpeedTestResult(
  * 错误语义对齐 `xhr_ignoreErrors:1`：单流请求失败（含 429 code:40003）
  * 只重开该流的下一个请求，不中断整轮测速。
  *
- * 网络请求不带鉴权；会话（create/claim/complete）由调用方 [edu.cqwu.electricity.campusnetwork.ui.SpeedTestViewModel] 管理。
+ * 网络请求不带鉴权；会话（create/claim/complete）由调用方 [edu.cqwu.electricity.campusnetwork.speedtest.ui.SpeedTestViewModel] 管理。
  */
 class SpeedTestEngine(
     private val api: SpeedTestApi,
@@ -174,7 +174,7 @@ class SpeedTestEngine(
         val buffer = ByteArray(64 * 1024)
         while (coroutineContext.isActive) {
             var failed = false
-            val call = api.newDownloadCall(randomR())
+            val call = api.newDownloadCall(randomR(), SpeedTestSettings.GARBAGE_CK_SIZE)
             register(call)
             try {
                 call.execute().use { response ->

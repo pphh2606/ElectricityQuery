@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * 测速会话/历史 DTO —— 字段对照 `fortest/校园网测速API文档.md` §3-5 实测报文。
- * 统一响应包装 `{code,message,data}` 已收敛到 common（[edu.cqwu.electricity.campusnetwork.common.CampusNetworkJson]），
+ * 统一响应包装 `{code,message,data}` 已收敛到 common（[edu.cqwu.electricity.campusnetwork.common.CampusNetworkHttp]），
  * 这里只保留各接口的 data 业务形状；字段全部可空防解析崩溃。
  */
 

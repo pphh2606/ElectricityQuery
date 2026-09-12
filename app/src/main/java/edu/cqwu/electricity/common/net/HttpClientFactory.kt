@@ -49,6 +49,24 @@ object HttpClientFactory {
         )
     }
 
+    /**
+     * 校园网络模块专用客户端（测速站 speedtest.cqwu.edu.cn 与认证网关 222.179.99.144 共用）。
+     *
+     * 与其余 WebVPN 客户端一致挂 CookieStoreOkHttpJar、跟随全局 WebVPN 实验性开关。
+     * **连接超时单独收紧到 3 秒**：两者都是"源 IP 即身份"的校内服务，未连校园网时无法建连，
+     * 沿用默认 15 秒会让用户对着空白页干等；校内实测建连仅数十毫秒，3 秒足够给出结论。
+     * 读/写超时维持默认值——测速页的下载/上传探测请求需要长读。
+     *
+     * 收敛到此处而非各功能自建：此前测速站与认证网关各写一份完全相同的 create 参数，
+     * 3 秒超时这一取舍得改两处、易漂移。
+     */
+    val campusClient: OkHttpClient by lazy {
+        create(
+            cookieJar = CookieStoreOkHttpJar,
+            connectTimeout = 3,
+        )
+    }
+
     val shared: OkHttpClient by lazy {
         create(cookieJar = CookieStoreOkHttpJar)
     }

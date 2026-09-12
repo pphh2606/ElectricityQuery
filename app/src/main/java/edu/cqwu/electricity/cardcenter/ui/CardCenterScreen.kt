@@ -2,22 +2,11 @@ package edu.cqwu.electricity.cardcenter.ui
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.AccountBalance
@@ -26,8 +15,6 @@ import androidx.compose.material.icons.outlined.DirectionsBus
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Receipt
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,19 +29,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.qrcode.data.QrCodeType
 import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.ui.FeatureGrid
+import edu.cqwu.electricity.common.ui.FeatureGridItem
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -123,22 +108,29 @@ fun CardCenterScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 功能网格：3 列 × 2 行
+                // 功能网格：3 列 × 2 行（骨架与网格项统一由 common/ui 提供）
                 item(key = "grid") {
                     val resources = LocalResources.current
-                    CardGrid(
-                        onItemClick = { item ->
-                            when (item.action) {
-                                CardAction.ACCOUNT_INFO -> nav.navigate(Routes.ACCOUNT_INFO)
-                                CardAction.QR_CODE_PAY -> onNavigateToQrCode(QrCodeType.PAY)
-                                CardAction.QR_CODE_BUS -> onNavigateToQrCode(QrCodeType.BUS)
-                                CardAction.CARD_LOST -> nav.navigate(Routes.CARD_LOST)
-                                CardAction.BILL -> nav.navigate(Routes.BILL)
-                                CardAction.CARD_RECHARGE -> onNavigateToCardRecharge()
-                                is CardAction.WEB_VIEW -> nav.navigate(Routes.unifiedWebViewRoute(item.action.url, resources.getString(item.labelRes)))
-                            }
-                        }
-                    )
+                    FeatureGrid(items = cardCenterItems) { card, itemModifier ->
+                        FeatureGridItem(
+                            icon = card.icon,
+                            label = stringResource(card.labelRes),
+                            onClick = {
+                                when (val action = card.action) {
+                                    CardAction.ACCOUNT_INFO -> nav.navigate(Routes.ACCOUNT_INFO)
+                                    CardAction.QR_CODE_PAY -> onNavigateToQrCode(QrCodeType.PAY)
+                                    CardAction.QR_CODE_BUS -> onNavigateToQrCode(QrCodeType.BUS)
+                                    CardAction.CARD_LOST -> nav.navigate(Routes.CARD_LOST)
+                                    CardAction.BILL -> nav.navigate(Routes.BILL)
+                                    CardAction.CARD_RECHARGE -> onNavigateToCardRecharge()
+                                    is CardAction.WEB_VIEW -> nav.navigate(
+                                        Routes.unifiedWebViewRoute(action.url, resources.getString(card.labelRes)),
+                                    )
+                                }
+                            },
+                            modifier = itemModifier,
+                        )
+                    }
                 }
             }
         }
@@ -211,101 +203,6 @@ private val cardCenterItems = listOf(
     )
 )
 
-// ====================================================================
-//  子组件
-// ====================================================================
+// 网格容器（FeatureGrid）与网格项（FeatureGridItem）已上提到 common/ui，
+// 与校园网首页共用同一份实现，本文件不再保留私有副本。
 
-/**
- * 功能网格容器
- * 使用 Column + Row 手动分 3 列，避免嵌套 LazyVerticalGrid 的无限高度约束问题
- *
- * @param onItemClick 点击回调
- */
-@Composable
-private fun CardGrid(
-    onItemClick: (CardGridItem) -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        cardCenterItems.chunked(3).forEach { rowItems ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                rowItems.forEach { item ->
-                    CardGridItemView(
-                        item = item,
-                        modifier = Modifier.weight(1f),
-                        onClick = { onItemClick(item) }
-                    )
-                }
-                // 补齐空位，使最后一行不足 3 个时保持布局一致
-                repeat(3 - rowItems.size) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-    }
-}
-
-/**
- * 单个网格项 — 圆形图标 + 文字标签
- */
-@Composable
-private fun CardGridItemView(
-    item: CardGridItem,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // 圆形图标背景（浅色）
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = stringResource(item.labelRes),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // 功能名称
-            Text(
-                text = stringResource(item.labelRes),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}

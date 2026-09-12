@@ -1,24 +1,17 @@
 package edu.cqwu.electricity.campusnetwork.portal.data
 
-import com.google.gson.Gson
-import edu.cqwu.electricity.campusnetwork.common.CampusNetworkErrorKind
-import edu.cqwu.electricity.campusnetwork.common.CampusNetworkException
-import edu.cqwu.electricity.campusnetwork.common.toCampusNetworkException
-import edu.cqwu.electricity.common.net.CookieStoreOkHttpJar
+import edu.cqwu.electricity.campusnetwork.common.CampusHttpBase
 import edu.cqwu.electricity.common.net.HttpClientFactory
-import edu.cqwu.electricity.logging.AppLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
 
 /**
  * 认证网关（Dr.COM eportal，`http://222.179.99.144:8080`）客户端与接口封装。
  *
- * 与测速站共用底层网络工厂，但**不共用传输**：网关是表单编码 + `{result,...}` 平铺响应，
- * 没有 `{code,message,data}` 信封，详见 [PortalModels]。
+ * 与测速站共用底层网络工厂，但**不共用传输协议**：网关是表单编码 + `{result,...}` 平铺响应，
+ * 没有 `{code,message,data}` 信封，详见 [PortalModels]。执行/判码/日志/异常归类由
+ * [CampusHttpBase] 统一承担，本类只声明路径与平铺解析。
  *
  * 实测结论（2026-09-11，校园网内直连）：
  * - **判在线只看 `result`**：空 `userIndex` + 空 Cookie 查询即返回完整身份并回填 `userIndex`
@@ -33,28 +26,11 @@ object PortalClient {
 
     /** 网关根地址（门户页与全部 API 同源；静态资源在 :8081，App 不需要） */
     const val BASE_URL = "http://222.179.99.144:8080"
-
-    /**
-     * 跟随全局 WebVPN 开关（与校园网络其它功能保持一致的既定行为）。
-     *
-     * 网关业务接口均为 POST 直返 200、无重定向语义，故沿用默认的跟随策略。
-     *
-     * 连接超时单独收紧到 3 秒：网关是内网 IP 直连（实测正常响应 33ms），未连校园网时
-     * 无法建连，沿用默认 15 秒会让用户对着近乎空白的页面干等；3 秒足够给出结论。
-     * 读/写超时维持默认值（网关响应实测最慢 615ms）。
-     */
-    val client: OkHttpClient by lazy {
-        HttpClientFactory.create(
-            cookieJar = CookieStoreOkHttpJar,
-            includeWebVpn = true,
-            connectTimeout = 3L,
-        )
-    }
 }
 
 class PortalApi internal constructor(
-    private val client: OkHttpClient = PortalClient.client,
-) {
+    client: okhttp3.OkHttpClient = HttpClientFactory.campusClient,
+) : CampusHttpBase(client = client, tag = "PortalApi") {
 
     /**
      * 查询当前会话。
@@ -64,7 +40,7 @@ class PortalApi internal constructor(
      * 在线与否看返回的 `isOnline`（`result` 为 `success`/`wait`），**不要看 message**。
      */
     suspend fun onlineInfo(userIndex: String = ""): Result<PortalOnlineInfo> =
-        postJson(
+        postFlat(
             "getOnlineUserInfo",
             USER_INFO_PATH,
             mapOf("userIndex" to userIndex),
@@ -73,7 +49,7 @@ class PortalApi internal constructor(
 
     /** 在线切换服务；服务名取自会话响应的 [parseServices]（不硬编码枚举） */
     suspend fun switchService(userIndex: String, serviceName: String): Result<PortalResult> =
-        postJson(
+        postFlat(
             "switchService",
             SWITCH_SERVICE_PATH,
             mapOf("userIndex" to userIndex, "serviceName" to serviceName),
@@ -82,7 +58,7 @@ class PortalApi internal constructor(
 
     /** 断开网络（下线）；`userIndex` 必须为真实凭证（传字面量 "null" 会被网关静默忽略） */
     suspend fun logout(userIndex: String): Result<PortalResult> =
-        postJson("logout", LOGOUT_PATH, mapOf("userIndex" to userIndex), PortalResult::class.java)
+        postFlat("logout", LOGOUT_PATH, mapOf("userIndex" to userIndex), PortalResult::class.java)
 
     /**
      * 无感认证开关（当前设备）。
@@ -92,66 +68,42 @@ class PortalApi internal constructor(
      * 因此调用方应忽略 message、以随后查询的 `hasMabInfo` 实际值为准。
      */
     suspend fun setMab(userIndex: String, enable: Boolean): Result<PortalResult> =
-        postJson(
+        postFlat(
             if (enable) "registerMac" else "cancelMac",
             if (enable) REGISTER_MAC_PATH else CANCEL_MAC_PATH,
             mapOf("mac" to "", "userIndex" to userIndex),
             PortalResult::class.java,
         )
 
-    // ────────────────────────── 传输 ──────────────────────────
-
-    /** 统一兜底：归类网络异常并记录日志；[CancellationException] 原样上抛，绝不吞掉 */
-    private fun <T> guard(desc: String, block: () -> T): Result<T> = try {
-        Result.success(block())
-    } catch (e: CancellationException) {
-        throw e
-    } catch (e: Exception) {
-        AppLog.e(TAG, "$desc 失败: ${e.message}", e)
-        Result.failure(e.toCampusNetworkException())
-    }
-
-    private suspend fun <T> postJson(
+    /**
+     * 表单 POST 平铺 JSON 响应：请求构建与执行委托 [CampusHttpBase.execute]，
+     * 异常统一经 [CampusHttpBase.logAndClassify] 归类（HTTP 非 2xx / 无网络等）。
+     */
+    private suspend fun <T> postFlat(
         desc: String,
         path: String,
         form: Map<String, String>,
         type: Class<T>,
     ): Result<T> = withContext(Dispatchers.IO) {
-        guard(desc) {
-            val text = postText(desc, path, form)
-            gson.fromJson(text, type) ?: throw IllegalStateException("$desc 响应解析失败")
-        }
-    }
-
-    private fun postText(desc: String, path: String, form: Map<String, String>): String {
-        val body = FormBody.Builder()
-            .apply { form.forEach { (k, v) -> add(k, v) } }
-            .build()
-        val request = Request.Builder()
-            .url(PortalClient.BASE_URL + path)
-            .post(body)
-            .build()
-        return client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                AppLog.e(TAG, "$desc HTTP 失败: ${response.code}")
-                throw CampusNetworkException(
-                    CampusNetworkErrorKind.SERVER,
-                    userMessage = "HTTP ${response.code}",
-                )
-            }
-            response.body.string()
+        try {
+            val text = execute("POST", PortalClient.BASE_URL + path) { post(formBody(form)) }
+                .use { it.body.string() }
+            Result.success(
+                gson.fromJson(text, type) ?: throw IllegalStateException("$desc 响应解析失败"),
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // execute() 抛出的 HTTP 失败已带正确分类，logAndClassify 对其原样返回
+            Result.failure(e.logAndClassify(desc))
         }
     }
 
     private companion object {
-        const val TAG = "PortalApi"
-
         const val USER_INFO_PATH = "/eportal/InterFace.do?method=getOnlineUserInfo"
         const val SWITCH_SERVICE_PATH = "/eportal/InterFace.do?method=switchService"
         const val LOGOUT_PATH = "/eportal/InterFace.do?method=logout"
         const val REGISTER_MAC_PATH = "/eportal/InterFace.do?method=registerMac"
         const val CANCEL_MAC_PATH = "/eportal/InterFace.do?method=cancelMac"
-
-        val gson = Gson()
     }
 }

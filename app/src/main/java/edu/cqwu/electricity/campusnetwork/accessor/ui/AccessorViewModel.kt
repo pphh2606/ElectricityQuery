@@ -1,10 +1,10 @@
-package edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui
+package edu.cqwu.electricity.campusnetwork.accessor.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.data.CampusNetworkApi
+import edu.cqwu.electricity.campusnetwork.accessor.data.AccessorApi
+import edu.cqwu.electricity.campusnetwork.accessor.data.AccessorData
 import edu.cqwu.electricity.campusnetwork.common.toCampusUiMessage
-import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.data.ClientContextData
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.UiMessage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,14 +14,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** 接入者信息页面状态 */
-data class ClientContextUiState(
+data class AccessorUiState(
     /** 首次整页加载中（尚无数据可展示） */
     val isLoading: Boolean = false,
     /** 下拉刷新中（已有数据） */
     val isRefreshing: Boolean = false,
     /** 错误信息；非空时优先展示错误态（含重试按钮） */
     val error: UiMessage? = null,
-    val data: ClientContextData? = null,
+    val data: AccessorData? = null,
 )
 
 /**
@@ -33,12 +33,12 @@ data class ClientContextUiState(
  * 错误约定：错误经 [CampusNetworkException] 分类后映射为用户可读文案；
  * 技术细节（原始堆栈）统一经 AppLog 记录，不静默吞掉。
  */
-class ClientContextViewModel(
-    private val api: CampusNetworkApi = CampusNetworkApi(),
+class AccessorViewModel(
+    private val api: AccessorApi = AccessorApi(),
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ClientContextUiState())
-    val state: StateFlow<ClientContextUiState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(AccessorUiState())
+    val state: StateFlow<AccessorUiState> = _state.asStateFlow()
 
     /**
      * 加载接入者信息。
@@ -59,7 +59,7 @@ class ClientContextViewModel(
                     error = null,
                 )
             }
-            api.fetchClientContext()
+            api.fetchAccessorInfo()
                 .onSuccess { data ->
                     _state.update {
                         it.copy(isLoading = false, isRefreshing = false, data = data)
@@ -79,6 +79,6 @@ class ClientContextViewModel(
     }
 
     private companion object {
-        const val TAG = "ClientContextViewModel"
+        const val TAG = "AccessorViewModel"
     }
 }

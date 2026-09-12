@@ -17,7 +17,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,9 +49,9 @@ import edu.cqwu.electricity.cardcenter.ui.BillViewModel
 import edu.cqwu.electricity.cardcenter.ui.CardCenterScreen
 import edu.cqwu.electricity.cardcenter.ui.CardLostScreen
 import edu.cqwu.electricity.cardcenter.ui.CardPaymentScreen
-import edu.cqwu.electricity.campusnetwork.ui.CampusNetworkScreen
-import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui.ClientContextScreen
-import edu.cqwu.electricity.campusnetwork.campusnetworkinfo.ui.ClientContextViewModel
+import edu.cqwu.electricity.campusnetwork.CampusNetworkScreen
+import edu.cqwu.electricity.campusnetwork.accessor.ui.AccessorScreen
+import edu.cqwu.electricity.campusnetwork.accessor.ui.AccessorViewModel
 import edu.cqwu.electricity.campusnetwork.speedtest.ui.SpeedTestScreen
 import edu.cqwu.electricity.campusnetwork.portal.ui.PortalServiceScreen
 import edu.cqwu.electricity.cardcenter.ui.CardRechargeScreen
@@ -949,9 +948,9 @@ fun AppNavGraph(
         // 校园网络 — 接入者信息
         animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK_ACCESSOR_INFO) {
             // viewModel() 在此处调用，作用域绑定到本路由条目，离开页面即销毁
-            val clientContextViewModel: ClientContextViewModel = viewModel()
-            ClientContextScreen(
-                viewModel = clientContextViewModel,
+            val accessorViewModel: AccessorViewModel = viewModel()
+            AccessorScreen(
+                viewModel = accessorViewModel,
                 onBack = { navController.popBackStack() },
             )
         }
