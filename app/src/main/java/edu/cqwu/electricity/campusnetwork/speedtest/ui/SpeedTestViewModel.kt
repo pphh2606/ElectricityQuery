@@ -56,7 +56,7 @@ data class SpeedTestUiState(
 )
 
 /**
- * 网速测试 ViewModel。
+ * 校内网络测速 ViewModel。
  *
  * 流程：POST /session 创建 →（queued 则轮询至 active/expired）→ claim →
  * 引擎跑 D/P/U → complete（字符串、2 位小数）→ 完成。

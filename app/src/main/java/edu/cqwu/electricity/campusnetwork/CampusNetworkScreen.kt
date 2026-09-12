@@ -39,7 +39,7 @@ import edu.cqwu.electricity.theme.ui.currentTopBarColors
  * [edu.cqwu.electricity.common.ui.FeatureGrid] / [FeatureGridItem] 提供
  * （与一卡通服务平台首页共用同一份实现，网格自身用 Column + Row 手动分列）。
  *
- * 本期已实现「接入者信息」「网速测试」「网络服务」，其余 3 格置灰「敬请期待」（未来功能位）。
+ * 本期已实现「接入者信息」「校内网络测速」「网络服务」，其余 3 格置灰「敬请期待」（未来功能位）。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +113,7 @@ private enum class CampusFeatureAction {
     /** 接入者信息 */
     ACCESSOR_INFO,
 
-    /** 网速测试 */
+    /** 校内网络测速 */
     SPEED_TEST,
 
     /** 网络服务（认证网关会话） */
@@ -133,7 +133,7 @@ private data class CampusFeatureItem(
     val enabled: Boolean = action != CampusFeatureAction.PLACEHOLDER
 }
 
-/** 3×2 网格：接入者信息 + 网速测试 + 网络服务可用，其余为未来功能占位 */
+/** 3×2 网格：接入者信息 + 校内网络测速 + 网络服务可用，其余为未来功能占位 */
 private val campusFeatureItems = listOf(
     CampusFeatureItem(
         labelRes = R.string.campus_network_accessor_title,

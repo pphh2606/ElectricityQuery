@@ -87,7 +87,7 @@
     <string name="cn_label_is_public">公網 IP</string>
 
     <!-- ── スピードテスト ── -->
-    <string name="speed_test_title">ネットワーク速度テスト</string>
+    <string name="speed_test_title">学内ネットワーク速度テスト</string>
     <string name="speed_test_idle_hint">タップして開始</string>
     <string name="speed_test_queued">順番待ち、しばらくお待ちください…</string>
     <string name="speed_test_queue_position">順番待ち、あと %1$d 人です</string>

@@ -469,7 +469,29 @@ fun NoticeDetailScreen(
 }
 
 /**
- * 构建纯内容 HTML（无自定义样式，夜间模式由 WebViewDarkMode 统一处理）
+ * 构建正文 HTML 页面。
+ *
+ * 夜间模式由 `WebViewDarkMode` 统一处理，但**布局类规则必须留在这里**：
+ * 该工具只注入颜色/背景/边框（见其 WEBVIEW_NIGHT_CSS），不含任何换行与宽度约束。
+ *
+ * `white-space: normal` 是刻意保留的一条：服务端富文本会把正文逐段包进
+ * `<span style="text-wrap-mode: nowrap">`（实测 41 个 span 全部带 nowrap），
+ * 不压制它则整段文字无法折行、向右溢出屏幕。
+ * 它必须带 `!important`——内联样式虽优先级高，但不带 `!important`，
+ * 会被带 `!important` 的样式表规则压过。
+ * （aef1261 整体移除本样式块导致该问题，d159e0e 补回了部分规则但漏掉这条。）
+ *
+ * `p { text-indent: 2em }` 针对另一种服务端产物：从 Word 粘贴的落款用**固定像素**
+ * 缩进做右对齐（实测「基建后勤处」那行是 `text-indent:419px`），
+ * 该值超过手机屏幕逻辑宽度，整行被推出屏幕外、只露出第一个字的一角。
+ * 统一成 2em 后：正常段落原本就是 `28px`（字号 14px × 2），视觉不变；
+ * 异常段落被拉回可见范围。本规则必须排在 `body *` 之后——两者优先级相同，
+ * 同为 `!important` 时后出现者生效。
+ *
+ * `img` 与 `table` 两条同样防溢出：图片限宽并在超宽时等比缩放（缺 `height: auto`
+ * 会把图片拉变形，`display: block` + `margin: auto` 让它居中）；
+ * 表格强制占满容器宽度——服务端从 Word 粘贴的表格常带固定像素宽度，会撑破屏幕。
+ * 这两条同为普通选择器优先级，也排在 `body *` 之后。
  */
 private fun buildHtmlPage(noticeContent: String): String {
     return """<!DOCTYPE html>
@@ -482,6 +504,21 @@ body * {
     max-width: 100% !important;
     word-break: break-word !important;
     overflow-wrap: break-word !important;
+    white-space: normal !important;
+}
+p {
+    text-indent: 2em !important;
+}
+img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 8px auto;
+}
+table {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin: 8px 0;
 }
 </style>
 </head>

@@ -45,6 +45,7 @@ object HomeAppLauncher {
         HomeAppIds.MY_INFO -> HomeAppLaunch.Native(Routes.MY_INFO)
         HomeAppIds.SPEAK_UP -> HomeAppLaunch.Native(Routes.SPEAK_UP)
         HomeAppIds.SCAN -> HomeAppLaunch.Native(Routes.SCAN)
+        HomeAppIds.INTERNAL_SPEED_TEST -> HomeAppLaunch.Native(Routes.CAMPUS_NETWORK_SPEED_TEST)
         else -> when {
             openUrl.isBlank() -> HomeAppLaunch.DoNothing
             WebViewUrlUtil.isHttpScheme(openUrl) -> HomeAppLaunch.WebPage(openUrl, name)

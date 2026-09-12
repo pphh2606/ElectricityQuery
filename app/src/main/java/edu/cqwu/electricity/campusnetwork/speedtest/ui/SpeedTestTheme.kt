@@ -1,11 +1,11 @@
-﻿package edu.cqwu.electricity.campusnetwork.speedtest.ui
+package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.material3.MaterialTheme
 
 /**
- * 网速测试页专用语义色板。
+ * 校内网络测速页专用语义色板。
  *
  * 色值来源：官网页面打包 CSS（`fortest/校园网测速.har.txt` → `index-CY0zSaht.css`）的
  * `:root`（浅色）与 `.dark`（深色）hsl 变量 + 页面 JS 内指标专用类（blue-600/blue-400、red-600/red-400）。

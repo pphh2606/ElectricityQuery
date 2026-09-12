@@ -81,7 +81,7 @@ private const val UNLIMITED_TRAFFIC_MB = 1024.0 * 1024 * 1024
 private const val REMAINING_WARN_SECONDS = 300L
 
 /**
- * SAM 自助服务系统入口（与网速测试页同一地址）。
+ * SAM 自助服务系统入口（与校内网络测速页同一地址）。
  *
  * 不再使用网关下发的 `selfUrl`：实测该链接只是个把用户名预填、仍需手输密码的登录页
  * （`login_judge.jsf` 会丢弃凭据并跳到 `login_self.jsf`），并非免密入口。

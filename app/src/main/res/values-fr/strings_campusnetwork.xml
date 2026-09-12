@@ -87,7 +87,7 @@
     <string name="cn_label_is_public">IP publique</string>
 
     <!-- ── Test de vitesse ── -->
-    <string name="speed_test_title">Test de vitesse réseau</string>
+    <string name="speed_test_title">Test de débit du réseau du campus</string>
     <string name="speed_test_idle_hint">Appuyez pour démarrer</string>
     <string name="speed_test_queued">En file d\'attente, veuillez patienter…</string>
     <string name="speed_test_queue_position">En file d\'attente, %1$d personne(s) avant vous</string>

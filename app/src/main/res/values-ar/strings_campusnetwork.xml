@@ -87,7 +87,7 @@
     <string name="cn_label_is_public">عنوان IP العام</string>
 
     <!-- ── اختبار السرعة ── -->
-    <string name="speed_test_title">اختبار سرعة الشبكة</string>
+    <string name="speed_test_title">اختبار سرعة شبكة الحرم الجامعي</string>
     <string name="speed_test_idle_hint">اضغط للبدء</string>
     <string name="speed_test_queued">في قائمة الانتظار، يرجى الانتظار…</string>
     <string name="speed_test_queue_position">في قائمة الانتظار، أمامك %1$d شخص(أشخاص)</string>

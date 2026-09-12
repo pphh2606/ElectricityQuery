@@ -33,12 +33,17 @@ internal class CookieJarBridge(
         val cookiesMap = CookieParser.parse(cookieString)
 
         return cookiesMap.mapNotNull { (name, value) ->
-            try {
-                if (value.isEmpty()) return@mapNotNull null
-                // 出库拼头前检查：非 ASCII 值会导致 OkHttp BridgeInterceptor 组装 Cookie 头时抛
-                // IllegalArgumentException(Unexpected char ... in Cookie value)，这里先定位元凶
+            // 含非 ASCII 的 name/value 会被 OkHttp 组装 Cookie 头时拒绝
+            // （IllegalArgumentException: Unexpected char ... in Cookie value），
+            // 且该异常发生在更晚的 BridgeInterceptor，本函数的 try/catch 兜不住 ——
+            // 一旦出现就会让**整个请求**失败（如缴费大厅项目列表加载失败）。
+            // 这类 Cookie 本来就永远发不出去，直接丢弃：只损失这一条，
+            // 其余合法 Cookie 照常发送，登录态不受影响。
+            if (value.isEmpty() || !name.isAsciiHeaderSafe() || !value.isAsciiHeaderSafe()) {
                 logNonAsciiIfPresent("load", url.toString(), name, value)
-
+                return@mapNotNull null
+            }
+            try {
                 Cookie.Builder()
                     .name(name)
                     .value(value)
@@ -57,9 +62,17 @@ internal class CookieJarBridge(
     }
 
     /**
-     * 排查用日志：cookie 名/值只允许可见 ASCII（0x20..0x7E），一旦出现其它字符，
-     * OkHttp 在把 Cookie 写入请求头时会抛 IllegalArgumentException（复现日志中的
-     * "Unexpected char ... in Cookie value"）。
+     * 头部值只允许可见 ASCII（0x20..0x7E），口径与 `okhttp3.Headers` 的校验一致。
+     * `\t` 虽被 OkHttp 放行，但 Cookie 值里不应出现，故一并判为非法。
+     */
+    private fun String.isAsciiHeaderSafe(): Boolean = all { it.code in 0x20..0x7E }
+
+    /**
+     * 记录非法 Cookie：出库（[loadForRequest]）时会连同该条一起丢弃，
+     * 入库（[saveFromResponse]）时仅记录、不拦截。
+     *
+     * cookie 名/值只允许可见 ASCII（0x20..0x7E），一旦出现其它字符，OkHttp 在把 Cookie
+     * 写入请求头时会抛 IllegalArgumentException（"Unexpected char ... in Cookie value"）。
      * 注意：不打印 cookie 值内容（可能含 token/隐私），只输出域名、cookie 名、长度与
      * 每个非 ASCII 字符的码点（U+xxxx）与下标，便于定位元凶且不泄密。
      */

@@ -87,7 +87,7 @@ private const val RECENT_PAGE_SIZE = 10
 private val SectionSpacing = 20.dp
 
 /**
- * 网速测试页 —— 原生复刻官方移动端测速 UI（白底扁平、胶囊按钮、2×2 指标四宫格）。
+ * 校内网络测速页 —— 原生复刻官方移动端测速 UI（白底扁平、胶囊按钮、2×2 指标四宫格）。
  * 顶部为项目标准 TopAppBar；页面主体布局对照官网截图/AI 描述。
  *
  * 状态→文案/按钮的映射由 [statusTextOf]/[buttonSpecOf] 唯一决定，无状态展示件在

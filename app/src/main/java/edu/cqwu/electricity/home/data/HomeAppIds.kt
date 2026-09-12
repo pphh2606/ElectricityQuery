@@ -36,4 +36,7 @@ object HomeAppIds {
 
     /** 扫一扫 → 打开原生扫码页（openUrl 为 mamp://scan 自定义 scheme，需原生处理） */
     const val SCAN = "5215256879824476"
+
+    /** 校内网络测速 → 打开原生测速页 */
+    const val INTERNAL_SPEED_TEST = "7768470048823278"
 }

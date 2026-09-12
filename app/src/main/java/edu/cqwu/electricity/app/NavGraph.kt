@@ -301,7 +301,7 @@ object Routes {
     /** 校园网络 — 接入者信息 */
     const val CAMPUS_NETWORK_ACCESSOR_INFO = "campus_network_accessor_info"
 
-    /** 校园网络 — 网速测试 */
+    /** 校园网络 — 校内网络测速 */
     const val CAMPUS_NETWORK_SPEED_TEST = "campus_network_speed_test"
 
     /** 校园网络 — 网络服务（认证网关 eportal 本地化页） */
@@ -955,7 +955,7 @@ fun AppNavGraph(
             )
         }
 
-        // 校园网络 — 网速测试
+        // 校园网络 — 校内网络测速
         animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK_SPEED_TEST) {
             SpeedTestScreen(
                 onBack = { navController.popBackStack() },

@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * 网速测试页的无状态展示组件与尺寸 token。
+ * 校内网络测速页的无状态展示组件与尺寸 token。
  *
  * 本文件只放"不认识页面状态"的哑组件（不引用 [SpeedTestUiState]/`tick`），
  * 便于预览、复用与单测；状态与数据绑定留在 `SpeedTestScreen.kt`。
