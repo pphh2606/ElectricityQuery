@@ -323,7 +323,6 @@
     <string name="settings_backup_import_clipboard">从剪贴板导入</string>
     <string name="settings_backup_import_file">从本地文件导入</string>
     <string name="settings_backup_confirm">确定</string>
-    <string name="settings_backup_copied">备份已复制到剪贴板</string>
     <string name="settings_backup_saved">备份已导出到本地文件</string>
     <string name="settings_backup_import_ok">设置导入成功，部分设置重启后生效</string>
     <string name="settings_backup_invalid">备份内容无效或版本不受支持</string>

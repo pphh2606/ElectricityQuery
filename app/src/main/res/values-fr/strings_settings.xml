@@ -354,7 +354,6 @@
     <string name="settings_backup_import_clipboard">Importer depuis le presse-papiers</string>
     <string name="settings_backup_import_file">Importer depuis un fichier</string>
     <string name="settings_backup_confirm">OK</string>
-    <string name="settings_backup_copied">Sauvegarde copiée dans le presse-papiers</string>
     <string name="settings_backup_saved">Sauvegarde enregistrée dans un fichier</string>
     <string name="settings_backup_import_ok">Réglages importés ; certains prennent effet après redémarrage</string>
     <string name="settings_backup_invalid">Contenu invalide ou version non prise en charge</string>

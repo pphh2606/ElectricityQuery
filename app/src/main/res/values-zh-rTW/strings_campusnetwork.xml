@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 校園網路（campusnetwork 模組）：僅框架文案；欄位標籤缺省回退到預設 values/ 中文 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  校園網路（campusnetwork 模組）             -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- ── 頁面框架 ── -->
     <string name="campus_network_title">校園網路</string>
     <string name="campus_network_accessor_title">接入者資訊</string>
     <string name="campus_network_coming_soon">敬請期待</string>
@@ -12,7 +16,77 @@
     <string name="campus_network_empty">暫未取得接入者資訊。</string>
     <string name="campus_network_sam_not_hit">未命中校園網路檔案，請確認已連上並登入校園網路（完成上網認證）。</string>
 
-    <!-- 网速测试（僅框架文案） -->
+    <!-- ── 分組標題 ── -->
+    <string name="cn_group_overview">識別概覽</string>
+    <string name="cn_group_isp">網路業者資訊</string>
+    <string name="cn_group_profile">使用者檔案（SAM）</string>
+    <string name="cn_group_region">公網歸屬地</string>
+
+    <!-- ── 識別概覽欄位標籤 ── -->
+    <string name="cn_label_request_ip">請求 IP</string>
+    <string name="cn_label_source">識別來源</string>
+    <string name="cn_label_processed">展示字串</string>
+    <string name="cn_label_matched">命中方式</string>
+    <string name="cn_label_sam_error">SAM 異常</string>
+    <string name="cn_label_identity_hit">校園網路身分</string>
+
+    <!-- ── 網路業者欄位標籤 ── -->
+    <string name="cn_label_isp_source">資料來源</string>
+    <string name="cn_label_region">區域</string>
+    <string name="cn_label_city">城市</string>
+    <string name="cn_label_isp_name">電信業者</string>
+    <string name="cn_label_isp_provider">服務商</string>
+    <string name="cn_label_isp_org">機構名稱</string>
+    <string name="cn_label_label">標籤</string>
+
+    <!-- ── 使用者檔案欄位標籤 ── -->
+    <string name="cn_label_user_type">使用者類型</string>
+    <string name="cn_label_user_no">學工號</string>
+    <string name="cn_label_name">姓名</string>
+    <string name="cn_label_sex">性別</string>
+    <string name="cn_label_phone">手機號碼</string>
+    <string name="cn_label_dept_id">部門編號</string>
+    <string name="cn_label_dept_name">部門／學院</string>
+    <string name="cn_label_source_id">來源 ID</string>
+    <string name="cn_label_title">職務</string>
+    <string name="cn_label_major_code">專業代碼</string>
+    <string name="cn_label_major_name">專業</string>
+    <string name="cn_label_grade">年級</string>
+    <string name="cn_label_class">班級</string>
+    <string name="cn_label_archive_user_id">SAM 帳號</string>
+    <string name="cn_label_archive_user_name">檔案使用者名稱</string>
+    <string name="cn_label_archive_user_group">使用者群組</string>
+    <string name="cn_label_archive_template">檔案範本</string>
+    <string name="cn_label_archive_package">檔案套餐</string>
+    <string name="cn_label_archive_policy">檔案策略</string>
+    <string name="cn_label_archive_state">檔案狀態</string>
+    <string name="cn_label_archive_online_state">線上狀態</string>
+    <string name="cn_label_archive_created">建檔時間</string>
+    <string name="cn_label_archive_logout">最後下線時間</string>
+    <string name="cn_label_archive_next_billing">下次計費時間</string>
+    <string name="cn_label_archive_free_auth">免認證</string>
+    <string name="cn_label_archive_ip">檔案 IP</string>
+    <string name="cn_label_archive_self_permission">自助服務權限</string>
+    <string name="cn_label_online_mac">線上 MAC</string>
+    <string name="cn_label_online_ipv4">線上 IPv4</string>
+    <string name="cn_label_online_nas_ip">NAS IP</string>
+    <string name="cn_label_online_nas_port">NAS 埠</string>
+    <string name="cn_label_online_connected">上線時間</string>
+    <string name="cn_label_online_access_type">接入類型</string>
+    <string name="cn_label_online_group_id">線上分組 ID</string>
+    <string name="cn_label_online_template_id">線上範本 ID</string>
+    <string name="cn_label_online_package">線上套餐</string>
+    <string name="cn_label_online_policy">線上策略</string>
+    <string name="cn_label_online_service_id">服務 ID</string>
+    <string name="cn_label_online_area">接入區域</string>
+
+    <!-- ── 公網歸屬地欄位標籤 ── -->
+    <string name="cn_label_country">國家</string>
+    <string name="cn_label_province">省份</string>
+    <string name="cn_label_country_code">國家代碼</string>
+    <string name="cn_label_is_public">公網 IP</string>
+
+    <!-- ── 網速測試 ── -->
     <string name="speed_test_title">網速測試</string>
     <string name="speed_test_idle_hint">點擊開始測速</string>
     <string name="speed_test_queued">排隊中，請稍候…</string>
@@ -37,17 +111,79 @@
     <string name="speed_test_banner">測速結果僅代表校園網內網頻寬</string>
     <string name="speed_test_recent_title">最近測速</string>
 
-    <!-- 網路服務 -->
+    <!-- 測速記錄詳情彈窗 -->
+    <string name="speed_test_record_detail_title">測速詳情</string>
+    <string name="speed_test_record_time">測試時間</string>
+    <string name="speed_test_record_ip">接入 IP</string>
+    <string name="speed_test_record_isp">電信業者</string>
+    <string name="speed_test_record_jitter">抖動</string>
+    <string name="speed_test_record_uuid">結果 ID</string>
+    <string name="speed_test_record_language">語言偏好</string>
+
+    <!-- ── 網路服務 ── -->
     <string name="speed_test_network_service">網路服務</string>
     <string name="speed_test_service_plan">切換套餐 / 下線</string>
     <string name="speed_test_service_plan_desc">校園網帳號套餐操作</string>
     <string name="speed_test_service_self">自助服務</string>
     <string name="speed_test_service_self_desc">開啟 SAM 自助服務頁</string>
 
-    <!-- 國際學術資源 -->
+    <!-- ── 國際學術資源 ── -->
     <string name="speed_test_academic_title">國際學術資源</string>
     <string name="speed_test_academic_apply">發起申請</string>
     <string name="speed_test_academic_apply_desc">提交國際學術資源存取申請</string>
     <string name="speed_test_academic_records">申請記錄</string>
     <string name="speed_test_academic_records_desc">檢視已提交申請的審核進度</string>
+
+    <!-- ── 網路服務（認證閘道 eportal，本地化） ── -->
+    <string name="portal_service_title">網路服務</string>
+
+    <!-- 會話狀態 -->
+    <string name="portal_group_session">會話狀態</string>
+    <string name="portal_status_online">線上</string>
+    <string name="portal_remaining_label">剩餘可用時長</string>
+    <string name="portal_remaining_unknown">--</string>
+    <string name="portal_remaining_days">%1$d 天 %2$d 小時</string>
+    <string name="portal_remaining_hours">%1$d 小時 %2$d 分</string>
+    <string name="portal_remaining_minutes">%1$d 分鐘</string>
+    <string name="portal_field_traffic">流量上限</string>
+    <string name="portal_field_ip">線上 IP</string>
+    <string name="portal_field_mac">裝置 MAC</string>
+    <string name="portal_field_gateway">閘道</string>
+    <string name="portal_field_login_type">登入方式</string>
+    <string name="portal_field_package">套餐</string>
+    <string name="portal_field_group">使用者群組</string>
+    <string name="portal_traffic_unlimited">不限</string>
+    <string name="portal_login_type_portal">網頁認證</string>
+
+    <!-- 服務 -->
+    <string name="portal_group_service">服務</string>
+    <string name="portal_service_current">目前服務</string>
+    <string name="portal_service_pick">選擇服務</string>
+    <string name="portal_service_switched">已切換至 %1$s</string>
+
+    <!-- 無感認證 -->
+    <string name="portal_group_mab">無感認證</string>
+    <string name="portal_mab_title">本機無感認證</string>
+    <string name="portal_mab_desc">帳號最多綁定 2 台裝置；管理其他裝置請至自助服務 → 我的裝置</string>
+    <string name="portal_mab_bound">已綁定 %1$d / %2$d 台裝置；管理其他裝置請至自助服務 → 我的裝置</string>
+    <string name="portal_mab_not_allowed">該帳號未開通無感認證</string>
+
+    <!-- 中斷連線（下線） -->
+    <string name="portal_group_actions">中斷連線</string>
+    <string name="portal_action_logout">下線</string>
+    <string name="portal_logout_confirm_title">確認下線</string>
+    <string name="portal_logout_confirm_message">下線後將立即斷網，重新上網需要再次認證。</string>
+
+    <!-- 相關入口 -->
+    <string name="portal_group_links">相關入口</string>
+    <string name="portal_link_self_service">自助服務</string>
+    <string name="portal_link_auth_page">開啟官方認證頁</string>
+
+    <!-- 未查詢到線上會話（中性表述：不等於不能上網） -->
+    <string name="portal_no_session_title">未查詢到線上會話</string>
+    <string name="portal_no_session_hint">認證閘道未查詢到本機線上會話。可能原因：\n1.本機透過無感認證服務上線\n2.閘道會話未同步\n3.在本頁或官方認證頁下線或者切換服務。</string>
+    <string name="portal_open_auth_page">開啟認證頁面</string>
+
+    <!-- 統一錯誤態：不區分具體異常類型（細節進日誌） -->
+    <string name="portal_error_unreachable">無法連線校園網路認證服務。請確認已連上並登入校園網路（完成上網認證）後再試一次。</string>
 </resources>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Réseau du campus (module campusnetwork)    -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- ── Structure de l'écran ── -->
     <string name="campus_network_title">Réseau du campus</string>
     <string name="campus_network_accessor_title">Infos d\'accès</string>
     <string name="campus_network_coming_soon">Bientôt disponible</string>
@@ -12,7 +16,77 @@
     <string name="campus_network_empty">Aucune info d\'accès disponible.</string>
     <string name="campus_network_sam_not_hit">Identité du réseau du campus non reconnue. Connectez-vous et authentifiez-vous au réseau du campus.</string>
 
-    <!-- Test de vitesse (textes d\'interface uniquement) -->
+    <!-- ── Titres de groupe ── -->
+    <string name="cn_group_overview">Vue d\'ensemble de l\'identification</string>
+    <string name="cn_group_isp">Infos du fournisseur d\'accès</string>
+    <string name="cn_group_profile">Profil utilisateur (SAM)</string>
+    <string name="cn_group_region">Localisation de l\'IP publique</string>
+
+    <!-- ── Libellés de l'identification ── -->
+    <string name="cn_label_request_ip">IP de la requête</string>
+    <string name="cn_label_source">Source de détection</string>
+    <string name="cn_label_processed">Chaîne affichée</string>
+    <string name="cn_label_matched">Méthode de correspondance</string>
+    <string name="cn_label_sam_error">Erreur SAM</string>
+    <string name="cn_label_identity_hit">Identité du réseau du campus</string>
+
+    <!-- ── Libellés du fournisseur d'accès ── -->
+    <string name="cn_label_isp_source">Source des données</string>
+    <string name="cn_label_region">Région</string>
+    <string name="cn_label_city">Ville</string>
+    <string name="cn_label_isp_name">Opérateur</string>
+    <string name="cn_label_isp_provider">Fournisseur</string>
+    <string name="cn_label_isp_org">Organisation</string>
+    <string name="cn_label_label">Libellé</string>
+
+    <!-- ── Libellés du profil utilisateur ── -->
+    <string name="cn_label_user_type">Type d\'utilisateur</string>
+    <string name="cn_label_user_no">Identifiant étudiant/personnel</string>
+    <string name="cn_label_name">Nom</string>
+    <string name="cn_label_sex">Sexe</string>
+    <string name="cn_label_phone">Téléphone</string>
+    <string name="cn_label_dept_id">ID du département</string>
+    <string name="cn_label_dept_name">Département/École</string>
+    <string name="cn_label_source_id">ID de source</string>
+    <string name="cn_label_title">Fonction</string>
+    <string name="cn_label_major_code">Code de spécialité</string>
+    <string name="cn_label_major_name">Spécialité</string>
+    <string name="cn_label_grade">Promotion</string>
+    <string name="cn_label_class">Classe</string>
+    <string name="cn_label_archive_user_id">Compte SAM</string>
+    <string name="cn_label_archive_user_name">Nom d\'utilisateur du profil</string>
+    <string name="cn_label_archive_user_group">Groupe d\'utilisateurs</string>
+    <string name="cn_label_archive_template">Modèle de profil</string>
+    <string name="cn_label_archive_package">Forfait du profil</string>
+    <string name="cn_label_archive_policy">Politique du profil</string>
+    <string name="cn_label_archive_state">État du profil</string>
+    <string name="cn_label_archive_online_state">État de connexion</string>
+    <string name="cn_label_archive_created">Date de création</string>
+    <string name="cn_label_archive_logout">Dernière déconnexion</string>
+    <string name="cn_label_archive_next_billing">Prochaine facturation</string>
+    <string name="cn_label_archive_free_auth">Sans authentification</string>
+    <string name="cn_label_archive_ip">IP du profil</string>
+    <string name="cn_label_archive_self_permission">Droit au libre-service</string>
+    <string name="cn_label_online_mac">MAC en ligne</string>
+    <string name="cn_label_online_ipv4">IPv4 en ligne</string>
+    <string name="cn_label_online_nas_ip">IP NAS</string>
+    <string name="cn_label_online_nas_port">Port NAS</string>
+    <string name="cn_label_online_connected">Heure de connexion</string>
+    <string name="cn_label_online_access_type">Type d\'accès</string>
+    <string name="cn_label_online_group_id">ID de groupe en ligne</string>
+    <string name="cn_label_online_template_id">ID de modèle en ligne</string>
+    <string name="cn_label_online_package">Forfait en ligne</string>
+    <string name="cn_label_online_policy">Politique en ligne</string>
+    <string name="cn_label_online_service_id">ID de service</string>
+    <string name="cn_label_online_area">Zone d\'accès</string>
+
+    <!-- ── Libellés de la localisation de l'IP publique ── -->
+    <string name="cn_label_country">Pays</string>
+    <string name="cn_label_province">Province</string>
+    <string name="cn_label_country_code">Code pays</string>
+    <string name="cn_label_is_public">IP publique</string>
+
+    <!-- ── Test de vitesse ── -->
     <string name="speed_test_title">Test de vitesse réseau</string>
     <string name="speed_test_idle_hint">Appuyez pour démarrer</string>
     <string name="speed_test_queued">En file d\'attente, veuillez patienter…</string>
@@ -37,17 +111,79 @@
     <string name="speed_test_banner">Le résultat reflète uniquement la bande passante du réseau du campus</string>
     <string name="speed_test_recent_title">Tests récents</string>
 
-    <!-- Services réseau -->
+    <!-- Détails d'un test enregistré -->
+    <string name="speed_test_record_detail_title">Détails du test</string>
+    <string name="speed_test_record_time">Date du test</string>
+    <string name="speed_test_record_ip">IP d\'accès</string>
+    <string name="speed_test_record_isp">Opérateur</string>
+    <string name="speed_test_record_jitter">Gigue</string>
+    <string name="speed_test_record_uuid">ID de résultat</string>
+    <string name="speed_test_record_language">Langue</string>
+
+    <!-- ── Services réseau ── -->
     <string name="speed_test_network_service">Services réseau</string>
     <string name="speed_test_service_plan">Changer de forfait / Déconnexion</string>
     <string name="speed_test_service_plan_desc">Gérer le forfait du compte réseau du campus</string>
     <string name="speed_test_service_self">Libre-service</string>
     <string name="speed_test_service_self_desc">Ouvrir la page libre-service SAM</string>
 
-    <!-- Ressources académiques internationales -->
+    <!-- ── Ressources académiques internationales ── -->
     <string name="speed_test_academic_title">Ressources académiques internationales</string>
     <string name="speed_test_academic_apply">Déposer une demande</string>
     <string name="speed_test_academic_apply_desc">Soumettre une demande d\'accès aux ressources académiques internationales</string>
     <string name="speed_test_academic_records">Historique des demandes</string>
     <string name="speed_test_academic_records_desc">Suivre l\'avancement des demandes déposées</string>
+
+    <!-- ── Services réseau (passerelle d'authentification eportal, localisé) ── -->
+    <string name="portal_service_title">Services réseau</string>
+
+    <!-- État de la session -->
+    <string name="portal_group_session">État de la session</string>
+    <string name="portal_status_online">En ligne</string>
+    <string name="portal_remaining_label">Temps restant</string>
+    <string name="portal_remaining_unknown">--</string>
+    <string name="portal_remaining_days">%1$d j %2$d h</string>
+    <string name="portal_remaining_hours">%1$d h %2$d min</string>
+    <string name="portal_remaining_minutes">%1$d min</string>
+    <string name="portal_field_traffic">Plafond de données</string>
+    <string name="portal_field_ip">IP en ligne</string>
+    <string name="portal_field_mac">MAC de l\'appareil</string>
+    <string name="portal_field_gateway">Passerelle</string>
+    <string name="portal_field_login_type">Méthode de connexion</string>
+    <string name="portal_field_package">Forfait</string>
+    <string name="portal_field_group">Groupe d\'utilisateurs</string>
+    <string name="portal_traffic_unlimited">Illimité</string>
+    <string name="portal_login_type_portal">Authentification web</string>
+
+    <!-- Services -->
+    <string name="portal_group_service">Services</string>
+    <string name="portal_service_current">Service actuel</string>
+    <string name="portal_service_pick">Choisir un service</string>
+    <string name="portal_service_switched">Basculé vers %1$s</string>
+
+    <!-- Authentification transparente -->
+    <string name="portal_group_mab">Authentification transparente</string>
+    <string name="portal_mab_title">Authentification transparente sur cet appareil</string>
+    <string name="portal_mab_desc">Un compte peut associer jusqu\'à 2 appareils ; pour gérer d\'autres appareils, ouvrez Libre-service → Mes appareils</string>
+    <string name="portal_mab_bound">%1$d / %2$d appareils associés ; pour gérer d\'autres appareils, ouvrez Libre-service → Mes appareils</string>
+    <string name="portal_mab_not_allowed">L\'authentification transparente n\'est pas activée pour ce compte</string>
+
+    <!-- Déconnexion -->
+    <string name="portal_group_actions">Déconnexion</string>
+    <string name="portal_action_logout">Se déconnecter</string>
+    <string name="portal_logout_confirm_title">Confirmer la déconnexion</string>
+    <string name="portal_logout_confirm_message">La connexion sera coupée immédiatement après la déconnexion ; une nouvelle authentification sera nécessaire pour vous reconnecter.</string>
+
+    <!-- Accès associés -->
+    <string name="portal_group_links">Liens utiles</string>
+    <string name="portal_link_self_service">Libre-service</string>
+    <string name="portal_link_auth_page">Ouvrir la page d\'authentification officielle</string>
+
+    <!-- Aucune session en ligne trouvée (formulation neutre : différent d'une absence de réseau) -->
+    <string name="portal_no_session_title">Aucune session en ligne trouvée</string>
+    <string name="portal_no_session_hint">La passerelle d\'authentification n\'a trouvé aucune session en ligne pour cet appareil. Causes possibles :\n1. Cet appareil est connecté via le service d\'authentification transparente\n2. La session de la passerelle n\'est pas synchronisée\n3. Vous vous êtes déconnecté ou avez changé de service sur cette page ou sur la page officielle.</string>
+    <string name="portal_open_auth_page">Ouvrir la page d\'authentification</string>
+
+    <!-- Erreur unifiée : les détails de l'exception restent dans le journal -->
+    <string name="portal_error_unreachable">Impossible de joindre le service d\'authentification du réseau du campus. Connectez-vous et authentifiez-vous au réseau du campus, puis réessayez.</string>
 </resources>

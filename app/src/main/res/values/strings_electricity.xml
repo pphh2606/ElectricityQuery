@@ -4,8 +4,6 @@
     <!--  电费仪表盘模块                             -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="dashboard_select_room">请选择要查看的寝室：</string>
-    <string name="dashboard_room_info">房间信息</string>
-    <string name="dashboard_power_info">用电信息</string>
     <string name="dashboard_unit_degree">度</string>
     <string name="dashboard_remaining_power">剩余电量</string>
     <string name="dashboard_account_balance">账户余额</string>

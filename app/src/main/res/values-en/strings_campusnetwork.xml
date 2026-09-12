@@ -1,18 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Campus network (campusnetwork module)      -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- ── Screen frame ── -->
     <string name="campus_network_title">Campus Network</string>
     <string name="campus_network_accessor_title">Access Info</string>
     <string name="campus_network_coming_soon">Coming Soon</string>
     <string name="campus_network_fetching">Fetching access info…</string>
-    <string name="campus_network_error_need_campus">Cannot reach the campus network service. Please connect to and sign in to the campus network (complete the network authentication), then retry.</string>
+    <string name="campus_network_error_need_campus">Cannot reach the campus network speed test service. Please connect to and sign in to the campus network (complete the network authentication), then retry.</string>
     <string name="campus_network_error_no_network">Network unavailable. Check your connection and retry.</string>
     <string name="campus_network_error_parse">Failed to parse access info. Please try again later.</string>
     <string name="campus_network_error_generic">Request failed. Please try again later.</string>
     <string name="campus_network_empty">No access info available.</string>
     <string name="campus_network_sam_not_hit">Campus network identity not matched. Please connect to and sign in to the campus network (complete the network authentication).</string>
 
-    <!-- Speed test (framework strings only) -->
+    <!-- ── Group titles ── -->
+    <string name="cn_group_overview">Identity Overview</string>
+    <string name="cn_group_isp">ISP Info</string>
+    <string name="cn_group_profile">User Profile (SAM)</string>
+    <string name="cn_group_region">Public IP Location</string>
+
+    <!-- ── Identity overview labels ── -->
+    <string name="cn_label_request_ip">Request IP</string>
+    <string name="cn_label_source">Detection Source</string>
+    <string name="cn_label_processed">Display String</string>
+    <string name="cn_label_matched">Match Method</string>
+    <string name="cn_label_sam_error">SAM Error</string>
+    <string name="cn_label_identity_hit">Campus Identity</string>
+
+    <!-- ── ISP labels ── -->
+    <string name="cn_label_isp_source">Data Source</string>
+    <string name="cn_label_region">Region</string>
+    <string name="cn_label_city">City</string>
+    <string name="cn_label_isp_name">Carrier</string>
+    <string name="cn_label_isp_provider">Provider</string>
+    <string name="cn_label_isp_org">Organization</string>
+    <string name="cn_label_label">Label</string>
+
+    <!-- ── User profile labels ── -->
+    <string name="cn_label_user_type">User Type</string>
+    <string name="cn_label_user_no">Student/Staff ID</string>
+    <string name="cn_label_name">Name</string>
+    <string name="cn_label_sex">Gender</string>
+    <string name="cn_label_phone">Phone</string>
+    <string name="cn_label_dept_id">Department ID</string>
+    <string name="cn_label_dept_name">Department/School</string>
+    <string name="cn_label_source_id">Source ID</string>
+    <string name="cn_label_title">Title</string>
+    <string name="cn_label_major_code">Major Code</string>
+    <string name="cn_label_major_name">Major</string>
+    <string name="cn_label_grade">Grade</string>
+    <string name="cn_label_class">Class</string>
+    <string name="cn_label_archive_user_id">SAM Account</string>
+    <string name="cn_label_archive_user_name">Profile Username</string>
+    <string name="cn_label_archive_user_group">User Group</string>
+    <string name="cn_label_archive_template">Profile Template</string>
+    <string name="cn_label_archive_package">Profile Plan</string>
+    <string name="cn_label_archive_policy">Profile Policy</string>
+    <string name="cn_label_archive_state">Profile Status</string>
+    <string name="cn_label_archive_online_state">Online Status</string>
+    <string name="cn_label_archive_created">Created At</string>
+    <string name="cn_label_archive_logout">Last Logoff</string>
+    <string name="cn_label_archive_next_billing">Next Billing</string>
+    <string name="cn_label_archive_free_auth">Auth-Free</string>
+    <string name="cn_label_archive_ip">Profile IP</string>
+    <string name="cn_label_archive_self_permission">Self-Service Permission</string>
+    <string name="cn_label_online_mac">Online MAC</string>
+    <string name="cn_label_online_ipv4">Online IPv4</string>
+    <string name="cn_label_online_nas_ip">NAS IP</string>
+    <string name="cn_label_online_nas_port">NAS Port</string>
+    <string name="cn_label_online_connected">Login Time</string>
+    <string name="cn_label_online_access_type">Access Type</string>
+    <string name="cn_label_online_group_id">Online Group ID</string>
+    <string name="cn_label_online_template_id">Online Template ID</string>
+    <string name="cn_label_online_package">Online Plan</string>
+    <string name="cn_label_online_policy">Online Policy</string>
+    <string name="cn_label_online_service_id">Service ID</string>
+    <string name="cn_label_online_area">Access Area</string>
+
+    <!-- ── Public IP location labels ── -->
+    <string name="cn_label_country">Country</string>
+    <string name="cn_label_province">Province</string>
+    <string name="cn_label_country_code">Country Code</string>
+    <string name="cn_label_is_public">Public IP</string>
+
+    <!-- ── Speed test ── -->
     <string name="speed_test_title">Network Speed Test</string>
     <string name="speed_test_idle_hint">Tap to start</string>
     <string name="speed_test_queued">Queued, please wait…</string>
@@ -37,17 +111,79 @@
     <string name="speed_test_banner">Results reflect only the campus intranet bandwidth</string>
     <string name="speed_test_recent_title">Recent tests</string>
 
-    <!-- Network services -->
+    <!-- Speed test record details -->
+    <string name="speed_test_record_detail_title">Test Details</string>
+    <string name="speed_test_record_time">Test Time</string>
+    <string name="speed_test_record_ip">Access IP</string>
+    <string name="speed_test_record_isp">Carrier</string>
+    <string name="speed_test_record_jitter">Jitter</string>
+    <string name="speed_test_record_uuid">Result ID</string>
+    <string name="speed_test_record_language">Language</string>
+
+    <!-- ── Network services ── -->
     <string name="speed_test_network_service">Network Services</string>
     <string name="speed_test_service_plan">Switch plan / Log out</string>
     <string name="speed_test_service_plan_desc">Manage your campus network account plan</string>
     <string name="speed_test_service_self">Self-service</string>
     <string name="speed_test_service_self_desc">Open the SAM self-service page</string>
 
-    <!-- International academic resources -->
+    <!-- ── International academic resources ── -->
     <string name="speed_test_academic_title">International Academic Resources</string>
     <string name="speed_test_academic_apply">Submit application</string>
     <string name="speed_test_academic_apply_desc">Submit an international academic resource access application</string>
     <string name="speed_test_academic_records">Application records</string>
     <string name="speed_test_academic_records_desc">Track the review progress of submitted applications</string>
+
+    <!-- ── Network services (auth gateway eportal, localized) ── -->
+    <string name="portal_service_title">Network Services</string>
+
+    <!-- Session status -->
+    <string name="portal_group_session">Session Status</string>
+    <string name="portal_status_online">Online</string>
+    <string name="portal_remaining_label">Remaining Time</string>
+    <string name="portal_remaining_unknown">--</string>
+    <string name="portal_remaining_days">%1$d d %2$d h</string>
+    <string name="portal_remaining_hours">%1$d h %2$d min</string>
+    <string name="portal_remaining_minutes">%1$d min</string>
+    <string name="portal_field_traffic">Data Cap</string>
+    <string name="portal_field_ip">Online IP</string>
+    <string name="portal_field_mac">Device MAC</string>
+    <string name="portal_field_gateway">Gateway</string>
+    <string name="portal_field_login_type">Login Method</string>
+    <string name="portal_field_package">Plan</string>
+    <string name="portal_field_group">User Group</string>
+    <string name="portal_traffic_unlimited">Unlimited</string>
+    <string name="portal_login_type_portal">Web authentication</string>
+
+    <!-- Services -->
+    <string name="portal_group_service">Services</string>
+    <string name="portal_service_current">Current Service</string>
+    <string name="portal_service_pick">Choose Service</string>
+    <string name="portal_service_switched">Switched to %1$s</string>
+
+    <!-- Seamless authentication -->
+    <string name="portal_group_mab">Seamless Auth</string>
+    <string name="portal_mab_title">Seamless Auth on This Device</string>
+    <string name="portal_mab_desc">An account can bind up to 2 devices. To manage other devices, go to Self-service → My Devices</string>
+    <string name="portal_mab_bound">%1$d / %2$d devices bound. To manage other devices, go to Self-service → My Devices</string>
+    <string name="portal_mab_not_allowed">Seamless authentication is not enabled for this account</string>
+
+    <!-- Disconnect -->
+    <string name="portal_group_actions">Disconnect</string>
+    <string name="portal_action_logout">Log Out</string>
+    <string name="portal_logout_confirm_title">Confirm Log Out</string>
+    <string name="portal_logout_confirm_message">You will be disconnected immediately after logging out and must authenticate again to get back online.</string>
+
+    <!-- Related entries -->
+    <string name="portal_group_links">Related Links</string>
+    <string name="portal_link_self_service">Self-service</string>
+    <string name="portal_link_auth_page">Open Official Auth Page</string>
+
+    <!-- No online session found (neutral wording: not the same as being offline) -->
+    <string name="portal_no_session_title">No Online Session Found</string>
+    <string name="portal_no_session_hint">The authentication gateway found no online session for this device. Possible reasons:\n1. This device came online through the seamless authentication service\n2. The gateway session is not synchronized\n3. You logged out or switched services on this page or the official authentication page.</string>
+    <string name="portal_open_auth_page">Open Authentication Page</string>
+
+    <!-- Unified error state: exception details go to the log only -->
+    <string name="portal_error_unreachable">Cannot reach the campus network authentication service. Please connect to and sign in to the campus network (complete the network authentication), then retry.</string>
 </resources>

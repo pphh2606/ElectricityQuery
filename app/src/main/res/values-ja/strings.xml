@@ -14,7 +14,6 @@
     <string name="common_confirm">確認</string>
     <string name="common_cancel">キャンセル</string>
     <string name="common_delete">削除</string>
-    <string name="common_select_date">日付を選択</string>
     <string name="common_date_range_separator">〜</string>
     <string name="common_save">保存</string>
     <string name="common_add">追加</string>

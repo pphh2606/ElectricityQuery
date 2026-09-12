@@ -354,7 +354,6 @@
     <string name="settings_backup_import_clipboard">Import from clipboard</string>
     <string name="settings_backup_import_file">Import from file</string>
     <string name="settings_backup_confirm">OK</string>
-    <string name="settings_backup_copied">Backup copied to clipboard</string>
     <string name="settings_backup_saved">Backup saved to local file</string>
     <string name="settings_backup_import_ok">Settings imported; some take effect after restart</string>
     <string name="settings_backup_invalid">Invalid or unsupported backup content</string>

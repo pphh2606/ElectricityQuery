@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  キャンパスネットワーク（campusnetwork モジュール） -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- ── 画面フレーム ── -->
     <string name="campus_network_title">キャンパスネットワーク</string>
     <string name="campus_network_accessor_title">アクセス者情報</string>
     <string name="campus_network_coming_soon">近日公開</string>
@@ -12,7 +16,77 @@
     <string name="campus_network_empty">アクセス情報はまだありません。</string>
     <string name="campus_network_sam_not_hit">キャンパスネットワークの身元情報が見つかりません。キャンパスネットワークに接続してログイン（ネットワーク認証を完了）してください。</string>
 
-    <!-- スピードテスト（フレーム文言のみ） -->
+    <!-- ── グループ見出し ── -->
+    <string name="cn_group_overview">識別概要</string>
+    <string name="cn_group_isp">回線事業者情報</string>
+    <string name="cn_group_profile">利用者プロファイル（SAM）</string>
+    <string name="cn_group_region">公網の所在地</string>
+
+    <!-- ── 識別概要の項目ラベル ── -->
+    <string name="cn_label_request_ip">リクエスト IP</string>
+    <string name="cn_label_source">識別ソース</string>
+    <string name="cn_label_processed">表示文字列</string>
+    <string name="cn_label_matched">一致方法</string>
+    <string name="cn_label_sam_error">SAM エラー</string>
+    <string name="cn_label_identity_hit">キャンパスネットワーク身分</string>
+
+    <!-- ── 回線事業者の項目ラベル ── -->
+    <string name="cn_label_isp_source">データソース</string>
+    <string name="cn_label_region">地域</string>
+    <string name="cn_label_city">都市</string>
+    <string name="cn_label_isp_name">回線事業者</string>
+    <string name="cn_label_isp_provider">プロバイダー</string>
+    <string name="cn_label_isp_org">組織名</string>
+    <string name="cn_label_label">ラベル</string>
+
+    <!-- ── 利用者プロファイルの項目ラベル ── -->
+    <string name="cn_label_user_type">利用者種別</string>
+    <string name="cn_label_user_no">学籍・職員番号</string>
+    <string name="cn_label_name">氏名</string>
+    <string name="cn_label_sex">性別</string>
+    <string name="cn_label_phone">電話番号</string>
+    <string name="cn_label_dept_id">部署 ID</string>
+    <string name="cn_label_dept_name">部署／学部</string>
+    <string name="cn_label_source_id">ソース ID</string>
+    <string name="cn_label_title">職名</string>
+    <string name="cn_label_major_code">専攻コード</string>
+    <string name="cn_label_major_name">専攻</string>
+    <string name="cn_label_grade">学年</string>
+    <string name="cn_label_class">クラス</string>
+    <string name="cn_label_archive_user_id">SAM アカウント</string>
+    <string name="cn_label_archive_user_name">プロファイル利用者名</string>
+    <string name="cn_label_archive_user_group">利用者グループ</string>
+    <string name="cn_label_archive_template">プロファイルテンプレート</string>
+    <string name="cn_label_archive_package">プロファイルプラン</string>
+    <string name="cn_label_archive_policy">プロファイルポリシー</string>
+    <string name="cn_label_archive_state">プロファイル状態</string>
+    <string name="cn_label_archive_online_state">オンライン状態</string>
+    <string name="cn_label_archive_created">作成日時</string>
+    <string name="cn_label_archive_logout">最終ログアウト日時</string>
+    <string name="cn_label_archive_next_billing">次回課金日時</string>
+    <string name="cn_label_archive_free_auth">認証不要</string>
+    <string name="cn_label_archive_ip">プロファイル IP</string>
+    <string name="cn_label_archive_self_permission">セルフサービス権限</string>
+    <string name="cn_label_online_mac">オンライン MAC</string>
+    <string name="cn_label_online_ipv4">オンライン IPv4</string>
+    <string name="cn_label_online_nas_ip">NAS IP</string>
+    <string name="cn_label_online_nas_port">NAS ポート</string>
+    <string name="cn_label_online_connected">接続日時</string>
+    <string name="cn_label_online_access_type">接続タイプ</string>
+    <string name="cn_label_online_group_id">オンライングループ ID</string>
+    <string name="cn_label_online_template_id">オンラインテンプレート ID</string>
+    <string name="cn_label_online_package">オンラインプラン</string>
+    <string name="cn_label_online_policy">オンラインポリシー</string>
+    <string name="cn_label_online_service_id">サービス ID</string>
+    <string name="cn_label_online_area">接続エリア</string>
+
+    <!-- ── 公網所在地の項目ラベル ── -->
+    <string name="cn_label_country">国</string>
+    <string name="cn_label_province">省</string>
+    <string name="cn_label_country_code">国コード</string>
+    <string name="cn_label_is_public">公網 IP</string>
+
+    <!-- ── スピードテスト ── -->
     <string name="speed_test_title">ネットワーク速度テスト</string>
     <string name="speed_test_idle_hint">タップして開始</string>
     <string name="speed_test_queued">順番待ち、しばらくお待ちください…</string>
@@ -37,17 +111,79 @@
     <string name="speed_test_banner">結果はキャンパス内ネットワークのみを反映します</string>
     <string name="speed_test_recent_title">最近のテスト</string>
 
-    <!-- ネットワークサービス -->
+    <!-- 測定記録の詳細ダイアログ -->
+    <string name="speed_test_record_detail_title">測定の詳細</string>
+    <string name="speed_test_record_time">測定日時</string>
+    <string name="speed_test_record_ip">接続 IP</string>
+    <string name="speed_test_record_isp">回線事業者</string>
+    <string name="speed_test_record_jitter">ジッター</string>
+    <string name="speed_test_record_uuid">結果 ID</string>
+    <string name="speed_test_record_language">言語設定</string>
+
+    <!-- ── ネットワークサービス ── -->
     <string name="speed_test_network_service">ネットワークサービス</string>
     <string name="speed_test_service_plan">プラン変更 / ログアウト</string>
     <string name="speed_test_service_plan_desc">キャンパスネットワークのプランを管理</string>
     <string name="speed_test_service_self">セルフサービス</string>
     <string name="speed_test_service_self_desc">SAM セルフサービスページを開く</string>
 
-    <!-- 国際学術リソース -->
+    <!-- ── 国際学術リソース ── -->
     <string name="speed_test_academic_title">国際学術リソース</string>
     <string name="speed_test_academic_apply">申請する</string>
     <string name="speed_test_academic_apply_desc">国際学術リソースへのアクセス申請を提出</string>
     <string name="speed_test_academic_records">申請履歴</string>
     <string name="speed_test_academic_records_desc">提出済み申請の審査状況を確認</string>
+
+    <!-- ── ネットワークサービス（認証ゲートウェイ eportal、ローカライズ） ── -->
+    <string name="portal_service_title">ネットワークサービス</string>
+
+    <!-- セッション状態 -->
+    <string name="portal_group_session">セッション状態</string>
+    <string name="portal_status_online">オンライン</string>
+    <string name="portal_remaining_label">残り利用可能時間</string>
+    <string name="portal_remaining_unknown">--</string>
+    <string name="portal_remaining_days">%1$d 日 %2$d 時間</string>
+    <string name="portal_remaining_hours">%1$d 時間 %2$d 分</string>
+    <string name="portal_remaining_minutes">%1$d 分</string>
+    <string name="portal_field_traffic">通信量上限</string>
+    <string name="portal_field_ip">オンライン IP</string>
+    <string name="portal_field_mac">端末 MAC</string>
+    <string name="portal_field_gateway">ゲートウェイ</string>
+    <string name="portal_field_login_type">ログイン方式</string>
+    <string name="portal_field_package">プラン</string>
+    <string name="portal_field_group">利用者グループ</string>
+    <string name="portal_traffic_unlimited">無制限</string>
+    <string name="portal_login_type_portal">Web 認証</string>
+
+    <!-- サービス -->
+    <string name="portal_group_service">サービス</string>
+    <string name="portal_service_current">現在のサービス</string>
+    <string name="portal_service_pick">サービスを選択</string>
+    <string name="portal_service_switched">%1$s に切り替えました</string>
+
+    <!-- シームレス認証 -->
+    <string name="portal_group_mab">シームレス認証</string>
+    <string name="portal_mab_title">本機のシームレス認証</string>
+    <string name="portal_mab_desc">アカウントに登録できる端末は最大 2 台です。他の端末の管理はセルフサービス → マイ端末から行えます</string>
+    <string name="portal_mab_bound">%1$d / %2$d 台の端末を登録済みです。他の端末の管理はセルフサービス → マイ端末から行えます</string>
+    <string name="portal_mab_not_allowed">このアカウントではシームレス認証が有効になっていません</string>
+
+    <!-- 接続の切断（ログアウト） -->
+    <string name="portal_group_actions">接続を切断</string>
+    <string name="portal_action_logout">ログアウト</string>
+    <string name="portal_logout_confirm_title">ログアウトの確認</string>
+    <string name="portal_logout_confirm_message">ログアウトすると即座に切断され、再接続には再度認証が必要です。</string>
+
+    <!-- 関連リンク -->
+    <string name="portal_group_links">関連リンク</string>
+    <string name="portal_link_self_service">セルフサービス</string>
+    <string name="portal_link_auth_page">公式認証ページを開く</string>
+
+    <!-- オンラインセッションが見つからない場合（「接続不可」とは異なる中立的な表現） -->
+    <string name="portal_no_session_title">オンラインセッションが見つかりません</string>
+    <string name="portal_no_session_hint">認証ゲートウェイに本機のオンラインセッションが見つかりません。考えられる原因：\n1.本機がシームレス認証サービスで接続している\n2.ゲートウェイのセッションが同期されていない\n3.本ページまたは公式認証ページでログアウトまたはサービスを切り替えた。</string>
+    <string name="portal_open_auth_page">認証ページを開く</string>
+
+    <!-- 統一エラー表示：例外の詳細はログのみに記録 -->
+    <string name="portal_error_unreachable">キャンパスネットワークの認証サービスに接続できません。キャンパスネットワークに接続してログイン（ネットワーク認証を完了）してから再試行してください。</string>
 </resources>

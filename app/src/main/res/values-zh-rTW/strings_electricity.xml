@@ -4,8 +4,6 @@
     <!--  電費儀表板                                 -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="dashboard_select_room">請選取要檢視的寢室：</string>
-    <string name="dashboard_room_info">房間資訊</string>
-    <string name="dashboard_power_info">用電資訊</string>
     <string name="dashboard_unit_degree">度</string>
     <string name="dashboard_remaining_power">剩餘電量</string>
     <string name="dashboard_account_balance">帳戶餘額</string>

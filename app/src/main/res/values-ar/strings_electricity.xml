@@ -4,8 +4,6 @@
     <!--  لوحة الكهرباء                             -->
     <!-- ═══════════════════════════════════════════ -->
     <string name="dashboard_select_room">يرجى اختيار السكن للعرض:</string>
-    <string name="dashboard_room_info">معلومات الغرفة</string>
-    <string name="dashboard_power_info">معلومات الكهرباء</string>
     <string name="dashboard_unit_degree">ك.و.س</string>
     <string name="dashboard_remaining_power">الكهرباء المتبقية</string>
     <string name="dashboard_account_balance">رصيد الحساب</string>

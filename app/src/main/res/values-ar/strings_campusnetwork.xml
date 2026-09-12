@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 校园网络（campusnetwork 模块）：仅框架文案；字段标签缺省回退到默认 values/ 中文 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  شبكة الحرم الجامعي (وحدة campusnetwork)    -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- ── إطار الشاشة ── -->
     <string name="campus_network_title">شبكة الحرم الجامعي</string>
     <string name="campus_network_accessor_title">معلومات الوصول</string>
     <string name="campus_network_coming_soon">قريباً</string>
@@ -12,7 +16,77 @@
     <string name="campus_network_empty">لا توجد معلومات وصول متاحة.</string>
     <string name="campus_network_sam_not_hit">لم يتم التعرف على هوية شبكة الحرم الجامعي. يُرجى الاتصال بشبكة الحرم الجامعي وتسجيل الدخول إليها (إكمال التحقق من الشبكة).</string>
 
-    <!-- اختبار السرعة (نصوص الواجهة فقط) -->
+    <!-- ── عناوين المجموعات ── -->
+    <string name="cn_group_overview">نظرة عامة على التعريف</string>
+    <string name="cn_group_isp">معلومات مزوّد الخدمة</string>
+    <string name="cn_group_profile">ملف المستخدم (SAM)</string>
+    <string name="cn_group_region">الموقع الجغرافي للعنوان العام</string>
+
+    <!-- ── تسميات نظرة التعريف ── -->
+    <string name="cn_label_request_ip">عنوان IP للطلب</string>
+    <string name="cn_label_source">مصدر التعريف</string>
+    <string name="cn_label_processed">النص المعروض</string>
+    <string name="cn_label_matched">طريقة المطابقة</string>
+    <string name="cn_label_sam_error">خطأ SAM</string>
+    <string name="cn_label_identity_hit">هوية شبكة الحرم الجامعي</string>
+
+    <!-- ── تسميات مزوّد الخدمة ── -->
+    <string name="cn_label_isp_source">مصدر البيانات</string>
+    <string name="cn_label_region">المنطقة</string>
+    <string name="cn_label_city">المدينة</string>
+    <string name="cn_label_isp_name">مزوّد الخدمة</string>
+    <string name="cn_label_isp_provider">المزوّد</string>
+    <string name="cn_label_isp_org">اسم المؤسسة</string>
+    <string name="cn_label_label">التسمية</string>
+
+    <!-- ── تسميات ملف المستخدم ── -->
+    <string name="cn_label_user_type">نوع المستخدم</string>
+    <string name="cn_label_user_no">الرقم الجامعي/الوظيفي</string>
+    <string name="cn_label_name">الاسم</string>
+    <string name="cn_label_sex">الجنس</string>
+    <string name="cn_label_phone">رقم الجوال</string>
+    <string name="cn_label_dept_id">رقم القسم</string>
+    <string name="cn_label_dept_name">القسم/الكلية</string>
+    <string name="cn_label_source_id">معرّف المصدر</string>
+    <string name="cn_label_title">المسمى الوظيفي</string>
+    <string name="cn_label_major_code">رمز التخصص</string>
+    <string name="cn_label_major_name">التخصص</string>
+    <string name="cn_label_grade">السنة الدراسية</string>
+    <string name="cn_label_class">الفصل</string>
+    <string name="cn_label_archive_user_id">حساب SAM</string>
+    <string name="cn_label_archive_user_name">اسم مستخدم الملف</string>
+    <string name="cn_label_archive_user_group">مجموعة المستخدمين</string>
+    <string name="cn_label_archive_template">قالب الملف</string>
+    <string name="cn_label_archive_package">باقة الملف</string>
+    <string name="cn_label_archive_policy">سياسة الملف</string>
+    <string name="cn_label_archive_state">حالة الملف</string>
+    <string name="cn_label_archive_online_state">حالة الاتصال</string>
+    <string name="cn_label_archive_created">تاريخ الإنشاء</string>
+    <string name="cn_label_archive_logout">آخر تسجيل خروج</string>
+    <string name="cn_label_archive_next_billing">الفاتورة التالية</string>
+    <string name="cn_label_archive_free_auth">بدون تحقق</string>
+    <string name="cn_label_archive_ip">عنوان IP للملف</string>
+    <string name="cn_label_archive_self_permission">صلاحية الخدمة الذاتية</string>
+    <string name="cn_label_online_mac">عنوان MAC المتصل</string>
+    <string name="cn_label_online_ipv4">عنوان IPv4 المتصل</string>
+    <string name="cn_label_online_nas_ip">عنوان IP لـ NAS</string>
+    <string name="cn_label_online_nas_port">منفذ NAS</string>
+    <string name="cn_label_online_connected">وقت الاتصال</string>
+    <string name="cn_label_online_access_type">نوع الوصول</string>
+    <string name="cn_label_online_group_id">معرّف المجموعة المتصلة</string>
+    <string name="cn_label_online_template_id">معرّف القالب المتصل</string>
+    <string name="cn_label_online_package">الباقة المتصلة</string>
+    <string name="cn_label_online_policy">السياسة المتصلة</string>
+    <string name="cn_label_online_service_id">معرّف الخدمة</string>
+    <string name="cn_label_online_area">منطقة الوصول</string>
+
+    <!-- ── تسميات موقع العنوان العام ── -->
+    <string name="cn_label_country">الدولة</string>
+    <string name="cn_label_province">المحافظة</string>
+    <string name="cn_label_country_code">رمز الدولة</string>
+    <string name="cn_label_is_public">عنوان IP العام</string>
+
+    <!-- ── اختبار السرعة ── -->
     <string name="speed_test_title">اختبار سرعة الشبكة</string>
     <string name="speed_test_idle_hint">اضغط للبدء</string>
     <string name="speed_test_queued">في قائمة الانتظار، يرجى الانتظار…</string>
@@ -37,17 +111,79 @@
     <string name="speed_test_banner">تعكس النتيجة نطاق شبكة الحرم الجامعي فقط</string>
     <string name="speed_test_recent_title">الاختبارات الأخيرة</string>
 
-    <!-- خدمات الشبكة -->
+    <!-- تفاصيل سجل الاختبار -->
+    <string name="speed_test_record_detail_title">تفاصيل الاختبار</string>
+    <string name="speed_test_record_time">وقت الاختبار</string>
+    <string name="speed_test_record_ip">عنوان IP للوصول</string>
+    <string name="speed_test_record_isp">مزوّد الخدمة</string>
+    <string name="speed_test_record_jitter">الارتعاش</string>
+    <string name="speed_test_record_uuid">معرّف النتيجة</string>
+    <string name="speed_test_record_language">اللغة</string>
+
+    <!-- ── خدمات الشبكة ── -->
     <string name="speed_test_network_service">خدمات الشبكة</string>
     <string name="speed_test_service_plan">تغيير الباقة / تسجيل الخروج</string>
     <string name="speed_test_service_plan_desc">إدارة باقة حساب شبكة الحرم الجامعي</string>
     <string name="speed_test_service_self">الخدمة الذاتية</string>
     <string name="speed_test_service_self_desc">فتح صفحة الخدمة الذاتية في SAM</string>
 
-    <!-- موارد أكاديمية دولية -->
+    <!-- ── الموارد الأكاديمية الدولية ── -->
     <string name="speed_test_academic_title">موارد أكاديمية دولية</string>
     <string name="speed_test_academic_apply">تقديم الطلب</string>
     <string name="speed_test_academic_apply_desc">تقديم طلب الوصول إلى الموارد الأكاديمية الدولية</string>
     <string name="speed_test_academic_records">سجل الطلبات</string>
     <string name="speed_test_academic_records_desc">عرض حالة مراجعة الطلبات المقدمة</string>
+
+    <!-- ── خدمات الشبكة (بوابة التحقق eportal، مترجمة) ── -->
+    <string name="portal_service_title">خدمات الشبكة</string>
+
+    <!-- حالة الجلسة -->
+    <string name="portal_group_session">حالة الجلسة</string>
+    <string name="portal_status_online">متصل</string>
+    <string name="portal_remaining_label">الوقت المتبقي</string>
+    <string name="portal_remaining_unknown">--</string>
+    <string name="portal_remaining_days">%1$d يوم %2$d ساعة</string>
+    <string name="portal_remaining_hours">%1$d ساعة %2$d دقيقة</string>
+    <string name="portal_remaining_minutes">%1$d دقيقة</string>
+    <string name="portal_field_traffic">حد البيانات</string>
+    <string name="portal_field_ip">عنوان IP المتصل</string>
+    <string name="portal_field_mac">عنوان MAC للجهاز</string>
+    <string name="portal_field_gateway">البوابة</string>
+    <string name="portal_field_login_type">طريقة تسجيل الدخول</string>
+    <string name="portal_field_package">الباقة</string>
+    <string name="portal_field_group">مجموعة المستخدمين</string>
+    <string name="portal_traffic_unlimited">غير محدود</string>
+    <string name="portal_login_type_portal">تحقق عبر الويب</string>
+
+    <!-- الخدمات -->
+    <string name="portal_group_service">الخدمات</string>
+    <string name="portal_service_current">الخدمة الحالية</string>
+    <string name="portal_service_pick">اختر الخدمة</string>
+    <string name="portal_service_switched">تم التبديل إلى %1$s</string>
+
+    <!-- التحقق التلقائي -->
+    <string name="portal_group_mab">التحقق التلقائي</string>
+    <string name="portal_mab_title">التحقق التلقائي لهذا الجهاز</string>
+    <string name="portal_mab_desc">يمكن ربط جهازين كحد أقصى بالحساب؛ لإدارة أجهزة أخرى انتقل إلى الخدمة الذاتية ← أجهزتي</string>
+    <string name="portal_mab_bound">تم ربط %1$d / %2$d جهاز؛ لإدارة أجهزة أخرى انتقل إلى الخدمة الذاتية ← أجهزتي</string>
+    <string name="portal_mab_not_allowed">التحقق التلقائي غير مُفعّل لهذا الحساب</string>
+
+    <!-- قطع الاتصال (تسجيل الخروج) -->
+    <string name="portal_group_actions">قطع الاتصال</string>
+    <string name="portal_action_logout">تسجيل الخروج</string>
+    <string name="portal_logout_confirm_title">تأكيد تسجيل الخروج</string>
+    <string name="portal_logout_confirm_message">سيتم قطع الاتصال فوراً بعد تسجيل الخروج، وستحتاج إلى التحقق مرة أخرى للعودة إلى الشبكة.</string>
+
+    <!-- روابط ذات صلة -->
+    <string name="portal_group_links">روابط ذات صلة</string>
+    <string name="portal_link_self_service">الخدمة الذاتية</string>
+    <string name="portal_link_auth_page">فتح صفحة التحقق الرسمية</string>
+
+    <!-- لم يتم العثور على جلسة متصلة (صياغة محايدة: لا تعني تعذّر الاتصال) -->
+    <string name="portal_no_session_title">لم يتم العثور على جلسة متصلة</string>
+    <string name="portal_no_session_hint">لم تعثر بوابة التحقق على جلسة متصلة لهذا الجهاز. الأسباب المحتملة:\n1. اتصل الجهاز عبر خدمة التحقق التلقائي\n2. لم تتم مزامنة جلسة البوابة\n3. سجّلت الخروج أو بدّلت الخدمة من هذه الصفحة أو من صفحة التحقق الرسمية.</string>
+    <string name="portal_open_auth_page">فتح صفحة التحقق</string>
+
+    <!-- حالة خطأ موحّدة: تفاصيل الاستثناء في السجل فقط -->
+    <string name="portal_error_unreachable">تعذّر الاتصال بخدمة التحقق من شبكة الحرم الجامعي. يُرجى الاتصال بشبكة الحرم الجامعي وتسجيل الدخول إليها (إكمال التحقق من الشبكة)، ثم إعادة المحاولة.</string>
 </resources>

@@ -95,7 +95,12 @@
     <string name="login_log_detail_title">تفاصيل المصادقة</string>
     <string name="login_log_all_loaded">تم تحميل جميع السجلات</string>
     <plurals name="login_log_loaded_count">
+        <item quantity="one">تم تحميل %1$d سجلات</item>
         <item quantity="other">تم تحميل %1$d سجلات</item>
+        <item quantity="zero">تم تحميل %1$d سجلات</item>
+        <item quantity="two">تم تحميل %1$d سجلات</item>
+        <item quantity="few">تم تحميل %1$d سجلات</item>
+        <item quantity="many">تم تحميل %1$d سجلات</item>
     </plurals>
     <string name="login_log_page_info">صفحة %1$d/%2$d</string>
     <string name="login_log_oper_auth">سجلات المصادقة</string>
@@ -353,7 +358,6 @@
     <string name="settings_backup_import_clipboard">استيراد من الحافظة</string>
     <string name="settings_backup_import_file">استيراد من ملف</string>
     <string name="settings_backup_confirm">موافق</string>
-    <string name="settings_backup_copied">تم نسخ النسخة الاحتياطية إلى الحافظة</string>
     <string name="settings_backup_saved">تم حفظ النسخة الاحتياطية في ملف</string>
     <string name="settings_backup_import_ok">تم استيراد الإعدادات؛ بعضها يسري بعد إعادة التشغيل</string>
     <string name="settings_backup_invalid">محتوى غير صالح أو إصدار غير مدعوم</string>

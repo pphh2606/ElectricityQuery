@@ -353,7 +353,6 @@
     <string name="settings_backup_import_clipboard">從剪貼簿匯入</string>
     <string name="settings_backup_import_file">從檔案匯入</string>
     <string name="settings_backup_confirm">確定</string>
-    <string name="settings_backup_copied">備份已複製到剪貼簿</string>
     <string name="settings_backup_saved">備份已匯出至本機檔案</string>
     <string name="settings_backup_import_ok">設定匯入成功，部分設定需重新啟動後生效</string>
     <string name="settings_backup_invalid">備份內容無效或版本不受支援</string>
