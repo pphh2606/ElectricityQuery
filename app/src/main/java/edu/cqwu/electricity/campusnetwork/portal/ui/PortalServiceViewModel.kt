@@ -3,7 +3,6 @@ package edu.cqwu.electricity.campusnetwork.portal.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.campusnetwork.common.toCampusUiMessage
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalApi
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalMabDevice
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalOnlineInfo
@@ -27,9 +26,12 @@ import kotlinx.coroutines.launch
  * 是两个不同服务器的来源，字段同名也不代表同一个值。
  */
 data class PortalServiceUiState(
-    /** 首次加载中（尚无内容可展示） */
-    val isLoading: Boolean = false,
-    /** 下拉刷新中（已有内容，仅顶部指示器） */
+    /**
+     * 加载 / 刷新中。
+     *
+     * 首次加载与下拉刷新共用同一状态：页面统一由 `PullToRefreshBox` 的顶部指示器呈现，
+     * 不再区分"整页加载态"（原 `isLoading` 已合并到此）。
+     */
     val isRefreshing: Boolean = false,
     /** 操作进行中（切换服务 / 下线 / 无感认证），期间操作入口置灰 */
     val isApplying: Boolean = false,
@@ -82,28 +84,19 @@ class PortalServiceViewModel(
         load()
     }
 
-    /** 加载会话（空 userIndex 由网关按源 IP 定位） */
-    fun load(refresh: Boolean = false) {
-        val current = _state.value
-        // 幂等保护：加载中不重复发起；下拉刷新进行中也不重复
-        if (current.isLoading || (refresh && current.isRefreshing)) return
+    /**
+     * 加载 / 刷新会话（空 userIndex 由网关按源 IP 定位）。
+     *
+     * 首次加载与下拉刷新同一入口：已有内容时保留内容，只转顶部指示器。
+     */
+    fun load() {
+        if (_state.value.isRefreshing) return
         viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    // 下拉刷新时保留已有内容，只走顶部指示器
-                    isLoading = !refresh && it.info == null,
-                    isRefreshing = refresh,
-                    error = null,
-                    notice = null,
-                )
-            }
+            _state.update { it.copy(isRefreshing = true, error = null, notice = null) }
             fetchInfo()
-            _state.update { it.copy(isLoading = false, isRefreshing = false) }
+            _state.update { it.copy(isRefreshing = false) }
         }
     }
-
-    /** 下拉刷新：重新探测会话，保留已有内容 */
-    fun refresh() = load(refresh = true)
 
     /** 切换服务；成功后界面就地刷新，失败以服务端原文提示 */
     fun switchService(serviceName: String) {
@@ -256,9 +249,15 @@ class PortalServiceViewModel(
         emptyList()
     }
 
+    /**
+     * 统一错误处理。
+     *
+     * 界面只呈现一种错误文案（无法连接认证服务）：用户无法据异常类型采取不同行动，
+     * 细分无意义；**具体分类与原始异常全部进 AppLog**，排查时看日志即可。
+     */
     private fun fail(e: Throwable) {
         AppLog.e(TAG, "认证网关请求失败: ${e.message}", e)
-        _state.update { it.copy(error = e.toCampusUiMessage()) }
+        _state.update { it.copy(error = UiMessage(res = R.string.portal_error_unreachable)) }
     }
 
     /** 剩余时长本地递减；不轮询接口，刷新/操作后由服务端值重新校准 */

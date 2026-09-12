@@ -12,9 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,6 +61,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  * 通用底部弹窗，封装 MD3 ModalBottomSheet 的样板代码。
  *
  * 通过 [visible] 参数控制显隐，退出时自动播放动画，类似原生 Dialog.dismiss()。
+ *
+ * 高度上限为「屏高 − 状态栏」：内容撑满时顶边停在状态栏下沿，圆角不会被无圆角机型的屏幕边缘切掉。
+ * 状态栏已由顶层 padding 让出，故内容 inset 只取导航栏与输入法，重复计入状态栏会出现双倍顶部留白。
  *
  * @param visible 控制弹窗是否可见。当从 `true` 变为 `false` 时，会先播放退出动画，
  *                动画完成后再移除内部 ModalBottomSheet。默认为 `true`（始终渲染）。
@@ -145,6 +149,8 @@ fun BottomSheetDialog(
     if (visible || isHiding) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
+            // 顶部让出状态栏高度：撑满时顶边停在状态栏下沿。
+            modifier = Modifier.statusBarsPadding(),
             sheetState = sheetState,
             sheetGesturesEnabled = true,
             dragHandle = {
@@ -182,7 +188,7 @@ fun BottomSheetDialog(
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = 2.dp,
             contentWindowInsets = {
-                WindowInsets.systemBars.union(WindowInsets.ime)
+                WindowInsets.navigationBars.union(WindowInsets.ime)
             }
         ) {
             ProvideAppScaledDensity(appDensity) {

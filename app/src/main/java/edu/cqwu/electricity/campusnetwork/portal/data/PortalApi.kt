@@ -38,11 +38,16 @@ object PortalClient {
      * 跟随全局 WebVPN 开关（与校园网络其它功能保持一致的既定行为）。
      *
      * 网关业务接口均为 POST 直返 200、无重定向语义，故沿用默认的跟随策略。
+     *
+     * 连接超时单独收紧到 3 秒：网关是内网 IP 直连（实测正常响应 33ms），未连校园网时
+     * 无法建连，沿用默认 15 秒会让用户对着近乎空白的页面干等；3 秒足够给出结论。
+     * 读/写超时维持默认值（网关响应实测最慢 615ms）。
      */
     val client: OkHttpClient by lazy {
         HttpClientFactory.create(
             cookieJar = CookieStoreOkHttpJar,
             includeWebVpn = true,
+            connectTimeout = 3L,
         )
     }
 }

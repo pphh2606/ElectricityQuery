@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -25,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -49,54 +47,61 @@ import androidx.compose.ui.unit.sp
  * 所有尺寸/颜色数值与原实现逐一相同，集中在此仅为消除各处的重复字面量。
  */
 internal object SpeedTestDimens {
-    /** 卡片圆角 */
-    val CardRadius = 12.dp
+    /** 卡片圆角（对齐设置页入口卡片） */
+    val CardRadius = 16.dp
 
-    /** 卡片标题内边距 */
-    val CardTitlePadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp)
+    /** 分组标题内边距：标题在卡片外，缩进同设置页 SectionTitle */
+    val SectionTitlePadding = PaddingValues(start = 4.dp, top = 8.dp)
 
     /** 入口行/记录行内边距 */
-    val RowPadding = PaddingValues(horizontal = 14.dp, vertical = 14.dp)
+    val RowPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
 
-    /** 入口行圆形图标底 */
-    val IconCircle = 34.dp
+    /** 入口行图标与其右侧内容的间距 */
+    val RowIconSpacing = 16.dp
+
+    /** 入口行图标尺寸（设置页为纯图标，无圆形底） */
+    val RowIconSize = 24.dp
+
+    /** 入口行右箭头尺寸 */
+    val RowArrowSize = 24.dp
 
     /** 胶囊按钮高度（圆角取一半） */
     val CapsuleHeight = 46.dp
 }
 
+/** 分组标题：卡片外的蓝色小标题（样式与缩进对齐设置页 SectionTitle） */
+@Composable
+internal fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Medium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(SpeedTestDimens.SectionTitlePadding),
+    )
+}
+
 /**
- * 卡片分组：圆角 surface 底 + 标题 + 标题下分隔线 + 内容。
+ * 卡片分组容器：16dp 圆角 + surfaceContainerLow 底（对齐设置页入口卡片）。
  *
- * 网络服务 / 国际学术资源 / 最近测速三个分区共用，分隔线统一取 [SpeedTestPalette.divider]。
+ * 标题在卡片**外部**，由调用方用 [SectionTitle] 渲染；
+ * 网络服务 / 国际学术资源 / 最近测速三个分区共用。
  */
 @Composable
 internal fun SettingsCard(
-    @StringRes titleRes: Int,
-    palette: SpeedTestPalette,
     contentPadding: PaddingValues = PaddingValues(),
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(SpeedTestDimens.CardRadius))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(contentPadding),
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(SpeedTestDimens.CardRadius),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Text(
-            text = stringResource(titleRes),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = palette.label,
-            modifier = Modifier.padding(SpeedTestDimens.CardTitlePadding),
-        )
-        HorizontalDivider(color = palette.divider)
-        content()
+        Column(modifier = Modifier.padding(contentPadding), content = content)
     }
 }
 
-/** 卡片内分隔线 */
+/** 卡片内分隔线（「最近测速」数据行之间使用） */
 @Composable
 internal fun CardDivider(palette: SpeedTestPalette) {
     HorizontalDivider(color = palette.divider)
@@ -114,7 +119,7 @@ internal fun RowDivider(color: Color) {
 }
 
 /**
- * 服务入口行：圆形底图标 + 标题/副标题 + 右箭头（对齐 CampusNetworkScreen 圆形图标项）。
+ * 入口行：纯图标 + 标题/副标题 + 右箭头（对齐设置页入口行）。
  * 整行可点，并按一条语义合并，供读屏一次播报标题与副标题。
  */
 @Composable
@@ -132,21 +137,13 @@ internal fun IconRow(
             .padding(SpeedTestDimens.RowPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(SpeedTestDimens.IconCircle)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp),
-            )
-        }
-        Spacer(modifier = Modifier.width(14.dp))
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(SpeedTestDimens.RowIconSize),
+        )
+        Spacer(modifier = Modifier.width(SpeedTestDimens.RowIconSpacing))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
@@ -161,12 +158,12 @@ internal fun IconRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Spacer(modifier = Modifier.width(14.dp))
+        Spacer(modifier = Modifier.width(SpeedTestDimens.RowIconSpacing))
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(22.dp),
+            modifier = Modifier.size(SpeedTestDimens.RowArrowSize),
         )
     }
 }

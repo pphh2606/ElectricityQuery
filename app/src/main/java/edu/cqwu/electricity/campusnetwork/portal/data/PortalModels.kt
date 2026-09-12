@@ -97,8 +97,6 @@ data class PortalOnlineInfo(
     @SerializedName("mabInfo") val mabInfo: String? = null,
     /** 网关通知数组的 JSON 字符串（如弱密码提醒） */
     @SerializedName("notify") val notify: String? = null,
-    /** 自助服务免密登录链接（含服务端下发的 md5 凭据：禁止落盘、打日志、跨会话缓存） */
-    @SerializedName("selfUrl") val selfUrl: String? = null,
     /** 离线时为 "http://" */
     @SerializedName("redirectUrl") val redirectUrl: String? = null,
 ) {

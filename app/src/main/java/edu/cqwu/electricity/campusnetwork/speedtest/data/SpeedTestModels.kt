@@ -50,4 +50,6 @@ data class SpeedTestRecord(
     @SerializedName("jitter") val jitter: String? = null,
     @SerializedName("ipAddress") val ipAddress: String? = null,
     @SerializedName("isp") val isp: String? = null,
+    /** 服务端回显的 Accept-Language（实测存在，此前模型未声明被 Gson 忽略） */
+    @SerializedName("language") val language: String? = null,
 )

@@ -29,7 +29,6 @@ import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +68,7 @@ import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.InfoRowDivider
 import edu.cqwu.electricity.common.ui.InfoSectionTitle
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -80,6 +80,14 @@ private const val UNLIMITED_TRAFFIC_MB = 1024.0 * 1024 * 1024
 
 /** 剩余时长低于该秒数时转为警示色 */
 private const val REMAINING_WARN_SECONDS = 300L
+
+/**
+ * SAM 自助服务系统入口（与网速测试页同一地址）。
+ *
+ * 不再使用网关下发的 `selfUrl`：实测该链接只是个把用户名预填、仍需手输密码的登录页
+ * （`login_judge.jsf` 会丢弃凭据并跳到 `login_self.jsf`），并非免密入口。
+ */
+private const val SELF_SERVICE_URL = "https://zzfw.cqwu.edu.cn/selfservice/"
 
 /** 平铺信息行的统一内边距：水平 16dp 与分组标题、分隔线缩进对齐 */
 private val RowPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
@@ -123,15 +131,13 @@ fun PortalServiceScreen(
             ),
         )
     }
-    val openSelfService: (String) -> Unit = { url ->
-        if (url.isNotBlank()) {
-            nav.navigate(
-                Routes.unifiedWebViewRoute(
-                    url,
-                    resources.getString(R.string.portal_link_self_service),
-                ),
-            )
-        }
+    val openSelfService = {
+        nav.navigate(
+            Routes.unifiedWebViewRoute(
+                SELF_SERVICE_URL,
+                resources.getString(R.string.portal_link_self_service),
+            ),
+        )
     }
 
     // 一次性成功提示
@@ -174,28 +180,22 @@ fun PortalServiceScreen(
         // 与其他页面一致：下拉刷新（不再在标题栏放刷新按钮）
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
-            onRefresh = { viewModel.refresh() },
+            onRefresh = { viewModel.load() },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-            ) {
-                val info = state.info
-                when {
-                    state.isLoading && info == null && !state.noSession -> LoadingContent()
-
-                    state.noSession -> NoSessionContent(onOpenAuthPage = openAuthPage)
-
-                    info == null -> ErrorContent(
-                        message = errorText ?: stringResource(R.string.campus_network_error_generic),
-                        onRetry = { viewModel.refresh() },
-                    )
-
-                    else -> OnlineContent(
+            // 说明：可滚动内容各自包一层 verticalScroll——错误态用的 ReLoginContent
+            // 依赖 fillMaxSize 做整页居中，放进可滚动列会导致高度约束无限、居中失效。
+            val info = state.info
+            when {
+                // 有数据优先：下拉刷新期间保留已有内容
+                info != null -> Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    OnlineContent(
                         state = state,
                         info = info,
                         onSwitchClick = { showServiceSheet = true },
@@ -205,6 +205,26 @@ fun PortalServiceScreen(
                         onOpenAuthPage = openAuthPage,
                     )
                 }
+
+                // 网关明确未报告会话：中性态（不等于不能上网）
+                state.noSession -> Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    NoSessionContent(onOpenAuthPage = openAuthPage)
+                }
+
+                // 加载/刷新中：内容区留空，由 PullToRefreshBox 的顶部指示器呈现
+                state.isRefreshing -> Unit
+
+                // 其余情况统一收敛为一种错误态（细节进 AppLog），样式对齐其它页面的通用错误态
+                else -> ReLoginContent(
+                    errorMessage = errorText ?: stringResource(R.string.portal_error_unreachable),
+                    requiresReLogin = false,
+                    onReLogin = {},
+                    onRetry = { viewModel.load() },
+                )
             }
         }
     }
@@ -282,7 +302,7 @@ private fun OnlineContent(
     onSwitchClick: () -> Unit,
     onMabToggle: (Boolean) -> Unit,
     onLogoutClick: () -> Unit,
-    onOpenSelfService: (String) -> Unit,
+    onOpenSelfService: () -> Unit,
     onOpenAuthPage: () -> Unit,
 ) {
     // ── 会话状态 ──
@@ -383,13 +403,11 @@ private fun OnlineContent(
     // ── 相关入口 ──
     InfoSectionTitle(text = stringResource(R.string.portal_group_links))
     SettingsCard {
-        info.selfUrl?.takeIf { it.isNotBlank() }?.let { url ->
-            LinkRow(
-                icon = Icons.Outlined.Language,
-                title = stringResource(R.string.portal_link_self_service),
-                onClick = { onOpenSelfService(url) },
-            )
-        }
+        LinkRow(
+            icon = Icons.Outlined.Language,
+            title = stringResource(R.string.portal_link_self_service),
+            onClick = onOpenSelfService,
+        )
         LinkRow(
             icon = Icons.AutoMirrored.Outlined.OpenInNew,
             title = stringResource(R.string.portal_link_auth_page),
@@ -591,28 +609,8 @@ private fun LinkRow(icon: ImageVector, title: String, onClick: () -> Unit) {
 }
 
 // ══════════════════════════════════════════════
-//  加载 / 网关无会话 / 错误
+//  网关无会话 / 错误
 // ══════════════════════════════════════════════
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 48.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = stringResource(R.string.campus_network_fetching),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
 
 /**
  * 网关未报告会话时的中性空状态。
@@ -641,24 +639,6 @@ private fun NoSessionContent(onOpenAuthPage: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(R.string.portal_open_auth_page))
-        }
-    }
-}
-
-@Composable
-private fun ErrorContent(message: String, onRetry: () -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = onRetry,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(text = stringResource(R.string.common_retry))
         }
     }
 }

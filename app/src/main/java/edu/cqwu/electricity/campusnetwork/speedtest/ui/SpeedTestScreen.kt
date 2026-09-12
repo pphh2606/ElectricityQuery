@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,12 +64,15 @@ import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestRecord
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestPhase
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestStats
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestTick
+import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.InfoLabelWidth
+import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 
-/** 网络服务：自助服务（SAM 自助服务页） */
-private const val SELF_SERVICE_URL = "https://speedtest.cqwu.edu.cn/self-service"
+/** 网络服务：自助服务（SAM 自助服务系统）——与网络服务页同一站点；本页无会话，走裸地址需自行登录 */
+private const val SELF_SERVICE_URL = "https://zzfw.cqwu.edu.cn/selfservice/"
 
 /** 国际学术资源：发起申请 */
 private const val ACADEMIC_APPLY_URL = "https://speedtest.cqwu.edu.cn/access/apply"
@@ -157,7 +162,6 @@ fun SpeedTestScreen(
                     ServiceEntry(Icons.Outlined.Bolt, R.string.speed_test_service_plan, R.string.speed_test_service_plan_desc, localRoute = Routes.CAMPUS_NETWORK_PORTAL_SERVICE),
                     ServiceEntry(Icons.Outlined.Language, R.string.speed_test_service_self, R.string.speed_test_service_self_desc, SELF_SERVICE_URL),
                 ),
-                palette = palette,
             )
 
             // ── 国际学术资源 ──
@@ -167,7 +171,6 @@ fun SpeedTestScreen(
                     ServiceEntry(Icons.AutoMirrored.Outlined.Send, R.string.speed_test_academic_apply, R.string.speed_test_academic_apply_desc, ACADEMIC_APPLY_URL),
                     ServiceEntry(Icons.Outlined.History, R.string.speed_test_academic_records, R.string.speed_test_academic_records_desc, ACADEMIC_RECORDS_URL),
                 ),
-                palette = palette,
             )
 
             // ── 最近测速（仅获取到数据时渲染）──
@@ -459,28 +462,34 @@ private data class ServiceEntry(
     val localRoute: String? = null,
 )
 
-/** 服务分组卡片：标题 + 若干入口行（本地路由优先，否则经内置浏览器打开 url） */
+/**
+ * 服务分组：卡片外标题 + 卡片内若干入口行（本地路由优先，否则经内置浏览器打开 url）。
+ *
+ * 用内层 Column 包住"标题 + 卡片"，避免外层 `spacedBy` 在两者之间再插一段间距。
+ */
 @Composable
 private fun ServiceSection(
     @StringRes titleRes: Int,
     entries: List<ServiceEntry>,
-    palette: SpeedTestPalette,
 ) {
     val nav = LocalNavController.current
-    SettingsCard(titleRes = titleRes, palette = palette) {
-        entries.forEach { entry ->
-            CardDivider(palette = palette)
-            val title = stringResource(entry.titleRes)
-            IconRow(
-                icon = entry.icon,
-                title = title,
-                subtitle = stringResource(entry.subtitleRes),
-                onClick = {
-                    val target = entry.localRoute
-                        ?: Routes.unifiedWebViewRoute(entry.url.orEmpty(), title)
-                    nav.navigate(target)
-                },
-            )
+    Column {
+        SectionTitle(text = stringResource(titleRes))
+        Spacer(modifier = Modifier.height(8.dp))
+        SettingsCard {
+            entries.forEach { entry ->
+                val title = stringResource(entry.titleRes)
+                IconRow(
+                    icon = entry.icon,
+                    title = title,
+                    subtitle = stringResource(entry.subtitleRes),
+                    onClick = {
+                        val target = entry.localRoute
+                            ?: Routes.unifiedWebViewRoute(entry.url.orEmpty(), title)
+                        nav.navigate(target)
+                    },
+                )
+            }
         }
     }
 }
@@ -496,50 +505,55 @@ private fun RecentRecordsSection(
 ) {
     val pages = remember(records) { records.chunked(RECENT_PAGE_SIZE) }
     var page by remember { mutableIntStateOf(1) }
+    var selectedRecord by remember { mutableStateOf<SpeedTestRecord?>(null) }
     val current = page.coerceIn(1, pages.size)
 
-    SettingsCard(
-        titleRes = R.string.speed_test_recent_title,
-        palette = palette,
+    Column {
+        SectionTitle(text = stringResource(R.string.speed_test_recent_title))
+        Spacer(modifier = Modifier.height(8.dp))
         // 与原实现一致：卡片内容上下各留 4dp
-        contentPadding = PaddingValues(vertical = 4.dp),
-    ) {
-        pages[current - 1].forEachIndexed { index, record ->
-            RecentRecordRow(
-                record = record,
-                palette = palette,
-                showBottomDivider = index != pages[current - 1].lastIndex,
-            )
-        }
+        SettingsCard(contentPadding = PaddingValues(vertical = 4.dp)) {
+            pages[current - 1].forEachIndexed { index, record ->
+                RecentRecordRow(
+                    record = record,
+                    palette = palette,
+                    showBottomDivider = index != pages[current - 1].lastIndex,
+                    onClick = { selectedRecord = record },
+                )
+            }
 
-        // ── 分页脚条 ──
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = "$current / ${pages.size}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontFamily = FontFamily.Serif,
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                PageArrow(
-                    icon = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
-                    enabled = current > 1,
-                    onClick = { page = current - 1 },
+            // ── 分页脚条 ──
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "$current / ${pages.size}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.Serif,
                 )
-                PageArrow(
-                    icon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                    enabled = current < pages.size,
-                    onClick = { page = current + 1 },
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    PageArrow(
+                        icon = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                        enabled = current > 1,
+                        onClick = { page = current - 1 },
+                    )
+                    PageArrow(
+                        icon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        enabled = current < pages.size,
+                        onClick = { page = current + 1 },
+                    )
+                }
             }
         }
     }
+
+    // 点击记录行 → 底部弹窗展示该条完整字段
+    RecordDetailSheet(record = selectedRecord, onDismiss = { selectedRecord = null })
 }
 
 /** 翻页箭头：禁用态用低透明度表示（与原实现一致） */
@@ -563,11 +577,12 @@ private fun RecentRecordRow(
     record: SpeedTestRecord,
     palette: SpeedTestPalette,
     showBottomDivider: Boolean,
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = {}),
+            .clickable(onClick = onClick),
     ) {
         Column(
             modifier = Modifier
@@ -634,6 +649,56 @@ private fun RecentRecordRow(
         }
     }
 }
+
+/**
+ * 测速记录详情：底部弹窗展示该条记录的**全部字段**
+ * （列表里只展示时间 / IP / DL / UL / ping）。
+ *
+ * 容器与信息行均复用通用组件；字段顺序固定，缺失值由 [InfoRow] 统一显示 "-"。
+ */
+@Composable
+private fun RecordDetailSheet(record: SpeedTestRecord?, onDismiss: () -> Unit) {
+    BottomSheetDialogV2(
+        visible = record != null,
+        onDismissRequest = onDismiss,
+        title = stringResource(R.string.speed_test_record_detail_title),
+        icon = Icons.Outlined.Speed,
+    ) {
+        record?.let { r ->
+            DetailRow(R.string.speed_test_record_time, formatTimestamp(r.timestamp))
+            DetailRow(R.string.speed_test_label_download, mbpsOf(r.download))
+            DetailRow(R.string.speed_test_label_upload, mbpsOf(r.upload))
+            DetailRow(R.string.speed_test_label_ping, msOf(r.ping))
+            DetailRow(R.string.speed_test_record_jitter, msOf(r.jitter))
+            DetailRow(R.string.speed_test_record_ip, r.ipAddress.orEmpty())
+            DetailRow(R.string.speed_test_record_isp, r.isp.orEmpty())
+            DetailRow(R.string.speed_test_record_uuid, r.uuid.orEmpty())
+            DetailRow(R.string.speed_test_record_language, r.language.orEmpty())
+        }
+    }
+}
+
+/** 详情字段行：固定标签宽度、允许换行与统一行距（复用通用 [InfoRow]，不重复布局逻辑） */
+@Composable
+private fun DetailRow(@StringRes labelRes: Int, value: String) {
+    InfoRow(
+        label = stringResource(labelRes),
+        value = value,
+        modifier = Modifier.padding(vertical = 8.dp),
+        labelWidth = InfoLabelWidth,
+        maxLines = Int.MAX_VALUE,
+    )
+}
+
+/** 详情弹窗里的 Mbps 值（1 位小数 + 单位，与页面四宫格口径一致） */
+@Composable
+private fun mbpsOf(raw: String?): String =
+    "${SpeedTestStats.formatMbps(value1(raw))} ${stringResource(R.string.speed_test_unit_mbps)}"
+
+/** 详情弹窗里的 ms 值（取整 + 单位） */
+@Composable
+private fun msOf(raw: String?): String =
+    "${SpeedTestStats.formatMs(value1(raw))} ${stringResource(R.string.speed_test_unit_ms)}"
 
 /** 记录行的次级信息（时间 / IP）：小字灰 serif */
 @Composable

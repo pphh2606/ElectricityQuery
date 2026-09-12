@@ -37,11 +37,19 @@ internal object CampusNetworkClients {
     /** 测速站 API 根地址（speedtest 与 campusnetworkinfo 共用，杜绝两处写死漂移） */
     const val BASE_URL = "https://speedtest.cqwu.edu.cn/api/speedlyst"
 
-    /** 校园网络统一客户端：与其它 WebVPN 客户端一致挂 CookieStoreOkHttpJar，跟随全局实验性开关 */
+    /**
+     * 校园网络统一客户端：与其它 WebVPN 客户端一致挂 CookieStoreOkHttpJar，跟随全局实验性开关。
+     *
+     * 连接超时收紧到 3 秒（与认证网关客户端同款取舍）：测速站与接入者信息同为校内服务、
+     * 源 IP 即身份，未连校园网或未完成上网认证时无法建连，沿用默认 15 秒会让用户对着空白页
+     * 干等；校内实测建连仅数十毫秒，3 秒足够给出结论。读/写超时维持默认值
+     * （测速页的下载/上传测量请求需要长读）。
+     */
     val direct: OkHttpClient by lazy {
         HttpClientFactory.create(
             cookieJar = CookieStoreOkHttpJar,
             includeWebVpn = true,
+            connectTimeout = 3L,
         )
     }
 }
