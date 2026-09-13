@@ -56,7 +56,7 @@ android {
         minSdk = 21
         targetSdk = 36
         versionCode = currentVersionCode
-        versionName = "1.0"
+        versionName = "1.1"
 
         buildConfigField("String", "BUILD_TIME",
             "\"${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}\"")
