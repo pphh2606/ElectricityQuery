@@ -1,12 +1,6 @@
 package edu.cqwu.electricity.notice.ui
-import edu.cqwu.electricity.logging.AppLog
-
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import android.annotation.SuppressLint
-import androidx.compose.ui.res.stringResource
-import edu.cqwu.electricity.R
-
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
@@ -58,26 +52,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
 import edu.cqwu.electricity.settings.data.isDark
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("SetJavaScriptEnabled")
@@ -384,12 +381,12 @@ fun NoticeDetailScreen(
                                         settings.domStorageEnabled = false
                                         settings.javaScriptCanOpenWindowsAutomatically = false
                                         settings.mediaPlaybackRequiresUserGesture = true
-                                        settings.setAllowFileAccess(false)
-                                        settings.setAllowContentAccess(false)
+                                        settings.allowFileAccess = false
+                                        settings.allowContentAccess = false
                                         @Suppress("DEPRECATION")
-                                        settings.setAllowFileAccessFromFileURLs(false)
+                                        settings.allowFileAccessFromFileURLs = false
                                         @Suppress("DEPRECATION")
-                                        settings.setAllowUniversalAccessFromFileURLs(false)
+                                        settings.allowUniversalAccessFromFileURLs = false
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                             settings.safeBrowsingEnabled = true
                                         }

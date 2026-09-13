@@ -37,11 +37,9 @@ internal fun WebView.applyWebViewDarkMode(enabled: Boolean) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                settings.setAlgorithmicDarkeningAllowed(enabled)
+                settings.isAlgorithmicDarkeningAllowed = enabled
             } else {
-                settings.setForceDark(
-                    if (enabled) WebSettings.FORCE_DARK_ON else WebSettings.FORCE_DARK_OFF
-                )
+                settings.forceDark = if (enabled) WebSettings.FORCE_DARK_ON else WebSettings.FORCE_DARK_OFF
             }
         } catch (_: Throwable) {
             AppLog.d("WebViewDarkMode", "WebView 深色模式设置不支持，已忽略")
@@ -57,4 +55,4 @@ private const val WEBVIEW_NIGHT_CSS = """html{background-color:#000!important}*{
 private const val DARK_MODE_REMOVE =
     "(function(){var e=document.getElementById('webview_inject_css_night');if(e)e.parentNode.removeChild(e)})();"
 
-private val DARK_MODE_INJECT = """(function(){var e=document.getElementById('webview_inject_css_night');if(e)e.parentNode.removeChild(e);var s=document.createElement('style');s.id='webview_inject_css_night';s.type='text/css';s.appendChild(document.createTextNode('$WEBVIEW_NIGHT_CSS'));var h=document.getElementsByTagName('head')[0];if(h)h.appendChild(s)})();"""
+private const val DARK_MODE_INJECT = """(function(){var e=document.getElementById('webview_inject_css_night');if(e)e.parentNode.removeChild(e);var s=document.createElement('style');s.id='webview_inject_css_night';s.type='text/css';s.appendChild(document.createTextNode('$WEBVIEW_NIGHT_CSS'));var h=document.getElementsByTagName('head')[0];if(h)h.appendChild(s)})();"""

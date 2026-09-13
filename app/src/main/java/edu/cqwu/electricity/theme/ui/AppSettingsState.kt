@@ -3,6 +3,7 @@ package edu.cqwu.electricity.theme.ui
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -54,7 +55,7 @@ class AppSettingsState(
     var qrCodeColorMode by mutableStateOf(prefs.get(SettingsKeys.QR_CODE_COLOR_MODE))
         private set
 
-    var qrCodeCornerRadius by mutableStateOf(
+    var qrCodeCornerRadius by mutableFloatStateOf(
         prefs.get(SettingsKeys.QR_CODE_CORNER_RADIUS)
             .coerceIn(MIN_QR_CORNER_RADIUS, MAX_QR_CORNER_RADIUS)
     )
@@ -73,12 +74,12 @@ class AppSettingsState(
     var sheetBlurEnabled by mutableStateOf(prefs.get(SettingsKeys.SHEET_BLUR_ENABLED))
         private set
 
-    var sheetBlurRadius by mutableStateOf(
+    var sheetBlurRadius by mutableFloatStateOf(
         prefs.get(SettingsKeys.SHEET_BLUR_RADIUS).coerceIn(MIN_SHEET_BLUR_RADIUS, MAX_SHEET_BLUR_RADIUS)
     )
         private set
 
-    var fontScale by mutableStateOf(
+    var fontScale by mutableFloatStateOf(
         prefs.get(SettingsKeys.FONT_SCALE).coerceIn(MIN_FONT_SCALE, MAX_FONT_SCALE)
     )
         private set

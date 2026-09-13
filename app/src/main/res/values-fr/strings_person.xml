@@ -9,7 +9,9 @@
     <string name="person_no_result">Aucune personne trouvée</string>
     <string name="person_no_more">Pas d’autres résultats</string>
     <plurals name="person_search_total_count">
+        <item quantity="one">%1$d personne trouvée</item>
         <item quantity="other">%1$d personnes trouvées</item>
+        <item quantity="many">%1$d personnes trouvées</item>
     </plurals>
     <string name="person_page_info">Page %1$d/%2$d</string>
 </resources>

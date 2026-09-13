@@ -97,6 +97,7 @@
     <plurals name="login_log_loaded_count">
         <item quantity="one">%1$d enregistrement chargé</item>
         <item quantity="other">%1$d enregistrements chargés</item>
+        <item quantity="many">%1$d enregistrements chargés</item>
     </plurals>
     <string name="login_log_page_info">Page %1$d/%2$d</string>
     <string name="login_log_oper_auth">Enregistrements d\'authentification</string>

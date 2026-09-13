@@ -17,8 +17,7 @@ import kotlinx.coroutines.launch
  * 管理指定咨询区的留言列表加载、分页和刷新状态。
  */
 class MessageListViewModel(
-    private val areaCode: String,
-    val areaName: String
+    private val areaCode: String
 ) : ViewModel() {
 
     /** UI 状态 */
@@ -114,7 +113,7 @@ class MessageListViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return MessageListViewModel(areaCode, areaName) as T
+            return MessageListViewModel(areaCode) as T
         }
     }
 }

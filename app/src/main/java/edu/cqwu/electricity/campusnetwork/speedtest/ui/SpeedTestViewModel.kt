@@ -103,9 +103,6 @@ class SpeedTestViewModel(
     @Volatile
     private var completed = false
 
-    /** 是否有进行中的流程（创建/排队/测速） */
-    fun isBusy(): Boolean = runJob?.isActive == true || engine.isRunning
-
     fun startTest() {
         if (runJob?.isActive == true) return
         runJob = viewModelScope.launch {
@@ -234,7 +231,7 @@ class SpeedTestViewModel(
         }
     }
 
-    private suspend fun failWith(e: Throwable) {
+    private fun failWith(e: Throwable) {
         AppLog.e(TAG, "测速流程失败: ${e.message}", e)
         _state.update {
             it.copy(status = SpeedTestRunStatus.ERROR, error = e.toCampusUiMessage())

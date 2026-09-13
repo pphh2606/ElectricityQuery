@@ -186,9 +186,6 @@ object AccountSessionStore {
         AppLog.d("AccountSessionStore", "回填学号: ${accounts[idx].username} -> $studentId")
     }
 
-    /** 当前激活账号的数字学号（本地读取，零网络） */
-    fun getActiveStudentId(): String? = getActiveAccount()?.studentId
-
     /**
      * 原子激活指定条目（QQ 模式切换）：
      * 1. 清空系统 CookieManager（同步等待完成）

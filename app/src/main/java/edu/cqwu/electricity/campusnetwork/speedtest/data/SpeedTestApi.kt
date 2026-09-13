@@ -41,10 +41,6 @@ class SpeedTestApi internal constructor(
     suspend fun claimSession(sessionId: String): Result<SpeedTestSessionData> =
         json.post(TAG, "/session/$sessionId/claim", body = null, dataType = SpeedTestSessionData::class.java)
 
-    /** 全局会话状态（空闲/排队位次/活跃数） */
-    suspend fun sessionStatus(): Result<SpeedTestSessionData> =
-        json.get(TAG, "/session/status", SpeedTestSessionData::class.java)
-
     /** 上报测速结果并释放会话（四个数值以字符串传、保留 2 位小数） */
     suspend fun completeSession(
         sessionId: String,

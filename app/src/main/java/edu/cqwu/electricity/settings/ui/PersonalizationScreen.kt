@@ -53,6 +53,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -96,7 +97,7 @@ fun PersonalizationScreen(
     var showPageTransitionDialog by remember { mutableStateOf(false) }
     var showReduceMotionDialog by remember { mutableStateOf(false) }
     var showFontSizeSlider by remember { mutableStateOf(false) }
-    var draftFontScale by remember(appSettings.fontScale) { mutableStateOf(appSettings.fontScale) }
+    var draftFontScale by remember(appSettings.fontScale) { mutableFloatStateOf(appSettings.fontScale) }
     val displayedFontScale = if (showFontSizeSlider) draftFontScale else appSettings.fontScale
     val customSeedColor = (appSettings.colorSource as? ThemeColorSource.Custom)?.seedColor ?: Color(0xFF6750A4)
     val topBarColors = currentTopBarColors()
@@ -576,9 +577,9 @@ private fun ColorPickerDialog(
 ) {
     val openedColor = remember(visible) { initialColor }
     val initialHsv = remember(openedColor) { openedColor.toHsv() }
-    var hue by remember(openedColor) { mutableStateOf(initialHsv.hue) }
-    var saturation by remember(openedColor) { mutableStateOf(initialHsv.saturation) }
-    var value by remember(openedColor) { mutableStateOf(initialHsv.value) }
+    var hue by remember(openedColor) { mutableFloatStateOf(initialHsv.hue) }
+    var saturation by remember(openedColor) { mutableFloatStateOf(initialHsv.saturation) }
+    var value by remember(openedColor) { mutableFloatStateOf(initialHsv.value) }
     var selectedColor by remember(openedColor) { mutableStateOf(openedColor) }
     var hexInput by remember(openedColor) { mutableStateOf(openedColor.toHex()) }
     var hexError by remember { mutableStateOf(false) }

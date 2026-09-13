@@ -1,16 +1,10 @@
 package edu.cqwu.electricity.profile.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
-
-import edu.cqwu.electricity.common.ui.InfoLabelWidth
-import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,13 +52,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.profile.data.StudentInfo
-import edu.cqwu.electricity.profile.data.MenuCategory
+import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.profile.data.MenuCategory
+import edu.cqwu.electricity.profile.data.StudentInfo
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

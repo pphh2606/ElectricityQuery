@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,11 +29,11 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
 import edu.cqwu.electricity.theme.ui.CustomSnackbarVisuals
 import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
-import edu.cqwu.electricity.theme.ui.SheetVisibilityState
-import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.SnackbarController
 import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
+import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.theme.ui.SheetVisibilityState
+import edu.cqwu.electricity.theme.ui.SnackbarController
 import edu.cqwu.electricity.theme.ui.isHazeBlurSupported
 import edu.cqwu.electricity.theme.util.ToastUtils
 

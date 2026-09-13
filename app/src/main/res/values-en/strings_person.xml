@@ -9,6 +9,7 @@
     <string name="person_no_result">No person found</string>
     <string name="person_no_more">No more results</string>
     <plurals name="person_search_total_count">
+        <item quantity="one">%1$d person found</item>
         <item quantity="other">%1$d people found</item>
     </plurals>
     <string name="person_page_info">Page %1$d/%2$d</string>

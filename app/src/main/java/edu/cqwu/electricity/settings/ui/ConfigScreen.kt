@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -75,7 +76,7 @@ fun ConfigScreen(
     val currentLanguage by remember { mutableStateOf(settingsPrefs.getAppLanguage()) }
     var autoUpdateEnabled by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.AUTO_UPDATE_ENABLED)) }
     var checkCiUpdates by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.CHECK_CI_UPDATES)) }
-    var updateTimeoutMs by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.UPDATE_TIMEOUT_MS)) }
+    var updateTimeoutMs by remember { mutableIntStateOf(settingsPrefs.get(SettingsKeys.UPDATE_TIMEOUT_MS)) }
 
     Scaffold(
         topBar = {

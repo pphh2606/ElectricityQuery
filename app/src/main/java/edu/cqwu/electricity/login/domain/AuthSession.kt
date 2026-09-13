@@ -70,8 +70,12 @@ object SessionRegistry {
 
     /** 取或建指定域的会话；已存在则直接返回（同一闸门），避免并发重复建锁。 */
     fun getOrCreate(domain: String, authenticator: () -> Unit): AuthSession {
-        return sessions.computeIfAbsent(domain) {
-            AuthSession(domain, authenticator)
-        }
+        // ConcurrentHashMap#computeIfAbsent 需要 API 24，而 minSdk 为 21；
+        // 改用 API 1 即可用的 get + putIfAbsent，并发语义等价（并发时只有第一个实例胜出）。
+        // 极端并发下可能多构造一个 AuthSession 后丢弃：其构造函数只分配一个空的
+        // ConcurrentHashMap，无任何副作用（真正的认证在 ensureActive()），故安全。
+        sessions[domain]?.let { return it }
+        val created = AuthSession(domain, authenticator)
+        return sessions.putIfAbsent(domain, created) ?: created
     }
 }

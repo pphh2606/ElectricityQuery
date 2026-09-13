@@ -60,7 +60,6 @@ class LoginLogApi {
 
     companion object {
         private const val TAG = "LoginLogApi"
-        private const val LOG_URL = "https://authserver.cqwu.edu.cn/authserver/userLogs.do"
 
         /** 分页统计：分页控件 span 文本 "30/3"（总条数/总页数） */
         private val PAGE_INFO_REGEX = Regex("""(\d+)\s*/\s*(\d+)""")

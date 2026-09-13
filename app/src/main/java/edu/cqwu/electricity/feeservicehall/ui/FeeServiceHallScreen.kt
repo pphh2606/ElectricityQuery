@@ -2,8 +2,6 @@
 
 package edu.cqwu.electricity.feeservicehall.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
-
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,9 +25,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.OpenInBrowser
@@ -69,15 +67,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.feeservicehall.data.FeeItem
-import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
-import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.feeservicehall.data.FeeItem
+import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
+import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.util.ToastUtils
 import kotlinx.coroutines.launch
 

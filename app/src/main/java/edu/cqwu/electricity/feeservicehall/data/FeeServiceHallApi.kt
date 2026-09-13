@@ -71,7 +71,7 @@ class FeeServiceHallApi : PayApiBase() {
             "https://pay.cqwu.edu.cn/api/pay/pay/cos/merchant/getProjectTypeAndProjectInfoListInit/datalook"
         private const val ORDER_LIST_URL =
             "https://pay.cqwu.edu.cn/api/pay/web/order/pageOrderlist"
-        private const val CLOSE_ORDER_URL = PayApiBase.PAY_DOMAIN + "/api/pay/web/order/closeOrderById"
+        private const val CLOSE_ORDER_URL = PAY_DOMAIN + "/api/pay/web/order/closeOrderById"
 
         /** 个人信息 API */
         private const val PROFILE_URL =

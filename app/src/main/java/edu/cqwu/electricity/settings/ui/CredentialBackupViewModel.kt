@@ -42,9 +42,6 @@ class CredentialBackupViewModel(application: Application) : AndroidViewModel(app
     private val _events = Channel<CredentialTransferEvent>(Channel.BUFFERED)
     val events: Flow<CredentialTransferEvent> = _events.receiveAsFlow()
 
-    /** 当前激活账号的用户名（导出对话框展示用）；未登录为空串 */
-    fun currentUsername(): String = SessionCoordinatorV2.currentAccount()?.username.orEmpty()
-
     /** 导出：加密全量"记住密码"账号并复制到剪贴板。 */
     fun exportCredentials(exportPassword: String) {
         viewModelScope.launch {

@@ -29,13 +29,9 @@ data class PortalResult(
     val isSuccess: Boolean get() = result == SUCCESS
     val isWait: Boolean get() = result == WAIT
 
-    /** 既非成功也非过渡态（含 result 缺失） */
-    val isFailure: Boolean get() = !isSuccess && !isWait
-
     companion object {
         const val SUCCESS = "success"
         const val WAIT = "wait"
-        const val FAIL = "fail"
     }
 }
 

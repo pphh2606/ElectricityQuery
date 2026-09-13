@@ -16,15 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.navigation.NavHostController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.NavHostController
 import com.materialkolor.dynamicColorScheme
 import dev.chrisbanes.haze.HazeDefaults
 import edu.cqwu.electricity.settings.data.NightMode
@@ -46,8 +47,8 @@ private val LightColorScheme = lightColorScheme(
 
 @Stable
 class SheetVisibilityState {
-    private val openCount = mutableStateOf(0)
-    private val blurProgressState = mutableStateOf(0f)
+    private val openCount = mutableIntStateOf(0)
+    private val blurProgressState = mutableFloatStateOf(0f)
 
     val active: Boolean get() = openCount.value > 0
 
@@ -76,7 +77,7 @@ val LocalNavController = staticCompositionLocalOf<NavHostController> {
 }
 
 internal val LocalWebViewReloadAfterLogin = staticCompositionLocalOf { false }
-internal val LocalWebViewReloadConsumed = staticCompositionLocalOf<() -> Unit> { {} }
+internal val LocalWebViewReloadConsumed = staticCompositionLocalOf { {} }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

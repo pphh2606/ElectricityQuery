@@ -38,9 +38,6 @@ object SessionCoordinatorV2 {
     /** 清空全部账号数据与登录态 */
     fun clearAll() = AccountSessionStore.clearAllData()
 
-    /** 追加导入 Cookie 备份账号（新 UUID、不激活） */
-    fun importAccounts(drafts: List<SavedAccount>) = AccountSessionStore.importAccounts(drafts)
-
     /** 追加导入账密凭据账号（保留密码、新 UUID、不激活） */
     fun importCredentials(drafts: List<SavedAccount>) = AccountSessionStore.importCredentials(drafts)
 }

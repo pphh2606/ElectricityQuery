@@ -1,15 +1,14 @@
 package edu.cqwu.electricity.profile.data
 
-import edu.cqwu.electricity.logging.AppLog
 import com.google.gson.Gson
 import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.common.net.CookieStore
 import edu.cqwu.electricity.common.net.HtmlFormParser
-import edu.cqwu.electricity.common.net.SessionExpiredException
-import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
 import edu.cqwu.electricity.common.net.HttpClientFactory
-import kotlinx.coroutines.CancellationException
+import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.logging.AppLog
+import edu.cqwu.electricity.login.data.AccountSessionStore
+import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -74,7 +73,7 @@ class CampusphereApi {
     }
 
     /** 内部：执行一次学生信息请求，不重试 */
-    private suspend fun doFetchStudentInfo(): Result<StudentInfo> {
+    private fun doFetchStudentInfo(): Result<StudentInfo> {
         return try {
             val (client, cookieReader) = createClient()
 

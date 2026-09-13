@@ -79,7 +79,7 @@ internal class CookieJarBridge(
     private fun logNonAsciiIfPresent(phase: String, url: String, name: String, value: String) {
         val offenders = value.mapIndexedNotNull { index, c ->
             val code = c.code
-            if (code < 0x20 || code > 0x7E) "U+${code.toString(16).uppercase()}@$index" else null
+            if (code !in 0x20..0x7E) "U+${code.toString(16).uppercase()}@$index" else null
         }
         if (offenders.isNotEmpty()) {
             AppLog.w(

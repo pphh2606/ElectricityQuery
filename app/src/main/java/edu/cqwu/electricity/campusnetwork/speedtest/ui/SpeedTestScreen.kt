@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,6 +72,8 @@ import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /** 网络服务：自助服务（SAM 自助服务系统）——与网络服务页同一站点；本页无会话，走裸地址需自行登录 */
 private const val SELF_SERVICE_URL = "https://zzfw.cqwu.edu.cn/selfservice/"
@@ -714,16 +718,62 @@ private fun MetaText(text: String) {
 /** 字符串数值 → Double（非法/空回退 0.0） */
 private fun value1(value: String?): Double = value?.toDoubleOrNull() ?: 0.0
 
-/** ISO8601 时间戳 → 本地时区 `yyyy-MM-dd HH:mm:ss`；解析失败回退原始串（与前端 rte 行为一致） */
-private val TimestampFormatter = java.time.format.DateTimeFormatter
-    .ofPattern("yyyy-MM-dd HH:mm:ss")
-    .withZone(java.time.ZoneId.systemDefault())
-
+/**
+ * ISO8601 时间戳 → 本地时区 `yyyy-MM-dd HH:mm:ss`；解析失败回退原始串（与前端 rte 行为一致）。
+ *
+ * 服务端实测格式：`2026-09-05T23:56:46+08:00`（带偏移、无毫秒）。
+ * `java.time` 需要 API 26 而 minSdk 为 21，故按版本分流。
+ * [Api26Timestamp] 单独成类是必需的：若把 java.time 写在顶层属性上，Kotlin 会把它放进
+ * 本文件类的静态初始化块，API < 26 的设备上一旦加载本文件任何函数就会
+ * NoClassDefFoundError（而不只是调用本函数时才崩）。
+ */
 private fun formatTimestamp(raw: String?): String {
     if (raw.isNullOrBlank()) return "--"
     return try {
-        TimestampFormatter.format(java.time.OffsetDateTime.parse(raw))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Api26Timestamp.format(raw)
+        } else {
+            LegacyTimestamp.format(raw)
+        }
     } catch (e: Exception) {
         raw
     }
 }
+
+/** API 26+ 路径：`java.time` 实现 */
+@RequiresApi(Build.VERSION_CODES.O)
+private object Api26Timestamp {
+    private val formatter = java.time.format.DateTimeFormatter
+        .ofPattern("yyyy-MM-dd HH:mm:ss")
+        .withZone(java.time.ZoneId.systemDefault())
+
+    fun format(raw: String): String = formatter.format(java.time.OffsetDateTime.parse(raw))
+}
+
+/**
+ * API 21~25 回退路径：`SimpleDateFormat`（API 1+）。
+ *
+ * `+08:00` 这种带冒号的偏移只有 `XXX` 模式能直接解析，而 `XXX` 需要 API 24，
+ * 故去掉冒号改用 `Z` 模式。服务端格式固定为 `2026-09-05T23:56:46+08:00`。
+ *
+ * `parse` 按输入偏移得到时刻，`format` 按设备默认时区输出，
+ * 与 API 26 路径的 `withZone(ZoneId.systemDefault())` 语义一致。
+ * 解析失败（`ParseException`）由 [formatTimestamp] 统一回退为原始串。
+ * `SimpleDateFormat` 非线程安全，故每次调用新建实例（调用点最多几十条记录，开销可忽略）。
+ */
+private object LegacyTimestamp {
+
+    fun format(raw: String): String {
+        val parsed = SimpleDateFormat(ISO_8601_INPUT, Locale.US)
+            .parse(normalizeIso8601(raw))
+        return SimpleDateFormat(TS_OUTPUT, Locale.US).format(parsed)
+    }
+}
+
+/** 去掉时区偏移里的冒号，使其可被 `SimpleDateFormat` 的 `Z` 模式解析（`+08:00` → `+0800`） */
+internal fun normalizeIso8601(raw: String): String =
+    raw.replace(OFFSET_COLON_PATTERN, "$1$2")
+
+private const val ISO_8601_INPUT = "yyyy-MM-dd'T'HH:mm:ssZ"
+private const val TS_OUTPUT = "yyyy-MM-dd HH:mm:ss"
+private val OFFSET_COLON_PATTERN = Regex("([+-]\\d{2}):(\\d{2})$")

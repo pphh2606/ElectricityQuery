@@ -43,7 +43,7 @@ class UpdateRepository(
         var fallback: UpdateInfo? = null
         withTimeoutOrNull(timeoutMs) {
             while (found == null && pending.isNotEmpty()) {
-                select<Unit> {
+                select {
                     pending.forEach { deferred ->
                         deferred.onAwait { (_, info) ->
                             pending.remove(deferred)

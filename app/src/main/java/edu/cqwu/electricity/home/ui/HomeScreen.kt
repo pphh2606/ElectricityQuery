@@ -71,7 +71,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -220,7 +219,6 @@ fun HomePageContent(
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
     val listState = rememberLazyListState()

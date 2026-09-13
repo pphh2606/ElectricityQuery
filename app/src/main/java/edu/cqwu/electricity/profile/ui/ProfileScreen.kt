@@ -133,7 +133,7 @@ fun ProfilePageContent(
         AppLog.d("TabPerf", "ProfilePageContent composition done, elapsed=${System.currentTimeMillis() - _profilePerfStart}ms")
     }
     val nav = LocalNavController.current
-    val context = LocalContext.current
+    LocalContext.current
     val resources = LocalResources.current
     var showOpenUrlDialog by remember { mutableStateOf(false) }
 

@@ -2,12 +2,12 @@ package edu.cqwu.electricity.campusnetwork.speedtest.engine
 
 import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestApi
 import edu.cqwu.electricity.logging.AppLog
-import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -172,7 +172,7 @@ class SpeedTestEngine(
     /** 单条下载流：循环 GET garbage 边读边计数；失败（含 429）后重开下一请求 */
     private suspend fun downloadStreamLoop(totalLoaded: AtomicLong) {
         val buffer = ByteArray(64 * 1024)
-        while (coroutineContext.isActive) {
+        while (currentCoroutineContext().isActive) {
             var failed = false
             val call = api.newDownloadCall(randomR(), SpeedTestSettings.GARBAGE_CK_SIZE)
             register(call)
@@ -184,7 +184,7 @@ class SpeedTestEngine(
                         return@use
                     }
                     val source = response.body.source()
-                    while (coroutineContext.isActive) {
+                    while (currentCoroutineContext().isActive) {
                         val n = source.read(buffer, 0, buffer.size)
                         if (n < 0) break
                         totalLoaded.addAndGet(n.toLong())
@@ -192,12 +192,12 @@ class SpeedTestEngine(
                 }
             } catch (e: IOException) {
                 failed = true
-                if (!coroutineContext.isActive) return
+                if (!currentCoroutineContext().isActive) return
                 AppLog.w(TAG, "下载流异常（将重开）: ${e.message}")
             } finally {
                 unregister(call)
             }
-            if (!coroutineContext.isActive) return
+            if (!currentCoroutineContext().isActive) return
             if (failed) delay(150) // 失败轻微节流，避免 429 时忙转
         }
     }
@@ -239,7 +239,7 @@ class SpeedTestEngine(
 
     /** 单条上传流：循环 POST 4MiB 随机体；失败（含 429）后重开下一请求 */
     private suspend fun uploadStreamLoop(totalLoaded: AtomicLong, payload: ByteArray) {
-        while (coroutineContext.isActive) {
+        while (currentCoroutineContext().isActive) {
             var failed = false
             val call = api.newUploadCall(randomR(), payload) { written ->
                 totalLoaded.addAndGet(written.toLong())
@@ -254,12 +254,12 @@ class SpeedTestEngine(
                 }
             } catch (e: IOException) {
                 failed = true
-                if (!coroutineContext.isActive) return
+                if (!currentCoroutineContext().isActive) return
                 AppLog.w(TAG, "上传流异常（将重开）: ${e.message}")
             } finally {
                 unregister(call)
             }
-            if (!coroutineContext.isActive) return
+            if (!currentCoroutineContext().isActive) return
             if (failed) delay(150)
         }
     }
@@ -274,7 +274,7 @@ class SpeedTestEngine(
         var attempt = 0
         var consecutiveFailures = 0
         // 第 0 次为预热请求（丢弃），其后为有效样本；失败不计数并重试
-        while (attempt < SpeedTestSettings.COUNT_PING && coroutineContext.isActive) {
+        while (attempt < SpeedTestSettings.COUNT_PING && currentCoroutineContext().isActive) {
             val warmup = attempt == 0
             val t0 = System.currentTimeMillis()
             val ok = pingOnce()
@@ -290,7 +290,7 @@ class SpeedTestEngine(
                     AppLog.w(TAG, "ping 连续失败 $consecutiveFailures 次，跳过剩余探测")
                     attempt = SpeedTestSettings.COUNT_PING
                 }
-                if (!coroutineContext.isActive) return
+                if (!currentCoroutineContext().isActive) return
                 delay(150)
             }
             _tick.update {
@@ -303,7 +303,7 @@ class SpeedTestEngine(
         }
     }
 
-    private suspend fun pingOnce(): Boolean {
+    private fun pingOnce(): Boolean {
         val call = api.newPingCall(randomR())
         register(call)
         return try {
@@ -331,7 +331,7 @@ class SpeedTestEngine(
         var bonusMs = 0.0
         val graceMs = (graceSec * 1000).toLong()
 
-        while (coroutineContext.isActive) {
+        while (currentCoroutineContext().isActive) {
             delay(SpeedTestSettings.SAMPLE_INTERVAL_MS)
             val now = System.currentTimeMillis()
             val t = now - startedAt
@@ -362,7 +362,7 @@ class SpeedTestEngine(
         }
     }
 
-    private fun randomR(): String = java.lang.Double.toString(java.lang.Math.random())
+    private fun randomR(): String = Math.random().toString()
 
     private companion object {
         const val TAG = "SpeedTestEngine"
