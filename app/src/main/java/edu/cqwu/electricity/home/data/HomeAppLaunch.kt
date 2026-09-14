@@ -46,6 +46,9 @@ object HomeAppLauncher {
         HomeAppIds.SPEAK_UP -> HomeAppLaunch.Native(Routes.SPEAK_UP)
         HomeAppIds.SCAN -> HomeAppLaunch.Native(Routes.SCAN)
         HomeAppIds.INTERNAL_SPEED_TEST -> HomeAppLaunch.Native(Routes.CAMPUS_NETWORK_SPEED_TEST)
+        // 教务入口（服务端配置里两条都指向 jwfw /jwmobile/auth/index）统一进原生教务首页
+        HomeAppIds.UNDERGRAD_JW -> HomeAppLaunch.Native(Routes.JWXT_HOME)
+        HomeAppIds.MOBILE_JW -> HomeAppLaunch.Native(Routes.JWXT_HOME)
         else -> when {
             openUrl.isBlank() -> HomeAppLaunch.DoNothing
             WebViewUrlUtil.isHttpScheme(openUrl) -> HomeAppLaunch.WebPage(openUrl, name)

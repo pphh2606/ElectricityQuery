@@ -125,7 +125,8 @@ fun AccountManagerScreen(
         isSwitching = true
         scope.launch {
             val result = withContext(Dispatchers.IO) {
-                SessionManager.validateCookie(account.cookies)
+                // 传 account.id：此刻激活的还是旧账号，学号必须回填到这份 cookies 所属的条目上
+                SessionManager.validateCookie(account.cookies, account.id)
             }
             when (result) {
                 is SessionValidationResult.Valid -> {

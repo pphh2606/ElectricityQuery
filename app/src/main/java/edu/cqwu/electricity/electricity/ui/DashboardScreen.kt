@@ -522,7 +522,6 @@ private fun NavItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
             .padding(vertical = 14.dp, horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,

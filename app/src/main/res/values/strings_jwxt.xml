@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  教务（jwfw.cqwu.edu.cn /jwmobile）模块      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="jwxt_title">教务</string>
+    <!-- 分类 chip 文案：%1$s = 分类名（全部/查询/申请），%2$d = 该分类的服务数量 -->
+    <string name="jwxt_chip_label">%1$s %2$d</string>
+    <string name="jwxt_more_service">更多服务</string>
+    <string name="jwxt_notice_title">公告信息</string>
+    <string name="jwxt_detail">详情</string>
+    <string name="jwxt_tab_today_lesson">今日课程</string>
+    <string name="jwxt_tab_term_exam">本学期考试</string>
+    <!-- 课程条目标题：%1$s = 节次区间（如 5-6），%2$s = 时间区间（如 14:30-16:10） -->
+    <string name="jwxt_lesson_section_time">%1$s 节（%2$s）</string>
+    <!-- 调课 / 补课标签（网页端在课程名前显示单字标签） -->
+    <string name="jwxt_lesson_tag_adjust">调</string>
+    <string name="jwxt_lesson_tag_makeup">补</string>
+    <string name="jwxt_lesson_empty">今日暂无课程安排</string>
+    <string name="jwxt_exam_empty">近期暂无考试安排</string>
+    <!-- 考试条目详情：%1$s = 地点 / 座位 / 教师 -->
+    <string name="jwxt_exam_place">地点 %1$s</string>
+    <string name="jwxt_exam_seat">座位 %1$s</string>
+    <string name="jwxt_exam_teacher">教师 %1$s</string>
+</resources>

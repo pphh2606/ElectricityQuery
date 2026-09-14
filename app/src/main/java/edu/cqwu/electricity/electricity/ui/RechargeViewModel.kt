@@ -59,8 +59,8 @@ data class RechargeUiState(
 )
 
 /**
- * 充值记录独立状态。
- * 生命周期跟随 RECHARGE_RECORD 路由，不受 ElectricityViewModel 影响。
+ * 充值记录独立状态：与充值主流程状态分开，互不干扰。
+ * 随 [RechargeViewModel] 存活——作用域跟随电费主页，退出电费主页即清空。
  */
 data class RechargeRecordState(
     val isQuerying: Boolean = false,

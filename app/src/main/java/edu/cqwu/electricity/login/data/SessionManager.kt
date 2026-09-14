@@ -52,18 +52,29 @@ object SessionManager {
      * 并顺手回填该账号的数字学号（[AccountSessionStore.updateStudentId]，启动验证场景零额外请求）。
      *
      * @param cookies 该账号持久化的 cookie 集合（domain → name→value），为空直接判定无效。
+     * @param accountId cookies **所属**的账号条目 id。调用方必须传：
+     *   切换账号时验证发生在激活之前，此时"当前激活账号"仍是旧账号，
+     *   只能靠调用方指明这份 cookies 属于哪个条目，否则学号会被写到旧账号上（串号）。
+     *   仅当确知 cookies 就是激活账号的（如启动验证已自行取过 [AccountSessionStore.getActiveAccount]）才可传 null 回退。
      * @return [edu.cqwu.electricity.common.net.SessionValidationResult.Valid]、[edu.cqwu.electricity.common.net.SessionValidationResult.Invalid]、[edu.cqwu.electricity.common.net.SessionValidationResult.NetworkError]
      */
     suspend fun validateCookie(
         cookies: Map<String, Map<String, String>>,
+        accountId: String? = null,
     ): SessionValidationResult {
         val result = fetchUserInfo(cookies)
         return if (result.isSuccess) {
             val (username, realName) = result.getOrThrow()
             AppLog.d("SessionManager", "Cookie 有效！用户ID=${username}, 实名=${realName}")
-            // 启动验证回填老账号学号（index.do 请求已发生，无额外网络开销）
-            val active = AccountSessionStore.getActiveAccount()
-            if (active != null) AccountSessionStore.updateStudentId(active.id, username)
+            // 回填这份 cookies 所属账号的学号（index.do 请求已发生，无额外网络开销）。
+            // 优先用调用方传入的 accountId：切换到新账号时激活动作尚未执行，
+            // 此时 getActiveAccount() 返回的仍是旧账号，直接回填会把新账号的学号写到旧账号上。
+            val targetAccountId = accountId ?: AccountSessionStore.getActiveAccount()?.id
+            if (targetAccountId != null) {
+                AccountSessionStore.updateStudentId(targetAccountId, username)
+            } else {
+                AppLog.w("SessionManager", "Cookie 有效但无处回填学号：accountId 为空且无激活账号")
+            }
             SessionValidationResult.Valid
         } else {
             when (val e = result.exceptionOrNull()) {

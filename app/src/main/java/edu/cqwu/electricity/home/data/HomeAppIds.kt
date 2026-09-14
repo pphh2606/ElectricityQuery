@@ -39,4 +39,10 @@ object HomeAppIds {
 
     /** 校内网络测速 → 打开原生测速页 */
     const val INTERNAL_SPEED_TEST = "7768470048823278"
+
+    /** 本科教务系统 → 打开原生教务首页（jwfw /jwmobile 本地化页） */
+    const val UNDERGRAD_JW = "7840869642248515"
+
+    /** 移动教务 → 同上，打开原生教务首页 */
+    const val MOBILE_JW = "17852895911767506"
 }

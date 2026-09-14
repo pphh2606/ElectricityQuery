@@ -71,6 +71,7 @@ import edu.cqwu.electricity.electricity.ui.UsageRecordScreenV2
 import edu.cqwu.electricity.electricity.ui.UsageRecordViewModelV2
 import edu.cqwu.electricity.feedback.ui.FeedbackScreen
 import edu.cqwu.electricity.feeservicehall.ui.FeeServiceHallScreen
+import edu.cqwu.electricity.jwxt.ui.JwxtHomeScreen
 import edu.cqwu.electricity.login.ui.LoginScreen
 import edu.cqwu.electricity.login.ui.QrLoginScreen
 import edu.cqwu.electricity.notice.ui.NoticeDetailScreen
@@ -306,6 +307,9 @@ object Routes {
 
     /** 校园网络 — 网络服务（认证网关 eportal 本地化页） */
     const val CAMPUS_NETWORK_PORTAL_SERVICE = "campus_network_portal_service"
+
+    /** 教务首页（jwfw /jwmobile，本地化） */
+    const val JWXT_HOME = "jwxt_home"
 }
 
 /**
@@ -408,10 +412,9 @@ fun AppNavGraph(
     modifier: Modifier = Modifier,
 ) {
     val resources = LocalResources.current
-    val viewModel: ElectricityViewModel = viewModel()
-    val rechargeViewModel: RechargeViewModel = viewModel()
-    val cardRechargeViewModel: CardRechargeViewModel = viewModel()
+    val electricityViewModel: ElectricityViewModel = viewModel()
     val myRoomViewModel: MyRoomViewModel = viewModel()
+    // RechargeViewModel / CardRechargeViewModel 由各自页面创建：作用域跟随页面，子页面复用父页面实例。
     val noticeViewModel: NoticeViewModel = viewModel()
     var webViewReloadAfterLogin by rememberSaveable { mutableStateOf(false) }
     val appSettings = LocalAppSettingsState.current
@@ -477,8 +480,9 @@ fun AppNavGraph(
             )
         }
 
-        // 校园卡充值 — 学号输入+金额选择
+        // 校园卡充值 — 学号输入+金额选择（ViewModel 作用域 = 本页面：退出即销毁，下次进入重新加载）
         animatedComposable(settings = appSettings, route = Routes.CARD_RECHARGE) {
+            val cardRechargeViewModel: CardRechargeViewModel = viewModel()
             CardRechargeScreen(
                 viewModel = cardRechargeViewModel,
                 onBack = { navController.popBackStack() },
@@ -486,8 +490,10 @@ fun AppNavGraph(
             )
         }
 
-        // 校园卡充值 — 支付执行（使用 AppNavGraph 级别的共享 ViewModel）
-        animatedComposable(settings = appSettings, route = Routes.CARD_PAYMENT) {
+        // 校园卡充值 — 支付执行（复用充值页的 ViewModel：充值页仍在返回栈上，进子页不丢状态）
+        animatedComposable(settings = appSettings, route = Routes.CARD_PAYMENT) { entry ->
+            val owner = remember(entry) { navController.getBackStackEntry(Routes.CARD_RECHARGE) }
+            val cardRechargeViewModel: CardRechargeViewModel = viewModel(viewModelStoreOwner = owner)
             CardPaymentScreen(
                 viewModel = cardRechargeViewModel,
                 onBack = { navController.popBackStack() },
@@ -580,9 +586,11 @@ fun AppNavGraph(
                 )
             }
 
+        // 电费主页（充值 Tab 在其中；ViewModel 作用域 = 本页面：退出即销毁，下次进入重新加载）
         animatedComposable(settings = appSettings, route = Routes.ELECTRICITY_MAIN) {
+            val rechargeViewModel: RechargeViewModel = viewModel()
             ElectricityMainScreen(
-                viewModel = viewModel,
+                viewModel = electricityViewModel,
                 rechargeViewModel = rechargeViewModel,
                 myRoomViewModel = myRoomViewModel,
                 onBack = { navController.popBackStack() },
@@ -605,8 +613,10 @@ fun AppNavGraph(
             DetailScreen(viewModel = detailViewModel, detailType = DetailType.METER_STATUS, onBack = { navController.popBackStack() })
         }
 
-
-        animatedComposable(settings = appSettings, route = Routes.PAYMENT_SELECTION) {
+        // 电费充值 — 支付选择（复用充值页的 ViewModel：电费主页仍在返回栈上，进子页不丢状态）
+        animatedComposable(settings = appSettings, route = Routes.PAYMENT_SELECTION) { entry ->
+            val owner = remember(entry) { navController.getBackStackEntry(Routes.ELECTRICITY_MAIN) }
+            val rechargeViewModel: RechargeViewModel = viewModel(viewModelStoreOwner = owner)
             PaymentSelectionScreen(
                 viewModel = rechargeViewModel,
                 onBack = { navController.popBackStack() },
@@ -614,15 +624,17 @@ fun AppNavGraph(
             )
         }
 
+        // 电费充值记录（同样复用充值页的 ViewModel）
         animatedComposable(
             settings = appSettings,
             route = Routes.RECHARGE_RECORD,
             arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
-        ) { backStackEntry ->
-            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+        ) { entry ->
+            val owner = remember(entry) { navController.getBackStackEntry(Routes.ELECTRICITY_MAIN) }
+            val rechargeViewModel: RechargeViewModel = viewModel(viewModelStoreOwner = owner)
             RechargeRecordScreen(
                 viewModel = rechargeViewModel,
-                roomId = roomId,
+                roomId = entry.arguments?.getString("roomId") ?: "",
                 onBack = { navController.popBackStack() }
             )
         }
@@ -941,6 +953,13 @@ fun AppNavGraph(
         // 校园网络（入口页）
         animatedComposable(settings = appSettings, route = Routes.CAMPUS_NETWORK) {
             CampusNetworkScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        // 教务首页（jwfw /jwmobile 本地化页；入口：首页「本科教务系统」「移动教务」）
+        animatedComposable(settings = appSettings, route = Routes.JWXT_HOME) {
+            JwxtHomeScreen(
                 onBack = { navController.popBackStack() },
             )
         }

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -75,12 +76,13 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import edu.cqwu.electricity.common.ui.AppIconBox
+import edu.cqwu.electricity.common.ui.FeatureGrid
 import edu.cqwu.electricity.home.data.CustomServiceEntry
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeApp
@@ -647,7 +649,6 @@ private fun MyServicesSection(
 private fun AddCustomServiceButton(onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -701,7 +702,6 @@ private fun CustomServiceIconItem(
 
     Column(
         modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -771,7 +771,6 @@ private fun MyServiceIconItem(
 ) {
     Column(
         modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -797,47 +796,10 @@ private fun MyServiceIconItem(
 }
 
 /**
- * 通用的应用图标方框，带圆角背景和 AsyncImage 加载。
- * 被 [AppIconItem] 和 [MyServiceIconItem] 复用。
- */
-@Composable
-private fun AppIconBox(
-    iconUrl: String,
-    size: Dp,
-    padding: Dp,
-    contentDescription: String?,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .size(size)
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Center
-    ) {
-        val context = LocalContext.current
-        val imageRequest = remember(iconUrl) {
-            ImageRequest.Builder(context)
-                .data(iconUrl)
-                .size(128)
-                .crossfade(true)
-                .build()
-        }
-        AsyncImage(
-            model = imageRequest,
-            contentDescription = contentDescription,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Fit
-        )
-    }
-}
-
-/**
- * 分类区块：标题 + 4列图标网格
- * 使用 chunked(4) + Row.weight(1f) 避免 LazyVerticalGrid 嵌套 LazyColumn 的无限高度约束崩溃
+ * 分类区块：标题 + 4 列图标网格。
+ *
+ * 网格交给公共组件 [FeatureGrid]（内部就是 `chunked` + `Row.weight(1f)` + 末行补空位，
+ * 刻意不用 `LazyVerticalGrid`——嵌在 `LazyColumn` 里会因无限高度约束崩溃）。
  */
 @Composable
 private fun CategorySection(
@@ -861,29 +823,21 @@ private fun CategorySection(
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        // 手动分 4 列网格，避免使用 LazyVerticalGrid
-        Column(modifier = Modifier.padding(top = 8.dp)) {
-            apps.chunked(4).forEach { rowApps ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    rowApps.forEach { app ->
-                        AppIconItem(
-                            app = app,
-                            modifier = Modifier.weight(1f),
-                            onClick = { onAppClick(app) },
-                            showAddBadge = isEditMode,
-                            isMyService = app.appId in myServiceIds,
-                            onAddClick = { onAddToService(app.appId) }
-                        )
-                    }
-                    // 补齐空位，使最后一行不足 4 个时保持布局一致
-                    repeat(4 - rowApps.size) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
+        FeatureGrid(
+            items = apps,
+            columns = 4,
+            rowSpacing = 0.dp,      // 首页行与行之间不留间距（与改造前一致）
+            columnSpacing = 4.dp,
+            modifier = Modifier.padding(top = 8.dp),
+        ) { app, itemModifier ->
+            AppIconItem(
+                app = app,
+                modifier = itemModifier,
+                onClick = { onAppClick(app) },
+                showAddBadge = isEditMode,
+                isMyService = app.appId in myServiceIds,
+                onAddClick = { onAddToService(app.appId) }
+            )
         }
     }
 }
@@ -909,56 +863,65 @@ private fun AppIconItem(
         contentAlignment = Alignment.Center
     ) {
         Column(
+            // 刻意不 clip：角标要骑在图标右上角、会探出 Column 边界 3dp，一旦 clip 就会被圆角裁掉。
+            // 本格子没有背景色，去掉 clip 只影响点击涟漪的形状（圆角 → 直角）
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(MaterialTheme.shapes.small)
                 .clickable(onClick = onClick)
                 .padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AppIconBox(
-                iconUrl = app.iconUrl,
-                size = 44.dp,
-                padding = 8.dp,
-                contentDescription = app.name
-            )
+            // 图标与它的「+」角标放进同一个窄 Box：角标对齐的是图标（44dp），不是整格，
+            // 否则横屏时列变宽，角标会被推到离图标很远的格子右边缘
+            Box {
+                AppIconBox(
+                    iconUrl = app.iconUrl,
+                    size = 44.dp,
+                    padding = 8.dp,
+                    contentDescription = app.name
+                )
+
+                // 编辑模式下，未收藏的应用显示「+」号
+                if (showAddBadge && !isMyService && onAddClick != null) {
+                    IconButton(
+                        onClick = onAddClick,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            // 沿 45° 向外挪半个角标（22dp 的一半），让圆心落在图标框右上角顶点上——
+                            // 即"骑"在角上、一半露在框外
+                            .offset(x = 11.dp, y = -11.dp)
+                            .size(22.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Add,
+                                contentDescription = stringResource(R.string.common_add_to_my_services),
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+                }
+            }
 
             Text(
                 text = app.name,
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
-                maxLines = 1,
+                // 两行：长服务名（如"个人学业监测报告"）在单行下只能看到前几个字
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 2.dp)
                     .padding(top = 4.dp)
             )
-        }
-
-        // 编辑模式下，未收藏的应用显示「+」号
-        if (showAddBadge && !isMyService && onAddClick != null) {
-            IconButton(
-                onClick = onAddClick,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(22.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = stringResource(R.string.common_add_to_my_services),
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
-            }
         }
     }
 }

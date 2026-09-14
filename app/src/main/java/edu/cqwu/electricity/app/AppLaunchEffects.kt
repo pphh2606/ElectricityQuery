@@ -83,7 +83,8 @@ fun AppLaunchEffects(
             startupCookieValidationDone = true
             val activeAccount = SessionCoordinatorV2.currentAccount()
             val cookies = activeAccount?.cookies ?: emptyMap()
-            when (val result = SessionManager.validateCookie(cookies)) {
+            // 这里 cookies 就取自激活账号，显式传 id 以免依赖"验证期间激活账号不变"的隐含假设
+            when (val result = SessionManager.validateCookie(cookies, activeAccount?.id)) {
                 is SessionValidationResult.Valid -> {
                     AppLog.d("AppLaunchEffects", "启动 Cookie 验证：有效（${activeAccount?.username}）")
                 }
