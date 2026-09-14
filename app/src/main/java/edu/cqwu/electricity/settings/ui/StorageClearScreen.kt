@@ -57,8 +57,8 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.settings.util.StorageManager
-import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.theme.util.restartApp
+import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.restartApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

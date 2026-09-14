@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.qrcode.data.QrCodeType
+import edu.cqwu.electricity.common.navigation.QrCodeType
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
 
 /**

@@ -13,7 +13,7 @@ import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.hall.data.HallFavoriteApi
 import edu.cqwu.electricity.hall.data.HallJsonLoader
 import edu.cqwu.electricity.hall.data.HallServiceCenterApi
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

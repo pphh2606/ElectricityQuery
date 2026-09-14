@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.CardGiftcard
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DateRange
@@ -28,10 +29,7 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.CardGiftcard
 import androidx.compose.material3.CardDefaults
-import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
-import edu.cqwu.electricity.common.ui.InfoRow
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,7 +47,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -58,18 +55,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.DetailType
+import edu.cqwu.electricity.common.navigation.LocalNavController
+import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.InfoRow
+import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.copyToClipboard
 import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
-import edu.cqwu.electricity.electricity.data.DetailType
 import edu.cqwu.electricity.electricity.data.displayName
-import edu.cqwu.electricity.theme.ui.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.UiMessage
 import edu.cqwu.electricity.theme.ui.resolve
-import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.theme.util.copyToClipboard
 import java.util.Locale
 
 /**

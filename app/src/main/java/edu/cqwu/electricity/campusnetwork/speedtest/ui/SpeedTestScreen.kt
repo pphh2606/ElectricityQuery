@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestRecord
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestPhase
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestStats
@@ -69,7 +69,7 @@ import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestTick
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.InfoRow
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 import java.text.SimpleDateFormat

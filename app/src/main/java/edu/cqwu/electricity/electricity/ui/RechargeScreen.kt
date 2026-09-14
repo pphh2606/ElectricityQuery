@@ -60,14 +60,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
  * 充值页面

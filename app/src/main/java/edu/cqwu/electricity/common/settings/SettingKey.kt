@@ -1,12 +1,11 @@
-package edu.cqwu.electricity.settings.data
-import edu.cqwu.electricity.logging.AppLog
+package edu.cqwu.electricity.common.settings
 
 import android.content.SharedPreferences
 import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.home.data.CustomServiceEntry
+import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.logging.LogLevel
 
 private val gson = Gson()

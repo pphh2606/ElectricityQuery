@@ -26,10 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.ui.FeatureGrid
 import edu.cqwu.electricity.common.ui.FeatureGridItem
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 /**

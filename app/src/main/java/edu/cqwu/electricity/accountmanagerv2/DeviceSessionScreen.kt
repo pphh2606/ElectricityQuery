@@ -59,7 +59,7 @@ import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
  * 登录设备管理页 — 对应 CAS 网页 userOnline.do：

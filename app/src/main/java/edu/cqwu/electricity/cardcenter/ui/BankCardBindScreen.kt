@@ -62,7 +62,7 @@ import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 
 /** 学生绑定银行卡原生页面。 */
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.qrcode.data
 
+import edu.cqwu.electricity.common.navigation.QrCodeType
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.common.net.HtmlFormParser
@@ -7,14 +8,6 @@ import edu.cqwu.electricity.common.net.HttpClientFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
-
-/**
- * 二维码类型：支付码 / 乘车码
- */
-enum class QrCodeType {
-    PAY,
-    BUS
-}
 
 /**
  * 获取乘车码/支付码的数据 API

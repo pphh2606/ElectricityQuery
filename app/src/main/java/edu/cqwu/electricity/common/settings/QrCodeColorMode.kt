@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.settings.data
+package edu.cqwu.electricity.common.settings
 
 /** 二维码颜色模式 */
 enum class QrCodeColorMode(val value: String) {

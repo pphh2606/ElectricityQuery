@@ -57,7 +57,7 @@ import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
  * 日志记录页 — 对应 CAS 网页 userLogs.do：

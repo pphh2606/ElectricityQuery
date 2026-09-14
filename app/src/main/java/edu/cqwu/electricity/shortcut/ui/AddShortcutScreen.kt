@@ -66,7 +66,7 @@ import edu.cqwu.electricity.common.ui.BottomSheetDialog
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.shortcut.util.ShortcutHelper
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -77,7 +77,7 @@ import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

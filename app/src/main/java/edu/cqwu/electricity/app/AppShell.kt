@@ -28,14 +28,14 @@ import androidx.navigation.NavHostController
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
 import edu.cqwu.electricity.theme.ui.CustomSnackbarVisuals
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.navigation.LocalNavController
+import edu.cqwu.electricity.common.ui.LocalSheetVisibilityState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.SheetVisibilityState
+import edu.cqwu.electricity.common.ui.SheetVisibilityState
 import edu.cqwu.electricity.theme.ui.SnackbarController
-import edu.cqwu.electricity.theme.ui.isHazeBlurSupported
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.ui.isHazeBlurSupported
+import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
  * 应用外壳

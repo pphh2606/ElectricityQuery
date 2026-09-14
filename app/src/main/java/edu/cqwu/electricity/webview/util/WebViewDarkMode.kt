@@ -9,9 +9,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberUpdatedState
-import edu.cqwu.electricity.settings.data.NightMode
-import edu.cqwu.electricity.settings.data.isDark
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.NightMode
+import edu.cqwu.electricity.common.settings.isDark
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 
 internal fun shouldApplyWebViewDarkMode(
     nightMode: NightMode,

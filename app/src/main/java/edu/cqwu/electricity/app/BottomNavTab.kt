@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.navigation.Routes
 
 /**
  * 底栏 Tab 数据模型

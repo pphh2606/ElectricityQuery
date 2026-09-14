@@ -68,19 +68,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.NightMode
-import edu.cqwu.electricity.settings.data.PageTransition
-import edu.cqwu.electricity.settings.data.ReduceMotion
-import edu.cqwu.electricity.settings.data.ThemeColorSource
-import edu.cqwu.electricity.settings.data.TopBarStyle
-import edu.cqwu.electricity.settings.data.labelRes
-import edu.cqwu.electricity.theme.ui.MAX_FONT_SCALE
-import edu.cqwu.electricity.theme.ui.MAX_SHEET_BLUR_RADIUS
-import edu.cqwu.electricity.theme.ui.MIN_FONT_SCALE
-import edu.cqwu.electricity.theme.ui.MIN_SHEET_BLUR_RADIUS
+import edu.cqwu.electricity.common.settings.NightMode
+import edu.cqwu.electricity.common.settings.PageTransition
+import edu.cqwu.electricity.common.settings.ReduceMotion
+import edu.cqwu.electricity.common.settings.ThemeColorSource
+import edu.cqwu.electricity.common.settings.TopBarStyle
+import edu.cqwu.electricity.common.settings.labelRes
+import edu.cqwu.electricity.common.settings.MAX_FONT_SCALE
+import edu.cqwu.electricity.common.settings.MAX_SHEET_BLUR_RADIUS
+import edu.cqwu.electricity.common.settings.MIN_FONT_SCALE
+import edu.cqwu.electricity.common.settings.MIN_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)

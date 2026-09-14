@@ -51,8 +51,8 @@ import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
-import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.theme.util.restartApp
+import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.restartApp
 
 /**
  * 修改密码页 — 布局对应 CAS 网页 mobilePasswordChange.do：

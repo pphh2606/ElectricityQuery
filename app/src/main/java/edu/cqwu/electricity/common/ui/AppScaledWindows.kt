@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.PopupProperties
-import edu.cqwu.electricity.theme.ui.LocalSheetVisibilityState
 
 @Composable
 internal fun ProvideAppScaledDensity(

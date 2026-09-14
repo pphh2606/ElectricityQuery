@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.ui
+package edu.cqwu.electricity.common.settings
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Stable
@@ -11,14 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.logging.LogLevel
-import edu.cqwu.electricity.settings.data.NightMode
-import edu.cqwu.electricity.settings.data.PageTransition
-import edu.cqwu.electricity.settings.data.QrCodeColorMode
-import edu.cqwu.electricity.settings.data.ReduceMotion
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
-import edu.cqwu.electricity.settings.data.ThemeColorSource
-import edu.cqwu.electricity.settings.data.TopBarStyle
 
 const val MIN_SHEET_BLUR_RADIUS = 0f
 const val MAX_SHEET_BLUR_RADIUS = 40f

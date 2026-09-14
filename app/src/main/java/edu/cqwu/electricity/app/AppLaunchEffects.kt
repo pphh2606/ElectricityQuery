@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.navigation.NavHostController
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeAppLauncher
 import edu.cqwu.electricity.home.ui.ExternalAppConfirmDialog
@@ -17,12 +18,12 @@ import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.common.net.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.common.settings.SettingsKeys
+import edu.cqwu.electricity.common.settings.SettingsPreferences
 import edu.cqwu.electricity.settings.ui.UpdateFoundSheet
 import edu.cqwu.electricity.shortcut.util.ShortcutHelper
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.update.data.UpdateCheckCoordinator
 import edu.cqwu.electricity.update.data.UpdateCheckResult
 

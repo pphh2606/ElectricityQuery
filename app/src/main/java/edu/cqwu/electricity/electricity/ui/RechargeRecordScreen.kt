@@ -69,8 +69,8 @@ import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
-import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.theme.util.copyToClipboard
+import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.copyToClipboard
 import java.util.Locale
 
 /**

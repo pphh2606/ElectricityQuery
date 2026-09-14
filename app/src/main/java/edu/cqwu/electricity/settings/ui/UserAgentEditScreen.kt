@@ -39,8 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.UserAgentEntry
-import edu.cqwu.electricity.settings.data.UserAgentProvider
+import edu.cqwu.electricity.common.settings.UserAgentEntry
+import edu.cqwu.electricity.common.settings.UserAgentProvider
 import java.util.UUID
 
 /**

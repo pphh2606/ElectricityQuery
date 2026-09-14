@@ -69,7 +69,7 @@ import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

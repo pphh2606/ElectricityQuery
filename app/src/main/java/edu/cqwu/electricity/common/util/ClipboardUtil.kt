@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.theme.util
+package edu.cqwu.electricity.common.util
 
 import android.content.ClipData
 import android.content.ClipboardManager

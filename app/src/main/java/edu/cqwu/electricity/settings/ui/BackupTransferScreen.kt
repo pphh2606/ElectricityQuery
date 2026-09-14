@@ -45,9 +45,9 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.settings.data.BackupPayloadV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
-import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.theme.util.copyToClipboard
-import edu.cqwu.electricity.theme.util.restartApp
+import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.copyToClipboard
+import edu.cqwu.electricity.common.util.restartApp
 
 /** 备份传输模式：导出（只读预览）或导入（可编辑输入） */
 enum class BackupTransferModeV2 { EXPORT, IMPORT }

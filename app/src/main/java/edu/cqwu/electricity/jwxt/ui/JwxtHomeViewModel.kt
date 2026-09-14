@@ -215,10 +215,11 @@ class JwxtHomeViewModel(
             }.toMutableList()
 
             if (index == 0) {
+                // 「更多服务」已改为原生二级页（Routes.JWXT_MORE_SERVICE），这里不再需要落地 URL
                 services += JwxtGridItem(
                     name = "",
                     iconUrl = "",
-                    pageUrl = JwxtConstants.MORE_SERVICE_URL,
+                    pageUrl = "",
                     isMore = true,
                 )
             }

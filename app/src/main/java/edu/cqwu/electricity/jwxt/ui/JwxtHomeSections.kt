@@ -55,31 +55,38 @@ import edu.cqwu.electricity.common.ui.ServiceIconTile
 // ═══════════════════════════════════════════
 
 /**
- * 分类 chip 行：**服务区内部的分类切换**，随服务区一起滚动。
+ * chip 行的一项：名称 + 数量（文案形如「全部 11」）。
  *
- * 它只是"服务网格"这一个模块的分类（全部 / 查询 / 申请），不是整页导航，
+ * 首页的「服务分类」与更多服务页的「分组」都只需要这两个值，所以 chip 组件按它取参，
+ * 不绑死在某一页的 UI 模型上。
+ */
+internal data class JwxtChipLabel(val name: String, val count: Int)
+
+/**
+ * chip 行：**页面内部的分类/分组切换**，随内容一起滚动。
+ *
+ * 它只代表某一页里的分组维度（首页是服务分类、更多服务页是全部/查询/申请），不是整页导航，
  * 所以不像项目首页 `HomeSectionIndex` 那样固定在顶栏下方——那会让人误以为它是全站分类。
  *
- * 文案形如「全部 11」——分类名 + 该分类的服务数量，两个值都来自接口
- * `listLabelService` 的 `labelName` / `serviceNum`。样式复用
- * `common/ui/SectionFilterChip.kt`，保证与其它页面观感统一。
+ * 文案形如「全部 11」（名称 + 数量），样式复用 `common/ui/SectionFilterChip.kt`，
+ * 保证与其它页面观感统一。
  */
 @Composable
 internal fun JwxtLabelChips(
-    tabs: List<JwxtLabelTab>,
+    labels: List<JwxtChipLabel>,
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
 ) {
-    if (tabs.isEmpty()) return
+    if (labels.isEmpty()) return
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        itemsIndexed(tabs) { index, tab ->
+        itemsIndexed(labels) { index, label ->
             SectionFilterChip(
-                text = stringResource(R.string.jwxt_chip_label, tab.name, tab.count),
+                text = stringResource(R.string.jwxt_chip_label, label.name, label.count),
                 selected = index == selectedIndex,
                 onClick = { onSelect(index) },
             )
@@ -111,7 +118,7 @@ internal fun JwxtServiceSection(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         JwxtLabelChips(
-            tabs = tabs,
+            labels = tabs.map { JwxtChipLabel(it.name, it.count) },
             selectedIndex = selectedIndex,
             onSelect = onSelectLabel,
         )

@@ -61,7 +61,7 @@ import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.update.data.UpdateChannel
 import edu.cqwu.electricity.update.data.UpdateCheckCoordinator
 import edu.cqwu.electricity.update.data.UpdateCheckResult

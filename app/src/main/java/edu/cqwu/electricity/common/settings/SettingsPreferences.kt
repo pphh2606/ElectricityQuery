@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.settings.data
+package edu.cqwu.electricity.common.settings
 
 import android.app.LocaleManager
 import android.content.Context

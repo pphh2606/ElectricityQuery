@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalClient
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalOnlineInfo
 import edu.cqwu.electricity.campusnetwork.ui.KeyValueRows
@@ -68,11 +68,11 @@ import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.InfoSectionTitle
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 
 /** 网关流量上限超过该量级（MB）视为不限：实测值 ≈3.25 PB，阈值属推断 */
 private const val UNLIMITED_TRAFFIC_MB = 1024.0 * 1024 * 1024

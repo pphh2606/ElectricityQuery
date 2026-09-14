@@ -83,14 +83,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import edu.cqwu.electricity.common.ui.AppIconBox
 import edu.cqwu.electricity.common.ui.FeatureGrid
-import edu.cqwu.electricity.home.data.CustomServiceEntry
+import edu.cqwu.electricity.common.settings.CustomServiceEntry
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeApp
 import edu.cqwu.electricity.home.data.HomeAppLauncher
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.navigation.LocalNavController
+import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.launch
 
 /**

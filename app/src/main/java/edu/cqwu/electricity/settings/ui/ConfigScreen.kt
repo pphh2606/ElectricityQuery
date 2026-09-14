@@ -46,9 +46,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.AppLanguage
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.common.settings.AppLanguage
+import edu.cqwu.electricity.common.settings.SettingsKeys
+import edu.cqwu.electricity.common.settings.SettingsPreferences
 import edu.cqwu.electricity.common.ui.LanguageSwitchSheet
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import kotlin.math.roundToInt

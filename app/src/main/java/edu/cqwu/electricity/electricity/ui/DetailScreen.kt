@@ -48,12 +48,12 @@ import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.InfoRowDivider
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
-import edu.cqwu.electricity.electricity.data.DetailType
+import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
-import edu.cqwu.electricity.theme.util.ToastUtils
-import edu.cqwu.electricity.theme.util.copyToClipboard
+import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.copyToClipboard
 import java.util.Locale
 
 /**

@@ -33,10 +33,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.jwxt.data.JwxtConstants
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 /**
@@ -156,7 +156,12 @@ fun JwxtHomeScreen(
                                 items = uiState.currentServices,
                                 moreServiceLabel = moreServiceLabel,
                             ) { item ->
-                                openWeb(item.pageUrl, item.name.ifBlank { moreServiceLabel })
+                                // 「更多服务」进原生二级页；其余服务仍用内置浏览器打开教务子应用
+                                if (item.isMore) {
+                                    nav.navigate(Routes.JWXT_MORE_SERVICE)
+                                } else {
+                                    openWeb(item.pageUrl, item.name)
+                                }
                             }
                         }
                     }

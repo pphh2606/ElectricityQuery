@@ -15,23 +15,18 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.navigation.NavHostController
 import com.materialkolor.dynamicColorScheme
-import dev.chrisbanes.haze.HazeDefaults
-import edu.cqwu.electricity.settings.data.NightMode
-import edu.cqwu.electricity.settings.data.ThemeColorSource
-import edu.cqwu.electricity.settings.data.TopBarStyle
-import edu.cqwu.electricity.settings.data.isDark
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.NightMode
+import edu.cqwu.electricity.common.settings.ThemeColorSource
+import edu.cqwu.electricity.common.settings.TopBarStyle
+import edu.cqwu.electricity.common.settings.isDark
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -44,40 +39,6 @@ private val LightColorScheme = lightColorScheme(
     secondary = PurpleGrey40,
     tertiary = Pink40
 )
-
-@Stable
-class SheetVisibilityState {
-    private val openCount = mutableIntStateOf(0)
-    private val blurProgressState = mutableFloatStateOf(0f)
-
-    val active: Boolean get() = openCount.value > 0
-
-    var blurProgress: Float
-        get() = blurProgressState.value
-        set(value) {
-            blurProgressState.value = value.coerceIn(0f, 1f)
-        }
-
-    fun open() {
-        openCount.value++
-    }
-
-    fun close() {
-        openCount.value = (openCount.value - 1).coerceAtLeast(0)
-    }
-}
-
-val LocalSheetVisibilityState = staticCompositionLocalOf { SheetVisibilityState() }
-
-fun isHazeBlurSupported(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && HazeDefaults.blurEnabled()
-
-val LocalNavController = staticCompositionLocalOf<NavHostController> {
-    error("No NavController provided")
-}
-
-internal val LocalWebViewReloadAfterLogin = staticCompositionLocalOf { false }
-internal val LocalWebViewReloadConsumed = staticCompositionLocalOf { {} }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

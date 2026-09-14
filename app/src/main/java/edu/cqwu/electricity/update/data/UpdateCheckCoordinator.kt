@@ -2,8 +2,8 @@ package edu.cqwu.electricity.update.data
 
 import android.content.Context
 import edu.cqwu.electricity.BuildConfig
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.common.settings.SettingsKeys
+import edu.cqwu.electricity.common.settings.SettingsPreferences
 
 sealed interface UpdateCheckResult {
     data class Found(

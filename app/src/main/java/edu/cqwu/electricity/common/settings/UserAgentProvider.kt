@@ -1,9 +1,9 @@
-package edu.cqwu.electricity.settings.data
+package edu.cqwu.electricity.common.settings
 import edu.cqwu.electricity.logging.AppLog
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import edu.cqwu.electricity.app.ElectricityApp
+import android.content.Context
 
 /**
  * 浏览器标识（User-Agent）运行时提供者。
@@ -14,7 +14,20 @@ import edu.cqwu.electricity.app.ElectricityApp
 object UserAgentProvider {
 
     private val gson = Gson()
-    private val prefs by lazy { SettingsPreferences(ElectricityApp.instance) }
+
+    private var prefsRef: SettingsPreferences? = null
+
+    /**
+     * 初始化：在 `Application.onCreate` 调用（与 [edu.cqwu.electricity.login.data.AccountSessionStore.init] 同一处）。
+     *
+     * 显式传入 Context，避免这个被 WebView 与网络层共用的对象反向依赖 app 模块的 Application 单例。
+     */
+    fun init(context: Context) {
+        prefsRef = SettingsPreferences(context)
+    }
+
+    private val prefs: SettingsPreferences
+        get() = prefsRef ?: error("UserAgentProvider 未初始化，请先在 Application.onCreate 调用 init(context)")
 
     // ═══════════════════════════════════════
     //  内置预设

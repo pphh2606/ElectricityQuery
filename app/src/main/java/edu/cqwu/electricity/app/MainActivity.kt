@@ -17,15 +17,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
-import edu.cqwu.electricity.settings.data.AppLanguage
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.common.settings.AppLanguage
+import edu.cqwu.electricity.common.settings.SettingsKeys
+import edu.cqwu.electricity.common.settings.SettingsPreferences
 import edu.cqwu.electricity.settings.util.LocaleContextWrapper
 import edu.cqwu.electricity.shortcut.util.ShortcutHelper
-import edu.cqwu.electricity.theme.ui.AppSettingsState
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.AppSettingsState
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.电费查询Theme
-import edu.cqwu.electricity.theme.ui.toAppCompatMode
+import edu.cqwu.electricity.common.settings.toAppCompatMode
 
 class MainActivity : AppCompatActivity() {
 

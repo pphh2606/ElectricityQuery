@@ -8,7 +8,7 @@ import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.payment.ui.PaymentConfirmScreen
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 
 private const val CARD_PAY_RETURN_URL_PREFIX = "https://pay.cqwu.edu.cn/PayPreService/"
 

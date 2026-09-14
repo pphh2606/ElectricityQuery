@@ -51,7 +51,7 @@ import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.electricity.data.displayName
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
  * 建筑选择页面

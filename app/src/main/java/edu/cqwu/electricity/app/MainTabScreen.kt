@@ -25,7 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import edu.cqwu.electricity.settings.data.ReduceMotion
+import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.hall.ui.HallPageContent
 import edu.cqwu.electricity.hall.ui.HallViewModel
 import edu.cqwu.electricity.home.ui.HomePageContent
@@ -33,8 +33,8 @@ import edu.cqwu.electricity.home.ui.HomeTopBar
 import edu.cqwu.electricity.home.ui.HomeViewModel
 import edu.cqwu.electricity.profile.ui.ProfilePageContent
 import edu.cqwu.electricity.profile.ui.ProfileTopBar
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
 import kotlinx.coroutines.launch
 

@@ -61,12 +61,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.QrCodeColorMode
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.QrCodeColorMode
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.QrCodeView
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

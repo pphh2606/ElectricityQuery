@@ -30,8 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.net.WebVpnSettings
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.common.settings.SettingsKeys
+import edu.cqwu.electricity.common.settings.SettingsPreferences
 
 /**
  * WebVPN 设置页 — 提供 WebVPN 代理开关。

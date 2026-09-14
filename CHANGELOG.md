@@ -1,20 +1,18 @@
 ## 新增功能
-1. 新增原生教务首页，入口是首页的「本科教务系统」与「移动教务」：新增 JWXT_HOME 路由与 jwxt 模块，本地仿写教务移动端首页，子功能仍交给内置浏览器打开
-2. 教务首页展示服务网格、分类切换、场景大图卡与公告入口：分类与数量取自 listLabelService，第一组末尾追加本地固定的「更多服务」；场景卡取卡片大图与首个服务的 hash 路由，无图或无落地页的卡片跳过
-3. 教务首页展示今日课程与本学期考试：今日课程按节次升序并标注调课补课、正文去掉 HTML 标签，考试按时间升序展示地点座位与教师，两处失败只影响各自卡片
-4. 教务凭证由 CAS 票据自动换取：跟随 302 链取回 JWT 存入 Cookie，业务请求以 Authorization 头携带，全程无需打开 WebView；业务码 401 时清除本地 token 并抛会话过期，由页面引导重新登录
-
-## Bug 修复
-1. 修复切换账号时学号可能回填到旧账号的问题：Cookie 校验新增所属账号 id 参数，验证时按该 id 回填学号，不再取当前激活账号
-2. 修复首页图标上的「+」角标横屏下偏离图标的问题：角标与图标放进同一个窄 Box 并沿 45 度外移
-3. 修复首页应用名过长被单行截断的问题：应用名最多显示两行
+1. 教务首页九宫格的「更多服务」改为 App 内原生二级页，不再跳到网页：新增 JwxtMoreServiceScreen 与 JwxtMoreServiceViewModel，注册 Routes.JWXT_MORE_SERVICE 路由并在 jwxtGraph 中登记
+2. 更多服务页按分组、分类、服务三级展示并支持下拉刷新：新增 listLabelServiceSet 接口与 LabelServiceSetResponse、JwxtServiceGroup、JwxtServiceCategory 模型，页面观感对齐缴费服务大厅，服务条目点击仍交给内置浏览器，空状态与标题补齐中英文文案资源
 
 ## 界面优化
-1. 首页分类网格与图标方框改用公共组件：4 列网格复用 FeatureGrid，图标方框上移到 common/ui，无背景的格子与仪表盘条目不再裁剪点击水波
-2. 充值相关 ViewModel 作用域跟随页面：电费主页与卡充值页各自创建实例，支付页与充值记录复用充值页实例，退出主页即销毁
-3. 教务首页新增文案资源并同步英文：标题、分类 chip、课程与考试条目、空状态文案集中在 strings_jwxt
+1. 教务首页今日课程与考试卡片的文字可长按选取复制：当前页内容包进 SelectionContainer，透明占位的另一页不参与选择，避免选到隐藏页的文字
 
 ## 架构改进
-1. 新增 jwxt 教务模块并按 data 与 ui 分层：data 放常量、接口、模型与 JWT 会话管理器，ui 放页面骨架、区块组件、课表考试卡与主页 ViewModel
-2. FeatureGrid 扩展出教务所需的服务格子：新增 ServiceIconTile 与支持内置回退图标的 AppIconBox，供教务首页与项目首页共用
-3. 新增协程安全工具 runCatchingCancellable：协程取消异常原样抛出，避免被 runCatching 吞掉后页面已销毁仍去更新状态
+1. 全局导航图改为装配层加各模块自注册：NavGraph.kt 从 420 行精简到 62 行，路由常量集中到 common/navigation/Routes.kt，页面转场动画抽到 app/NavTransitions.kt 的 animatedComposable，16 个模块各自新增 XxxNavigation.kt 提供 xxxGraph 函数，新增页面不再改动全局导航图
+2. 设置基元与通用工具上移到 common 包，消除共享层对 app 与业务模块的反向依赖：settings/data 的十个设置定义、theme/ui 的 AppSettingsState、home/data 的 CustomServiceEntry 统一迁入 common/settings，theme/util 的工具迁入 common/util，SheetVisibilityState 迁入 common/ui，LocalNavController 与 DetailType、QrCodeType 迁入 common/navigation，WebView 登录后刷新标记迁入 webview/ui
+3. 浏览器标识提供者改为显式初始化：UserAgentProvider 不再依赖 ElectricityApp.instance 单例，改由 ElectricityApp.onCreate 调用 init(context) 注入上下文
+4. 重启应用不再硬编码首页 Activity：restartApp 改用 PackageManager.getLaunchIntentForPackage 取启动 Intent 后清空任务栈重启
+5. 教务分类组件解耦为通用数据模型：JwxtLabelChips 的参数由 JwxtLabelTab 换成 JwxtChipLabel，教务首页的分类与更多服务页的分组共用同一组件
+
+## 删除的文件
+1. 删除 settings/data 目录下的十个设置定义文件：AppLanguage、NightMode、PageTransition、QrCodeColorMode、ReduceMotion、SettingKey、SettingsPreferences、ThemeColorSource、TopBarStyle、UserAgentProvider 全部迁移到 common/settings
+2. 删除 theme 包下的共享代码文件：AppSettingsState 迁到 common/settings，AppRestart、ClipboardUtil、ToastUtils 迁到 common/util
+3. 删除 home/data/CustomServiceEntry.kt：自定义服务数据类随设置项一起迁移到 common/settings

@@ -65,8 +65,8 @@ import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
-import edu.cqwu.electricity.settings.data.isDark
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.isDark
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState

@@ -1,4 +1,4 @@
-package edu.cqwu.electricity.settings.data
+package edu.cqwu.electricity.common.settings
 
 import androidx.annotation.StringRes
 import edu.cqwu.electricity.R

@@ -7,7 +7,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.logging.LogLevel
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 
 @Composable
 fun LogLevelSheet(

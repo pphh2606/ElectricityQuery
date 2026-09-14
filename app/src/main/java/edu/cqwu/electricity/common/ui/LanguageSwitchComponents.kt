@@ -15,8 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.AppLanguage
-import edu.cqwu.electricity.settings.data.SettingsPreferences
+import edu.cqwu.electricity.common.settings.AppLanguage
+import edu.cqwu.electricity.common.settings.SettingsPreferences
 
 /**
  * 语言切换按钮（图标 + 弹窗一体的便捷组件）。

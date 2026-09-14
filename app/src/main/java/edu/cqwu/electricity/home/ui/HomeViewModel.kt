@@ -7,9 +7,9 @@ import coil.Coil
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.SettingsKeys
-import edu.cqwu.electricity.settings.data.SettingsPreferences
-import edu.cqwu.electricity.home.data.CustomServiceEntry
+import edu.cqwu.electricity.common.settings.SettingsKeys
+import edu.cqwu.electricity.common.settings.SettingsPreferences
+import edu.cqwu.electricity.common.settings.CustomServiceEntry
 import edu.cqwu.electricity.home.data.HomeApp
 import edu.cqwu.electricity.home.data.HomeCategory
 import edu.cqwu.electricity.home.data.HomeJsonLoader

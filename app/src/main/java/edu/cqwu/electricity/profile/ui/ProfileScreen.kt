@@ -63,11 +63,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.app.Routes
+import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.net.WebVpnEncoder
-import edu.cqwu.electricity.settings.data.NightMode
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.LocalNavController
+import edu.cqwu.electricity.common.settings.NightMode
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.navigation.LocalNavController
 
 /**
  * 「我的」页面 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。

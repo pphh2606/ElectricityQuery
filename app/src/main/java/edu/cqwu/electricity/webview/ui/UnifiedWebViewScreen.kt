@@ -71,9 +71,9 @@ import edu.cqwu.electricity.common.net.WebVpnEncoder
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.WebViewErrorOverlay
-import edu.cqwu.electricity.app.Routes
-import edu.cqwu.electricity.theme.ui.LocalNavController
-import edu.cqwu.electricity.theme.util.ToastUtils
+import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.navigation.LocalNavController
+import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import edu.cqwu.electricity.webview.util.WebViewUrlUtil
@@ -352,7 +352,7 @@ fun UnifiedWebViewScreen(
                             settings.setSupportZoom(true)
                             settings.builtInZoomControls = true
                             settings.displayZoomControls = true
-                            settings.userAgentString = edu.cqwu.electricity.settings.data.UserAgentProvider.getActiveUserAgent()
+                            settings.userAgentString = edu.cqwu.electricity.common.settings.UserAgentProvider.getActiveUserAgent()
 
                             fun updateLoginRequiredOverlay(url: String?) {
                                 loginRequiredOverlayVisible = WebViewUrlUtil.shouldShowLoginRequired(url, webErrorState != null)

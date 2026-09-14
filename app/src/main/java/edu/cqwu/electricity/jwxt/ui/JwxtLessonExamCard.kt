@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +52,8 @@ import kotlinx.coroutines.launch
  *
  * 两个 tab 内容不等高会让切换时整页上移，所以每一页都把两份内容叠放（非当前份透明占位），
  * 使两页等高、都等于内容较多的那一页。
+ *
+ * 当前 tab 的文字包在 `SelectionContainer` 里，可长按选取复制；透明的那一份不参与选择。
  */
 @Composable
 internal fun JwxtLessonExamCard(
@@ -100,15 +103,26 @@ internal fun JwxtLessonExamCard(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
-                    Box(modifier = if (page == 0) Modifier else HiddenTabContent) {
-                        LessonTabContent(lessons = lessons, error = lessonError)
-                    }
-                    Box(modifier = if (page == 1) Modifier else HiddenTabContent) {
-                        ExamTabContent(exams = exams, error = examError)
-                    }
+                    // 当前 tab：包 SelectionContainer，文字可长按选取复制
+                    TabPage(selected = page == 0) { LessonTabContent(lessons = lessons, error = lessonError) }
+                    // 另一 tab：透明占位，只负责把卡片撑到两页中的较高者，不参与选择
+                    TabPage(selected = page == 1) { ExamTabContent(exams = exams, error = examError) }
                 }
             }
         }
+    }
+}
+
+/**
+ * 一页 tab 的内容。
+ *
+ * [selected] 为 false 时透明占位（让两个 tab 等高），且**不包 [SelectionContainer]**——
+ * 两份内容叠在同一位置，若都参与选择会选到另一 tab 的文字。
+ */
+@Composable
+private fun TabPage(selected: Boolean, content: @Composable () -> Unit) {
+    Box(modifier = if (selected) Modifier else HiddenTabContent) {
+        if (selected) SelectionContainer { content() } else content()
     }
 }
 

@@ -42,9 +42,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.settings.data.QrCodeColorMode
+import edu.cqwu.electricity.common.settings.QrCodeColorMode
 import edu.cqwu.electricity.common.ui.QrCodeView
-import edu.cqwu.electricity.theme.ui.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 /** Corner radius slider range: 0..50 in 1% steps. */

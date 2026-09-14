@@ -97,13 +97,6 @@ data class RechargeResponse(
 )
 
 /**
- * 详情类型枚举
- */
-enum class DetailType {
-    METER_STATUS        // 电表实时状态
-}
-
-/**
  * 微信用户信息响应（通过学号查询）
  * 对应 Python 中 query_userid_by_student_id 的响应
  */
