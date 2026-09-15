@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 今日课表小组件专用配色（浅色）。
+     RemoteViews 拿不到 Compose 主题（materialKolor 动态取色 / 纯黑 / 字体缩放都影响不到桌面），
+     所以小组件用固定资源色，深色由 values-night 覆盖。 -->
+<resources>
+    <color name="widget_bg">#FFFFFFFF</color>
+    <color name="widget_text_primary">#FF1B1B1F</color>
+    <color name="widget_text_secondary">#FF49454F</color>
+    <!-- 课程条目左侧竖线 -->
+    <color name="widget_indicator">#FF6750A4</color>
+    <color name="widget_tag_bg">#FFFFDAD6</color>
+    <color name="widget_tag_text">#FF410002</color>
+</resources>

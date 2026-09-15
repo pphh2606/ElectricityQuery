@@ -23,7 +23,8 @@ data class JwxtLabelGroup(
     val labelName: String = "",
     val labelId: String = "",
     val serviceNum: Int = 0,
-    val serviceList: List<JwxtService> = emptyList(),
+    /** 可空：Gson 会把接口的显式 null 直接塞进字段（不执行 Kotlin 默认值），取用处用 orEmpty() 兜底 */
+    val serviceList: List<JwxtService>? = null,
 )
 
 /** 单个服务入口（九宫格的一项） */
@@ -49,7 +50,7 @@ data class JwxtScene(
     val sceneId: String = "",
     val sceneName: String = "",
     val welcomeTip: String = "",
-    val sceneCardList: List<JwxtSceneCard> = emptyList(),
+    val sceneCardList: List<JwxtSceneCard>? = null,
 )
 
 /** 场景卡片；接口只提供小图标（[cardIcon]，完整 URL），没有插画字段 */
@@ -57,7 +58,7 @@ data class JwxtSceneCard(
     val cardId: String = "",
     val cardName: String = "",
     val cardIcon: String = "",
-    val serviceList: List<JwxtService> = emptyList(),
+    val serviceList: List<JwxtService>? = null,
 )
 
 // ═══════════════════════════════════════════
@@ -80,7 +81,8 @@ data class TodayLessonResponse(
 data class TodayLessonPage(
     val code: Int = 0,
     val msg: String = "",
-    val data: List<JwxtTodayLesson> = emptyList(),
+    /** 可空：实测「近期没有数据」时接口返回显式 null（不是空数组），见 JwxtApi 里的 orEmpty() */
+    val data: List<JwxtTodayLesson>? = null,
 )
 
 /**
@@ -95,7 +97,7 @@ data class JwxtTodayLesson(
     val endSession: Int = 0,
     val startTime: String = "",
     val endTime: String = "",
-    val cellDetail: List<JwxtCellLine> = emptyList(),
+    val cellDetail: List<JwxtCellLine>? = null,
     /** 形如 `00:正常 01：调课 02：停课 03：补课`，网页取前两位判断「调」/「补」 */
     val classTransferTypeCode: String = "",
 )
@@ -117,7 +119,8 @@ data class RecentExamResponse(
 data class RecentExamPage(
     val code: Int = 0,
     val msg: String = "",
-    val data: List<JwxtExam> = emptyList(),
+    /** 可空：实测「近期没有考试」时接口返回显式 null（不是空数组），见 JwxtApi 里的 orEmpty() */
+    val data: List<JwxtExam>? = null,
 )
 
 /**
@@ -160,11 +163,11 @@ data class JwxtServiceGroup(
     val labelName: String = "",
     val labelId: String = "",
     val serviceNum: Int = 0,
-    val serviceList: List<JwxtServiceCategory> = emptyList(),
+    val serviceList: List<JwxtServiceCategory>? = null,
 )
 
 /** 分组下的一个分类（学籍 / 选课 / 考务 / 其他 / 评教）；服务字段与首页一致，复用 [JwxtService] */
 data class JwxtServiceCategory(
     val categoryName: String = "",
-    val serviceList: List<JwxtService> = emptyList(),
+    val serviceList: List<JwxtService>? = null,
 )

@@ -40,6 +40,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".jwxt.schedule.widget.TodayLessonWidgetProvider"
+            android:label="@string/widget_today_name"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- 覆盖安装后系统不保证补发 APPWIDGET_UPDATE（ColorOS 实测会漏），
+                     额外接收「本包被替换」广播，由 Provider 自己补一次刷新 -->
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/today_lesson_widget_info" />
+        </receiver>
+
+        <!-- 集合小组件的列表数据源：由系统（launcher 侧）绑定，因此用 signature 级权限保护 -->
+        <service
+            android:name=".jwxt.schedule.widget.TodayLessonWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
     </application>
 
 </manifest>

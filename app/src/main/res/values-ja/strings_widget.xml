@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today_name">今日の授業</string>
+    <string name="widget_today_description">ホーム画面で今日の時間割を表示します</string>
+    <string name="widget_today_title">今日の授業</string>
+    <!-- %1$d = コマ数 -->
+    <string name="widget_lesson_total">全%1$dコマ</string>
+    <string name="widget_state_no_account">ログインすると今日の授業を表示します</string>
+    <string name="widget_state_no_cache">アプリを開いて同期してください</string>
+    <!-- %1$s = 前回の更新日（MM-dd） -->
+    <string name="widget_state_stale">時間割を更新してください（%1$s）</string>
+    <string name="widget_loading">時間割を読み込み中…</string>
+</resources>

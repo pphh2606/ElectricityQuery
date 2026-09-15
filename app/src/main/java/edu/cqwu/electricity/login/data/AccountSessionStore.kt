@@ -310,12 +310,15 @@ object AccountSessionStore {
      */
     fun deleteAccount(accountId: String) {
         val accounts = getAllAccounts().filterNot { it.id == accountId }
+        // 必须在 saveAccounts 之前判断：条目一旦删掉，getActiveAccount() 就查不到了（它按 id 查条目），
+        // 会让下面的清理永不执行——退出登录后系统 cookie 残留，各服务仍显示已登录，重启也不会恢复。
+        val wasActive = store().getString(KEY_ACTIVE_ACCOUNT_ID) == accountId
         saveAccounts(accounts)
-        if (getActiveAccount()?.id == accountId) {
+        if (wasActive) {
             SessionCleaner.clearAll()
             store().remove(KEY_ACTIVE_ACCOUNT_ID)
         }
-        AppLog.d("AccountSessionStore", "删除账号: $accountId")
+        AppLog.d("AccountSessionStore", "删除账号: $accountId, 是否激活条目=$wasActive")
     }
 
     /** 清空所有账号数据与登录态（设置页"清除存储空间"用）。 */

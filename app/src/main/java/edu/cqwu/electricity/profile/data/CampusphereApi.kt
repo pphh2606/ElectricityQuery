@@ -9,6 +9,7 @@ import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.login.data.AccountSessionStore
 import edu.cqwu.electricity.login.domain.AutoLoginCoordinatorV2
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -192,7 +193,16 @@ class CampusphereApi {
         var result = request()
         if (result.isFailure && result.exceptionOrNull() is NotLoggedInException) {
             AppLog.d(TAG, "$subject 未登录，执行 CAS ticket 交换后重试")
-            doCasTicketExchange()
+            // CAS 交换失败（会话已过期 / 网络异常）必须收敛成 Result：本方法对调用方承诺
+            // "只返回 Result"，异常直接穿出会让调用方的 onFailure 形同虚设，最终崩到主线程。
+            try {
+                doCasTicketExchange()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                AppLog.w(TAG, "$subject 的 CAS ticket 交换失败", e)
+                return@withContext Result.failure(e)
+            }
             result = request()
         }
         result

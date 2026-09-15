@@ -105,6 +105,8 @@ fun AppLaunchEffects(
     var pendingExternalIntent by remember { mutableStateOf<Pair<String, String>?>(null) }
     LaunchedEffect(shortcutLaunchId) {
         if (shortcutAppInfo != null) {
+            // 小组件/快捷方式点击后是否真的带上了 extra，靠这条日志判断（没出现即说明点击没走我们的 PendingIntent）
+            AppLog.d("AppLaunchEffects", "启动分发：appId=${shortcutAppInfo.appId}, openUrl=${shortcutAppInfo.openUrl}")
             HomeAppLauncher.launch(
                 appId = shortcutAppInfo.appId,
                 name = shortcutAppInfo.appName,

@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.jwxt.data.JwxtConstants
+import edu.cqwu.electricity.jwxt.schedule.data.JwxtLessonUi
 import kotlinx.coroutines.launch
 
 /**

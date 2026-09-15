@@ -22,7 +22,7 @@ import androidx.compose.material.icons.outlined.SignalWifiOff
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.WifiOff
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -110,8 +110,8 @@ fun WebViewErrorOverlay(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // ── 重新加载按钮 ──
-            FilledTonalButton(onClick = onRetry) {
+            // 与项目通用的「重试」按钮（ReLoginContent）保持同一种样式：Button = primary 主色
+            Button(onClick = onRetry) {
                 Text(stringResource(R.string.webview_reload))
             }
 

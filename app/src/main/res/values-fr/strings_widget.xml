@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today_name">Cours du jour</string>
+    <string name="widget_today_description">Afficher l\'emploi du temps du jour sur l\'écran d\'accueil</string>
+    <string name="widget_today_title">Cours du jour</string>
+    <!-- %1$d = nombre de cours -->
+    <string name="widget_lesson_total">%1$d cours</string>
+    <string name="widget_state_no_account">Connectez-vous pour voir les cours du jour</string>
+    <string name="widget_state_no_cache">Ouvrez l\'application pour synchroniser</string>
+    <!-- %1$s = date de la dernière mise à jour (MM-dd) -->
+    <string name="widget_state_stale">À mettre à jour (%1$s)</string>
+    <string name="widget_loading">Chargement des cours…</string>
+</resources>

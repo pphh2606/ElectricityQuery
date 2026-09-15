@@ -69,11 +69,16 @@ fun JwxtHomeScreen(
         nav.navigate(Routes.unifiedWebViewRoute(url, title))
     }
 
-    // 从登录页返回时自动重试一次（仅在确实因会话过期失败时），避免用户还要手动下拉
+    // 从登录页返回时自动重试一次（仅在确实因会话过期失败时），避免用户还要手动下拉。
+    //
+    // key 只能放 lifecycleOwner：若把 uiState.requiresReLogin 也作为 key，状态一变就会重建 observer，
+    // 而 addObserver 会把当前状态补发给新观察者（页面已 RESUMED 时会立刻收到 ON_RESUME），于是形成
+    // "加载失败 → 重建 observer → 收到 ON_RESUME → 再 load → 再失败"的自激循环，
+    // 界面在骨架屏与未登录页之间反复闪、请求被刷爆。状态改为回调里实时读取即可断开。
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner, uiState.requiresReLogin) {
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME && uiState.requiresReLogin) {
+            if (event == Lifecycle.Event.ON_RESUME && viewModel.uiState.value.requiresReLogin) {
                 viewModel.load()
             }
         }

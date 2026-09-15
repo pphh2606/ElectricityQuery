@@ -129,8 +129,8 @@ class JwxtMoreServiceViewModel(
             JwxtMoreServiceGroup(
                 name = group.labelName,
                 count = group.serviceNum,
-                categories = group.serviceList.mapNotNull { category ->
-                    val services = category.serviceList.map { service ->
+                categories = group.serviceList.orEmpty().mapNotNull { category ->
+                    val services = category.serviceList.orEmpty().map { service ->
                         JwxtMoreServiceItem(
                             name = service.serviceName,
                             iconUrl = JwxtConstants.iconUrl(service.serviceIcon),

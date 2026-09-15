@@ -47,6 +47,11 @@ class MainActivity : AppCompatActivity() {
             SettingsPreferences(this).get(SettingsKeys.NIGHT_MODE).toAppCompatMode()
         )
         super.onCreate(savedInstanceState)
+        // 快捷方式 / 小组件带来的跳转 extra：取出后立即消费掉。
+        // 否则 Activity 因切换夜间模式、旋转屏幕等 recreate 时，同一个 intent 会被再分发一次
+        // （表现为「切完夜间模式界面又自己跳到教务」）。
+        val launchInfo = ShortcutHelper.extractShortcutAppInfo(intent)
+        intent.removeExtra(ShortcutHelper.EXTRA_SHORTCUT_APP_ID)
         // 启用边到边绘制（内容延伸到系统栏后方）
         // 系统栏图标颜色由 Compose 层的 Theme.kt 中的 SideEffect 动态管理
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -56,8 +61,8 @@ class MainActivity : AppCompatActivity() {
             WindowCompat.setDecorFitsSystemWindows(window, false)
         }
         setContent {
-            // 首次启动时从 intent 提取快捷方式信息
-            val initialInfo = remember { ShortcutHelper.extractShortcutAppInfo(intent) }
+            // 首次启动时从 intent 提取快捷方式信息（extra 已在上面消费，recreate 时为 null）
+            val initialInfo = remember { launchInfo }
             LaunchedEffect(initialInfo) {
                 if (initialInfo != null && _shortcutAppInfo.value == null) {
                     _shortcutAppInfo.value = initialInfo
@@ -96,6 +101,8 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         val info = ShortcutHelper.extractShortcutAppInfo(intent)
+        // 同样消费掉 extra，避免 recreate 时把这次跳转重放一遍
+        intent.removeExtra(ShortcutHelper.EXTRA_SHORTCUT_APP_ID)
         if (info != null) {
             _shortcutAppInfo.value = info
             _shortcutLaunchId.intValue++

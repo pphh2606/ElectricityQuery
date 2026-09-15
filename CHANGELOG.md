@@ -1,18 +1,25 @@
 ## 新增功能
-1. 教务首页九宫格的「更多服务」改为 App 内原生二级页，不再跳到网页：新增 JwxtMoreServiceScreen 与 JwxtMoreServiceViewModel，注册 Routes.JWXT_MORE_SERVICE 路由并在 jwxtGraph 中登记
-2. 更多服务页按分组、分类、服务三级展示并支持下拉刷新：新增 listLabelServiceSet 接口与 LabelServiceSetResponse、JwxtServiceGroup、JwxtServiceCategory 模型，页面观感对齐缴费服务大厅，服务条目点击仍交给内置浏览器，空状态与标题补齐中英文文案资源
+1. 新增「今日课表」桌面小组件，不用打开 App 就能看到今天要上的课：以 RemoteViews 实现 AppWidgetProvider 与集合列表 Service，声明为可横竖缩放的桌面组件，系统最快 30 分钟刷新一次
+2. 小组件的课程列表可以上下滑动，标题行固定不动：课程条目交给 ListView 集合组件承载，每条显示节次与时间、正文与调补标签，点击组件任意位置直接跳到教务首页
+3. 小组件会区分未登录、没有缓存、缓存过期、今天没课四种情况并显示对应提示：渲染前拿缓存里的保存日期与账号和当前状态比对，跨天或切号立即退化成待更新态，不显示昨天或别人的课表
+
+## Bug 修复
+1. 修复退出登录后仍然显示已登录、重启也不恢复的问题：删除账号时先判断被删的是否为当前激活条目再清 cookie，避免条目删掉后判断失效导致清理被跳过
+2. 修复教务接口返回空数据时首页会被打崩的问题：接口模型里的列表字段改为可空并用 orEmpty 兜底，后端用显式 null 表示没有数据时不再触发空指针
+3. 修复教务网关报 502 时页面提示一长串看不懂的解析错误的问题：请求改为先检查 HTTP 状态码，失败时直接以状态码作为错误信息
+4. 修复从登录页返回教务首页时界面反复闪烁、请求被刷爆的问题：生命周期观察者不再把登录状态当 key，改为在回调里实时读取，断开状态变化重建观察者再次触发加载的自激循环
+5. 修复教务凭证交换失败会直接崩溃的问题：CAS 票据交换的异常收敛成失败结果返回，兑现该方法只返回 Result 的约定
+6. 修复切换夜间模式或旋转屏幕后界面会自己多跳一次的问题：启动跳转的 extra 取出后立即消费，Activity 重建时不再重放同一次跳转
+7. 修复网页出现 HTTP 错误时错误浮层一闪而过的问题：记下出错页面的地址，只有真的换了页面才清除错误状态
 
 ## 界面优化
-1. 教务首页今日课程与考试卡片的文字可长按选取复制：当前页内容包进 SelectionContainer，透明占位的另一页不参与选择，避免选到隐藏页的文字
+1. 网页加载失败时的「重新加载」按钮改用主色实心按钮：与其它页面通用的重试按钮样式保持一致
+2. 网页的内外网切换改为在当前页面里换地址：不再新开一个浏览器页面，返回栈不会越切越深
 
 ## 架构改进
-1. 全局导航图改为装配层加各模块自注册：NavGraph.kt 从 420 行精简到 62 行，路由常量集中到 common/navigation/Routes.kt，页面转场动画抽到 app/NavTransitions.kt 的 animatedComposable，16 个模块各自新增 XxxNavigation.kt 提供 xxxGraph 函数，新增页面不再改动全局导航图
-2. 设置基元与通用工具上移到 common 包，消除共享层对 app 与业务模块的反向依赖：settings/data 的十个设置定义、theme/ui 的 AppSettingsState、home/data 的 CustomServiceEntry 统一迁入 common/settings，theme/util 的工具迁入 common/util，SheetVisibilityState 迁入 common/ui，LocalNavController 与 DetailType、QrCodeType 迁入 common/navigation，WebView 登录后刷新标记迁入 webview/ui
-3. 浏览器标识提供者改为显式初始化：UserAgentProvider 不再依赖 ElectricityApp.instance 单例，改由 ElectricityApp.onCreate 调用 init(context) 注入上下文
-4. 重启应用不再硬编码首页 Activity：restartApp 改用 PackageManager.getLaunchIntentForPackage 取启动 Intent 后清空任务栈重启
-5. 教务分类组件解耦为通用数据模型：JwxtLabelChips 的参数由 JwxtLabelTab 换成 JwxtChipLabel，教务首页的分类与更多服务页的分组共用同一组件
-
-## 删除的文件
-1. 删除 settings/data 目录下的十个设置定义文件：AppLanguage、NightMode、PageTransition、QrCodeColorMode、ReduceMotion、SettingKey、SettingsPreferences、ThemeColorSource、TopBarStyle、UserAgentProvider 全部迁移到 common/settings
-2. 删除 theme 包下的共享代码文件：AppSettingsState 迁到 common/settings，AppRestart、ClipboardUtil、ToastUtils 迁到 common/util
-3. 删除 home/data/CustomServiceEntry.kt：自定义服务数据类随设置项一起迁移到 common/settings
+1. 今日课表的取数逻辑从界面层下沉到数据层：新增 TodayLessonRepository 作为教务首页与桌面小组件共用的唯一取数入口，课程模型一并搬到课表数据包，依赖方向保持单向
+2. 新增课表本地缓存：缓存先写临时文件再改名避免写坏，读取失败或版本不符按无缓存处理，文件放 noBackupFilesDir 不参与云备份也不受清除缓存影响
+3. 桌面小组件的刷新收敛到一个出口：数据更新后通过只保留最新一次的 Channel 通知 Application 订阅刷新，界面层不再直接调用刷新逻辑
+4. 小组件用系统原生能力实现且不新增任何依赖：沿用 RemoteViews 与集合列表 Service，兼容到 minSdk 21
+5. 覆盖安装后系统可能不补发刷新广播、组件会一直停在加载占位：额外接收本包被替换广播，由 Provider 自己补刷一次
+6. 关键路径补充调试日志：启动跳转分发、账号删除、系统 cookie 清理都写入日志，便于定位组件与登录态问题

@@ -115,6 +115,9 @@ fun UnifiedWebViewScreen(
         val isHttpError: Boolean = false
     )
     var webErrorState by remember { mutableStateOf<WebViewError?>(null) }
+    // 出错时的页面 URL：HTTP 错误页会为它自身再走一遍 onPageStarted，用它区分
+    // 「换了页面」与「同一页面的二次导航」，避免 4xx/5xx 的浮层被清掉而一闪而过
+    var webErrorUrl by remember { mutableStateOf<String?>(null) }
     // CAS 登录页停留时显示登录已过期遮罩，不再自动跳转本地登录
     var loginRequiredOverlayVisible by remember { mutableStateOf(false) }
 
@@ -153,6 +156,26 @@ fun UnifiedWebViewScreen(
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
     // 标记：本地登录成功后需要自动刷新 WebView 当前页
     var needsReloadAfterReturn by remember { mutableStateOf(false) }
+
+    /**
+     * 内/外网通道切换（右上角菜单与错误浮层共用同一份实现）。
+     *
+     * 统一在当前页面里换 URL，而不是新开一个浏览器页面：内/外网只是同一份内容的两个通道，
+     * 做成「新页面」会把返回栈越堆越深（切几次就要按几次返回才能退出）。
+     */
+    fun toggleNetwork() {
+        webErrorState = null
+        webErrorUrl = null
+        val currentUrl = webViewRef.value?.url ?: return
+        val toggledUrl = try {
+            WebVpnEncoder.toggle(currentUrl)
+        } catch (e: Exception) {
+            AppLog.e("WebView_DIAG", "URL 切换失败: ${e.message}")
+            snackbar.show(resources.getString(R.string.webview_url_change_failed), ToastUtils.Type.ERROR)
+            null
+        } ?: return
+        webViewRef.value?.loadUrl(toggledUrl)
+    }
 
     // ═══ 系统返回键：仅在 WebView 有历史记录时拦截 ═══
     // 当 WebView 已到首页时，enabled=false 让系统接管返回手势，
@@ -228,6 +251,10 @@ fun UnifiedWebViewScreen(
                 actions = {
                     // ── 刷新按钮 ──
                     IconButton(onClick = {
+                        // 先清错误状态：同一个 URL 的 reload 不会再触发 onPageStarted 里的清空逻辑，
+                        // 不清的话错误浮层会一直盖在页面上，看起来像「刷新没生效」
+                        webErrorState = null
+                        webErrorUrl = null
                         webViewRef.value?.reload()
                     }) {
                         Icon(
@@ -296,17 +323,7 @@ fun UnifiedWebViewScreen(
                                 leadingIcon = { Icon(Icons.Outlined.SwapHoriz, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    val currentUrl = webViewRef.value?.url ?: return@DropdownMenuItem
-                                    val toggledUrl = try {
-                                        WebVpnEncoder.toggle(currentUrl)
-                                    } catch (e: Exception) {
-                                        AppLog.e("WebView_DIAG", "URL 切换失败: ${e.message}")
-                                        snackbar.show(resources.getString(R.string.webview_url_change_failed), ToastUtils.Type.ERROR)
-                                        null
-                                    }
-                                    if (toggledUrl != null) {
-                                        nav.navigate(Routes.unifiedWebViewRoute(toggledUrl, pageTitle))
-                                    }
+                                    toggleNetwork()
                                 }
                             )
                         }
@@ -363,7 +380,12 @@ fun UnifiedWebViewScreen(
                                     super.onPageStarted(view, url, favicon)
                                     AppLog.d("WebView_DIAG", "onPageStarted: $url")
                                     isLoading = true
-                                    webErrorState = null  // 新页面开始加载时清除错误状态
+                                    // 只有「换了页面」才清错误状态；同一个 URL 的二次导航
+                                    // （HTTP 错误页自身的渲染）要保留浮层，否则 4xx/5xx 会一闪而过
+                                    if (url != webErrorUrl) {
+                                        webErrorState = null
+                                        webErrorUrl = null
+                                    }
                                     loginRequiredOverlayVisible = false
                                     canGoBack = view?.canGoBack() == true
 
@@ -453,6 +475,7 @@ fun UnifiedWebViewScreen(
                                         AppLog.w("WebView_DIAG", ">>> 主框架加载错误: code=$code, desc=$desc")
                                         isLoading = false
                                         loginRequiredOverlayVisible = false
+                                        webErrorUrl = request.url.toString()
                                         webErrorState = WebViewError(
                                             errorCode = code,
                                             description = desc
@@ -471,6 +494,7 @@ fun UnifiedWebViewScreen(
                                         AppLog.w("WebView_DIAG", ">>> HTTP 错误: statusCode=$statusCode")
                                         isLoading = false
                                         loginRequiredOverlayVisible = false
+                                        webErrorUrl = request.url.toString()
                                         webErrorState = WebViewError(
                                             errorCode = statusCode,
                                             description = "HTTP $statusCode",
@@ -623,23 +647,10 @@ fun UnifiedWebViewScreen(
                     isHttpError = error.isHttpError,
                     onRetry = {
                         webErrorState = null
+                        webErrorUrl = null
                         webViewRef.value?.reload()
                     },
-                    onToggleVpn = {
-                        webErrorState = null
-                        val currentUrl = webViewRef.value?.url
-                        if (currentUrl != null) {
-                            val toggledUrl = try {
-                                WebVpnEncoder.toggle(currentUrl)
-                            } catch (e: Exception) {
-                                AppLog.e("WebView_DIAG", "URL切换失败: ${e.message}")
-                                null
-                            }
-                            if (toggledUrl != null) {
-                                webViewRef.value?.loadUrl(toggledUrl)
-                            }
-                        }
-                    },
+                    onToggleVpn = { toggleNetwork() },
                     onNetworkSettings = {
                         try {
                             context.startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))

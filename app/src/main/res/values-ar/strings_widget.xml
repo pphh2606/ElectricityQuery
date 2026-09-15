@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today_name">محاضرات اليوم</string>
+    <string name="widget_today_description">عرض جدول محاضرات اليوم على الشاشة الرئيسية</string>
+    <string name="widget_today_title">محاضرات اليوم</string>
+    <!-- %1$d = عدد المحاضرات -->
+    <string name="widget_lesson_total">%1$d محاضرات</string>
+    <string name="widget_state_no_account">سجّل الدخول لعرض محاضرات اليوم</string>
+    <string name="widget_state_no_cache">افتح التطبيق للمزامنة</string>
+    <!-- %1$s = تاريخ آخر تحديث (MM-dd) -->
+    <string name="widget_state_stale">بحاجة إلى تحديث (%1$s)</string>
+    <string name="widget_loading">جارٍ تحميل الجدول…</string>
+</resources>

@@ -17,6 +17,7 @@ object SessionCleaner {
     fun clearSystemCookies() {
         try {
             CookieStore.removeAllCookies()
+            AppLog.d(TAG, "已清除系统 cookie")
         } catch (e: Exception) {
             AppLog.w(TAG, "清除系统 cookie 失败", e)
         }

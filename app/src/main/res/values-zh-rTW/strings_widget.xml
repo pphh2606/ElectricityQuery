@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today_name">今日課表</string>
+    <string name="widget_today_description">在桌面查看今天的課程安排</string>
+    <string name="widget_today_title">今日課表</string>
+    <!-- 課程條數統計：%1$d = 節數 -->
+    <string name="widget_lesson_total">共 %1$d 節</string>
+    <string name="widget_state_no_account">登入後查看今日課表</string>
+    <string name="widget_state_no_cache">開啟 App 同步課表</string>
+    <!-- 快取不是今天的：%1$s = 上次更新日期（MM-dd） -->
+    <string name="widget_state_stale">課表待更新（%1$s）</string>
+    <string name="widget_loading">正在載入課表…</string>
+</resources>

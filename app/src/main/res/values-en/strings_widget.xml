@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today_name">Today\'s classes</string>
+    <string name="widget_today_description">View today\'s class schedule on your home screen</string>
+    <string name="widget_today_title">Today\'s classes</string>
+    <!-- %1$d = number of classes -->
+    <string name="widget_lesson_total">%1$d classes</string>
+    <string name="widget_state_no_account">Sign in to view today\'s classes</string>
+    <string name="widget_state_no_cache">Open the app to sync</string>
+    <!-- %1$s = last update date (MM-dd) -->
+    <string name="widget_state_stale">Needs update (%1$s)</string>
+    <string name="widget_loading">Loading classes…</string>
+</resources>

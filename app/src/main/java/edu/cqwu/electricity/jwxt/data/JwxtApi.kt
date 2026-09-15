@@ -68,7 +68,8 @@ class JwxtApi(
             checkBusinessCode(resp.code, resp.msg, "listStudentTodayLesson")
             val page = resp.data ?: return@request emptyList<JwxtTodayLesson>()
             checkBusinessCode(page.code, page.msg, "listStudentTodayLesson")
-            page.data
+            // 内层 data 可能是显式 null（当天没课时后端这样返回，实测过），必须兜底
+            page.data.orEmpty()
         }
 
     /** 本学期考试（无查询参数，按考试时间降序返回） */
@@ -78,7 +79,8 @@ class JwxtApi(
             checkBusinessCode(resp.code, resp.msg, "recentExams")
             val page = resp.data ?: return@request emptyList<JwxtExam>()
             checkBusinessCode(page.code, page.msg, "recentExams")
-            page.data
+            // 内层 data 可能是显式 null（近期没有考试时后端这样返回，实测会打崩首页），必须兜底
+            page.data.orEmpty()
         }
 
     // ── 内部实现 ──
@@ -90,9 +92,15 @@ class JwxtApi(
         parse: (String) -> T,
     ): Result<T> = withContext(Dispatchers.IO) {
         try {
-            val body = client.newCall(buildRequest(path, isPost)).execute().use { it.body.string() }
-            AppLog.body(TAG, "$path → $body")
-            Result.success(parse(body))
+            val data = client.newCall(buildRequest(path, isPost)).execute().use { response ->
+                val body = response.body.string()
+                AppLog.body(TAG, "$path → $body")
+                // 网关故障（如 502 Bad Gateway）返回的是 HTML 错误页，直接交给 Gson 只会得到
+                // 一串看不懂的 JSON 异常；这里改成用 HTTP 状态码当错误信息（页面显示 "HTTP 502"）
+                if (!response.isSuccessful) throw IllegalStateException("HTTP ${response.code}")
+                parse(body)
+            }
+            Result.success(data)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

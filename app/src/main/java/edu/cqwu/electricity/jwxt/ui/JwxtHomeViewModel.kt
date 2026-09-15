@@ -2,7 +2,6 @@ package edu.cqwu.electricity.jwxt.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.common.util.runCatchingCancellable
 import edu.cqwu.electricity.jwxt.data.JwxtApi
@@ -10,7 +9,8 @@ import edu.cqwu.electricity.jwxt.data.JwxtConstants
 import edu.cqwu.electricity.jwxt.data.JwxtExam
 import edu.cqwu.electricity.jwxt.data.JwxtLabelGroup
 import edu.cqwu.electricity.jwxt.data.JwxtScene
-import edu.cqwu.electricity.jwxt.data.JwxtTodayLesson
+import edu.cqwu.electricity.jwxt.schedule.data.JwxtLessonUi
+import edu.cqwu.electricity.jwxt.schedule.data.TodayLessonRepository
 import edu.cqwu.electricity.logging.AppLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
@@ -51,26 +51,6 @@ data class JwxtSceneUi(
     val name: String,
     val iconUrl: String,
     val pageUrl: String,
-)
-
-/**
- * 今日课程的一条（已清洗）。
- *
- * [sectionRange] 形如 `5-6`、[timeRange] 形如 `14:30-16:10`——含中文的「节（时间）」拼接
- * 交给 UI 层用字符串资源完成，ViewModel 不产出中文。
- */
-data class JwxtLessonUi(
-    val sectionRange: String,
-    val timeRange: String,
-    /** 调/补标签的原始码（`01` 调课 / `03` 补课），空串表示正常；文案由 UI 层映射 */
-    val transferTag: String,
-    val lines: List<JwxtLessonLine>,
-)
-
-/** 课程正文的一行（已去掉 HTML 标签）；[highlight] 对应接口 `color` 非空（网页的红字行） */
-data class JwxtLessonLine(
-    val text: String,
-    val highlight: Boolean,
 )
 
 /** 本学期考试的一条；[place] / [seat] / [teacher] 为空的段由 UI 层跳过不显示 */
@@ -155,7 +135,7 @@ class JwxtHomeViewModel(
                 val data = coroutineScope {
                     val groupsDeferred = async { api.fetchLabelServices().getOrThrow() }
                     val scenesDeferred = async { api.fetchMoreScenes().getOrThrow() }
-                    val lessonsDeferred = async { runCatchingCancellable { api.fetchTodayLessons().getOrThrow() } }
+                    val lessonsDeferred = async { runCatchingCancellable { TodayLessonRepository.fetchAndCache().getOrThrow() } }
                     val examsDeferred = async { runCatchingCancellable { api.fetchRecentExams().getOrThrow() } }
                     HomeData(
                         groups = groupsDeferred.await(),
@@ -173,12 +153,13 @@ class JwxtHomeViewModel(
                         selectedLabelIndex = state.selectedLabelIndex
                             .coerceIn(0, (data.groups.size - 1).coerceAtLeast(0)),
                         scenes = buildSceneItems(data.scenes),
-                        todayLessons = buildLessons(data.lessons.getOrDefault(emptyList())),
+                        todayLessons = data.lessons.getOrDefault(emptyList()),
                         exams = buildExams(data.exams.getOrDefault(emptyList())),
                         lessonError = data.lessons.exceptionOrNull()?.message,
                         examError = data.exams.exceptionOrNull()?.message,
                     )
                 }
+                // 桌面小组件不在这里刷新：仓库写完缓存会发信号，由 Application 统一订阅（见 TodayLessonRepository）
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -206,7 +187,7 @@ class JwxtHomeViewModel(
      */
     private fun buildLabelTabs(groups: List<JwxtLabelGroup>): List<JwxtLabelTab> =
         groups.mapIndexed { index, group ->
-            val services = group.serviceList.map { service ->
+            val services = group.serviceList.orEmpty().map { service ->
                 JwxtGridItem(
                     name = service.serviceName,
                     iconUrl = JwxtConstants.iconUrl(service.serviceIcon),
@@ -236,35 +217,13 @@ class JwxtHomeViewModel(
      */
     private fun buildSceneItems(scenes: List<JwxtScene>): List<JwxtSceneUi> =
         scenes.mapNotNull { scene ->
-            val card = scene.sceneCardList.firstOrNull() ?: return@mapNotNull null
-            val service = card.serviceList.firstOrNull() ?: return@mapNotNull null
+            val card = scene.sceneCardList.orEmpty().firstOrNull() ?: return@mapNotNull null
+            val service = card.serviceList.orEmpty().firstOrNull() ?: return@mapNotNull null
             if (card.cardIcon.isBlank()) return@mapNotNull null
             JwxtSceneUi(
                 name = card.cardName.ifBlank { scene.sceneName },
                 iconUrl = JwxtConstants.iconUrl(card.cardIcon),
                 pageUrl = JwxtConstants.pageUrl(service.appId, service.url),
-            )
-        }
-
-    /**
-     * 今日课程映射。
-     *
-     * 接口返回顺序是乱的（实测 5-6 → 1-2 → 3-4 → 7-8 节），按开始节次升序排。
-     * 课程内容只能来自 `cellDetail`（顶层 `courseName`/`classroom` 等实测全为 null），
-     * 逐行去掉 HTML 标签后展示；清洗后为空的行丢弃。
-     */
-    private fun buildLessons(lessons: List<JwxtTodayLesson>): List<JwxtLessonUi> =
-        lessons.sortedBy { it.startSession }.map { lesson ->
-            JwxtLessonUi(
-                sectionRange = "${lesson.startSession}-${lesson.endSession}",
-                timeRange = "${lesson.startTime}-${lesson.endTime}",
-                transferTag = lesson.classTransferTypeCode.take(2)
-                    .takeIf { it == JwxtConstants.TRANSFER_TYPE_ADJUST || it == JwxtConstants.TRANSFER_TYPE_MAKEUP }
-                    .orEmpty(),
-                lines = lesson.cellDetail.mapNotNull { line ->
-                    val text = HtmlFormParser.stripHtml(line.text)
-                    if (text.isEmpty()) null else JwxtLessonLine(text = text, highlight = line.color != null)
-                },
             )
         }
 
@@ -300,6 +259,6 @@ class JwxtHomeViewModel(
 private data class HomeData(
     val groups: List<JwxtLabelGroup>,
     val scenes: List<JwxtScene>,
-    val lessons: Result<List<JwxtTodayLesson>>,
+    val lessons: Result<List<JwxtLessonUi>>,
     val exams: Result<List<JwxtExam>>,
 )

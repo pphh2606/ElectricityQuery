@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  今日课表小组件声明。
+  - updatePeriodMillis：系统最快就是 30 分钟一次且不精确（Doze 下更晚），只当兜底；
+    App 内数据刷新时会主动再刷一次（见 TodayLessonWidgetUpdater）。
+  - initialLayout：先用加载占位，避免刚拖到桌面时白屏。
+  - 暂无 previewImage（预览素材待补）：此时组件选择器会显示应用图标。
+  - targetCellWidth/Height 与 description 需要 API 31+，低版本自动忽略。
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="180dp"
+    android:minResizeHeight="70dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_today_lesson_loading"
+    android:description="@string/widget_today_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />
