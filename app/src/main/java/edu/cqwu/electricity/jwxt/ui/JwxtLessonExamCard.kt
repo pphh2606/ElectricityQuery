@@ -30,8 +30,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.jwxt.data.JwxtConstants
@@ -187,6 +190,7 @@ private fun TabMessage(text: String) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
@@ -196,8 +200,11 @@ private fun TabMessage(text: String) {
 /**
  * 一条课程：标题行 =「节次 节（时间）」+ 调/补标签；正文 = 接口 `cellDetail` 逐行。
  *
- * 正文行数不固定（实测 3–4 行，其中一行是全部上课班级、可能很长）。**不做行数截断**：
+ * 正文行数不固定（实测 3–4 行，其中一行是全部上课班级、可能很长），**不做行数截断**：
  * 网页原版正文只有 `word-break: break-all`，课表信息要完整展示。
+ *
+ * 高亮对齐网页：网页把每行原样渲染，行内 `<a>`（教师 / 教室 / 班级）由全局样式着主题色，
+ * 接口的 `color` 字段（红字）网页并不使用，所以这里按**片段**着色而不再整行标红。
  */
 @Composable
 private fun JwxtLessonItem(lesson: JwxtLessonUi) {
@@ -206,7 +213,7 @@ private fun JwxtLessonItem(lesson: JwxtLessonUi) {
             Text(
                 text = stringResource(R.string.jwxt_lesson_section_time, lesson.sectionRange, lesson.timeRange),
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             TransferTag(lesson.transferTag)
@@ -214,15 +221,23 @@ private fun JwxtLessonItem(lesson: JwxtLessonUi) {
 
         lesson.lines.forEach { line ->
             Text(
-                text = line.text,
-                // 字号对齐网页原版 `.descripText`（14px）
-                style = MaterialTheme.typography.bodyMedium,
-                // 网页把「教师 时间 地点」那行标成红字；这里用主题 error 色，深色模式下同样可读
-                color = if (line.highlight) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                text = buildAnnotatedString {
+                    line.spans.forEach { span ->
+                        // 链接片段用主题色（网页的 --adm-color-primary），其余用次要文字色
+                        withStyle(
+                            SpanStyle(
+                                color = if (span.isLink) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                            )
+                        ) { append(span.text) }
+                    }
                 },
+                // 字号对齐网页原版 `.descripText`（14px）；字重对齐网页 `.descripTitle`（500）
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
             )
         }
     }
@@ -245,6 +260,7 @@ private fun TransferTag(code: String) {
             .background(MaterialTheme.colorScheme.errorContainer)
             .padding(horizontal = 5.dp, vertical = 1.dp),
         style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Medium,
         color = MaterialTheme.colorScheme.onErrorContainer,
     )
 }
@@ -265,13 +281,14 @@ private fun JwxtExamItem(exam: JwxtExamUi) {
         Text(
             text = exam.timeNote,
             style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
             text = exam.courseName,
             // 字号对齐网页原版 `.descripTitle`（16px）
             style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface,
         )
         if (details.isNotEmpty()) {
@@ -279,6 +296,7 @@ private fun JwxtExamItem(exam: JwxtExamUi) {
                 text = details.joinToString(" · "),
                 // 字号对齐网页原版 `.descripText`（14px）；不截断，地点/座位/教师完整展示
                 style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

@@ -290,7 +290,8 @@ private val SCENE_CARD_SIDE_MARGIN = 11.dp    // .background left:11px → 宽�
 private val SCENE_CARD_SPACING = 22.dp        // 相邻两卡的间距 = 左右各 11px 相加（网页滑动到两张之间时）
 /** 场景卡标题固定色：卡片图是固定的浅色插画，跟随主题会在深色模式下变白 → 压在图上读不清 */
 private val COLOR_SCENE_TITLE = Color(0xFF121212)
-private val SCENE_CARD_CORNER = 8.dp          // .background border-radius:8px
+// 圆角不跟随网页（那边是 8px）：与页面其它卡片（公告行 / Tab 卡）统一为 16dp
+private val SCENE_CARD_CORNER = 16.dp
 private val SCENE_CONTENT_START = 17.dp       // .contentWrapper padding-left:17px
 private val SCENE_TITLE_WIDTH = 140.dp        // .title width:7em（21px 字号下约 147px）
 private val SCENE_BUTTON_TOP_GAP = 5.dp       // .buttonWrapper margin-top:5px

@@ -5,6 +5,8 @@
     <string name="widget_today_title">今日の授業</string>
     <!-- %1$d = コマ数 -->
     <string name="widget_lesson_total">全%1$dコマ</string>
+    <!-- 授業の 2 行目：教室 · 教員（片方だけのときは他方のみ表示） -->
+    <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">ログインすると今日の授業を表示します</string>
     <string name="widget_state_no_cache">アプリを開いて同期してください</string>
     <!-- %1$s = 前回の更新日（MM-dd） -->

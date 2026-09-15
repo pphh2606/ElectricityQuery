@@ -5,6 +5,8 @@
     <string name="widget_today_title">Cours du jour</string>
     <!-- %1$d = nombre de cours -->
     <string name="widget_lesson_total">%1$d cours</string>
+    <!-- Ligne 2 d'un cours : salle · enseignant (l'autre seul s'il en manque un) -->
+    <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">Connectez-vous pour voir les cours du jour</string>
     <string name="widget_state_no_cache">Ouvrez l\'application pour synchroniser</string>
     <!-- %1$s = date de la dernière mise à jour (MM-dd) -->

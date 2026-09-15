@@ -40,7 +40,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -67,10 +66,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.ReduceMotion
+import edu.cqwu.electricity.common.ui.AppNavigationBarItem
+import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
+import edu.cqwu.electricity.common.ui.trackBottomBarScroll
 import edu.cqwu.electricity.feeservicehall.data.FeeItem
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
@@ -156,6 +161,19 @@ fun FeeServiceHallScreen(
         }
     }
 
+    // ── 底栏滚动隐藏（与首页三个 tab 共用同一套组件与设置开关）──
+    val appSettings = LocalAppSettingsState.current
+    val hideBarOnScroll = appSettings.hideBottomBarOnScroll
+    val animateBar = appSettings.reduceMotion != ReduceMotion.ON
+    val barScrollState = rememberBottomBarScrollState()
+
+    // 切 tab 后底栏必须回到可见，否则用户找不到导航
+    LaunchedEffect(pagerState.currentPage, hideBarOnScroll) { barScrollState.show() }
+
+    // 外层 Box 只负责给底栏提供覆盖层与滚动判定：底栏不再占用布局，内容区高度恒定
+    Box(
+        modifier = if (hideBarOnScroll) Modifier.trackBottomBarScroll(barScrollState) else Modifier,
+    ) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -185,28 +203,13 @@ fun FeeServiceHallScreen(
                 colors = topBarColors,
             )
         },
-        bottomBar = {
-            NavigationBar {
-                tabs.forEachIndexed { index, tab ->
-                    val tabLabel = stringResource(tab.labelRes)
-                    NavigationBarItem(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            if (pagerState.currentPage != index) {
-                                scope.launch { pagerState.animateScrollToPage(index) }
-                            }
-                        },
-                        icon = { Icon(tab.icon, contentDescription = tabLabel) },
-                        label = { Text(tabLabel) },
-                    )
-                }
-            }
-        },
     ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
             beyondViewportPageCount = 1,
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
         ) { page ->
             LaunchedEffect(page) { viewModel.onTabSelected(page) }
             when (page) {
@@ -238,6 +241,30 @@ fun FeeServiceHallScreen(
                     onReLogin = onReLogin,
                     onRetryProfile = { viewModel.retryProfileLoad() },
                 )
+            }
+        }
+    }
+
+        // 底栏：浮在内容之上，隐藏时向下滑出且不拦截触摸
+        BottomBarOverlay(
+            state = barScrollState,
+            enabled = hideBarOnScroll,
+            animate = animateBar,
+        ) {
+            NavigationBar {
+                tabs.forEachIndexed { index, tab ->
+                    val selected = pagerState.currentPage == index
+                    AppNavigationBarItem(
+                        selected = selected,
+                        onClick = {
+                            if (!selected) {
+                                scope.launch { pagerState.animateScrollToPage(index) }
+                            }
+                        },
+                        icon = tab.icon,
+                        label = stringResource(tab.labelRes),
+                    )
+                }
             }
         }
     }

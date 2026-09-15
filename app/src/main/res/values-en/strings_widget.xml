@@ -5,6 +5,8 @@
     <string name="widget_today_title">Today\'s classes</string>
     <!-- %1$d = number of classes -->
     <string name="widget_lesson_total">%1$d classes</string>
+    <!-- Row 2 of a lesson: room · teacher (only one is shown when the other is missing) -->
+    <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">Sign in to view today\'s classes</string>
     <string name="widget_state_no_cache">Open the app to sync</string>
     <!-- %1$s = last update date (MM-dd) -->

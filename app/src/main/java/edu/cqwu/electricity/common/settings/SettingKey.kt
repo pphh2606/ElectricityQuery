@@ -125,6 +125,18 @@ object SettingsKeys {
         default = false,
     )
 
+    /** 列表向下滚动时收起底部导航栏，向上滚动时恢复（首页 / 大厅 / 我的） */
+    val HIDE_BOTTOM_BAR_ON_SCROLL = booleanSetting(
+        name = "hide_bottom_bar_on_scroll",
+        default = true,
+    )
+
+    /** 底栏只显示选中项的文字、其余项只留图标；false（默认）时所有项都显示文字 */
+    val TAB_LABEL_SELECTED_ONLY = booleanSetting(
+        name = "tab_label_selected_only",
+        default = false,
+    )
+
     val COLOR_SOURCE = stringSetting(
         name = "color_source",
         default = "dynamic",

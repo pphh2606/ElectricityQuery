@@ -21,12 +21,9 @@ class TodayLessonWidgetService : RemoteViewsService() {
         TodayLessonWidgetFactory(applicationContext)
 }
 
-/** 列表数据工厂：把缓存里的今日课程逐条转成 RemoteViews */
+/** 列表数据工厂：把缓存里的今日课程逐条转成 RemoteViews（课程 / 教室·老师 / 节次·时间 三行） */
 private class TodayLessonWidgetFactory(private val context: Context) :
     RemoteViewsService.RemoteViewsFactory {
-
-    /** 单条课程正文最多显示的行数（接口里「上课班级」那一行可能很长） */
-    private val maxBodyLines = 2
 
     /** 在 [onDataSetChanged] 里读一次缓存，滑动过程中不再碰文件 */
     private var lessons: List<JwxtLessonUi> = emptyList()
@@ -47,13 +44,11 @@ private class TodayLessonWidgetFactory(private val context: Context) :
         val item = RemoteViews(context.packageName, R.layout.widget_today_lesson_item)
         val lesson = lessons.getOrNull(position) ?: return item
 
+        item.setTextViewText(R.id.tv_lesson_course, lesson.courseName)
+        item.setTextViewText(R.id.tv_lesson_meta, metaText(lesson))
         item.setTextViewText(
-            R.id.tv_lesson_title,
+            R.id.tv_lesson_time,
             context.getString(R.string.jwxt_lesson_section_time, lesson.sectionRange, lesson.timeRange),
-        )
-        item.setTextViewText(
-            R.id.tv_lesson_body,
-            lesson.lines.take(maxBodyLines).joinToString("\n") { it.text },
         )
 
         val tagLabel = transferTagLabel(context, lesson.transferTag)
@@ -64,6 +59,13 @@ private class TodayLessonWidgetFactory(private val context: Context) :
         // 这里只给一个空的填充 Intent，launcher 会把两者合并
         item.setOnClickFillInIntent(R.id.item_root, Intent())
         return item
+    }
+
+    /** 第二行「教室 · 老师」；接口偶尔缺其中之一，缺谁就只显示另一个，不留孤零零的分隔符 */
+    private fun metaText(lesson: JwxtLessonUi): String = when {
+        lesson.classroom.isEmpty() -> lesson.teacher
+        lesson.teacher.isEmpty() -> lesson.classroom
+        else -> context.getString(R.string.widget_lesson_room_teacher, lesson.classroom, lesson.teacher)
     }
 
     override fun getItemId(position: Int): Long = position.toLong()

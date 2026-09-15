@@ -69,7 +69,12 @@ class TodayLessonCache(private val file: File) {
     }
 
     companion object {
-        const val VERSION = 1
+        /**
+         * 缓存格式版本：字段有增删时必须 +1，版本不符的旧缓存按「无缓存」处理（下次进 App 重写）。
+         * v2：`JwxtLessonUi` 增加课程名 / 教师 / 教室，供桌面小组件按三行展示。
+         * v3：`JwxtLessonLine` 由「整行文本 + 是否高亮」改为「片段列表」，用于行内主题色高亮。
+         */
+        const val VERSION = 3
 
         private const val TAG = "TodayLessonCache"
         private const val FILE_NAME = "today_lessons.json"

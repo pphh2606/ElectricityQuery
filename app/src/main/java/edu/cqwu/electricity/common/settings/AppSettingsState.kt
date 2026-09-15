@@ -29,6 +29,12 @@ class AppSettingsState(
     var pureBlack by mutableStateOf(prefs.get(SettingsKeys.PURE_BLACK))
         private set
 
+    var hideBottomBarOnScroll by mutableStateOf(prefs.get(SettingsKeys.HIDE_BOTTOM_BAR_ON_SCROLL))
+        private set
+
+    var tabLabelSelectedOnly by mutableStateOf(prefs.get(SettingsKeys.TAB_LABEL_SELECTED_ONLY))
+        private set
+
     var colorSource by mutableStateOf(loadColorSource())
         private set
 
@@ -85,6 +91,16 @@ class AppSettingsState(
     fun updatePureBlack(enabled: Boolean) {
         pureBlack = enabled
         prefs.set(SettingsKeys.PURE_BLACK, enabled)
+    }
+
+    fun updateHideBottomBarOnScroll(enabled: Boolean) {
+        hideBottomBarOnScroll = enabled
+        prefs.set(SettingsKeys.HIDE_BOTTOM_BAR_ON_SCROLL, enabled)
+    }
+
+    fun updateTabLabelSelectedOnly(enabled: Boolean) {
+        tabLabelSelectedOnly = enabled
+        prefs.set(SettingsKeys.TAB_LABEL_SELECTED_ONLY, enabled)
     }
 
     fun updateColorSource(source: ThemeColorSource) {

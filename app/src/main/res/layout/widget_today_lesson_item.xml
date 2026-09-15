@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 单条课程：左侧一条竖线用来区分不同课程（对标拾光课程表），右侧是
-     标题行（节次+时间 / 调补标签）+ 正文（最多 2 行，超出省略）。
+<!-- 单条课程三行：课程名（+ 调/补标签）/ 教室 · 老师 / 节次（时间）。
+     左侧一条竖线用来区分不同课程（对标拾光课程表）。
      根布局的 id 是必需的：集合列表靠 setOnClickFillInIntent(item_root, …) 让整条都能点。 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_root"
@@ -34,7 +34,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_lesson_title"
+                android:id="@+id/tv_lesson_course"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/widget_text_primary"
@@ -57,12 +57,22 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_lesson_body"
+            android:id="@+id/tv_lesson_meta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:maxLines="2"
+            android:textColor="@color/widget_text_secondary"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tv_lesson_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/widget_text_secondary"
             android:textSize="11sp" />
     </LinearLayout>

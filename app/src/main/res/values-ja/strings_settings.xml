@@ -127,6 +127,10 @@
     <string name="personalization_night_mode">ダークモード</string>
     <string name="personalization_pure_black">純黒背景</string>
     <string name="personalization_pure_black_desc">ダークモードで純黒背景を使用</string>
+    <string name="personalization_hide_bottom_bar">スクロール時にバーを隠す</string>
+    <string name="personalization_hide_bottom_bar_desc">下にスクロールすると下部ナビゲーションバーを隠し、上にスクロールすると再表示します</string>
+    <string name="personalization_tab_label_selected_only">選択中のタブのみ文字を表示</string>
+    <string name="personalization_tab_label_selected_only_desc">現在のタブだけラベルを表示し、他はアイコンのみ表示します</string>
     <string name="personalization_font_scale">文字サイズ</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">デフォルト</string>

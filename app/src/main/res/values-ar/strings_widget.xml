@@ -5,6 +5,8 @@
     <string name="widget_today_title">محاضرات اليوم</string>
     <!-- %1$d = عدد المحاضرات -->
     <string name="widget_lesson_total">%1$d محاضرات</string>
+    <!-- السطر الثاني للمحاضرة: القاعة · المدرّس (يُعرض أحدهما فقط عند غياب الآخر) -->
+    <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">سجّل الدخول لعرض محاضرات اليوم</string>
     <string name="widget_state_no_cache">افتح التطبيق للمزامنة</string>
     <!-- %1$s = تاريخ آخر تحديث (MM-dd) -->

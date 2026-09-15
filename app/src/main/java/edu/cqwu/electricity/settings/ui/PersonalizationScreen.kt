@@ -34,8 +34,10 @@ import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FormatPaint
+import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
+import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,6 +80,7 @@ import edu.cqwu.electricity.common.settings.MAX_FONT_SCALE
 import edu.cqwu.electricity.common.settings.MAX_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.common.settings.MIN_FONT_SCALE
 import edu.cqwu.electricity.common.settings.MIN_SHEET_BLUR_RADIUS
+import edu.cqwu.electricity.common.ui.isHazeBlurSupported
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
@@ -142,6 +145,20 @@ fun PersonalizationScreen(
                         subtitle = stringResource(R.string.personalization_pure_black_desc),
                         checked = appSettings.pureBlack,
                         onCheckedChange = appSettings::updatePureBlack,
+                    )
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.SwapVert,
+                        title = stringResource(R.string.personalization_hide_bottom_bar),
+                        subtitle = stringResource(R.string.personalization_hide_bottom_bar_desc),
+                        checked = appSettings.hideBottomBarOnScroll,
+                        onCheckedChange = appSettings::updateHideBottomBarOnScroll,
+                    )
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.Label,
+                        title = stringResource(R.string.personalization_tab_label_selected_only),
+                        subtitle = stringResource(R.string.personalization_tab_label_selected_only_desc),
+                        checked = appSettings.tabLabelSelectedOnly,
+                        onCheckedChange = appSettings::updateTabLabelSelectedOnly,
                     )
                     FontScaleRow(
                         title = stringResource(R.string.personalization_font_scale),
@@ -218,10 +235,14 @@ fun PersonalizationScreen(
                             }
                         }
                     }
+                    // 系统不支持模糊时（Android 12 以下，或系统关掉了模糊）把这一项整体冻结：
+                    // 与「动态取色不支持」的处理一致——只置灰、不可点，不隐藏，让用户知道有这项能力。
+                    val blurSupported = isHazeBlurSupported()
+                    val blurContentAlpha = if (blurSupported) 1f else 0.38f
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
+                            .clickable(enabled = blurSupported) {
                                 appSettings.updateSheetBlurEnabled(!appSettings.sheetBlurEnabled)
                             }
                             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -231,7 +252,7 @@ fun PersonalizationScreen(
                             Icon(
                                 imageVector = Icons.Outlined.BlurOn,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = blurContentAlpha),
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -241,22 +262,24 @@ fun PersonalizationScreen(
                                 text = stringResource(R.string.personalization_sheet_blur),
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = blurContentAlpha)
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = stringResource(R.string.personalization_sheet_blur_desc),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = blurContentAlpha)
                             )
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Switch(
-                            checked = appSettings.sheetBlurEnabled,
+                            // 不支持时显示为「关」，避免出现"开着却点不动"的困惑
+                            checked = appSettings.sheetBlurEnabled && blurSupported,
                             onCheckedChange = appSettings::updateSheetBlurEnabled,
+                            enabled = blurSupported,
                         )
                     }
-                    AnimatedVisibility(visible = appSettings.sheetBlurEnabled) {
+                    AnimatedVisibility(visible = blurSupported && appSettings.sheetBlurEnabled) {
                         Column {
                             Spacer(modifier = Modifier.height(4.dp))
                             Row(

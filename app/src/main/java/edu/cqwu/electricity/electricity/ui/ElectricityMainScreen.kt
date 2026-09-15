@@ -36,7 +36,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -65,10 +64,16 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.electricity.data.SelectionStep
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.ReduceMotion
+import edu.cqwu.electricity.common.ui.AppNavigationBarItem
+import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
+import edu.cqwu.electricity.common.ui.trackBottomBarScroll
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -184,6 +189,19 @@ fun ElectricityMainScreen(
     val room = uiState.selectedRoom
     val balance = uiState.balance
 
+    // ── 底栏滚动隐藏（与首页三个 tab 共用同一套组件与设置开关）──
+    val appSettings = LocalAppSettingsState.current
+    val hideBarOnScroll = appSettings.hideBottomBarOnScroll
+    val animateBar = appSettings.reduceMotion != ReduceMotion.ON
+    val barScrollState = rememberBottomBarScrollState()
+
+    // 切 tab 后底栏必须回到可见，否则用户找不到导航
+    LaunchedEffect(pagerState.currentPage, hideBarOnScroll) { barScrollState.show() }
+
+    // 外层 Box 只负责给底栏提供覆盖层与滚动判定：底栏不再占用布局，内容区高度恒定
+    Box(
+        modifier = if (hideBarOnScroll) Modifier.trackBottomBarScroll(barScrollState) else Modifier,
+    ) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -269,27 +287,12 @@ fun ElectricityMainScreen(
                 colors = topBarColors
             )
         },
-        bottomBar = {
-            NavigationBar {
-                electricityTabIcons.forEachIndexed { index, icon ->
-                    val label = stringResource(electricityTabLabelKeys[index])
-                    NavigationBarItem(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            if (pagerState.currentPage != index) {
-                                scope.launch { pagerState.animateScrollToPage(index) }
-                            }
-                        },
-                        icon = { Icon(icon, contentDescription = label) },
-                        label = { Text(label) },
-                    )
-                }
-            }
-        }
     ) { paddingValues ->
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
         ) { page ->
             when (page) {
                 0 -> {
@@ -322,6 +325,30 @@ fun ElectricityMainScreen(
                     MyRoomDashboardTab(
                         viewModel = myRoomViewModel,
                         onReLogin = { nav.navigate(Routes.loginRoute()) },
+                    )
+                }
+            }
+        }
+    }
+
+        // 底栏：浮在内容之上，隐藏时向下滑出且不拦截触摸
+        BottomBarOverlay(
+            state = barScrollState,
+            enabled = hideBarOnScroll,
+            animate = animateBar,
+        ) {
+            NavigationBar {
+                electricityTabIcons.forEachIndexed { index, icon ->
+                    val selected = pagerState.currentPage == index
+                    AppNavigationBarItem(
+                        selected = selected,
+                        onClick = {
+                            if (!selected) {
+                                scope.launch { pagerState.animateScrollToPage(index) }
+                            }
+                        },
+                        icon = icon,
+                        label = stringResource(electricityTabLabelKeys[index]),
                     )
                 }
             }

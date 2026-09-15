@@ -5,6 +5,8 @@
     <string name="widget_today_title">今日課表</string>
     <!-- 課程條數統計：%1$d = 節數 -->
     <string name="widget_lesson_total">共 %1$d 節</string>
+    <!-- 單條課程第二行：教室 · 老師（介面缺其中之一時只顯示另一個） -->
+    <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">登入後查看今日課表</string>
     <string name="widget_state_no_cache">開啟 App 同步課表</string>
     <!-- 快取不是今天的：%1$s = 上次更新日期（MM-dd） -->

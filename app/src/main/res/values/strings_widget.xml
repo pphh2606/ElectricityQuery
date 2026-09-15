@@ -9,6 +9,8 @@
     <string name="widget_today_title">今日课表</string>
     <!-- 课程条数统计：%1$d = 节数 -->
     <string name="widget_lesson_total">共 %1$d 节</string>
+    <!-- 单条课程第二行：教室 · 老师（接口缺其中之一时只显示另一个） -->
+    <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">登录后查看今日课表</string>
     <string name="widget_state_no_cache">打开 App 同步课表</string>
     <!-- 缓存不是今天的：%1$s = 上次更新日期（MM-dd） -->

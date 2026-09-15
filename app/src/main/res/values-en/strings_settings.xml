@@ -128,6 +128,10 @@
     <string name="personalization_night_mode">Night Mode</string>
     <string name="personalization_pure_black">Pure Black Background</string>
     <string name="personalization_pure_black_desc">Use a pure black background in dark mode</string>
+    <string name="personalization_hide_bottom_bar">Hide bar when scrolling</string>
+    <string name="personalization_hide_bottom_bar_desc">Tuck the bottom bar away as you scroll down and bring it back as you scroll up</string>
+    <string name="personalization_tab_label_selected_only">Show label for selected tab only</string>
+    <string name="personalization_tab_label_selected_only_desc">Only the current tab shows its label, the others keep just the icon</string>
     <string name="personalization_font_scale">Font Size</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">Default</string>

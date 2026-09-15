@@ -127,6 +127,10 @@
     <string name="personalization_night_mode">夜間模式</string>
     <string name="personalization_pure_black">純黑背景</string>
     <string name="personalization_pure_black_desc">深色模式下使用純黑背景</string>
+    <string name="personalization_hide_bottom_bar">捲動時隱藏底欄</string>
+    <string name="personalization_hide_bottom_bar_desc">向下捲動列表時收起底部導覽列，向上捲動時恢復</string>
+    <string name="personalization_tab_label_selected_only">底欄只顯示選取項文字</string>
+    <string name="personalization_tab_label_selected_only_desc">僅目前頁面的標籤顯示文字，其餘只留圖示，切換時圖示平滑移動</string>
     <string name="personalization_font_scale">字型大小</string>
     <string name="personalization_font_scale_value">%1$d%%</string>
     <string name="personalization_font_scale_default">預設</string>
