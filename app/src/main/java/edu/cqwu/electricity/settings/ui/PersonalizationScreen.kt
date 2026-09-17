@@ -37,7 +37,6 @@ import androidx.compose.material.icons.outlined.FormatPaint
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
-import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -145,13 +144,6 @@ fun PersonalizationScreen(
                         subtitle = stringResource(R.string.personalization_pure_black_desc),
                         checked = appSettings.pureBlack,
                         onCheckedChange = appSettings::updatePureBlack,
-                    )
-                    SettingsSwitchEntry(
-                        icon = Icons.Outlined.SwapVert,
-                        title = stringResource(R.string.personalization_hide_bottom_bar),
-                        subtitle = stringResource(R.string.personalization_hide_bottom_bar_desc),
-                        checked = appSettings.hideBottomBarOnScroll,
-                        onCheckedChange = appSettings::updateHideBottomBarOnScroll,
                     )
                     SettingsSwitchEntry(
                         icon = Icons.Outlined.Label,

@@ -13,7 +13,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.ui.AppNavigationBarItem
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
+import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
 import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
 import edu.cqwu.electricity.hall.ui.HallPageContent
@@ -70,17 +70,15 @@ fun MainTabScreen(
 
     val appSettings = LocalAppSettingsState.current
     val userScrollEnabled = appSettings.reduceMotion != ReduceMotion.ON
-    val hideBarOnScroll = appSettings.hideBottomBarOnScroll
     val animateBar = appSettings.reduceMotion != ReduceMotion.ON
     val barScrollState = rememberBottomBarScrollState()
 
-    // 切 tab、打开半屏浏览器、改动开关后，底栏都必须回到可见，否则用户会找不到导航
-    LaunchedEffect(pagerState.currentPage, halfScreenUrl, hideBarOnScroll) {
-        barScrollState.show()
-    }
+    // 切 tab、打开半屏浏览器后，底栏都必须回到可见，否则用户会找不到导航；
+    // 从子页面返回时的那一次不算（要保留用户离开时的收起状态）
+    ShowBottomBarOnChange(barScrollState, pagerState.currentPage, halfScreenUrl)
 
     Box(
-        modifier = if (hideBarOnScroll) modifier.trackBottomBarScroll(barScrollState) else modifier,
+        modifier = modifier.trackBottomBarScroll(barScrollState),
     ) {
         HorizontalPager(
             state = pagerState,
@@ -139,7 +137,6 @@ fun MainTabScreen(
         // 底栏：浮在内容之上，隐藏时向下滑出且不拦截触摸
         BottomBarOverlay(
             state = barScrollState,
-            enabled = hideBarOnScroll,
             animate = animateBar,
         ) {
             NavigationBar {

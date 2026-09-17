@@ -145,7 +145,8 @@ fun JwxtHomeScreen(
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(top = 4.dp, bottom = 12.dp),
+                    // 顶部不留间距：分类 chip 紧贴顶栏，与首页分区索引栏的规格一致
+                    contentPadding = PaddingValues(bottom = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     // ① 服务区：数据未到时用等高的空白撑开——公告行、Tab 卡这些本地内容照常显示，
@@ -161,11 +162,11 @@ fun JwxtHomeScreen(
                                 items = uiState.currentServices,
                                 moreServiceLabel = moreServiceLabel,
                             ) { item ->
-                                // 「更多服务」进原生二级页；其余服务仍用内置浏览器打开教务子应用
-                                if (item.isMore) {
-                                    nav.navigate(Routes.JWXT_MORE_SERVICE)
-                                } else {
-                                    openWeb(item.pageUrl, item.name)
+                                // 已本地化的服务进原生页；其余仍用内置浏览器打开教务子应用
+                                when {
+                                    item.isMore -> nav.navigate(Routes.JWXT_MORE_SERVICE)
+                                    item.serviceKey == JwxtConstants.SERVICE_KEY_SCORE -> nav.navigate(Routes.JWXT_SCORE)
+                                    else -> openWeb(item.pageUrl, item.name)
                                 }
                             }
                         }

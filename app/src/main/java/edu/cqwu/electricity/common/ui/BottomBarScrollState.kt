@@ -7,10 +7,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,10 +36,14 @@ import androidx.compose.ui.unit.dp
  * 手指按在屏幕上本身就有 ±1px 级抖动，完全零死区会让底栏反复抽搐。
  */
 @Stable
-class BottomBarScrollState(private val deadZonePx: Float) {
+class BottomBarScrollState(
+    private val deadZonePx: Float,
+    /** 初始是否收起；跨页面恢复时由 [rememberBottomBarScrollState] 的保存器传回来 */
+    hidden: Boolean = false,
+) {
 
     /** 底栏是否已收起 */
-    var hidden by mutableStateOf(false)
+    var hidden by mutableStateOf(hidden)
         private set
 
     /** 上次确认过的方向：-1 向上滑（看后面的内容）、1 向下滑、0 还没确认过 */
@@ -91,7 +98,32 @@ class BottomBarScrollState(private val deadZonePx: Float) {
 @Composable
 fun rememberBottomBarScrollState(deadZone: Dp = 2.dp): BottomBarScrollState {
     val deadZonePx = with(LocalDensity.current) { deadZone.toPx() }
-    return remember(deadZonePx) { BottomBarScrollState(deadZonePx) }
+    // 用 rememberSaveable：本页被销毁重建（进子页面再返回、进程被系统回收）后，底栏保持离开时的收起状态。
+    // 只存「是否收起」这一个开关——死区是固定参数，恢复时按当前值重建即可。
+    return rememberSaveable(
+        saver = Saver(
+            save = { it.hidden },
+            restore = { saved -> BottomBarScrollState(deadZonePx, saved) },
+        )
+    ) {
+        BottomBarScrollState(deadZonePx)
+    }
+}
+
+/**
+ * 「切页 / 打开弹窗」时把底栏放回可见（[keys] 是触发信号：当前页下标、弹窗 URL 之类）。
+ *
+ * 与直接调用 [BottomBarScrollState.show] 的区别：**跳过本页重建后的首次执行**。
+ * `LaunchedEffect` 在页面重建时也会跑一次，那一次会把刚从存档恢复的「收起」状态强行展开
+ * （现象：返回瞬间是收起的、紧接着又滑出来），所以必须跳过；之后真的切页、开弹窗照常显示。
+ */
+@Composable
+fun ShowBottomBarOnChange(state: BottomBarScrollState, vararg keys: Any?) {
+    // 普通 remember：本页每次重建都是 false，于是重建后的首次调用正好被跳过
+    var changeSeen by remember { mutableStateOf(false) }
+    LaunchedEffect(*keys) {
+        if (changeSeen) state.show() else changeSeen = true
+    }
 }
 
 /**
@@ -103,7 +135,7 @@ fun Modifier.trackBottomBarScroll(state: BottomBarScrollState): Modifier =
     nestedScroll(state.connection)
 
 /**
- * 覆盖在内容之上的底栏：显隐由 [state] 控制，[enabled] 为 false（用户关掉开关）时始终显示。
+ * 覆盖在内容之上的底栏：显隐由 [state] 控制（滚动方向驱动，不再提供关闭开关）。
  *
  * 三个底部 tab（首页/大厅/我的、电费、缴费服务大厅）共用这一份，避免各自的滑入滑出代码重复。
  * 调用处放在 `Box` 里即可，[BoxScope] 扩展会自动把它对齐到底部。
@@ -111,12 +143,11 @@ fun Modifier.trackBottomBarScroll(state: BottomBarScrollState): Modifier =
 @Composable
 fun BoxScope.BottomBarOverlay(
     state: BottomBarScrollState,
-    enabled: Boolean,
     animate: Boolean,
     content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
-        visible = !(enabled && state.hidden),
+        visible = !state.hidden,
         modifier = Modifier.align(Alignment.BottomCenter),
         // 开启「减少动画」时不做位移动画，直接切换（与页面过渡动画的处理一致）
         enter = if (animate) slideInVertically { it } else EnterTransition.None,

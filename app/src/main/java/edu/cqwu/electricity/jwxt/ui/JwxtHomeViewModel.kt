@@ -32,6 +32,8 @@ data class JwxtGridItem(
     val iconUrl: String,
     val pageUrl: String,
     val isMore: Boolean = false,
+    /** 接口的服务标识；已本地化的服务（如成绩查询）据此改跳原生页面 */
+    val serviceKey: String = "",
 )
 
 /**
@@ -192,6 +194,7 @@ class JwxtHomeViewModel(
                     name = service.serviceName,
                     iconUrl = JwxtConstants.iconUrl(service.serviceIcon),
                     pageUrl = JwxtConstants.pageUrl(service.appId, service.url),
+                    serviceKey = service.serviceKey,
                 )
             }.toMutableList()
 

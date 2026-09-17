@@ -127,8 +127,6 @@
     <string name="personalization_night_mode">夜间模式</string>
     <string name="personalization_pure_black">纯黑背景</string>
     <string name="personalization_pure_black_desc">深色模式下使用纯黑背景</string>
-    <string name="personalization_hide_bottom_bar">滚动时隐藏底栏</string>
-    <string name="personalization_hide_bottom_bar_desc">向下滚动列表时收起底部导航栏，向上滚动时恢复</string>
     <string name="personalization_tab_label_selected_only">底栏只显示选中项文字</string>
     <string name="personalization_tab_label_selected_only_desc">仅当前页面的标签显示文字，其余只留图标，切换时图标平滑移动</string>
     <string name="personalization_font_scale">字体大小</string>

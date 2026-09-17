@@ -7,17 +7,18 @@ import edu.cqwu.electricity.logging.AppLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 /**
- * 教务首页（jwfw `/jwmobile`）接口客户端。
+ * 教务（jwfw `/jwmobile`）接口客户端。
  *
- * 只声明首页需要的接口（服务分组、场景卡、今日课程、本学期考试）；请求头按抓包实测固定，
- * token 由 [JwxtSessionManager] 统一提供。
- * 业务码 401 表示服务端已不认这个 token（JWT 无 `exp`，无法本地判过期），此时清掉本地 token
- * 并抛 [SessionExpiredException]，由 UI 统一引导重新登录——**不做自动重试**。
+ * 声明本模块用到的接口：首页的服务分组、场景卡、今日课程、本学期考试，以及成绩查询的学期列表与成绩。
+ * 请求头按抓包实测固定，token 由 [JwxtSessionManager] 统一提供。
+ * 业务码 401 表示服务端已不认这个 token（JWT 无 `exp`，无法本地判过期），此时清掉本地 token、
+ * 换一次票据重发一次（见 [request]）；重试后仍失败才抛 [SessionExpiredException]，由 UI 引导重新登录。
  */
 class JwxtApi(
     private val client: OkHttpClient = HttpClientFactory.shared,
@@ -83,39 +84,87 @@ class JwxtApi(
             page.data.orEmpty()
         }
 
+    /**
+     * 成绩查询的学期列表（无参数）。
+     *
+     * 实测下发「全部学期（`*`）」+ 各具体学期，页面按这个顺序直接铺胶囊按钮。
+     */
+    suspend fun fetchScoreTerms(): Result<List<JwxtScoreTerm>> =
+        request("biz/v510/score/termList", isPost = false) { json ->
+            val resp = gson.fromJson(json, ScoreTermResponse::class.java)
+            checkBusinessCode(resp.code, resp.msg, "termList")
+            resp.data ?: emptyList()
+        }
+
+    /**
+     * 某学期的成绩；[termCode] 传 `*` 时一次返回所有学期的分组。
+     *
+     * 接口按学期分组下发，这里直接铺平成一条列表——每条成绩自带 `termName`，页面不需要分组结构。
+     */
+    suspend fun fetchTermScores(termCode: String): Result<List<JwxtScore>> =
+        request(
+            path = "biz/v510/score/termScore",
+            isPost = true,
+            jsonBody = gson.toJson(ScoreTermRequest(termCode)),
+        ) { json ->
+            val resp = gson.fromJson(json, TermScoreResponse::class.java)
+            checkBusinessCode(resp.code, resp.msg, "termScore")
+            resp.data?.termScoreList.orEmpty().flatMap { it.scoreList.orEmpty() }
+        }
+
     // ── 内部实现 ──
 
-    /** 执行一次请求并解析；异常统一归类（会话过期原样上抛，其余封装为 Result.failure） */
+    /**
+     * 执行请求，必要时重试一次；异常统一归类（会话过期原样上抛，其余封装为 Result.failure）。
+     *
+     * 业务码 401 说明服务端已不认本地这个 token；而教务的 JWT **没有 `exp` 字段**（本地判断不出过期），
+     * 只能撞上才知道。此时 [checkBusinessCode] 已把本地 token 清掉，这里再换一次票据重发一次通常就能成功，
+     * 不必把用户赶去重新登录；只有重试后仍失败（CAS 会话真的失效）才交给界面提示。
+     */
     private suspend fun <T> request(
         path: String,
         isPost: Boolean,
+        jsonBody: String? = null,
         parse: (String) -> T,
     ): Result<T> = withContext(Dispatchers.IO) {
         try {
-            val data = client.newCall(buildRequest(path, isPost)).execute().use { response ->
-                val body = response.body.string()
-                AppLog.body(TAG, "$path → $body")
-                // 网关故障（如 502 Bad Gateway）返回的是 HTML 错误页，直接交给 Gson 只会得到
-                // 一串看不懂的 JSON 异常；这里改成用 HTTP 状态码当错误信息（页面显示 "HTTP 502"）
-                if (!response.isSuccessful) throw IllegalStateException("HTTP ${response.code}")
-                parse(body)
-            }
-            Result.success(data)
+            Result.success(execute(path, isPost, jsonBody, parse))
         } catch (e: CancellationException) {
             throw e
+        } catch (e: SessionExpiredException) {
+            AppLog.d(TAG, "$path 会话失效，清除本地 token 后重试一次")
+            JwxtSessionManager.clearToken()
+            try {
+                Result.success(execute(path, isPost, jsonBody, parse))
+            } catch (e2: CancellationException) {
+                throw e2
+            } catch (e2: Exception) {
+                AppLog.e(TAG, "请求失败（重换 token 后仍失败）：$path", e2)
+                Result.failure(e2)
+            }
         } catch (e: Exception) {
             AppLog.e(TAG, "请求失败：$path", e)
             Result.failure(e)
         }
     }
 
+    /** 真正发一次请求并解析（不含重试）。网关故障（如 502）返回的是 HTML 错误页，用状态码当错误信息 */
+    private suspend fun <T> execute(path: String, isPost: Boolean, jsonBody: String?, parse: (String) -> T): T {
+        val response = client.newCall(buildRequest(path, isPost, jsonBody)).execute()
+        return response.use {
+            val body = it.body.string()
+            AppLog.body(TAG, "$path → $body")
+            if (!it.isSuccessful) throw IllegalStateException("HTTP ${it.code}")
+            parse(body)
+        }
+    }
+
     /**
      * 构造请求：先确保 token 有效（[JwxtSessionManager.ensureToken] 是挂起函数，因此本方法也是）。
      *
-     * 请求头按抓包实测：`Accept` / `Referer` / `X-Requested-With` / `Authorization`；
-     * POST 为无内容的空请求体（抓包中 `listMoreScene` 正是 `Content-Length: 0`）。
+     * 请求头按抓包实测：`Accept` / `Referer` / `X-Requested-With` / `Authorization`。
      */
-    private suspend fun buildRequest(path: String, isPost: Boolean): Request {
+    private suspend fun buildRequest(path: String, isPost: Boolean, jsonBody: String?): Request {
         val token = JwxtSessionManager.ensureToken()
         val builder = Request.Builder()
             .url(JwxtConstants.BASE + "/" + path)
@@ -125,10 +174,12 @@ class JwxtApi(
             // 取 AJAX 的标准标志值（网页端这里带的是浏览器标识），兼容依赖该头判断 AJAX 的服务端逻辑。
             .addHeader("X-Requested-With", "XMLHttpRequest")
             .addHeader("Authorization", token)
-        return if (isPost) {
-            builder.post(ByteArray(0).toRequestBody()).build()
-        } else {
-            builder.get().build()
+        return when {
+            // 带内容的 POST：成绩查询按学期传 {"termCode":"…"}（抓包实证）
+            jsonBody != null -> builder.post(jsonBody.toRequestBody(JSON_MEDIA_TYPE)).build()
+            // 无内容的 POST：抓包中 listMoreScene 正是 Content-Length: 0
+            isPost -> builder.post(ByteArray(0).toRequestBody()).build()
+            else -> builder.get().build()
         }
     }
 
@@ -152,5 +203,8 @@ class JwxtApi(
 
         /** 与项目其它模块一致的会话过期提示，UI 层据此显示「重新登录」 */
         const val SESSION_EXPIRED_MESSAGE = "会话已过期，请重新登录"
+
+        /** 成绩查询的请求体是 JSON（抓包：`Content-Type: application/json`） */
+        val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
 }

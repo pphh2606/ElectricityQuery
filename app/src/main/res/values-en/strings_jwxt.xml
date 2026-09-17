@@ -19,4 +19,13 @@
     <string name="jwxt_exam_place">Venue %1$s</string>
     <string name="jwxt_exam_seat">Seat %1$s</string>
     <string name="jwxt_exam_teacher">Teacher %1$s</string>
+
+    <!-- ── Score query (localized kwApp/cjcx_v5 page) ── -->
+    <string name="jwxt_score_title">Grades</string>
+    <string name="jwxt_score_tab_all">All</string>
+    <string name="jwxt_score_tab_passed">Passed</string>
+    <string name="jwxt_score_tab_not_passed">Failed</string>
+    <!-- Credit tag on a score item: %1$s = credits, e.g. 3 / 0.25 -->
+    <string name="jwxt_score_credit">%1$s credits</string>
+    <string name="jwxt_score_empty">No grades yet</string>
 </resources>

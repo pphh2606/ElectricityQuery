@@ -129,8 +129,6 @@
     <string name="personalization_night_mode">Mode nuit</string>
     <string name="personalization_pure_black">Fond noir pur</string>
     <string name="personalization_pure_black_desc">Utiliser un fond noir pur en mode sombre</string>
-    <string name="personalization_hide_bottom_bar">Masquer la barre au défilement</string>
-    <string name="personalization_hide_bottom_bar_desc">Replie la barre de navigation quand vous faites défiler vers le bas et la réaffiche vers le haut</string>
     <string name="personalization_tab_label_selected_only">Étiquette du seul onglet sélectionné</string>
     <string name="personalization_tab_label_selected_only_desc">Seul l\'onglet actif affiche son libellé, les autres gardent l\'icône seule</string>
     <string name="personalization_font_scale">Taille de police</string>

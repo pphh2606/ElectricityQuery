@@ -208,4 +208,7 @@ object Routes {
 
     /** 教务「更多服务」（首页九宫格的二级页，本地化） */
     const val JWXT_MORE_SERVICE = "jwxt_more_service"
+
+    /** 教务「成绩查询」（首页九宫格「成绩查询」格子，本地化） */
+    const val JWXT_SCORE = "jwxt_score"
 }

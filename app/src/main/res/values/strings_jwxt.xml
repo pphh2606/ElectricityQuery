@@ -23,4 +23,13 @@
     <string name="jwxt_exam_place">地点 %1$s</string>
     <string name="jwxt_exam_seat">座位 %1$s</string>
     <string name="jwxt_exam_teacher">教师 %1$s</string>
+
+    <!-- ── 成绩查询（kwApp/cjcx_v5 的本地化页） ── -->
+    <string name="jwxt_score_title">成绩查询</string>
+    <string name="jwxt_score_tab_all">全部</string>
+    <string name="jwxt_score_tab_passed">已通过</string>
+    <string name="jwxt_score_tab_not_passed">未通过</string>
+    <!-- 成绩条目的学分标签：%1$s = 学分（如 3、0.25） -->
+    <string name="jwxt_score_credit">%1$s学分</string>
+    <string name="jwxt_score_empty">暂无成绩记录</string>
 </resources>

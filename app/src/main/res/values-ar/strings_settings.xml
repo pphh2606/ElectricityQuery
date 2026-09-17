@@ -132,8 +132,6 @@
     <string name="personalization_night_mode">الوضع الليلي</string>
     <string name="personalization_pure_black">خلفية سوداء نقية</string>
     <string name="personalization_pure_black_desc">استخدم خلفية سوداء نقية في الوضع الداكن</string>
-    <string name="personalization_hide_bottom_bar">إخفاء الشريط عند التمرير</string>
-    <string name="personalization_hide_bottom_bar_desc">طيّ شريط التنقل السفلي عند التمرير للأسفل وإعادته عند التمرير للأعلى</string>
     <string name="personalization_tab_label_selected_only">إظهار نص التبويب المحدد فقط</string>
     <string name="personalization_tab_label_selected_only_desc">يعرض التبويب الحالي النص فقط، أما البقية فتظهر الأيقونة فقط</string>
     <string name="personalization_font_scale">حجم الخط</string>

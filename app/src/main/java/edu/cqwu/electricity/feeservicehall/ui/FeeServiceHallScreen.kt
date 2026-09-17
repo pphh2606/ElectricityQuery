@@ -74,6 +74,7 @@ import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
 import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
 import edu.cqwu.electricity.feeservicehall.data.FeeItem
@@ -161,18 +162,17 @@ fun FeeServiceHallScreen(
         }
     }
 
-    // ── 底栏滚动隐藏（与首页三个 tab 共用同一套组件与设置开关）──
+    // ── 底栏滚动隐藏（与首页三个 tab 共用同一套组件）──
     val appSettings = LocalAppSettingsState.current
-    val hideBarOnScroll = appSettings.hideBottomBarOnScroll
     val animateBar = appSettings.reduceMotion != ReduceMotion.ON
     val barScrollState = rememberBottomBarScrollState()
 
-    // 切 tab 后底栏必须回到可见，否则用户找不到导航
-    LaunchedEffect(pagerState.currentPage, hideBarOnScroll) { barScrollState.show() }
+    // 切 tab 后底栏必须回到可见，否则用户找不到导航；从子页面返回时的那一次不算
+    ShowBottomBarOnChange(barScrollState, pagerState.currentPage)
 
     // 外层 Box 只负责给底栏提供覆盖层与滚动判定：底栏不再占用布局，内容区高度恒定
     Box(
-        modifier = if (hideBarOnScroll) Modifier.trackBottomBarScroll(barScrollState) else Modifier,
+        modifier = Modifier.trackBottomBarScroll(barScrollState),
     ) {
     Scaffold(
         topBar = {
@@ -248,7 +248,6 @@ fun FeeServiceHallScreen(
         // 底栏：浮在内容之上，隐藏时向下滑出且不拦截触摸
         BottomBarOverlay(
             state = barScrollState,
-            enabled = hideBarOnScroll,
             animate = animateBar,
         ) {
             NavigationBar {

@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.app.animatedComposable
 import edu.cqwu.electricity.jwxt.moreservice.JwxtMoreServiceScreen
+import edu.cqwu.electricity.jwxt.score.JwxtScoreScreen
 import edu.cqwu.electricity.jwxt.ui.JwxtHomeScreen
 import edu.cqwu.electricity.common.settings.AppSettingsState
 
@@ -27,6 +28,13 @@ internal fun NavGraphBuilder.jwxtGraph(
     // 教务「更多服务」（二级页；入口：教务首页九宫格的「更多服务」格子）
     animatedComposable(settings = settings, route = Routes.JWXT_MORE_SERVICE) {
         JwxtMoreServiceScreen(
+            onBack = { navController.popBackStack() },
+        )
+    }
+
+    // 教务「成绩查询」（二级页；入口：教务首页九宫格的「成绩查询」格子）
+    animatedComposable(settings = settings, route = Routes.JWXT_SCORE) {
+        JwxtScoreScreen(
             onBack = { navController.popBackStack() },
         )
     }
