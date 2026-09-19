@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_today_name">محاضرات اليوم</string>
-    <string name="widget_today_description">عرض جدول محاضرات اليوم على الشاشة الرئيسية</string>
-    <string name="widget_today_title">محاضرات اليوم</string>
-    <!-- %1$d = عدد المحاضرات -->
-    <string name="widget_lesson_total">%1$d محاضرات</string>
+    <string name="widget_timetable_v2_name">محاضرات اليوم</string>
+    <string name="widget_timetable_v2_description">عرض جدول محاضرات اليوم على الشاشة الرئيسية</string>
+    <string name="widget_timetable_v2_title">محاضرات اليوم</string>
+    <!-- السطر الثالث: عندما لا يوفر الجدول الوقت ولا يُستخرج من النص؛ %1$s = نطاق الحصص (مثال 1-2) -->
+    <string name="widget_timetable_v2_section_only">الحصة %1$s</string>
+    <!-- سطر المعلومات العلوي (يظهر دائمًا): %1$d = عدد المحاضرات، %2$s = وقت حفظ الذاكرة المؤقتة (HH:mm) -->
+    <string name="widget_timetable_v2_footer">%1$d محاضرة · تحديث %2$s</string>
     <!-- السطر الثاني للمحاضرة: القاعة · المدرّس (يُعرض أحدهما فقط عند غياب الآخر) -->
     <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">سجّل الدخول لعرض محاضرات اليوم</string>

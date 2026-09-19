@@ -33,7 +33,7 @@
     <string name="common_settings">الإعدادات</string>
     <string name="common_remove">إزالة</string>
     <string name="common_view">عرض</string>
-    <string name="common_open_in_browser">فتح خارجي</string>
+    <string name="common_open_in_browser">فتح</string>
     <string name="common_clear_search">مسح البحث</string>
     <string name="common_exit_search">الخروج من البحث</string>
     <string name="common_scan">مسح</string>

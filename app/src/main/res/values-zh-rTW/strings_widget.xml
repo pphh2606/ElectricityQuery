@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_today_name">今日課表</string>
-    <string name="widget_today_description">在桌面查看今天的課程安排</string>
-    <string name="widget_today_title">今日課表</string>
-    <!-- 課程條數統計：%1$d = 節數 -->
-    <string name="widget_lesson_total">共 %1$d 節</string>
+    <string name="widget_timetable_v2_name">今日課表</string>
+    <string name="widget_timetable_v2_description">在桌面查看今天的課程安排</string>
+    <string name="widget_timetable_v2_title">今日課表</string>
+    <!-- 第三行：課表介面未提供時間、正文也擷取不到時的寫法；%1$s = 節次範圍（如 1-2） -->
+    <string name="widget_timetable_v2_section_only">%1$s 節</string>
+    <!-- 頂部資訊列（任何狀態都顯示）：%1$d = 課程數，%2$s = 快取寫入時刻（HH:mm） -->
+    <string name="widget_timetable_v2_footer">共 %1$d 節 · %2$s 更新</string>
     <!-- 單條課程第二行：教室 · 老師（介面缺其中之一時只顯示另一個） -->
     <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">登入後查看今日課表</string>

@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_today_name">Today\'s classes</string>
-    <string name="widget_today_description">View today\'s class schedule on your home screen</string>
-    <string name="widget_today_title">Today\'s classes</string>
-    <!-- %1$d = number of classes -->
-    <string name="widget_lesson_total">%1$d classes</string>
     <!-- Row 2 of a lesson: room · teacher (only one is shown when the other is missing) -->
     <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">Sign in to view today\'s classes</string>
@@ -13,15 +8,10 @@
     <string name="widget_state_stale">Needs update (%1$s)</string>
     <string name="widget_loading">Loading classes…</string>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  "Today's classes" widget (jwxt/timetable)      -->
-    <!--  Data source: My timetable. Coexists with the   -->
-    <!--  widget above; drop the V2 suffix once the old  -->
-    <!--  one is deleted. Count / room-teacher / period  -->
-    <!--  / state texts reuse the keys above.            -->
-    <!-- ═══════════════════════════════════════════ -->
-    <string name="widget_timetable_v2_name">Today\'s classes (new)</string>
-    <string name="widget_timetable_v2_description">View today\'s classes on your home screen (from My timetable)</string>
+    <!--  "Today's classes" widget (jwxt/timetable, data source: My timetable)  -->
+    <!--  Room-teacher / state texts share the keys above; only its own are listed here.  -->
+    <string name="widget_timetable_v2_name">Today\'s classes</string>
+    <string name="widget_timetable_v2_description">View today\'s class schedule on your home screen</string>
     <string name="widget_timetable_v2_title">Today\'s classes</string>
     <!-- Row 3 when the time could not be extracted: %1$s = section range (e.g. 1-2) -->
     <string name="widget_timetable_v2_section_only">Period %1$s</string>

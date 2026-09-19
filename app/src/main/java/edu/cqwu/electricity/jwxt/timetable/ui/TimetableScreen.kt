@@ -137,71 +137,73 @@ fun JwxtTimetableScreen(
             )
         },
     ) { paddingValues ->
-        when {
-            uiState.requiresReLogin -> ReLoginContent(
-                requiresReLogin = true,
-                onReLogin = { nav.navigate(Routes.loginRoute()) },
-                modifier = Modifier.padding(paddingValues),
+        // 顶部是「学期 / 周次」切换，下面是内容区——两者分离，任何内容态都不会把切换行一起挡住：
+        // 会话过期、或某个学期加载失败（教务「该校历未维护」）时，用户都还能切回别的学期
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            NavigatorRow(
+                state = uiState,
+                onSelectWeek = viewModel::selectWeek,
+                onSelectTerm = viewModel::selectTerm,
+                onPick = { picker = uiState.mode },
+                onModeChange = viewModel::selectMode,
             )
 
-            uiState.errorMessage != null -> ReLoginContent(
-                errorMessage = uiState.errorMessage,
-                requiresReLogin = false,
-                onReLogin = {},
-                onRetry = { viewModel.load() },
-                modifier = Modifier.padding(paddingValues),
-            )
-
-            else -> Column(
+            PullToRefreshBox(
+                // 首次加载也算「正在刷新」，让顶部下拉指示器一进页面就出现（与教务首页、成绩页一致）
+                isRefreshing = uiState.isLoading || uiState.isRefreshing,
+                onRefresh = { viewModel.refresh() },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                    .fillMaxWidth()
+                    .weight(1f),
             ) {
-                NavigatorRow(
-                    state = uiState,
-                    onSelectWeek = viewModel::selectWeek,
-                    onSelectTerm = viewModel::selectTerm,
-                    onPick = { picker = uiState.mode },
-                    onModeChange = viewModel::selectMode,
-                )
+                when {
+                    // 会话过期：内容区显示「重新登录」，顶部的学期 / 周次切换保留
+                    uiState.requiresReLogin -> ReLoginContent(
+                        requiresReLogin = true,
+                        onReLogin = { nav.navigate(Routes.loginRoute()) },
+                    )
 
-                PullToRefreshBox(
-                    // 首次加载也算「正在刷新」，让顶部下拉指示器一进页面就出现（与教务首页、成绩页一致）
-                    isRefreshing = uiState.isLoading || uiState.isRefreshing,
-                    onRefresh = { viewModel.refresh() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                ) {
-                    when {
-                        // 数据还没到：留白（顶部指示器在转），此时不能说「本周暂无课程」
-                        uiState.courses.isEmpty() && uiState.isLoading ->
-                            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {}
+                    // 某个学期加载失败（如教务回「该校历未维护」）：只在**内容区**提示，
+                    // 上面的学期 / 周次切换必须留着——否则用户被全屏错误页挡住，切不回别的学期
+                    uiState.errorMessage != null -> ReLoginContent(
+                        errorMessage = uiState.errorMessage,
+                        requiresReLogin = false,
+                        onReLogin = {},
+                        // 重试「当前选中的学期」；load() 会重新落到默认学期，等于把用户的选择丢掉
+                        onRetry = { viewModel.refresh() },
+                    )
 
-                        // 没课；或接口没给节次（没有节次就无法定位行，画出格子必然错位）
-                        uiState.courses.isEmpty() || uiState.sections.isEmpty() -> Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.jwxt_timetable_empty),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                    // 数据还没到：留白（顶部指示器在转），此时不能说「本周暂无课程」
+                    uiState.courses.isEmpty() && uiState.isLoading ->
+                        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {}
 
-                        else -> TimetableGrid(
-                            sections = uiState.sections,
-                            courses = uiState.courses,
-                            onCourseClick = {
-                                detailCourse = it
-                                detailVisible = true
-                            },
+                    // 没课；或接口没给节次（没有节次就无法定位行，画出格子必然错位）
+                    uiState.courses.isEmpty() || uiState.sections.isEmpty() -> Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.jwxt_timetable_empty),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+
+                    else -> TimetableGrid(
+                        sections = uiState.sections,
+                        courses = uiState.courses,
+                        onCourseClick = {
+                            detailCourse = it
+                            detailVisible = true
+                        },
+                    )
                 }
             }
         }

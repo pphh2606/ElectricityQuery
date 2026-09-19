@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_today_name">Cours du jour</string>
-    <string name="widget_today_description">Afficher l\'emploi du temps du jour sur l\'écran d\'accueil</string>
-    <string name="widget_today_title">Cours du jour</string>
-    <!-- %1$d = nombre de cours -->
-    <string name="widget_lesson_total">%1$d cours</string>
+    <string name="widget_timetable_v2_name">Cours du jour</string>
+    <string name="widget_timetable_v2_description">Afficher l\'emploi du temps du jour sur l\'écran d\'accueil</string>
+    <string name="widget_timetable_v2_title">Cours du jour</string>
+    <!-- Ligne 3 : quand l'heure n'est ni fournie ni extraite ; %1$s = plage de périodes (ex. 1-2) -->
+    <string name="widget_timetable_v2_section_only">Période %1$s</string>
+    <!-- Ligne d'infos en haut (toujours affichée) : %1$d = nombre de cours, %2$s = heure de mise en cache (HH:mm) -->
+    <string name="widget_timetable_v2_footer">%1$d cours · mis à jour %2$s</string>
     <!-- Ligne 2 d'un cours : salle · enseignant (l'autre seul s'il en manque un) -->
     <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">Connectez-vous pour voir les cours du jour</string>

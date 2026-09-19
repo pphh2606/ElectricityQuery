@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.notice.ui
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,9 +28,9 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,8 +52,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -82,12 +88,16 @@ fun NoticeScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     var searchText by remember { mutableStateOf("") }
+    var isSearching by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     val topBarColors = currentTopBarColors()
 
     // 每次从首页进入时刷新；从详情返回时不刷新
     // 同时清除上次的搜索状态，避免搜索残留
     LaunchedEffect(Unit) {
         searchText = ""
+        isSearching = false
         if (viewModel.listRefreshEnabled || viewModel.items.isEmpty()) {
             viewModel.clearSearch()
             viewModel.loadPage(0, isRefresh = true)
@@ -125,9 +135,95 @@ fun NoticeScreen(
         }
     }
 
+    // 退出搜索态：只收起搜索条，不改当前查询条件
+    fun exitSearch() {
+        focusManager.clearFocus()
+        isSearching = false
+    }
+
+    LaunchedEffect(isSearching) {
+        if (isSearching) focusRequester.requestFocus()
+    }
+
+    // 搜索态下拦截系统返回键：先退出搜索，而不是退出页面
+    BackHandler(enabled = isSearching) { exitSearch() }
+
+    // 软键盘回车与右侧搜索按钮都走这里：提交关键词并退出搜索态
+    fun submitSearch() {
+        val keyword = searchText.trim()
+        exitSearch()
+        doSearch(keyword)
+    }
+
     Scaffold(
         topBar = {
-            Column {
+            if (isSearching) {
+                // ── 搜索态：标题栏整体变成搜索条 ──
+                TopAppBar(
+                    title = {
+                        TextField(
+                            value = searchText,
+                            onValueChange = { searchText = it },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.notice_search_hint),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                )
+                            },
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester),
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                            ),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
+                            trailingIcon = {
+                                if (searchText.isNotEmpty()) {
+                                    // 只清输入框，不立刻改查询条件——提交后才生效
+                                    IconButton(onClick = { searchText = "" }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Close,
+                                            contentDescription = stringResource(R.string.common_clear_search),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    },
+                    navigationIcon = {
+                        // 取消：不改查询条件，直接退出搜索态
+                        IconButton(onClick = { exitSearch() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = stringResource(R.string.common_exit_search),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { submitSearch() }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = stringResource(R.string.common_search),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    colors = topBarColors
+                )
+            } else {
+                // ── 普通态：标题（含总数）+ 右侧搜索按钮 ──
                 TopAppBar(
                     title = {
                         Column {
@@ -159,68 +255,17 @@ fun NoticeScreen(
                             )
                         }
                     },
+                    actions = {
+                        IconButton(onClick = { isSearching = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = stringResource(R.string.common_search),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
                     colors = topBarColors
                 )
-
-                // 常驻搜索栏：输入框 + 右侧搜索按钮
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.notice_search_hint),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                            )
-                        },
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                            unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                        ),
-                        modifier = Modifier.weight(1f),
-                        trailingIcon = {
-                            if (searchText.isNotEmpty()) {
-                                IconButton(onClick = {
-                                    searchText = ""
-                                    doSearch("")
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Close,
-                                        contentDescription = stringResource(R.string.common_clear_search),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Search
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onSearch = { doSearch(searchText) }
-                        )
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(onClick = { doSearch(searchText) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = stringResource(R.string.common_search),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
             }
         }
     ) { paddingValues ->
@@ -317,13 +362,17 @@ private fun NoticeCard(
     notice: NoticeItem,
     onClick: () -> Unit
 ) {
-    ElevatedCard(
+    // 用 Card（ElevatedCard 没有 border 参数）；无阴影，轮廓由 1dp 描边提供
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
+            // 先裁圆角再挂点击，水波纹才会跟着圆角走（Card 的 shape 只管背景与边框）
+            .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )

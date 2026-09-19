@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_today_name">今日の授業</string>
-    <string name="widget_today_description">ホーム画面で今日の時間割を表示します</string>
-    <string name="widget_today_title">今日の授業</string>
-    <!-- %1$d = コマ数 -->
-    <string name="widget_lesson_total">全%1$dコマ</string>
+    <string name="widget_timetable_v2_name">今日の授業</string>
+    <string name="widget_timetable_v2_description">ホーム画面で今日の時間割を表示します</string>
+    <string name="widget_timetable_v2_title">今日の授業</string>
+    <!-- 3 行目：時間割 API が時間を返さず本文からも取れないときの表記；%1$s = 時限（例 1-2） -->
+    <string name="widget_timetable_v2_section_only">%1$s 限</string>
+    <!-- 上部の情報行（常に表示）：%1$d = コマ数、%2$s = キャッシュ更新時刻（HH:mm） -->
+    <string name="widget_timetable_v2_footer">全 %1$d 限 · %2$s 更新</string>
     <!-- 授業の 2 行目：教室 · 教員（片方だけのときは他方のみ表示） -->
     <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">ログインすると今日の授業を表示します</string>

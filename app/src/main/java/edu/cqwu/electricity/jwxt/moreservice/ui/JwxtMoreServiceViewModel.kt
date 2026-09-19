@@ -8,11 +8,13 @@ import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.moreservice.data.JwxtServiceGroup
 import edu.cqwu.electricity.logging.AppLog
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** 一条服务：名称、图标地址（已补全）、落地页（已拼好 appId 路由） */
 data class JwxtMoreServiceItem(
@@ -90,7 +92,9 @@ class JwxtMoreServiceViewModel(
 
         viewModelScope.launch {
             try {
-                val groups = buildGroups(api.fetchServiceSets().getOrThrow())
+                // 接口结构 → UI 结构的映射放 IO：几十条服务的构造不该占主线程，否则会和进入动画抢帧
+                val fetched = api.fetchServiceSets().getOrThrow()
+                val groups = withContext(Dispatchers.IO) { buildGroups(fetched) }
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,

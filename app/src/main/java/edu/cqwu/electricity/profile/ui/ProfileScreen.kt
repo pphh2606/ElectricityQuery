@@ -5,6 +5,7 @@ import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import edu.cqwu.electricity.logging.AppLog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -175,15 +176,18 @@ fun ProfilePageContent(
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
+                    // 先裁圆角再挂点击，水波纹才会跟着圆角走
+                    .clip(RoundedCornerShape(16.dp))
                     .clickable {
                         if (isLoggedIn) {
                             nav.navigate(Routes.MY_INFO)
                         } else {
                             nav.navigate(Routes.loginRoute())
                         }
-                    },
+                    }
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
                 shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
             ) {
                 Row(
                     modifier = Modifier

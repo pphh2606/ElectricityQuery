@@ -8,6 +8,4 @@
     <color name="widget_text_secondary">#FF49454F</color>
     <!-- 课程条目左侧竖线 -->
     <color name="widget_indicator">#FF6750A4</color>
-    <color name="widget_tag_bg">#FFFFDAD6</color>
-    <color name="widget_tag_text">#FF410002</color>
 </resources>

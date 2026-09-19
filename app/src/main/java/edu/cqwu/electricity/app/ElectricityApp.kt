@@ -15,8 +15,6 @@ import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.jwxt.timetable.data.TimetableWidgetRepositoryV2
 import edu.cqwu.electricity.jwxt.timetable.widget.TimetableWidgetUpdaterV2
-import edu.cqwu.electricity.jwxt.todaylesson.data.TodayLessonRepository
-import edu.cqwu.electricity.jwxt.todaylesson.widget.TodayLessonWidgetUpdater
 import edu.cqwu.electricity.common.settings.SettingsKeys
 import edu.cqwu.electricity.common.settings.SettingsPreferences
 import edu.cqwu.electricity.common.settings.UserAgentProvider
@@ -53,18 +51,13 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         AccountSessionStore.init(this)
         // 恢复上次激活账号的登录态到系统 CookieManager（经会话协调器）
         SessionCoordinatorV2.restoreActive()
-        // 今日课表仓库需要提前注入 Context（小组件被桌面进程拉起时会先走 Application.onCreate）
-        TodayLessonRepository.init(this)
-        // 「今日课表」小组件的数据来自课表接口，同样要提前注入 Context（理由同上）
+        // 「今日课表」小组件的数据来自课表接口，需要提前注入 Context：
+        // 小组件被桌面进程拉起时会先走 Application.onCreate
         TimetableWidgetRepositoryV2.init(this)
         // 进程一起来就先刷一次桌面小组件：覆盖安装后系统不保证补发 APPWIDGET_UPDATE，
         // 这一步让「打开 App 的任意页面」都能把组件从加载占位里救回来
-        TodayLessonWidgetUpdater.renderFromCache(this)
+        TimetableWidgetUpdaterV2.renderFromCache(this)
         // 课表缓存一更新就刷桌面（数据变化即刷新，等价于参考实现里 Koin + Flow 的那条链路）
-        TodayLessonRepository.dataUpdated
-            .onEach { TodayLessonWidgetUpdater.renderFromCache(this@ElectricityApp) }
-            .launchIn(appScope)
-        // 「今日课表」（新）同理：课表缓存一更新就刷桌面（缓存由课表页写，也可由上面的启动补取写）
         TimetableWidgetRepositoryV2.dataUpdated
             .onEach { TimetableWidgetUpdaterV2.renderFromCache(this@ElectricityApp) }
             .launchIn(appScope)

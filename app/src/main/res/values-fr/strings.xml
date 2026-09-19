@@ -33,7 +33,7 @@
     <string name="common_settings">Paramètres</string>
     <string name="common_remove">Retirer</string>
     <string name="common_view">Afficher</string>
-    <string name="common_open_in_browser">Ouvrir en externe</string>
+    <string name="common_open_in_browser">Ouvrir</string>
     <string name="common_clear_search">Effacer la recherche</string>
     <string name="common_exit_search">Quitter la recherche</string>
     <string name="common_scan">Scanner</string>

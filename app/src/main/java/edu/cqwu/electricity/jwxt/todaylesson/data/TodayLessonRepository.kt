@@ -1,75 +1,29 @@
 package edu.cqwu.electricity.jwxt.todaylesson.data
 
-import android.content.Context
 import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
-import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
- * 今日课表仓库：教务首页「今日课程」与桌面小组件共用的唯一取数入口。
+ * 今日课程仓库：教务首页那张「今日课程」卡片的取数入口。
  *
- * 职责：网络取数 → 清洗成 [JwxtLessonUi] → 落缓存。
- * 原来这段逻辑挂在 `JwxtHomeViewModel` 里（UI 层），小组件无法复用，故搬到这里。
+ * 职责：网络取数 → 清洗成 [JwxtLessonUi]。
+ * 这段逻辑原来挂在 `JwxtHomeViewModel`（UI 层）里，搬到数据层后既能让单测直接验证，也不再受界面变动影响。
  * （周课表页用的是另一套接口 `getMyScheduleDetail`，与这里不共用。）
  *
- * 与项目其它单例（CookieStore / AccountSessionStore）一致：由 Application 注入 Context。
+ * 它原先还负责"为桌面小组件落缓存 + 发缓存已更新信号"；旧小组件删除后这两件事都没有使用者了，
+ * 于是回归成纯粹的取数入口——桌面上那份数据现在由 `timetable` 的 V2 小组件自己维护（数据源是课表接口）。
  */
 object TodayLessonRepository {
 
-    private const val DATE_PATTERN = "yyyy-MM-dd"
-
     private val api = TodayLessonApi()
 
-    /** 缓存位置：Context 由 [init] 注入（Application.onCreate 先于任何 Activity / 广播回调执行） */
-    private lateinit var cache: TodayLessonCache
-
     /**
-     * 「缓存已更新」信号（CONFLATED：只保留最新一次）。
+     * 拉取今日课程并清洗成 UI 模型。
      *
-     * 桌面小组件靠它做到「App 里课表一变，桌面立刻跟着变」；订阅方是 Application，
-     * 这样刷新小组件的调用不必写在 UI 层（ViewModel / Compose）里。
+     * 失败（含会话过期）原样返回 `Result.failure`，由调用方决定如何呈现——不做自动重试。
      */
-    private val _dataUpdated = Channel<Unit>(Channel.CONFLATED)
-    val dataUpdated: Flow<Unit> = _dataUpdated.receiveAsFlow()
-
-    /** 初始化，在 Application.onCreate 中调用 */
-    fun init(context: Context) {
-        cache = TodayLessonCache.from(context)
-    }
-
-    /**
-     * 拉取今日课程并写入缓存。
-     *
-     * 失败（含会话过期）原样返回 `Result.failure`，由调用方决定如何呈现——不做自动重试，
-     * 也不清空既有缓存（旧缓存仍可给小组件兜底展示）。
-     */
-    suspend fun fetchAndCache(): Result<List<JwxtLessonUi>> {
-        val result = api.fetchTodayLessons().map { toUiLessons(it) }
-        result.getOrNull()?.let { lessons ->
-            cache.write(
-                TodayLessonPayload(
-                    savedDate = todayDateString(),
-                    accountId = SessionCoordinatorV2.currentAccount()?.id.orEmpty(),
-                    lessons = lessons,
-                )
-            )
-            // 通知订阅者（Application）刷新桌面小组件
-            _dataUpdated.trySend(Unit)
-        }
-        return result
-    }
-
-    /** 读缓存（不做日期/账号过期判断，判定交给调用方） */
-    fun cached(): TodayLessonPayload? = cache.read()
-
-    /** 设备当天日期 `yyyy-MM-dd`；`java.time` 需要 API 26，本项目 minSdk 21，故用 SimpleDateFormat */
-    fun todayDateString(): String = SimpleDateFormat(DATE_PATTERN, Locale.US).format(Date())
+    suspend fun fetchTodayLessons(): Result<List<JwxtLessonUi>> =
+        api.fetchTodayLessons().map { toUiLessons(it) }
 
     /** `data-kblx` 标记：`02` 教师（锚文本是人名）、`01` 教室（锚文本是地点），`05` 是教学班 */
     private const val KB_TEACHER = "02"

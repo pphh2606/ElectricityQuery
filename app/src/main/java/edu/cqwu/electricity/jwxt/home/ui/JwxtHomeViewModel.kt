@@ -137,7 +137,7 @@ class JwxtHomeViewModel(
                 val data = coroutineScope {
                     val groupsDeferred = async { api.fetchLabelServices().getOrThrow() }
                     val scenesDeferred = async { api.fetchMoreScenes().getOrThrow() }
-                    val lessonsDeferred = async { runCatchingCancellable { TodayLessonRepository.fetchAndCache().getOrThrow() } }
+                    val lessonsDeferred = async { runCatchingCancellable { TodayLessonRepository.fetchTodayLessons().getOrThrow() } }
                     val examsDeferred = async { runCatchingCancellable { api.fetchRecentExams().getOrThrow() } }
                     HomeData(
                         groups = groupsDeferred.await(),

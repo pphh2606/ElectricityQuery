@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  今日课表桌面小组件（jwxt/todaylesson）          -->
-    <!--  课程标题行 / 调补标签复用 strings_jwxt.xml   -->
-    <!-- ═══════════════════════════════════════════ -->
-    <string name="widget_today_name">今日课表</string>
-    <string name="widget_today_description">在桌面查看今天的课程安排</string>
-    <string name="widget_today_title">今日课表</string>
-    <!-- 课程条数统计：%1$d = 节数 -->
-    <string name="widget_lesson_total">共 %1$d 节</string>
     <!-- 单条课程第二行：教室 · 老师（接口缺其中之一时只显示另一个） -->
     <string name="widget_lesson_room_teacher">%1$s · %2$s</string>
     <string name="widget_state_no_account">登录后查看今日课表</string>
@@ -17,16 +8,10 @@
     <string name="widget_state_stale">课表待更新（%1$s）</string>
     <string name="widget_loading">正在加载课表…</string>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  「今日课表」小组件（jwxt/timetable）            -->
-    <!--  数据源＝「我的课表」（课表接口），与上面那个     -->
-    <!--  （jwxt/todaylesson，数据源＝教务「今日课程」）   -->
-    <!--  并存；旧的那套删除后，把 name 改回「今日课表」  -->
-    <!--  条数统计 / 教室·老师 / 节次·时间 / 各状态文案   -->
-    <!--  与旧组件复用同一批 key，故这里只列它独有的一条  -->
-    <!-- ═══════════════════════════════════════════ -->
-    <string name="widget_timetable_v2_name">今日课表（新）</string>
-    <string name="widget_timetable_v2_description">在桌面查看今天要上的课（来自我的课表）</string>
+    <!--  「今日课表」小组件（jwxt/timetable，数据源＝「我的课表」）  -->
+    <!--  教室·老师 / 各状态文案与通用 key 共用，这里只列它独有的几条  -->
+    <string name="widget_timetable_v2_name">今日课表</string>
+    <string name="widget_timetable_v2_description">在桌面查看今天的课程安排</string>
     <string name="widget_timetable_v2_title">今日课表</string>
     <!-- 第三行：课表接口不给时间、正文里也没抠到时的写法；%1$s = 节次范围（如 1-2） -->
     <string name="widget_timetable_v2_section_only">%1$s 节</string>

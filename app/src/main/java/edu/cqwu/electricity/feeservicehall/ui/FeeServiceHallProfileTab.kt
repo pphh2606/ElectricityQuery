@@ -4,6 +4,7 @@ import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -104,8 +105,9 @@ private fun ProfileMenuCard(
     onNavigateToWebView: (url: String, title: String) -> Unit,
 ) {
     ElevatedCard(
+        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
     ) {
         items.forEachIndexed { index, item ->
             val itemTitle = stringResource(item.titleRes)
@@ -133,8 +135,10 @@ private fun ProfileInfoCard(
 ) {
     ElevatedCard(
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
     ) {
         when {
             uiState.isProfileLoading -> {

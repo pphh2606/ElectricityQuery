@@ -3,6 +3,7 @@ package edu.cqwu.electricity.shortcut.ui
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -183,9 +184,12 @@ fun AddShortcutScreen(
                     ElevatedCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showFunctionSheet = true },
+                            // 先裁圆角再挂点击，水波纹才会跟着圆角走
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { showFunctionSheet = true }
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
                         shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
                     ) {
                         Row(
                             modifier = Modifier

@@ -14,12 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -124,29 +126,37 @@ fun JwxtMoreServiceScreen(
                     .padding(paddingValues),
             ) {
                 // 分组 chip 固定在顶栏下方：它只切换下面的列表内容，不随列表滚动
+                // 分组只在数据变化时重算：写在组合里会让每次重组（如图标加载完成）都新建一个 List
+                val chipLabels = remember(uiState.groups) {
+                    uiState.groups.map { JwxtChipLabel(it.name, it.count) }
+                }
                 JwxtLabelChips(
-                    labels = uiState.groups.map { JwxtChipLabel(it.name, it.count) },
+                    labels = chipLabels,
                     selectedIndex = uiState.selectedGroupIndex,
                     onSelect = { viewModel.selectGroup(it) },
                 )
 
                 PullToRefreshBox(
-                    isRefreshing = uiState.isRefreshing,
+                    // 首屏也算「正在刷新」，让顶部指示器一进页面就转（页面不再有居中转圈）
+                    isRefreshing = uiState.isLoading || uiState.isRefreshing,
                     onRefresh = { viewModel.load(isRefresh = true) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 ) {
                     when {
+                        // 数据还没到：留白，否则会先闪一下「暂无可用的教务服务」
                         uiState.isLoading -> Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
+                        )
 
+                        // 空状态也放在可滚动容器里：这样「暂无服务」时往下拉能直接重试
                         uiState.currentCategories.isEmpty() -> Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(

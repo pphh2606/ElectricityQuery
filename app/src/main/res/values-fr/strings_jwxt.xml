@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Scolarité (jwfw.cqwu.edu.cn /jwmobile)      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="jwxt_title">Scolarité</string>
+    <!-- Libellé du chip de catégorie : %1$s = nom de la catégorie, %2$d = nombre de services -->
+    <string name="jwxt_chip_label">%1$s %2$d</string>
+    <string name="jwxt_more_service">Plus de services</string>
+    <string name="jwxt_more_service_empty">Aucun service disponible</string>
+    <string name="jwxt_notice_title">Annonces</string>
+    <string name="jwxt_detail">Détails</string>
+    <string name="jwxt_tab_today_lesson">Cours du jour</string>
+    <string name="jwxt_tab_term_exam">Examens du semestre</string>
+    <!-- Titre d\'un cours : %1$s = plage de périodes (ex. 5-6), %2$s = plage horaire (ex. 14:30-16:10) -->
+    <string name="jwxt_lesson_section_time">Période %1$s (%2$s)</string>
+    <!-- Étiquettes « déplacé » / « rattrapage » (la version web affiche un caractère avant le nom) -->
+    <string name="jwxt_lesson_tag_adjust">Déplacé</string>
+    <string name="jwxt_lesson_tag_makeup">Rattrapage</string>
+    <string name="jwxt_lesson_empty">Aucun cours aujourd\'hui</string>
+    <!-- Entrée en bas des cours du jour : ouvre la recherche d\'emploi du temps -->
+    <string name="jwxt_lesson_more">Plus de cours</string>
+    <string name="jwxt_exam_empty">Aucun examen à venir</string>
+    <!-- Détail d\'un examen : %1$s = lieu / place / enseignant -->
+    <string name="jwxt_exam_place">Lieu %1$s</string>
+    <string name="jwxt_exam_seat">Place %1$s</string>
+    <string name="jwxt_exam_teacher">Enseignant %1$s</string>
+
+    <!-- ── Relevé de notes (page localisée kwApp/cjcx_v5) ── -->
+    <string name="jwxt_score_title">Notes</string>
+    <string name="jwxt_score_tab_all">Tout</string>
+    <string name="jwxt_score_tab_passed">Validé</string>
+    <string name="jwxt_score_tab_not_passed">Non validé</string>
+    <!-- Étiquette de crédits : %1$s = crédits (ex. 3, 0.25) -->
+    <string name="jwxt_score_credit">%1$s crédits</string>
+    <string name="jwxt_score_empty">Aucune note</string>
+
+    <!-- ── Emploi du temps hebdomadaire (page localisée de l\'app index home/timetable) ── -->
+    <string name="jwxt_timetable_title">Emploi du temps</string>
+    <!-- Ligne en bas de la page de recherche : ouvre mon propre emploi du temps -->
+    <string name="jwxt_my_timetable">Mon emploi du temps</string>
+    <!-- Semaine : %1$d = numéro de semaine -->
+    <string name="jwxt_timetable_week">Semaine %1$d</string>
+    <string name="jwxt_timetable_prev_week">Semaine précédente</string>
+    <string name="jwxt_timetable_next_week">Semaine suivante</string>
+    <string name="jwxt_timetable_empty">Aucun cours cette semaine</string>
+    <string name="jwxt_timetable_mon">Lun</string>
+    <string name="jwxt_timetable_tue">Mar</string>
+    <string name="jwxt_timetable_wed">Mer</string>
+    <string name="jwxt_timetable_thu">Jeu</string>
+    <string name="jwxt_timetable_fri">Ven</string>
+    <string name="jwxt_timetable_sat">Sam</string>
+    <string name="jwxt_timetable_sun">Dim</string>
+    <!-- Barre de navigation : vues semaine / semestre et titres des sélecteurs -->
+    <string name="jwxt_timetable_mode_week">Semaine</string>
+    <string name="jwxt_timetable_mode_term">Semestre</string>
+    <string name="jwxt_timetable_pick_week">Choisir une semaine</string>
+    <string name="jwxt_timetable_pick_term">Choisir un semestre</string>
+
+    <!-- ── Recherche d\'emploi du temps (page localisée du service PK.QXKBCX) ── -->
+    <string name="jwxt_schedule_query_title">Recherche d\'emploi du temps</string>
+    <string name="jwxt_schedule_type_classroom">Emploi du temps par salle</string>
+    <string name="jwxt_schedule_type_teacher">Emploi du temps par enseignant</string>
+    <string name="jwxt_schedule_type_class">Emploi du temps par classe</string>
+    <!-- Filtres et liste de la page de sélection -->
+    <string name="jwxt_schedule_filter_all">Tout</string>
+    <string name="jwxt_schedule_filter_term">Semestre</string>
+    <string name="jwxt_schedule_filter_campus">Campus</string>
+    <string name="jwxt_schedule_filter_building">Bâtiment</string>
+    <string name="jwxt_schedule_filter_depart">Département</string>
+    <string name="jwxt_schedule_filter_sex">Sexe</string>
+    <string name="jwxt_schedule_filter_grade">Promotion</string>
+    <string name="jwxt_schedule_filter_college">École</string>
+    <string name="jwxt_schedule_filter_major">Spécialité</string>
+    <string name="jwxt_schedule_filter_teached_only">Avec cours</string>
+    <string name="jwxt_schedule_filter_outsource_only">Vacataires</string>
+    <string name="jwxt_schedule_search_classroom">Rechercher une salle</string>
+    <string name="jwxt_schedule_search_teacher">Rechercher un enseignant</string>
+    <string name="jwxt_schedule_empty">Aucun résultat</string>
+    <!-- Ligne de statistiques : éléments chargés / page -->
+    <plurals name="jwxt_schedule_loaded_count">
+        <item quantity="one">%1$d chargé</item>
+        <item quantity="other">%1$d chargés</item>
+        <item quantity="many">%1$d chargés</item>
+    </plurals>
+    <string name="jwxt_schedule_page_info">Page %1$d/%2$d</string>
+    <!-- Boîte centrée pendant la résolution du campus avant d\'ouvrir l\'emploi du temps -->
+    <string name="jwxt_schedule_opening">Ouverture de l\'emploi du temps…</string>
+</resources>

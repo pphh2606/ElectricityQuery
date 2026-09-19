@@ -9,7 +9,7 @@
   2. 内容区是 FrameLayout 叠放的两个互斥容器：inner_card（课程列表）与
      container_status（整块居中的一句提示）。用 Frame 叠放而非 ConstraintLayout——后者 RemoteViews 不支持。
   ListView 是 RemoteViews 里唯一能响应手指滑动的控件，所以课程条目交给它（数据由 TimetableWidgetServiceV2 提供）。
-  背景与各个 id 都与旧组件（widget_today_lesson.xml）复用同一份，两个布局可共用渲染代码。
+  背景与各 id 沿用同一套小组件资源（widget_today_bg / widget_today_indicator 等）。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"

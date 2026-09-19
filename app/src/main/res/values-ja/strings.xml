@@ -33,7 +33,7 @@
     <string name="common_settings">設定</string>
     <string name="common_remove">削除</string>
     <string name="common_view">表示</string>
-    <string name="common_open_in_browser">外部で開く</string>
+    <string name="common_open_in_browser">開く</string>
     <string name="common_clear_search">検索をクリア</string>
     <string name="common_exit_search">検索を終了</string>
     <string name="common_scan">スキャン</string>

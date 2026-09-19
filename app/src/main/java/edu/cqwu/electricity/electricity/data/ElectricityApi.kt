@@ -328,7 +328,14 @@ class ElectricityApi {
     private suspend fun <T> safeApiCall(call: suspend () -> T): Result<T> {
         return withContext(Dispatchers.IO) {
             try {
-                Result.success(call())
+                // gson.fromJson 是平台类型：服务端返回空响应时给 null 而不抛异常，不拦就会以
+                // Result.success(null) 流到上层、读字段时 NPE（见 RecordRepositoryV2）。统一转成失败。
+                val result: T? = call()
+                if (result == null) {
+                    Result.failure(IllegalStateException("响应内容为空"))
+                } else {
+                    Result.success(result)
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

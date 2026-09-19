@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  الشؤون الأكاديمية (jwfw.cqwu.edu.cn /jwmobile)  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="jwxt_title">الشؤون الأكاديمية</string>
+    <!-- نص شريحة التصنيف: %1$s = اسم التصنيف، %2$d = عدد الخدمات -->
+    <string name="jwxt_chip_label">%1$s %2$d</string>
+    <string name="jwxt_more_service">مزيد من الخدمات</string>
+    <string name="jwxt_more_service_empty">لا توجد خدمات أكاديمية متاحة</string>
+    <string name="jwxt_notice_title">الإعلانات</string>
+    <string name="jwxt_detail">التفاصيل</string>
+    <string name="jwxt_tab_today_lesson">محاضرات اليوم</string>
+    <string name="jwxt_tab_term_exam">اختبارات الفصل</string>
+    <!-- عنوان المحاضرة: %1$s = نطاق الحصص (مثال 5-6)، %2$s = النطاق الزمني (مثال 14:30-16:10) -->
+    <string name="jwxt_lesson_section_time">الحصة %1$s (%2$s)</string>
+    <!-- وسم التأجيل / التعويض (تعرضه النسخة الإلكترونية بحرف واحد قبل اسم المحاضرة) -->
+    <string name="jwxt_lesson_tag_adjust">تأجيل</string>
+    <string name="jwxt_lesson_tag_makeup">تعويض</string>
+    <string name="jwxt_lesson_empty">لا توجد محاضرات اليوم</string>
+    <!-- مدخل أسفل محاضرات اليوم: البحث في جدول الكلية -->
+    <string name="jwxt_lesson_more">مزيد من المحاضرات</string>
+    <string name="jwxt_exam_empty">لا توجد اختبارات قادمة</string>
+    <!-- تفاصيل الاختبار: %1$s = المكان / المقعد / المدرّس -->
+    <string name="jwxt_exam_place">المكان %1$s</string>
+    <string name="jwxt_exam_seat">المقعد %1$s</string>
+    <string name="jwxt_exam_teacher">المدرّس %1$s</string>
+
+    <!-- ── الدرجات (صفحة kwApp/cjcx_v5 المعرّبة) ── -->
+    <string name="jwxt_score_title">الدرجات</string>
+    <string name="jwxt_score_tab_all">الكل</string>
+    <string name="jwxt_score_tab_passed">ناجح</string>
+    <string name="jwxt_score_tab_not_passed">راسب</string>
+    <!-- وسم الساعات المعتمدة: %1$s = عدد الساعات (مثال 3 أو 0.25) -->
+    <string name="jwxt_score_credit">%1$s ساعة معتمدة</string>
+    <string name="jwxt_score_empty">لا توجد درجات</string>
+
+    <!-- ── الجدول الأسبوعي (صفحة تطبيق index home/timetable) ── -->
+    <string name="jwxt_timetable_title">الجدول</string>
+    <!-- سطر أسفل صفحة البحث: الانتقال إلى جدولي -->
+    <string name="jwxt_my_timetable">جدولي</string>
+    <!-- الأسبوع: %1$d = رقم الأسبوع -->
+    <string name="jwxt_timetable_week">الأسبوع %1$d</string>
+    <string name="jwxt_timetable_prev_week">الأسبوع السابق</string>
+    <string name="jwxt_timetable_next_week">الأسبوع التالي</string>
+    <string name="jwxt_timetable_empty">لا توجد محاضرات هذا الأسبوع</string>
+    <string name="jwxt_timetable_mon">الإثنين</string>
+    <string name="jwxt_timetable_tue">الثلاثاء</string>
+    <string name="jwxt_timetable_wed">الأربعاء</string>
+    <string name="jwxt_timetable_thu">الخميس</string>
+    <string name="jwxt_timetable_fri">الجمعة</string>
+    <string name="jwxt_timetable_sat">السبت</string>
+    <string name="jwxt_timetable_sun">الأحد</string>
+    <!-- شريط التنقل: عرض الأسبوع / الفصل، وعناوين قوائم الاختيار -->
+    <string name="jwxt_timetable_mode_week">أسبوع</string>
+    <string name="jwxt_timetable_mode_term">فصل دراسي</string>
+    <string name="jwxt_timetable_pick_week">اختر الأسبوع</string>
+    <string name="jwxt_timetable_pick_term">اختر الفصل الدراسي</string>
+
+    <!-- ── البحث في جدول الكلية (صفحة خدمة PK.QXKBCX المعرّبة) ── -->
+    <string name="jwxt_schedule_query_title">البحث في الجدول</string>
+    <string name="jwxt_schedule_type_classroom">جدول القاعة</string>
+    <string name="jwxt_schedule_type_teacher">جدول المدرّس</string>
+    <string name="jwxt_schedule_type_class">جدول الفصل</string>
+    <!-- التصفية والقائمة في صفحة الاختيار -->
+    <string name="jwxt_schedule_filter_all">الكل</string>
+    <string name="jwxt_schedule_filter_term">الفصل الدراسي</string>
+    <string name="jwxt_schedule_filter_campus">الحرم الجامعي</string>
+    <string name="jwxt_schedule_filter_building">المبنى</string>
+    <string name="jwxt_schedule_filter_depart">القسم</string>
+    <string name="jwxt_schedule_filter_sex">الجنس</string>
+    <string name="jwxt_schedule_filter_grade">السنة الدراسية</string>
+    <string name="jwxt_schedule_filter_college">الكلية</string>
+    <string name="jwxt_schedule_filter_major">التخصص</string>
+    <string name="jwxt_schedule_filter_teached_only">التي لها محاضرات</string>
+    <string name="jwxt_schedule_filter_outsource_only">الخارجيون فقط</string>
+    <string name="jwxt_schedule_search_classroom">البحث عن قاعة</string>
+    <string name="jwxt_schedule_search_teacher">البحث عن مدرّس</string>
+    <string name="jwxt_schedule_empty">لا توجد نتائج مطابقة</string>
+    <!-- سطر الإحصاء: عدد العناصر المحمّلة / الصفحة -->
+    <plurals name="jwxt_schedule_loaded_count">
+        <item quantity="one">تم تحميل %1$d</item>
+        <item quantity="other">تم تحميل %1$d</item>
+        <item quantity="zero">تم تحميل %1$d</item>
+        <item quantity="two">تم تحميل %1$d</item>
+        <item quantity="few">تم تحميل %1$d</item>
+        <item quantity="many">تم تحميل %1$d</item>
+    </plurals>
+    <string name="jwxt_schedule_page_info">الصفحة %1$d/%2$d</string>
+    <!-- نافذة مركزية أثناء تحديد الحرم الجامعي قبل فتح الجدول -->
+    <string name="jwxt_schedule_opening">جارٍ فتح الجدول…</string>
+</resources>

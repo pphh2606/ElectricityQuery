@@ -6,20 +6,27 @@ package edu.cqwu.electricity.electricity.ui
 import android.content.res.Resources
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.InfoRow
-import edu.cqwu.electricity.common.ui.InfoRowDivider
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -218,7 +224,7 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         return
     }
 
-    // 统一为"左标签 — 右值"的紧凑横向列表，白底平铺，行间细分隔线（同"我的信息"）
+    // 统一为"左标签 — 右值"的紧凑横向列表，行间细分隔线
     val powerLabel = stringResource(R.string.detail_power_cumulative)
     val statusLabel = stringResource(R.string.detail_power_status)
     val rows = buildList {
@@ -228,17 +234,29 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
         if (!data?.exp5.isNullOrBlank()) add(statusLabel to data.exp5)
     }
 
-    LazyColumn {
+    // fillMaxSize：列表要铺满内容区，卡片下方的空白才属于它、才能把下拉手势传给 PullToRefreshBox
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 16.dp),
+    ) {
         item {
-            Column {
-                rows.forEachIndexed { index, (label, value) ->
-                    InfoRow(
-                        label = label,
-                        value = value,
-                        modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
-                    )
-                    if (index < rows.size - 1) {
-                        InfoRowDivider()
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    rows.forEachIndexed { index, (label, value) ->
+                        InfoRow(
+                            label = label,
+                            value = value,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                        )
+                        if (index < rows.size - 1) {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        }
                     }
                 }
             }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  教務（jwfw.cqwu.edu.cn /jwmobile）モジュール  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="jwxt_title">教務</string>
+    <!-- 分類チップ：%1$s = 分類名（すべて／検索／申請）、%2$d = サービスの件数 -->
+    <string name="jwxt_chip_label">%1$s %2$d</string>
+    <string name="jwxt_more_service">その他のサービス</string>
+    <string name="jwxt_more_service_empty">利用できる教務サービスはありません</string>
+    <string name="jwxt_notice_title">お知らせ</string>
+    <string name="jwxt_detail">詳細</string>
+    <string name="jwxt_tab_today_lesson">今日の授業</string>
+    <string name="jwxt_tab_term_exam">今学期の試験</string>
+    <!-- 授業の見出し：%1$s = 時限（例 5-6）、%2$s = 時間帯（例 14:30-16:10） -->
+    <string name="jwxt_lesson_section_time">%1$s 限（%2$s）</string>
+    <!-- 振替／補講ラベル（Web 版は授業名の前に 1 文字で表示） -->
+    <string name="jwxt_lesson_tag_adjust">振</string>
+    <string name="jwxt_lesson_tag_makeup">補</string>
+    <string name="jwxt_lesson_empty">本日の授業はありません</string>
+    <!-- 今日の授業の下部にある入口：学校全体の時間割検索へ -->
+    <string name="jwxt_lesson_more">その他の授業</string>
+    <string name="jwxt_exam_empty">当面の試験はありません</string>
+    <!-- 試験の詳細：%1$s = 会場／座席／教員 -->
+    <string name="jwxt_exam_place">会場 %1$s</string>
+    <string name="jwxt_exam_seat">座席 %1$s</string>
+    <string name="jwxt_exam_teacher">教員 %1$s</string>
+
+    <!-- ── 成績照会（kwApp/cjcx_v5 のローカライズ版） ── -->
+    <string name="jwxt_score_title">成績照会</string>
+    <string name="jwxt_score_tab_all">すべて</string>
+    <string name="jwxt_score_tab_passed">合格</string>
+    <string name="jwxt_score_tab_not_passed">不合格</string>
+    <!-- 成績の単位タグ：%1$s = 単位数（例 3、0.25） -->
+    <string name="jwxt_score_credit">%1$s単位</string>
+    <string name="jwxt_score_empty">成績はありません</string>
+
+    <!-- ── 週間時間割（index アプリ home/timetable のローカライズ版） ── -->
+    <string name="jwxt_timetable_title">時間割</string>
+    <!-- 「学校全体の時間割検索」入口ページ下部の行：自分の時間割へ -->
+    <string name="jwxt_my_timetable">自分の時間割</string>
+    <!-- 週：%1$d = 第何週 -->
+    <string name="jwxt_timetable_week">第 %1$d 週</string>
+    <string name="jwxt_timetable_prev_week">前の週</string>
+    <string name="jwxt_timetable_next_week">次の週</string>
+    <string name="jwxt_timetable_empty">今週の授業はありません</string>
+    <string name="jwxt_timetable_mon">月</string>
+    <string name="jwxt_timetable_tue">火</string>
+    <string name="jwxt_timetable_wed">水</string>
+    <string name="jwxt_timetable_thu">木</string>
+    <string name="jwxt_timetable_fri">金</string>
+    <string name="jwxt_timetable_sat">土</string>
+    <string name="jwxt_timetable_sun">日</string>
+    <!-- ナビ行：週／学期の切り替えと、中央をタップしたときの選択リストの見出し -->
+    <string name="jwxt_timetable_mode_week">週</string>
+    <string name="jwxt_timetable_mode_term">学期</string>
+    <string name="jwxt_timetable_pick_week">週を選択</string>
+    <string name="jwxt_timetable_pick_term">学期を選択</string>
+
+    <!-- ── 学校全体の時間割検索（ホームのサービスタイル PK.QXKBCX のローカライズ版） ── -->
+    <string name="jwxt_schedule_query_title">時間割検索</string>
+    <string name="jwxt_schedule_type_classroom">教室の時間割</string>
+    <string name="jwxt_schedule_type_teacher">教員の時間割</string>
+    <string name="jwxt_schedule_type_class">クラスの時間割</string>
+    <!-- 選択ページの絞り込みと一覧 -->
+    <string name="jwxt_schedule_filter_all">すべて</string>
+    <string name="jwxt_schedule_filter_term">学期</string>
+    <string name="jwxt_schedule_filter_campus">キャンパス</string>
+    <string name="jwxt_schedule_filter_building">建物</string>
+    <string name="jwxt_schedule_filter_depart">学科</string>
+    <string name="jwxt_schedule_filter_sex">性別</string>
+    <string name="jwxt_schedule_filter_grade">学年</string>
+    <string name="jwxt_schedule_filter_college">学部</string>
+    <string name="jwxt_schedule_filter_major">専攻</string>
+    <string name="jwxt_schedule_filter_teached_only">授業ありのみ</string>
+    <string name="jwxt_schedule_filter_outsource_only">外部講師のみ</string>
+    <string name="jwxt_schedule_search_classroom">教室名で検索</string>
+    <string name="jwxt_schedule_search_teacher">教員名で検索</string>
+    <string name="jwxt_schedule_empty">一致する結果はありません</string>
+    <!-- 一覧の統計行：読み込み件数／ページ -->
+    <plurals name="jwxt_schedule_loaded_count">
+        <item quantity="other">%1$d 件読み込み済み</item>
+    </plurals>
+    <string name="jwxt_schedule_page_info">%1$d/%2$d ページ</string>
+    <!-- 項目を選んでキャンパスを取得し、時間割を開く前の中央ダイアログ -->
+    <string name="jwxt_schedule_opening">時間割を開いています…</string>
+</resources>

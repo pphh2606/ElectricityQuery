@@ -2,19 +2,25 @@ package edu.cqwu.electricity.app
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -145,16 +151,60 @@ fun AppShell(
                         enableDismissFromEndToStart = true,
                         backgroundContent = {}
                     ) {
-                        Snackbar(
-                            snackbarData = data,
+                        ShadowlessSnackbar(
+                            data = data,
                             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                             contentColor = contentColor,
-                            actionColor = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(8.dp),
                         )
                     }
                 }
             )
+        }
+    }
+}
+
+/**
+ * 自绘的 Snackbar 卡片：外观与 M3 的 `Snackbar` 一致，但不画阴影。
+ *
+ * 必须自绘：M3 的 `Snackbar` 内部固定了 6dp `shadowElevation` 且没有暴露参数，关不掉；
+ * 那层阴影在 API 28 以下不按形状裁剪，8dp 圆角会退化成发灰的方块。
+ * `tonalElevation` 一并置 0——否则 M3 会在 containerColor 上再叠一层色调，颜色就不是调用方给的那个。
+ */
+@Composable
+private fun ShadowlessSnackbar(
+    data: SnackbarData,
+    containerColor: Color,
+    contentColor: Color,
+) {
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = containerColor,
+        contentColor = contentColor,
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Row(
+            // 左右间距照 M3 的规格：正文侧 16dp，action 侧 8dp（按钮自带内边距）
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = data.visuals.message,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+
+            data.visuals.actionLabel?.let { label ->
+                TextButton(onClick = data::performAction) {
+                    Text(
+                        text = label,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
         }
     }
 }

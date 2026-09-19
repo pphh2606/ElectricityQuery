@@ -28,8 +28,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <!-- 旋转/尺寸变化不重建 Activity，否则内置浏览器会整个重新加载。
+             刻意不声明 locale 与 uiMode：切语言与切深色模式依赖重建才能生效。 -->
         <activity
             android:name=".app.MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.电费查询"
@@ -41,29 +44,7 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".jwxt.todaylesson.widget.TodayLessonWidgetProvider"
-            android:label="@string/widget_today_name"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <!-- 覆盖安装后系统不保证补发 APPWIDGET_UPDATE（ColorOS 实测会漏），
-                     额外接收「本包被替换」广播，由 Provider 自己补一次刷新 -->
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/today_lesson_widget_info" />
-        </receiver>
-
-        <!-- 集合小组件的列表数据源：由系统（launcher 侧）绑定，因此用 signature 级权限保护 -->
-        <service
-            android:name=".jwxt.todaylesson.widget.TodayLessonWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"
-            android:exported="false" />
-
-        <!-- 「今日课表」（新）：数据源改成「我的课表」，与上面那个旧组件并存；
-             验证通过后再删除旧的 receiver / service / 布局 / widget_info -->
+        <!-- 「今日课表」桌面小组件：数据源是「我的课表」（课表接口 v410） -->
         <receiver
             android:name=".jwxt.timetable.widget.TimetableWidgetProviderV2"
             android:label="@string/widget_timetable_v2_name"
@@ -77,6 +58,7 @@
                 android:resource="@xml/timetable_widget_v2_info" />
         </receiver>
 
+        <!-- 集合小组件的列表数据源：由系统（launcher 侧）绑定，因此用 signature 级权限保护 -->
         <service
             android:name=".jwxt.timetable.widget.TimetableWidgetServiceV2"
             android:permission="android.permission.BIND_REMOTEVIEWS"
