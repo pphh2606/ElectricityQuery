@@ -62,6 +62,7 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.person.data.PersonRow
 import edu.cqwu.electricity.person.data.PersonSearchApi
+import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
@@ -239,38 +240,10 @@ fun PersonSearchScreen(
                                     PersonCard(person = person)
                                 }
 
-                                // 加载更多指示器
-                                if (isLoadingMore) {
+                                // 分页提示：加载中 / 没有更多（统一组件）
+                                if (isLoadingMore || !state.hasMore) {
                                     item {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(16.dp),
-                                            contentAlignment = Alignment.Center,
-                                        ) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.size(20.dp),
-                                                strokeWidth = 2.dp,
-                                            )
-                                        }
-                                    }
-                                }
-
-                                // 没有更多数据
-                                if (!state.hasMore) {
-                                    item {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(16.dp),
-                                            contentAlignment = Alignment.Center,
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.person_no_more),
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            )
-                                        }
+                                        PagingFooter(isLoadingMore = isLoadingMore, hasMore = false)
                                     }
                                 }
                             }

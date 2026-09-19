@@ -211,4 +211,28 @@ object Routes {
 
     /** 教务「成绩查询」（首页九宫格「成绩查询」格子，本地化） */
     const val JWXT_SCORE = "jwxt_score"
+
+    /** 教务「周课表」（App 首页「我的课表」格子，本地化） */
+    const val JWXT_TIMETABLE = "jwxt_timetable"
+
+    /** 教务「全校课表查询」入口页（教务首页九宫格 `PK.QXKBCX*` 服务，本地化） */
+    const val JWXT_SCHEDULE_QUERY = "jwxt_schedule_query"
+
+    /** 教务「全校课表查询」的选择页；`scheduleType` 就是 KBLX（01 教室 / 02 教师 / 05 班级） */
+    const val JWXT_SCHEDULE_TARGET = "jwxt_schedule_target/{scheduleType}"
+
+    /**
+     * 教务「课表」通用页：「我的课表」（无参数入口）与「查任意对象的课表」共用同一个页面。
+     *
+     * 用 query 参数而不是路径段——校区可能为空串，路径里出现空段会让后面的参数错位。
+     */
+    const val JWXT_SCHEDULE_TABLE = "jwxt_schedule_table?kblx={kblx}&code={code}&campus={campus}&name={name}"
+
+    /** 构建课表查询选择页路由 */
+    fun jwxtScheduleTargetRoute(scheduleType: String): String = "jwxt_schedule_target/$scheduleType"
+
+    /** 构建通用课表页路由；名称含中文，按 URI 规则编码（Navigation 会自行解码） */
+    fun jwxtScheduleTableRoute(kblx: String, code: String, campus: String, name: String): String =
+        "jwxt_schedule_table?kblx=$kblx&code=${android.net.Uri.encode(code)}" +
+            "&campus=${android.net.Uri.encode(campus)}&name=${android.net.Uri.encode(name)}"
 }

@@ -6,8 +6,6 @@
     <string name="speakup_messages_title">الرسائل</string>
     <string name="speakup_detail_title">تفاصيل الرسالة</string>
     <string name="speakup_no_messages">لا توجد رسائل</string>
-    <string name="speakup_no_more">لا توجد المزيد</string>
-    <string name="speakup_loading_more">جارٍ التحميل…</string>
     <string name="speakup_link_copied">تم نسخ الرابط إلى الحافظة</string>
     <string name="speakup_evaluation">محتوى التقييم</string>
     <string name="speakup_problem_solved">هل تم حل المشكلة:</string>

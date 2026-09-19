@@ -45,4 +45,7 @@ object HomeAppIds {
 
     /** 移动教务 → 同上，打开原生教务首页 */
     const val MOBILE_JW = "17852895911767506"
+
+    /** 我的课表 → 打开原生周课表页（openUrl 指向教务 index 应用的 timetable 路由） */
+    const val TIMETABLE = "7888529148691600"
 }

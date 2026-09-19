@@ -7,7 +7,6 @@
     <string name="person_search_button">搜尋</string>
     <string name="person_search_hint">輸入姓名或學號搜尋</string>
     <string name="person_no_result">找不到相關人員</string>
-    <string name="person_no_more">沒有更多了</string>
     <plurals name="person_search_total_count">
         <item quantity="other">共搜尋到 %1$d 人</item>
     </plurals>

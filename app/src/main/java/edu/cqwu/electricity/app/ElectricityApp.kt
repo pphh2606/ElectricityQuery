@@ -13,8 +13,10 @@ import edu.cqwu.electricity.login.domain.CasAuthFlow
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.feedback.util.CrashHandler
-import edu.cqwu.electricity.jwxt.schedule.data.TodayLessonRepository
-import edu.cqwu.electricity.jwxt.schedule.widget.TodayLessonWidgetUpdater
+import edu.cqwu.electricity.jwxt.timetable.data.TimetableWidgetRepositoryV2
+import edu.cqwu.electricity.jwxt.timetable.widget.TimetableWidgetUpdaterV2
+import edu.cqwu.electricity.jwxt.todaylesson.data.TodayLessonRepository
+import edu.cqwu.electricity.jwxt.todaylesson.widget.TodayLessonWidgetUpdater
 import edu.cqwu.electricity.common.settings.SettingsKeys
 import edu.cqwu.electricity.common.settings.SettingsPreferences
 import edu.cqwu.electricity.common.settings.UserAgentProvider
@@ -23,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
  * 自定义 Application，配置 Coil ImageLoader
@@ -52,6 +55,8 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         SessionCoordinatorV2.restoreActive()
         // 今日课表仓库需要提前注入 Context（小组件被桌面进程拉起时会先走 Application.onCreate）
         TodayLessonRepository.init(this)
+        // 「今日课表」小组件的数据来自课表接口，同样要提前注入 Context（理由同上）
+        TimetableWidgetRepositoryV2.init(this)
         // 进程一起来就先刷一次桌面小组件：覆盖安装后系统不保证补发 APPWIDGET_UPDATE，
         // 这一步让「打开 App 的任意页面」都能把组件从加载占位里救回来
         TodayLessonWidgetUpdater.renderFromCache(this)
@@ -59,6 +64,19 @@ class ElectricityApp : Application(), ImageLoaderFactory {
         TodayLessonRepository.dataUpdated
             .onEach { TodayLessonWidgetUpdater.renderFromCache(this@ElectricityApp) }
             .launchIn(appScope)
+        // 「今日课表」（新）同理：课表缓存一更新就刷桌面（缓存由课表页写，也可由上面的启动补取写）
+        TimetableWidgetRepositoryV2.dataUpdated
+            .onEach { TimetableWidgetUpdaterV2.renderFromCache(this@ElectricityApp) }
+            .launchIn(appScope)
+        // 课表接口那份缓存不可用时后台补取一次：小组件在桌面上跑、不能联网判断"现在是第几周"，
+        // 所以跨周之后这是它唯一的自救机会。判断与取数都在协程里（读缓存也是文件 IO）；
+        // 失败只记日志——旧缓存仍能给桌面兜底显示。
+        appScope.launch {
+            if (TimetableWidgetRepositoryV2.needsRefresh()) {
+                TimetableWidgetRepositoryV2.fetchAndCache()
+                    .onFailure { AppLog.w(TAG, "启动补取课表失败", it) }
+            }
+        }
         // 浏览器标识提供者需要 Context 读设置：显式初始化（避免它反向依赖本 Application 单例）
         UserAgentProvider.init(this)
         // 网络运行时依赖注入（组合根）：WebVPN 自动登录回调 + 当前 UA。
@@ -70,6 +88,8 @@ class ElectricityApp : Application(), ImageLoaderFactory {
     }
 
     companion object {
+        private const val TAG = "ElectricityApp"
+
         lateinit var instance: ElectricityApp
             private set
     }

@@ -19,13 +19,14 @@
     <string name="common_add">添加</string>
     <string name="common_edit">编辑</string>
     <string name="common_retry">重试</string>
-    <string name="common_loading">加载中…</string>
+    <string name="common_loading">加载中...</string>
     <string name="common_more_options">更多选项</string>
     <string name="common_toggle_chart">切换为图表视图</string>
     <string name="common_toggle_table">切换为表格视图</string>
     <string name="common_unknown_error">未知错误</string>
     <string name="common_no_data">暂无数据</string>
     <string name="common_swipe_load_more">上滑加载更多</string>
+    <string name="common_no_more">╮(╯3╰)╭再怎么找也没有啦</string>
     <string name="common_search">搜索</string>
     <string name="common_share">分享</string>
     <string name="common_filter">筛选</string>

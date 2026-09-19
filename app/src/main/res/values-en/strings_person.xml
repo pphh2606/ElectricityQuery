@@ -7,7 +7,6 @@
     <string name="person_search_button">Search</string>
     <string name="person_search_hint">Search by name or ID</string>
     <string name="person_no_result">No person found</string>
-    <string name="person_no_more">No more results</string>
     <plurals name="person_search_total_count">
         <item quantity="one">%1$d person found</item>
         <item quantity="other">%1$d people found</item>

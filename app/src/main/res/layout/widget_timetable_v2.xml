@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  「今日课表」小组件主布局（数据源＝我的课表）。
+  只能使用 RemoteViews 支持的布局与控件（无 ConstraintLayout、无自定义 View）。
+  结构分两段：
+  1. 顶部信息行**恒可见**（标题 + 「共 N 节 · HH:mm 更新」）：它放在两个内容容器之外，
+     所以「未登录 / 无缓存 / 跨周 / 今天没课 / 正常」五种状态下都显示，
+     便于对比这几个字段在各状态下的表现（这是本轮特意调整的）；
+  2. 内容区是 FrameLayout 叠放的两个互斥容器：inner_card（课程列表）与
+     container_status（整块居中的一句提示）。用 Frame 叠放而非 ConstraintLayout——后者 RemoteViews 不支持。
+  ListView 是 RemoteViews 里唯一能响应手指滑动的控件，所以课程条目交给它（数据由 TimetableWidgetServiceV2 提供）。
+  背景与各个 id 都与旧组件（widget_today_lesson.xml）复用同一份，两个布局可共用渲染代码。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_today_bg"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/widget_timetable_v2_title"
+            android:textColor="@color/widget_text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tv_footer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/widget_text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="4dp">
+
+        <LinearLayout
+            android:id="@+id/inner_card"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/list_courses"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:scrollbars="none" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/container_status"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/widget_text_secondary"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

@@ -41,9 +41,6 @@
     </plurals>
     <string name="fee_order_page_info">第 %1$d/%2$d 页</string>
     <string name="fee_order_no_label">订单号: %1$s</string>
-    <plurals name="fee_hall_order_all_loaded">
-        <item quantity="other">— 已加载全部 %1$d 条 —</item>
-    </plurals>
     <string name="fee_order_continue_pay">继续支付</string>
     <string name="fee_order_close">关闭订单</string>
     <string name="fee_order_closing">正在关闭订单…</string>

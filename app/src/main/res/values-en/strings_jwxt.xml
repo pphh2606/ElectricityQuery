@@ -15,6 +15,8 @@
     <string name="jwxt_lesson_tag_adjust">Moved</string>
     <string name="jwxt_lesson_tag_makeup">Make-up</string>
     <string name="jwxt_lesson_empty">No classes today</string>
+    <!-- Entry at the bottom of today\'s classes: opens the school timetable query -->
+    <string name="jwxt_lesson_more">More classes</string>
     <string name="jwxt_exam_empty">No upcoming exams</string>
     <string name="jwxt_exam_place">Venue %1$s</string>
     <string name="jwxt_exam_seat">Seat %1$s</string>
@@ -28,4 +30,54 @@
     <!-- Credit tag on a score item: %1$s = credits, e.g. 3 / 0.25 -->
     <string name="jwxt_score_credit">%1$s credits</string>
     <string name="jwxt_score_empty">No grades yet</string>
+
+    <!-- ── Weekly timetable (localized index app home/timetable page) ── -->
+    <string name="jwxt_timetable_title">Timetable</string>
+    <!-- Bottom row of the query entry screen: opens my own timetable -->
+    <string name="jwxt_my_timetable">My timetable</string>
+    <!-- Week number: %1$d = week index -->
+    <string name="jwxt_timetable_week">Week %1$d</string>
+    <string name="jwxt_timetable_prev_week">Previous week</string>
+    <string name="jwxt_timetable_next_week">Next week</string>
+    <string name="jwxt_timetable_empty">No classes this week</string>
+    <string name="jwxt_timetable_mon">Mon</string>
+    <string name="jwxt_timetable_tue">Tue</string>
+    <string name="jwxt_timetable_wed">Wed</string>
+    <string name="jwxt_timetable_thu">Thu</string>
+    <string name="jwxt_timetable_fri">Fri</string>
+    <string name="jwxt_timetable_sat">Sat</string>
+    <string name="jwxt_timetable_sun">Sun</string>
+    <!-- Navigation row: week / term views, plus the titles of their pickers -->
+    <string name="jwxt_timetable_mode_week">Week</string>
+    <string name="jwxt_timetable_mode_term">Term</string>
+    <string name="jwxt_timetable_pick_week">Pick a week</string>
+    <string name="jwxt_timetable_pick_term">Pick a term</string>
+
+    <!-- ── School timetable query (localized page for the home-grid service PK.QXKBCX) ── -->
+    <string name="jwxt_schedule_query_title">School timetable query</string>
+    <string name="jwxt_schedule_type_classroom">Classroom timetable</string>
+    <string name="jwxt_schedule_type_teacher">Teacher timetable</string>
+    <string name="jwxt_schedule_type_class">Class timetable</string>
+    <!-- Filters and list on the picker page -->
+    <string name="jwxt_schedule_filter_all">All</string>
+    <string name="jwxt_schedule_filter_term">Term</string>
+    <string name="jwxt_schedule_filter_campus">Campus</string>
+    <string name="jwxt_schedule_filter_building">Building</string>
+    <string name="jwxt_schedule_filter_depart">Department</string>
+    <string name="jwxt_schedule_filter_sex">Gender</string>
+    <string name="jwxt_schedule_filter_grade">Grade</string>
+    <string name="jwxt_schedule_filter_college">College</string>
+    <string name="jwxt_schedule_filter_major">Major</string>
+    <string name="jwxt_schedule_filter_teached_only">Has classes</string>
+    <string name="jwxt_schedule_filter_outsource_only">External only</string>
+    <string name="jwxt_schedule_search_classroom">Search classroom</string>
+    <string name="jwxt_schedule_search_teacher">Search teacher</string>
+    <string name="jwxt_schedule_empty">No matching results</string>
+    <!-- Stats row: loaded count / page -->
+    <plurals name="jwxt_schedule_loaded_count">
+        <item quantity="other">%1$d loaded</item>
+    </plurals>
+    <string name="jwxt_schedule_page_info">Page %1$d/%2$d</string>
+    <!-- Centered dialog shown while resolving the campus before opening the timetable -->
+    <string name="jwxt_schedule_opening">Opening timetable…</string>
 </resources>

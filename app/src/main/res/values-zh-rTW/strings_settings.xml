@@ -93,7 +93,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="login_log_title">認證日誌</string>
     <string name="login_log_detail_title">認證詳情</string>
-    <string name="login_log_all_loaded">已載入全部紀錄</string>
     <plurals name="login_log_loaded_count">
         <item quantity="other">已載入 %1$d 條</item>
     </plurals>

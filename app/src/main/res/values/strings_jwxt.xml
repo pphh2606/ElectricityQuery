@@ -18,6 +18,8 @@
     <string name="jwxt_lesson_tag_adjust">调</string>
     <string name="jwxt_lesson_tag_makeup">补</string>
     <string name="jwxt_lesson_empty">今日暂无课程安排</string>
+    <!-- 今日课程底部的入口：进全校课表查询 -->
+    <string name="jwxt_lesson_more">更多课程</string>
     <string name="jwxt_exam_empty">近期暂无考试安排</string>
     <!-- 考试条目详情：%1$s = 地点 / 座位 / 教师 -->
     <string name="jwxt_exam_place">地点 %1$s</string>
@@ -32,4 +34,53 @@
     <!-- 成绩条目的学分标签：%1$s = 学分（如 3、0.25） -->
     <string name="jwxt_score_credit">%1$s学分</string>
     <string name="jwxt_score_empty">暂无成绩记录</string>
+
+    <!-- ── 周课表（index 应用 home/timetable 的本地化页） ── -->
+    <string name="jwxt_timetable_title">课表</string>
+    <!-- 「全校课表查询」入口页底部那一行：进自己的课表 -->
+    <string name="jwxt_my_timetable">我的课表</string>
+    <!-- 周次：%1$d = 第几周 -->
+    <string name="jwxt_timetable_week">第 %1$d 周</string>
+    <string name="jwxt_timetable_prev_week">上一周</string>
+    <string name="jwxt_timetable_next_week">下一周</string>
+    <string name="jwxt_timetable_empty">本周暂无课程</string>
+    <string name="jwxt_timetable_mon">周一</string>
+    <string name="jwxt_timetable_tue">周二</string>
+    <string name="jwxt_timetable_wed">周三</string>
+    <string name="jwxt_timetable_thu">周四</string>
+    <string name="jwxt_timetable_fri">周五</string>
+    <string name="jwxt_timetable_sat">周六</string>
+    <string name="jwxt_timetable_sun">周日</string>
+    <!-- 导航行：周 / 学期 两种视图，以及点击中间弹出的选择列表标题 -->
+    <string name="jwxt_timetable_mode_week">周</string>
+    <string name="jwxt_timetable_mode_term">学期</string>
+    <string name="jwxt_timetable_pick_week">选择周次</string>
+    <string name="jwxt_timetable_pick_term">选择学期</string>
+    <!-- ── 全校课表查询（首页九宫格 PK.QXKBCX 服务的本地化页） ── -->
+    <string name="jwxt_schedule_query_title">全校课表查询</string>
+    <string name="jwxt_schedule_type_classroom">教室课表</string>
+    <string name="jwxt_schedule_type_teacher">教师课表</string>
+    <string name="jwxt_schedule_type_class">班级课表</string>
+    <!-- 选择页的筛选与列表 -->
+    <string name="jwxt_schedule_filter_all">全部</string>
+    <string name="jwxt_schedule_filter_term">学期</string>
+    <string name="jwxt_schedule_filter_campus">校区</string>
+    <string name="jwxt_schedule_filter_building">楼栋</string>
+    <string name="jwxt_schedule_filter_depart">院系</string>
+    <string name="jwxt_schedule_filter_sex">性别</string>
+    <string name="jwxt_schedule_filter_grade">年级</string>
+    <string name="jwxt_schedule_filter_college">学院</string>
+    <string name="jwxt_schedule_filter_major">专业</string>
+    <string name="jwxt_schedule_filter_teached_only">只看有课</string>
+    <string name="jwxt_schedule_filter_outsource_only">只看外聘</string>
+    <string name="jwxt_schedule_search_classroom">搜索教室名</string>
+    <string name="jwxt_schedule_search_teacher">搜索教师姓名</string>
+    <string name="jwxt_schedule_empty">没有匹配的结果</string>
+    <!-- 列表统计行：已加载条数 / 页码 -->
+    <plurals name="jwxt_schedule_loaded_count">
+        <item quantity="other">已加载 %1$d 条</item>
+    </plurals>
+    <string name="jwxt_schedule_page_info">第%1$d/%2$d页</string>
+    <!-- 点选某一项后查校区、准备进入课表时的居中弹窗文案 -->
+    <string name="jwxt_schedule_opening">正在打开课表…</string>
 </resources>

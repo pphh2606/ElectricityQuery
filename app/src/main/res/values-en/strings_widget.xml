@@ -12,4 +12,19 @@
     <!-- %1$s = last update date (MM-dd) -->
     <string name="widget_state_stale">Needs update (%1$s)</string>
     <string name="widget_loading">Loading classes…</string>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  "Today's classes" widget (jwxt/timetable)      -->
+    <!--  Data source: My timetable. Coexists with the   -->
+    <!--  widget above; drop the V2 suffix once the old  -->
+    <!--  one is deleted. Count / room-teacher / period  -->
+    <!--  / state texts reuse the keys above.            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="widget_timetable_v2_name">Today\'s classes (new)</string>
+    <string name="widget_timetable_v2_description">View today\'s classes on your home screen (from My timetable)</string>
+    <string name="widget_timetable_v2_title">Today\'s classes</string>
+    <!-- Row 3 when the time could not be extracted: %1$s = section range (e.g. 1-2) -->
+    <string name="widget_timetable_v2_section_only">Period %1$s</string>
+    <!-- Top info row (always shown): %1$d = lesson count, %2$s = cache write time (HH:mm) -->
+    <string name="widget_timetable_v2_footer">%1$d classes · updated %2$s</string>
 </resources>

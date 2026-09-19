@@ -55,10 +55,6 @@
     <string name="bill_no_failed">No failed transactions</string>
     <string name="bill_no_records">No transaction records</string>
     <string name="bill_capped_hint">— Only showing last 100 records, more on web —</string>
-    <plurals name="bill_all_loaded">
-        <item quantity="one">— All %1$d record loaded —</item>
-        <item quantity="other">— All %1$d records loaded —</item>
-    </plurals>
     <string name="bill_hint_title">Tips</string>
     <string name="bill_hint_item1">Due to system limitations, loading all bills takes about 3 seconds, and loading the last 3 items takes about 15 seconds. Using the filter function also takes considerable time.</string>
     <string name="bill_hint_item2">Data sourced from the school\'s H5 and desktop websites, provided as-is.</string>

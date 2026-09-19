@@ -12,7 +12,6 @@
 
     <!-- 竖线：4dp 宽，高度随本条目内容撑满；上下各留 2dp，使相邻两节课的竖线不会连成一整条 -->
     <LinearLayout
-        android:id="@+id/lesson_indicator"
         android:layout_width="4dp"
         android:layout_height="match_parent"
         android:layout_marginTop="2dp"

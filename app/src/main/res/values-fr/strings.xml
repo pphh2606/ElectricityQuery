@@ -19,13 +19,14 @@
     <string name="common_add">Ajouter</string>
     <string name="common_edit">Modifier</string>
     <string name="common_retry">Réessayer</string>
-    <string name="common_loading">Chargement…</string>
+    <string name="common_loading">Chargement...</string>
     <string name="common_more_options">Plus d\'options</string>
     <string name="common_toggle_chart">Passer à la vue graphique</string>
     <string name="common_toggle_table">Passer à la vue tableau</string>
     <string name="common_unknown_error">Erreur inconnue</string>
     <string name="common_no_data">Aucune donnée</string>
     <string name="common_swipe_load_more">Balayez vers le haut pour charger plus</string>
+    <string name="common_no_more">╮(╯3╰)╭ Rien de plus à trouver</string>
     <string name="common_search">Rechercher</string>
     <string name="common_share">Partager</string>
     <string name="common_filter">Filtrer</string>

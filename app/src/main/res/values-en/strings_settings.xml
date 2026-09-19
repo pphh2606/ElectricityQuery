@@ -93,7 +93,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="login_log_title">Auth Logs</string>
     <string name="login_log_detail_title">Auth Details</string>
-    <string name="login_log_all_loaded">All records loaded</string>
     <plurals name="login_log_loaded_count">
         <item quantity="one">%1$d loaded</item>
         <item quantity="other">%1$d loaded</item>

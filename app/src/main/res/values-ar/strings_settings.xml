@@ -93,7 +93,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="login_log_title">سجلات المصادقة</string>
     <string name="login_log_detail_title">تفاصيل المصادقة</string>
-    <string name="login_log_all_loaded">تم تحميل جميع السجلات</string>
     <plurals name="login_log_loaded_count">
         <item quantity="one">تم تحميل %1$d سجلات</item>
         <item quantity="other">تم تحميل %1$d سجلات</item>

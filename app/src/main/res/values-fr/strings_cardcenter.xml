@@ -56,11 +56,6 @@
     <string name="bill_no_failed">Aucune transaction échouée</string>
     <string name="bill_no_records">Aucune transaction</string>
     <string name="bill_capped_hint">— Affichage limité aux 100 dernières, voir la version Web pour plus —</string>
-    <plurals name="bill_all_loaded">
-        <item quantity="one">— %1$d transaction chargée —</item>
-        <item quantity="other">— %1$d transactions chargées —</item>
-        <item quantity="many">— %1$d transactions chargées —</item>
-    </plurals>
     <string name="bill_hint_title">Info</string>
     <string name="bill_hint_item1">Pour des raisons techniques, le chargement de toutes les factures prend environ 3 secondes, et le chargement des 3 dernières prend environ 15 secondes. L\'utilisation du filtre prend également du temps.</string>
     <string name="bill_hint_item2">Les données proviennent du site H5 et du site de bureau de l\'école, fournies « en l\'état ».</string>

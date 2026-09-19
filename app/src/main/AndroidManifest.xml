@@ -42,7 +42,7 @@
         </activity>
 
         <receiver
-            android:name=".jwxt.schedule.widget.TodayLessonWidgetProvider"
+            android:name=".jwxt.todaylesson.widget.TodayLessonWidgetProvider"
             android:label="@string/widget_today_name"
             android:exported="false">
             <intent-filter>
@@ -58,7 +58,27 @@
 
         <!-- 集合小组件的列表数据源：由系统（launcher 侧）绑定，因此用 signature 级权限保护 -->
         <service
-            android:name=".jwxt.schedule.widget.TodayLessonWidgetService"
+            android:name=".jwxt.todaylesson.widget.TodayLessonWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
+
+        <!-- 「今日课表」（新）：数据源改成「我的课表」，与上面那个旧组件并存；
+             验证通过后再删除旧的 receiver / service / 布局 / widget_info -->
+        <receiver
+            android:name=".jwxt.timetable.widget.TimetableWidgetProviderV2"
+            android:label="@string/widget_timetable_v2_name"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/timetable_widget_v2_info" />
+        </receiver>
+
+        <service
+            android:name=".jwxt.timetable.widget.TimetableWidgetServiceV2"
             android:permission="android.permission.BIND_REMOTEVIEWS"
             android:exported="false" />
     </application>

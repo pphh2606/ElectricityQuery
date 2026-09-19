@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
+import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 
 /**
@@ -164,7 +165,14 @@ internal fun FeeServiceHallOrderTab(
                                 )
                             }
                             item(key = "footer") {
-                                OrderFooterContent(uiState, onLoadMore)
+                                // 列表为空时不显示（加载中除外），与改造前一致
+                                if (uiState.isLoadingMoreOrders || uiState.orders.isNotEmpty()) {
+                                    PagingFooter(
+                                        isLoadingMore = uiState.isLoadingMoreOrders,
+                                        hasMore = uiState.orderHasMore,
+                                        onLoadMore = onLoadMore,
+                                    )
+                                }
                             }
                         }
                     }
@@ -291,27 +299,4 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun OrderFooterContent(uiState: FeeServiceHallUiState, onLoadMore: () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
-        if (uiState.isLoadingMoreOrders) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.common_loading), style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        } else if (uiState.orderHasMore) {
-            Text(
-                stringResource(R.string.common_swipe_load_more),
-                modifier = Modifier.clickable(onClick = onLoadMore),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-            )
-        } else if (uiState.orders.isNotEmpty()) {
-            Text(pluralStringResource(R.plurals.fee_hall_order_all_loaded, uiState.orders.size, uiState.orders.size),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
+// 列表底部的分页提示已统一到 PagingFooter（common/ui）

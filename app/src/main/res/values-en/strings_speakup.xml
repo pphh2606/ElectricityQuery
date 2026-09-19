@@ -6,8 +6,6 @@
     <string name="speakup_messages_title">Messages</string>
     <string name="speakup_detail_title">Message Detail</string>
     <string name="speakup_no_messages">No messages yet</string>
-    <string name="speakup_no_more">No more messages</string>
-    <string name="speakup_loading_more">Loading…</string>
     <string name="speakup_link_copied">Link copied to clipboard</string>
     <string name="speakup_evaluation">Evaluation</string>
     <string name="speakup_problem_solved">Problem resolved:</string>

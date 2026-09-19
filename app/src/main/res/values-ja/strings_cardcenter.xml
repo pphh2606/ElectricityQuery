@@ -54,9 +54,6 @@
     <string name="bill_no_failed">失敗取引はありません</string>
     <string name="bill_no_records">取引記録がありません</string>
     <string name="bill_capped_hint">— 最新100件のみ表示。詳細はWeb版をご利用ください —</string>
-    <plurals name="bill_all_loaded">
-        <item quantity="other">— 全 %1$d 件読み込み完了 —</item>
-    </plurals>
     <string name="bill_hint_title">ヒント</string>
     <string name="bill_hint_item1">システムの都合により、全明細の読み込みに約3秒、末尾3件の読み込みに約15秒かかります。フィルター機能の使用にも時間がかかります。</string>
     <string name="bill_hint_item2">データは学校のH5およびデスクトップ版サイトから取得しており、「現状のまま」提供されています。</string>

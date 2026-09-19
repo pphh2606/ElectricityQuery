@@ -53,6 +53,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.common.ui.LabeledFieldRow
+import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -286,7 +287,7 @@ fun LoginLogScreen(
                                     }
                                 }
                                 item(key = "footer") {
-                                    LoginLogFooter(
+                                    PagingFooter(
                                         hasMore = state.hasMore,
                                         isLoadingMore = state.isLoadingMore,
                                         onLoadMore = viewModel::loadMore,
@@ -419,36 +420,4 @@ private fun LoginLogStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int
     }
 }
 
-/** 列表底部：加载中 / 上滑加载更多 / 已加载全部（仿订单页 footer） */
-@Composable
-private fun LoginLogFooter(
-    hasMore: Boolean,
-    isLoadingMore: Boolean,
-    onLoadMore: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        when {
-            isLoadingMore -> Text(
-                text = stringResource(R.string.common_loading),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            hasMore -> Text(
-                text = stringResource(R.string.common_swipe_load_more),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.clickable(onClick = onLoadMore),
-            )
-            else -> Text(
-                text = stringResource(R.string.login_log_all_loaded),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
+/** 列表底部的分页提示已统一到 [PagingFooter]（common/ui） */

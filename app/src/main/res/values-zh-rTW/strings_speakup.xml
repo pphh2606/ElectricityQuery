@@ -6,8 +6,6 @@
     <string name="speakup_messages_title">留言瀏覽</string>
     <string name="speakup_detail_title">留言詳情</string>
     <string name="speakup_no_messages">暫無留言</string>
-    <string name="speakup_no_more">沒有更多了</string>
-    <string name="speakup_loading_more">載入中…</string>
     <string name="speakup_link_copied">連結已複製到剪貼簿</string>
     <string name="speakup_evaluation">評價內容</string>
     <string name="speakup_problem_solved">是否已解決您所提的問題：</string>

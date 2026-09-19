@@ -93,7 +93,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="login_log_title">Journal d\'authentification</string>
     <string name="login_log_detail_title">Détails de l\'authentification</string>
-    <string name="login_log_all_loaded">Tous les enregistrements chargés</string>
     <plurals name="login_log_loaded_count">
         <item quantity="one">%1$d enregistrement chargé</item>
         <item quantity="other">%1$d enregistrements chargés</item>

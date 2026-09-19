@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.notice.data.NoticeItem
+import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -297,32 +298,11 @@ fun NoticeScreen(
                         }
 
                         item(key = "footer") {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                when {
-                                    viewModel.isLoadingMore -> {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(
-                                                text = stringResource(R.string.common_loading),
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
-                                    }
-                                    !viewModel.hasMore && viewModel.items.isNotEmpty() -> {
-                                        Text(
-                                            text = stringResource(R.string.notice_no_more),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                                        )
-                                    }
-                                }
+                            // 本页只有自动分页加载（NoticeViewModel 没有公开的手动加载入口），故不传 onLoadMore
+                            val showFooter = viewModel.isLoadingMore ||
+                                (viewModel.items.isNotEmpty() && !viewModel.hasMore)
+                            if (showFooter) {
+                                PagingFooter(isLoadingMore = viewModel.isLoadingMore, hasMore = false)
                             }
                         }
                     }

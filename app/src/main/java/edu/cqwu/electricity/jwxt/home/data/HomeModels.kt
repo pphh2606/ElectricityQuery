@@ -1,0 +1,91 @@
+package edu.cqwu.electricity.jwxt.home.data
+
+import edu.cqwu.electricity.jwxt.core.model.JwxtService
+
+/**
+ * 教务首页接口的数据模型。
+ *
+ * 字段名全部来自 `fortest/教务系统.har.json` 的真实响应，**没有猜测字段**。
+ * 每个接口配一个响应壳（不用 `Any` 泛型），与项目内 `CardRechargeApi` 等保持一致。
+ */
+
+/** `GET biz/home/listLabelService` 响应 */
+data class LabelServiceResponse(
+    val code: Int = 0,
+    val msg: String = "",
+    val data: List<JwxtLabelGroup>? = null,
+)
+
+/**
+ * 服务分组。
+ *
+ * 实测返回 3 组：`全部 11` / `查询 5` / `申请 6`——顶部三个统计数字就是各组的 [serviceNum]。
+ */
+data class JwxtLabelGroup(
+    val labelName: String = "",
+    val labelId: String = "",
+    val serviceNum: Int = 0,
+    /** 可空：Gson 会把接口的显式 null 直接塞进字段（不执行 Kotlin 默认值），取用处用 orEmpty() 兜底 */
+    val serviceList: List<JwxtService>? = null,
+)
+
+/** `POST biz/home/listMoreScene` 响应 */
+data class SceneResponse(
+    val code: Int = 0,
+    val msg: String = "",
+    val data: List<JwxtScene>? = null,
+)
+
+/** 首页场景（实测 2 个：学生社会考试报名、学生评教） */
+data class JwxtScene(
+    val sceneId: String = "",
+    val sceneName: String = "",
+    val welcomeTip: String = "",
+    val sceneCardList: List<JwxtSceneCard>? = null,
+)
+
+/** 场景卡片；接口只提供小图标（[cardIcon]，完整 URL），没有插画字段 */
+data class JwxtSceneCard(
+    val cardId: String = "",
+    val cardName: String = "",
+    val cardIcon: String = "",
+    val serviceList: List<JwxtService>? = null,
+)
+
+// ═══════════════════════════════════════════
+//  本学期考试（首页 Tab 卡）
+// ═══════════════════════════════════════════
+
+/** `GET biz/v410/examTask/recentExams` 响应（外层，同样是双层包裹） */
+data class RecentExamResponse(
+    val code: Int = 0,
+    val msg: String = "",
+    val data: RecentExamPage? = null,
+)
+
+/** 本学期考试响应内层 */
+data class RecentExamPage(
+    val code: Int = 0,
+    val msg: String = "",
+    /** 可空：实测「近期没有考试」时接口返回显式 null（不是空数组），见 HomeApi 里的 orEmpty() */
+    val data: List<JwxtExam>? = null,
+)
+
+/**
+ * 本学期考试的一条。
+ *
+ * 展示字段：网页直接用 [timeNote]（已含完整日期与时间）当标题。
+ * [examStart] / [timeStart] 只用于排序——接口按时间降序返回，UI 需要升序（与「今日课程」一致）。
+ * 每行都相同的 `batchName`，以及网页未参与渲染的 `examTaskStatus` / `showKeys` 不声明。
+ */
+data class JwxtExam(
+    val courseName: String = "",
+    /** 考试日期 `yyyy-MM-dd`（排序用） */
+    val examStart: String = "",
+    /** 开考时间 `HH:mm`（同日多场时用） */
+    val timeStart: String = "",
+    val timeNote: String = "",
+    val classroomName: String? = null,
+    val seatNo: Int? = null,
+    val teacher: String? = null,
+)

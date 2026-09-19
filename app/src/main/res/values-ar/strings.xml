@@ -19,13 +19,14 @@
     <string name="common_add">إضافة</string>
     <string name="common_edit">تعديل</string>
     <string name="common_retry">إعادة المحاولة</string>
-    <string name="common_loading">جارٍ التحميل…</string>
+    <string name="common_loading">جارٍ التحميل...</string>
     <string name="common_more_options">المزيد من الخيارات</string>
     <string name="common_toggle_chart">التبديل إلى عرض الرسم البياني</string>
     <string name="common_toggle_table">التبديل إلى عرض الجدول</string>
     <string name="common_unknown_error">خطأ غير معروف</string>
     <string name="common_no_data">لا توجد بيانات</string>
     <string name="common_swipe_load_more">اسحب للأعلى لتحميل المزيد</string>
+    <string name="common_no_more">╮(╯3╰)╭ لا يوجد المزيد</string>
     <string name="common_search">بحث</string>
     <string name="common_share">مشاركة</string>
     <string name="common_filter">تصفية</string>

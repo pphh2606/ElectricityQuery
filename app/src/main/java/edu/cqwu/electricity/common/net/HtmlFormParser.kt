@@ -130,12 +130,16 @@ object HtmlFormParser {
             .toList()
     }
 
+    /** 预编译正则：剥 HTML 标签、压缩连续空白（课表卡片等绘制路径每次重组都会调用 [stripHtml]） */
+    private val HTML_TAG_REGEX = Regex("<[^>]+>")
+    private val BLANK_REGEX = Regex("\\s+")
+
     /**
      * 去除单元格内 HTML 标签并压缩空白。
      */
     fun stripHtml(cell: String): String {
-        return cell.replace(Regex("<[^>]+>"), "")
-            .replace(Regex("\\s+"), " ")
+        return cell.replace(HTML_TAG_REGEX, "")
+            .replace(BLANK_REGEX, " ")
             .trim()
     }
 

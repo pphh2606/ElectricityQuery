@@ -633,9 +633,10 @@ private fun BillFooterContent(uiState: BillUiState, pageInfo: BillPageInfo, view
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
         )
         } else if (pageInfo.records.isNotEmpty()) {
+            // 达到条数上限时保留截断警告（只说"没有更多"会让用户以为账单是完整的）
             val isCapped = pageInfo.records.size >= 100
             Text(
-                text = if (isCapped) stringResource(R.string.bill_capped_hint) else pluralStringResource(R.plurals.bill_all_loaded, pageInfo.records.size, pageInfo.records.size),
+                text = if (isCapped) stringResource(R.string.bill_capped_hint) else stringResource(R.string.common_no_more),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
