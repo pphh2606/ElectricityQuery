@@ -12,5 +12,4 @@
         <item quantity="other">%1$d personnes trouvées</item>
         <item quantity="many">%1$d personnes trouvées</item>
     </plurals>
-    <string name="person_page_info">Page %1$d/%2$d</string>
 </resources>

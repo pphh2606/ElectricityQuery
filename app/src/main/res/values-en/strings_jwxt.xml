@@ -73,12 +73,6 @@
     <string name="jwxt_schedule_search_classroom">Search classroom</string>
     <string name="jwxt_schedule_search_teacher">Search teacher</string>
     <string name="jwxt_schedule_empty">No matching results</string>
-    <!-- Stats row: loaded count / page -->
-    <plurals name="jwxt_schedule_loaded_count">
-        <item quantity="one">%1$d loaded</item>
-        <item quantity="other">%1$d loaded</item>
-    </plurals>
-    <string name="jwxt_schedule_page_info">Page %1$d/%2$d</string>
     <!-- Centered dialog shown while resolving the campus before opening the timetable -->
     <string name="jwxt_schedule_opening">Opening timetable…</string>
 </resources>

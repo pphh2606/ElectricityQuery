@@ -31,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -59,7 +58,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.cardcenter.data.BankOption
-import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -171,28 +170,18 @@ fun BankCardBindScreen(
         }
     }
 
-    if (showUnbindConfirm) {
-        AppScaledAlertDialog(
-            onDismissRequest = { showUnbindConfirm = false },
-            title = { Text(stringResource(R.string.bank_card_unbind_confirm_title)) },
-            text = { Text(stringResource(R.string.bank_card_unbind_confirm_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showUnbindConfirm = false
-                        viewModel.unbind()
-                    }
-                ) {
-                    Text(stringResource(R.string.bank_card_unbind_confirm_btn))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showUnbindConfirm = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            }
-        )
-    }
+    // 解绑确认弹窗
+    ConfirmBottomSheet(
+        visible = showUnbindConfirm,
+        onDismissRequest = { showUnbindConfirm = false },
+        title = stringResource(R.string.bank_card_unbind_confirm_title),
+        message = stringResource(R.string.bank_card_unbind_confirm_text),
+        confirmText = stringResource(R.string.bank_card_unbind_confirm_btn),
+        onConfirm = {
+            showUnbindConfirm = false
+            viewModel.unbind()
+        },
+    )
 
     if (uiState.isSubmitting) {
         LoadingDialog(message = stringResource(R.string.bank_card_binding))

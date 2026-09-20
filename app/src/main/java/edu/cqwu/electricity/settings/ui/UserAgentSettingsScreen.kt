@@ -18,8 +18,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
-import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -30,7 +33,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,6 +62,7 @@ fun UserAgentSettingsScreen(
     var entries by remember { mutableStateOf(UserAgentProvider.getAllEntries()) }
     var selectedId by remember { mutableStateOf(UserAgentProvider.getSelectedId()) }
     var deleteTarget by remember { mutableStateOf<UserAgentEntry?>(null) }
+    var isEditMode by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -70,6 +73,15 @@ fun UserAgentSettingsScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
+                        )
+                    }
+                },
+                actions = {
+                    // 编辑模式：行尾箭头切换为删除图标（与账号管理页一致）
+                    IconButton(onClick = { isEditMode = !isEditMode }) {
+                        Icon(
+                            imageVector = if (isEditMode) Icons.Default.Close else Icons.Outlined.Edit,
+                            contentDescription = stringResource(R.string.common_edit),
                         )
                     }
                 },
@@ -104,13 +116,18 @@ fun UserAgentSettingsScreen(
                         UaEntryRow(
                             entry = entry,
                             isSelected = entry.id == selectedId,
+                            isEditMode = isEditMode,
                             onClick = {
-                                UserAgentProvider.setSelectedId(entry.id)
-                                selectedId = entry.id
+                                // 编辑模式下点击整行不再切换选中，避免误操作
+                                if (!isEditMode) {
+                                    UserAgentProvider.setSelectedId(entry.id)
+                                    selectedId = entry.id
+                                }
                             },
                             onEdit = {
                                 onNavigateToEdit(entry.id)
                             },
+                            onDelete = { deleteTarget = entry },
                         )
                         if (index < entries.lastIndex) {
                             HorizontalDivider(
@@ -129,6 +146,7 @@ fun UserAgentSettingsScreen(
                 onClick = { onNavigateToEdit("new") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
+                enabled = !isEditMode,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Add,
@@ -180,46 +198,37 @@ fun UserAgentSettingsScreen(
         }
     }
 
-    // ── 删除确认对话框 ──
-    if (deleteTarget != null) {
-        val target = deleteTarget!!
-        AppScaledAlertDialog(
-            onDismissRequest = { deleteTarget = null },
-            title = { Text(text = stringResource(R.string.ua_delete_title)) },
-            text = {
-                Text(text = stringResource(R.string.ua_delete_confirm, target.name))
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    UserAgentProvider.removeCustomEntry(target.id)
-                    entries = UserAgentProvider.getAllEntries()
-                    selectedId = UserAgentProvider.getSelectedId()
-                    deleteTarget = null
-                }) {
-                    Text(stringResource(R.string.common_delete), color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { deleteTarget = null }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        )
-    }
+    // ── 删除确认弹窗 ──
+    ConfirmBottomSheet(
+        visible = deleteTarget != null,
+        onDismissRequest = { deleteTarget = null },
+        title = stringResource(R.string.ua_delete_title),
+        message = stringResource(R.string.ua_delete_confirm, deleteTarget?.name ?: ""),
+        confirmText = stringResource(R.string.common_delete),
+        onConfirm = {
+            deleteTarget?.let { target ->
+                UserAgentProvider.removeCustomEntry(target.id)
+                entries = UserAgentProvider.getAllEntries()
+                selectedId = UserAgentProvider.getSelectedId()
+            }
+            deleteTarget = null
+        },
+    )
 }
 
 /**
  * 浏览器标识条目行。
- * 内置预设可点击选中 + 点击右箭头编辑（仅查看不可编辑名称）。
- * 自定义条目可点击选中 + 点击右箭头编辑 + 长按或编辑页删除。
+ * 常规模式：点击整行选中 + 点击右箭头进入编辑页。
+ * 编辑模式：右箭头切换为删除图标，自定义条目为可点的红色图标，内置预设为置灰不可点图标。
  */
 @Composable
 private fun UaEntryRow(
     entry: UserAgentEntry,
     isSelected: Boolean,
+    isEditMode: Boolean,
     onClick: () -> Unit,
     onEdit: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -260,12 +269,36 @@ private fun UaEntryRow(
             )
         }
 
-        IconButton(onClick = onEdit) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.common_edit),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            )
+        if (isEditMode) {
+            if (entry.isBuiltin) {
+                // 内置预设不可删除：置灰图标占位，保证行高与图标位置不跳动
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(8.dp),
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = stringResource(R.string.common_delete),
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable(onClick = onDelete)
+                        .padding(8.dp),
+                )
+            }
+        } else {
+            IconButton(onClick = onEdit) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = stringResource(R.string.common_edit),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                )
+            }
         }
     }
 }

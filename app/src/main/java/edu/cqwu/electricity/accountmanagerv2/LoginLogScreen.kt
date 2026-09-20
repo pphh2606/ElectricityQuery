@@ -53,6 +53,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.common.ui.LabeledFieldRow
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
@@ -263,7 +264,7 @@ fun LoginLogScreen(
                         }
                         Column(modifier = Modifier.fillMaxSize()) {
                             // 顶部统计行：已加载条数 + 页码（仿缴费服务大厅订单页）
-                            LoginLogStatsRow(
+                            ListStatsRow(
                                 loadedCount = state.records.size,
                                 currentPage = state.pageCurrent,
                                 totalPages = state.pageTotal,
@@ -395,28 +396,6 @@ private fun LoginRecordCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-    }
-}
-
-/** 列表顶部统计行：已加载条数（左）+ 页码（右），仿缴费服务大厅订单页 */
-@Composable
-private fun LoginLogStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = pluralStringResource(R.plurals.login_log_loaded_count, loadedCount, loadedCount),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = stringResource(R.string.login_log_page_info, currentPage, totalPages),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 

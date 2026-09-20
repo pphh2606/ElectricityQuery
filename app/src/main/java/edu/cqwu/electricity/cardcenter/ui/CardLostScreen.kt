@@ -26,10 +26,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.CreditCardOff
-import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -40,7 +40,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.ui.platform.LocalResources
@@ -240,29 +239,15 @@ fun CardLostScreen(
         LoadingDialog(message = stringResource(R.string.card_lost_processing))
     }
 
-    // ── 二次确认对话框 ──
-    if (showConfirmDialog) {
-        AppScaledAlertDialog(
-            onDismissRequest = { showConfirmDialog = false },
-            title = { Text(stringResource(R.string.card_lost_confirm_title)) },
-            text = { Text(stringResource(R.string.card_lost_confirm_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = { executeCardLost() },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Text(stringResource(R.string.card_lost_confirm_btn))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showConfirmDialog = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            }
-        )
-    }
+    // ── 二次确认弹窗 ──
+    ConfirmBottomSheet(
+        visible = showConfirmDialog,
+        onDismissRequest = { showConfirmDialog = false },
+        title = stringResource(R.string.card_lost_confirm_title),
+        message = stringResource(R.string.card_lost_confirm_text),
+        confirmText = stringResource(R.string.card_lost_confirm_btn),
+        onConfirm = { executeCardLost() },
+    )
 
     // ── 错误提示 - Bottom Sheet ──
     BottomSheetDialogV2(

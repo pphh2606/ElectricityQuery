@@ -14,6 +14,15 @@
     <string name="common_confirm">موافق</string>
     <string name="common_cancel">إلغاء</string>
     <string name="common_delete">حذف</string>
+    <plurals name="common_loaded_count">
+        <item quantity="one">تم تحميل %1$d</item>
+        <item quantity="other">تم تحميل %1$d</item>
+        <item quantity="zero">تم تحميل %1$d</item>
+        <item quantity="two">تم تحميل %1$d</item>
+        <item quantity="few">تم تحميل %1$d</item>
+        <item quantity="many">تم تحميل %1$d</item>
+    </plurals>
+    <string name="common_page_info">صفحة %1$d/%2$d</string>
     <string name="common_date_range_separator">إلى</string>
     <string name="common_save">حفظ</string>
     <string name="common_add">إضافة</string>

@@ -71,9 +71,12 @@ class NoticeApi {
             val qp = noticeResponse.qp
             val items = qp?.aList ?: emptyList()
             val totalItem = qp?.totalItem ?: 0
+            // 服务端 qp 自带 pageSize；缺失或非法时回退到请求用的 PAGE_SIZE
+            val pageSize = qp?.pageSize?.takeIf { it > 0 } ?: PAGE_SIZE
+            val totalPage = if (totalItem <= 0) 1 else (totalItem + pageSize - 1) / pageSize
 
-            AppLog.d(TAG, "解析结果: 当前页${items.size}条, 总共${totalItem}条")
-            Result.success(NoticePageResult(items = items, totalItem = totalItem))
+            AppLog.d(TAG, "解析结果: 当前页${items.size}条, 总共${totalItem}条, 共${totalPage}页")
+            Result.success(NoticePageResult(items = items, totalItem = totalItem, totalPage = totalPage))
         } catch (e: Exception) {
             AppLog.e(TAG, "获取通知公告失败", e)
             Result.failure(e)
@@ -133,5 +136,6 @@ class NoticeApi {
  */
 data class NoticePageResult(
     val items: List<NoticeItem>,
-    val totalItem: Int
+    val totalItem: Int,
+    val totalPage: Int
 )

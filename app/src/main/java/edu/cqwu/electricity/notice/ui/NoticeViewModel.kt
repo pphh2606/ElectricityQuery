@@ -29,6 +29,8 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         private set
     var totalItem by mutableIntStateOf(0)
         private set
+    var totalPage by mutableIntStateOf(1)
+        private set
     var isLoading by mutableStateOf(true)
         private set
     var isLoadingMore by mutableStateOf(false)
@@ -74,6 +76,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
                 items + pageResult.items
             }
             totalItem = pageResult.totalItem
+            totalPage = pageResult.totalPage
             currentPage = pageNo
             isLoading = false
             isLoadingMore = false
@@ -93,6 +96,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         items = emptyList()
         currentPage = 0
         totalItem = 0
+        totalPage = 1
         errorMessage = null
         requiresReLogin = false
     }
@@ -105,6 +109,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         items = emptyList()
         currentPage = 0
         totalItem = 0
+        totalPage = 1
         errorMessage = null
         requiresReLogin = false
     }
@@ -149,6 +154,7 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         items = emptyList()
         currentPage = 0
         totalItem = 0
+        totalPage = 1
         isLoading = true
         isLoadingMore = false
         errorMessage = null

@@ -26,8 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -93,15 +91,13 @@ fun OpenUrlDialog(
     var isInternal by remember { mutableStateOf(true) }
     var useHalfScreen by remember { mutableStateOf(true) }
     var urlError by remember { mutableStateOf<String?>(null) }
-    val focusRequester = remember { FocusRequester() }
     val resources = LocalResources.current
 
-    // 弹窗弹出后自动聚焦输入框
+    // 每次打开重置输入。不自动请求焦点：输入法会与弹窗入场动画叠加，反而更慢更乱
     LaunchedEffect(visible) {
         if (visible) {
             urlInput = ""
             urlError = null
-            focusRequester.requestFocus()
         }
     }
 
@@ -148,9 +144,7 @@ fun OpenUrlDialog(
                 supportingText = urlError?.let {
                     { Text(it, color = MaterialTheme.colorScheme.error) }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,

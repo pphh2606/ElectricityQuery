@@ -15,5 +15,4 @@
         <item quantity="few">تم العثور على %1$d شخصًا</item>
         <item quantity="many">تم العثور على %1$d شخصًا</item>
     </plurals>
-    <string name="person_page_info">الصفحة %1$d/%2$d</string>
 </resources>

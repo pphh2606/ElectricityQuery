@@ -77,16 +77,6 @@
     <string name="jwxt_schedule_search_classroom">البحث عن قاعة</string>
     <string name="jwxt_schedule_search_teacher">البحث عن مدرّس</string>
     <string name="jwxt_schedule_empty">لا توجد نتائج مطابقة</string>
-    <!-- سطر الإحصاء: عدد العناصر المحمّلة / الصفحة -->
-    <plurals name="jwxt_schedule_loaded_count">
-        <item quantity="one">تم تحميل %1$d</item>
-        <item quantity="other">تم تحميل %1$d</item>
-        <item quantity="zero">تم تحميل %1$d</item>
-        <item quantity="two">تم تحميل %1$d</item>
-        <item quantity="few">تم تحميل %1$d</item>
-        <item quantity="many">تم تحميل %1$d</item>
-    </plurals>
-    <string name="jwxt_schedule_page_info">الصفحة %1$d/%2$d</string>
     <!-- نافذة مركزية أثناء تحديد الحرم الجامعي قبل فتح الجدول -->
     <string name="jwxt_schedule_opening">جارٍ فتح الجدول…</string>
 </resources>

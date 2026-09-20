@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.app
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -8,12 +10,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeAppLauncher
-import edu.cqwu.electricity.home.ui.ExternalAppConfirmDialog
 import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.common.net.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
@@ -117,20 +120,26 @@ fun AppLaunchEffects(
         }
     }
 
-    // ── 外部应用（自定义 scheme）确认弹窗，与首页共用 ──
-    ExternalAppConfirmDialog(
-        pending = pendingExternalIntent,
-        onDismiss = { pendingExternalIntent = null },
-        onConfirm = { name, url ->
-            pendingExternalIntent = null
-            ExternalAppOpener.open(
-                context = context,
-                appName = name,
-                url = url,
-                onFailure = { message ->
-                    snackbar.show(message, ToastUtils.Type.ERROR)
-                }
-            )
-        }
+    // ── 外部应用（自定义 scheme）确认弹窗，与首页共用同一套确认组件 ──
+    ConfirmBottomSheet(
+        visible = pendingExternalIntent != null,
+        onDismissRequest = { pendingExternalIntent = null },
+        title = stringResource(R.string.home_external_app_title),
+        message = pendingExternalIntent?.let { stringResource(R.string.home_external_app_message, it.first) },
+        icon = Icons.Outlined.OpenInBrowser,
+        confirmText = stringResource(R.string.common_confirm),
+        onConfirm = {
+            pendingExternalIntent?.let { (name, url) ->
+                pendingExternalIntent = null
+                ExternalAppOpener.open(
+                    context = context,
+                    appName = name,
+                    url = url,
+                    onFailure = { message ->
+                        snackbar.show(message, ToastUtils.Type.ERROR)
+                    }
+                )
+            }
+        },
     )
 }

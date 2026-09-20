@@ -34,13 +34,8 @@
     <string name="bill_income">Income</string>
     <string name="bill_expense">Expense</string>
     <string name="bill_fetching">Fetching bills…%1$ds</string>
-    <plurals name="bill_loaded_count">
-        <item quantity="one">Loaded %1$d record</item>
-        <item quantity="other">Loaded %1$d records</item>
-    </plurals>
     <string name="bill_start_date">Start Date</string>
     <string name="bill_end_date">End Date</string>
-    <string name="bill_page_info">Page %1$d/%2$d</string>
     <string name="bill_tab_all">All</string>
     <string name="bill_tab_unpaid">Unpaid</string>
     <string name="bill_tab_success">Success</string>

@@ -77,13 +77,6 @@
     <string name="jwxt_schedule_search_classroom">Rechercher une salle</string>
     <string name="jwxt_schedule_search_teacher">Rechercher un enseignant</string>
     <string name="jwxt_schedule_empty">Aucun résultat</string>
-    <!-- Ligne de statistiques : éléments chargés / page -->
-    <plurals name="jwxt_schedule_loaded_count">
-        <item quantity="one">%1$d chargé</item>
-        <item quantity="other">%1$d chargés</item>
-        <item quantity="many">%1$d chargés</item>
-    </plurals>
-    <string name="jwxt_schedule_page_info">Page %1$d/%2$d</string>
     <!-- Boîte centrée pendant la résolution du campus avant d\'ouvrir l\'emploi du temps -->
     <string name="jwxt_schedule_opening">Ouverture de l\'emploi du temps…</string>
 </resources>

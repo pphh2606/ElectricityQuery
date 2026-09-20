@@ -95,6 +95,7 @@ fun NoticeDetailScreen(
     var requiresReLogin by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val resources = LocalResources.current
+    val fontScale = LocalAppSettingsState.current.fontScale
 
     // 文件/下载链接 → 系统浏览器打开（浏览器负责下载）
     fun openExternalBrowser(url: String) {
@@ -395,6 +396,23 @@ fun NoticeDetailScreen(
                                         overScrollMode = WebView.OVER_SCROLL_NEVER
 
                                         webViewClient = object : WebViewClient() {
+                                            // 正文里的链接（文件、邮箱、网址等）一律交给系统浏览器或对应 App：
+                                            // 本 WebView 是按内容动态测高、禁止自身滚动的特制版，
+                                            // 在里面加载一个完整网页会把布局撑坏
+                                            // 用被废弃的 String 签名是有意的：它兼容 API 21-23，
+                                            // 而 API 24+ 的默认实现会自动转发到这里，一个方法覆盖全版本
+                                            @Suppress("OVERRIDE_DEPRECATION")
+                                            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                                                if (url == null) return false
+                                                // 锚点与页面内部行为（JS、内嵌数据）放行给 WebView 自己处理
+                                                val scheme = Uri.parse(url).scheme?.lowercase()
+                                                if (scheme == null || scheme == "about" ||
+                                                    scheme == "javascript" || scheme == "data"
+                                                ) return false
+                                                openExternalBrowser(url)
+                                                return true
+                                            }
+
                                             override fun onPageFinished(view: WebView, url: String?) {
                                                 super.onPageFinished(view, url)
                                                 // 延迟一帧后使用原生 measure() 获取完整内容高度
@@ -438,6 +456,8 @@ fun NoticeDetailScreen(
                                         contentHeightPx = 0 // 重置，重新测量
                                         webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
                                     }
+                                    // WebView 是原生 View，读不到 Compose 的 Density，字体要自己同步
+                                    webView.settings.textZoom = (fontScale * 100).toInt()
                                     webView.applyWebViewDarkMode(webDarkModeEnabled.value)
                                 },
                                 onRelease = { webView ->

@@ -77,11 +77,6 @@
     <string name="jwxt_schedule_search_classroom">教室名で検索</string>
     <string name="jwxt_schedule_search_teacher">教員名で検索</string>
     <string name="jwxt_schedule_empty">一致する結果はありません</string>
-    <!-- 一覧の統計行：読み込み件数／ページ -->
-    <plurals name="jwxt_schedule_loaded_count">
-        <item quantity="other">%1$d 件読み込み済み</item>
-    </plurals>
-    <string name="jwxt_schedule_page_info">%1$d/%2$d ページ</string>
     <!-- 項目を選んでキャンパスを取得し、時間割を開く前の中央ダイアログ -->
     <string name="jwxt_schedule_opening">時間割を開いています…</string>
 </resources>

@@ -43,6 +43,7 @@ import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -82,6 +83,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import edu.cqwu.electricity.common.ui.AppIconBox
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.FeatureGrid
 import edu.cqwu.electricity.common.settings.CustomServiceEntry
 import edu.cqwu.electricity.home.data.ExternalAppOpener
@@ -437,16 +439,22 @@ fun HomePageContent(
         }
     }
 
-    // 外部 Intent 确认底部弹窗（与桌面快捷方式共用 ExternalAppConfirmDialog）
-    ExternalAppConfirmDialog(
-        pending = pendingExternalIntent,
-        onDismiss = { pendingExternalIntent = null },
-        onConfirm = { name, url ->
-            pendingExternalIntent = null
-            ExternalAppOpener.open(context, name, url) { message ->
-                snackbar.show(message, ToastUtils.Type.ERROR)
+    // 外部 Intent 确认底部弹窗（与桌面快捷方式共用同一套确认组件）
+    ConfirmBottomSheet(
+        visible = pendingExternalIntent != null,
+        onDismissRequest = { pendingExternalIntent = null },
+        title = stringResource(R.string.home_external_app_title),
+        message = pendingExternalIntent?.let { stringResource(R.string.home_external_app_message, it.first) },
+        icon = Icons.Outlined.OpenInBrowser,
+        confirmText = stringResource(R.string.common_confirm),
+        onConfirm = {
+            pendingExternalIntent?.let { (name, url) ->
+                pendingExternalIntent = null
+                ExternalAppOpener.open(context, name, url) { message ->
+                    snackbar.show(message, ToastUtils.Type.ERROR)
+                }
             }
-        }
+        },
     )
 
     // ── 自定义网站弹窗 ──

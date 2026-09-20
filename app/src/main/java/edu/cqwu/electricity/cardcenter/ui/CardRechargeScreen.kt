@@ -5,6 +5,7 @@ import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -357,8 +358,9 @@ private fun CardInfoCard(uiState: CardRechargeUiState) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             val info = uiState.cardInfo!!
@@ -373,7 +375,8 @@ private fun InfoRow(label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            // 5dp：让整张卡片与电费充值页的账户卡片等高（那边是「无行内边距 + 12dp 间隔」）
+            .padding(vertical = 5.dp)
     ) {
         Text(
             text = label,

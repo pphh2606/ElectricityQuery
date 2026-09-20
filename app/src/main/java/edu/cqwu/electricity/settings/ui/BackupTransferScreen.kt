@@ -20,7 +20,6 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.settings.data.BackupPayloadV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -242,22 +242,13 @@ fun BackupTransferScreen(
     }
 
     // ── 导入成功 → 提示重启使设置完整生效 ──
-    if (showRestartDialog) {
-        AlertDialog(
-            onDismissRequest = { showRestartDialog = false },
-            title = {
-                Text(stringResource(R.string.settings_backup_import_ok))
-            },
-            confirmButton = {
-                TextButton(onClick = { restartApp(context) }) {
-                    Text(stringResource(R.string.settings_backup_restart))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showRestartDialog = false }) {
-                    Text(stringResource(R.string.settings_backup_later))
-                }
-            },
-        )
-    }
+    // 标题文案本身已含「部分设置重启后生效」的说明，故不传 message
+    ConfirmBottomSheet(
+        visible = showRestartDialog,
+        onDismissRequest = { showRestartDialog = false },
+        title = stringResource(R.string.settings_backup_import_ok),
+        cancelText = stringResource(R.string.settings_backup_later),
+        confirmText = stringResource(R.string.settings_backup_restart),
+        onConfirm = { restartApp(context) },
+    )
 }

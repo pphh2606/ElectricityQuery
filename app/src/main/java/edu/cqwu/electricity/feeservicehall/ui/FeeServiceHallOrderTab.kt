@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 
@@ -144,7 +145,7 @@ internal fun FeeServiceHallOrderTab(
                     }
 
                     Column(Modifier.fillMaxSize()) {
-                        OrderStatsRow(
+                        ListStatsRow(
                             loadedCount = uiState.orders.size,
                             currentPage = uiState.orderPageCurrent,
                             totalPages = uiState.orderTotalPages,
@@ -217,19 +218,6 @@ private fun OrderFilterPanel(
             TextButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_reset)) }
             Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_apply)) }
         }
-    }
-}
-
-@Composable
-private fun OrderStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(pluralStringResource(R.plurals.fee_order_loaded_count, loadedCount, loadedCount), style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(stringResource(R.string.fee_order_page_info, currentPage, totalPages), style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

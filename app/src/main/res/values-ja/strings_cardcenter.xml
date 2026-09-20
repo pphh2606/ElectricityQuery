@@ -34,12 +34,8 @@
     <string name="bill_income">収入</string>
     <string name="bill_expense">支出</string>
     <string name="bill_fetching">明細を取得中…%1$ds</string>
-    <plurals name="bill_loaded_count">
-        <item quantity="other">%1$d 件読み込み済み</item>
-    </plurals>
     <string name="bill_start_date">開始日</string>
     <string name="bill_end_date">終了日</string>
-    <string name="bill_page_info">%1$d/%2$d ページ</string>
     <string name="bill_tab_all">すべて</string>
     <string name="bill_tab_unpaid">未払い</string>
     <string name="bill_tab_success">成功</string>

@@ -209,7 +209,6 @@ private fun MyInfoContent(
                     HorizontalDivider(
                         thickness = 0.5.dp,
                         color = MaterialTheme.colorScheme.outlineVariant,
-                        modifier = Modifier.padding(start = 16.dp),
                     )
                 }
             }
@@ -351,7 +350,7 @@ private fun CollapsibleCategoryCard(
                     if (index < category.children.size - 1) {
                         HorizontalDivider(thickness = 0.5.dp,
                             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                            modifier = Modifier.padding(start = 20.dp))
+                            modifier = Modifier.padding(horizontal = 20.dp))
                     }
                 }
             }

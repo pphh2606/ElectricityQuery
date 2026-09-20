@@ -66,6 +66,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.notice.data.NoticeItem
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -305,49 +306,64 @@ fun NoticeScreen(
             }
 
             else -> {
-                PullToRefreshBox(
-                    isRefreshing = viewModel.isLoading,
-                    onRefresh = {
-                        scope.launch {
-                            val keyword = viewModel.searchKeyword.ifBlank { null }
-                            viewModel.loadPage(0, isRefresh = true, keyword = keyword)
-                        }
-                    },
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
                 ) {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    // 顶部统计行：已加载条数 + 页码（与账单页同一排版，不随列表滚动）
+                    if (viewModel.items.isNotEmpty()) {
+                        ListStatsRow(
+                            loadedCount = viewModel.items.size,
+                            currentPage = viewModel.currentPage + 1,
+                            totalPages = viewModel.totalPage,
+                        )
+                    }
+
+                    PullToRefreshBox(
+                        isRefreshing = viewModel.isLoading,
+                        onRefresh = {
+                            scope.launch {
+                                val keyword = viewModel.searchKeyword.ifBlank { null }
+                                viewModel.loadPage(0, isRefresh = true, keyword = keyword)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f)
                     ) {
-                        // 搜索模式：显示搜索结果标题
-                        if (viewModel.searchKeyword.isNotBlank() && viewModel.items.isNotEmpty()) {
-                            item(key = "search_header") {
-                                Text(
-            text = pluralStringResource(R.plurals.notice_search_result, viewModel.totalItem, viewModel.searchKeyword, viewModel.totalItem),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // 搜索模式：显示搜索结果标题
+                            if (viewModel.searchKeyword.isNotBlank() && viewModel.items.isNotEmpty()) {
+                                item(key = "search_header") {
+                                    Text(
+                                        text = pluralStringResource(R.plurals.notice_search_result, viewModel.totalItem, viewModel.searchKeyword, viewModel.totalItem),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
+
+                            items(viewModel.items, key = { it.wid }) { notice ->
+                                NoticeCard(
+                                    notice = notice,
+                                    onClick = { onNavigateToNoticeDetail(notice.wid) }
                                 )
                             }
-                        }
 
-                        items(viewModel.items, key = { it.wid }) { notice ->
-                            NoticeCard(
-                                notice = notice,
-                                onClick = { onNavigateToNoticeDetail(notice.wid) }
-                            )
-                        }
-
-                        item(key = "footer") {
-                            // 本页只有自动分页加载（NoticeViewModel 没有公开的手动加载入口），故不传 onLoadMore
-                            val showFooter = viewModel.isLoadingMore ||
-                                (viewModel.items.isNotEmpty() && !viewModel.hasMore)
-                            if (showFooter) {
-                                PagingFooter(isLoadingMore = viewModel.isLoadingMore, hasMore = false)
+                            item(key = "footer") {
+                                // 本页只有自动分页加载（NoticeViewModel 没有公开的手动加载入口），故不传 onLoadMore
+                                val showFooter = viewModel.isLoadingMore ||
+                                    (viewModel.items.isNotEmpty() && !viewModel.hasMore)
+                                if (showFooter) {
+                                    PagingFooter(isLoadingMore = viewModel.isLoadingMore, hasMore = false)
+                                }
                             }
                         }
                     }

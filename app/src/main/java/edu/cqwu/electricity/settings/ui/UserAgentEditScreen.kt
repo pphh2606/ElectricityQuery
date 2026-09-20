@@ -14,18 +14,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Delete
-import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,7 +62,6 @@ fun UserAgentEditScreen(
 
     var userAgent by remember { mutableStateOf(existingEntry?.userAgent ?: "") }
     var note by remember { mutableStateOf(existingEntry?.note ?: "") }
-    var showDeleteDialog by remember { mutableStateOf(false) }
     val defaultNote = stringResource(R.string.ua_edit_default_note)
 
     val canSave = userAgent.isNotBlank()
@@ -90,18 +85,6 @@ fun UserAgentEditScreen(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
                         )
-                    }
-                },
-                actions = {
-                    // 编辑模式下且非内置预设时显示删除按钮
-                    if (!isNew && existingEntry != null && !existingEntry.isBuiltin) {
-                        IconButton(onClick = { showDeleteDialog = true }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = stringResource(R.string.common_delete),
-                                tint = MaterialTheme.colorScheme.error,
-                            )
-                        }
                     }
                 },
                 colors = topBarColors,
@@ -193,31 +176,5 @@ fun UserAgentEditScreen(
                 }
             }
         }
-    }
-
-    // ── 删除确认对话框 ──
-    if (showDeleteDialog && existingEntry != null) {
-        AppScaledAlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text(text = stringResource(R.string.ua_delete_title)) },
-            text = {
-                Text(text = stringResource(R.string.ua_delete_confirm, existingEntry.name))
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    UserAgentProvider.removeCustomEntry(existingEntry.id)
-                    showDeleteDialog = false
-                    onBack()
-                }) {
-                    Text(stringResource(R.string.common_delete), color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        )
     }
 }

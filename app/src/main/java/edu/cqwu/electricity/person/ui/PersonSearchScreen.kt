@@ -62,6 +62,7 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.person.data.PersonRow
 import edu.cqwu.electricity.person.data.PersonSearchApi
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -171,10 +172,15 @@ fun PersonSearchScreen(
             // ── 统计信息行：左「共搜索到 x 人」右「第 n/总页数 页」（排版参照账单页 BillStatsRow） ──
             val currentState = uiState
             if (currentState is PersonSearchViewModel.UiState.Success && currentState.rows.isNotEmpty()) {
-                PersonStatsRow(
-                    totalSize = currentState.totalSize,
+                ListStatsRow(
+                    loadedCount = currentState.totalSize,
                     currentPage = currentState.currentPage,
                     totalPages = currentState.totalPages,
+                    loadedText = pluralStringResource(
+                        R.plurals.person_search_total_count,
+                        currentState.totalSize,
+                        currentState.totalSize,
+                    ),
                 )
             }
 
@@ -359,32 +365,3 @@ private fun PersonCard(person: PersonRow) {
     }
 }
 
-/**
- * 统计信息行：左「共搜索到 x 人」右「第 n/总页数 页」。
- * 排版参照账单页 [edu.cqwu.electricity.cardcenter.ui.BillScreen] 的 BillStatsRow：
- * fillMaxWidth + padding(8,16) + SpaceBetween，bodySmall / onSurfaceVariant。
- */
-@Composable
-private fun PersonStatsRow(
-    totalSize: Int,
-    currentPage: Int,
-    totalPages: Int,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = pluralStringResource(R.plurals.person_search_total_count, totalSize, totalSize),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = stringResource(R.string.person_page_info, currentPage, totalPages),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}

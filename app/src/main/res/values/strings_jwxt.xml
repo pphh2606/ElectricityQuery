@@ -76,11 +76,6 @@
     <string name="jwxt_schedule_search_classroom">搜索教室名</string>
     <string name="jwxt_schedule_search_teacher">搜索教师姓名</string>
     <string name="jwxt_schedule_empty">没有匹配的结果</string>
-    <!-- 列表统计行：已加载条数 / 页码 -->
-    <plurals name="jwxt_schedule_loaded_count">
-        <item quantity="other">已加载 %1$d 条</item>
-    </plurals>
-    <string name="jwxt_schedule_page_info">第%1$d/%2$d页</string>
     <!-- 点选某一项后查校区、准备进入课表时的居中弹窗文案 -->
     <string name="jwxt_schedule_opening">正在打开课表…</string>
 </resources>

@@ -2,7 +2,6 @@ package edu.cqwu.electricity.accountmanagerv2
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,8 +29,6 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.WarningAmber
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,7 +37,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,15 +52,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.LogoutApi
 import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.common.net.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
-import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -281,91 +275,47 @@ fun AccountManagerScreen(
     }
 
     // 删除账号确认弹窗
-    if (accountToDelete != null) {
-        val accountId = accountToDelete!!
-        val deletingUsername = SessionCoordinatorV2.accountById(accountId)?.username
-        AppScaledAlertDialog(
-            onDismissRequest = { accountToDelete = null },
-            title = { Text(text = stringResource(R.string.login_delete_account_title)) },
-            text = { Text(text = stringResource(R.string.login_delete_account_confirm, deletingUsername ?: "")) },
-            confirmButton = {
-                TextButton(onClick = {
-                    scope.launch {
-                        val account = SessionCoordinatorV2.accountById(accountId)
-                        withContext(Dispatchers.IO) {
-                            // 先调用服务端退出登录注销该账号会话（302 视为成功），
-                            // 登出失败不阻塞本地删除（尽力而为，API 内部已记录日志）
-                            LogoutApi.logout(account?.username ?: "", account?.cookies ?: emptyMap())
-                            // 删除账号条目；删当前激活条目时内部清空系统登录态回到未登录
-                            SessionCoordinatorV2.delete(accountId)
-                        }
-                        accountToDelete = null
-                        refresh()
-                    }
-                }) {
-                    Text(stringResource(R.string.common_delete), color = MaterialTheme.colorScheme.error)
+    val deletingAccountId = accountToDelete
+    ConfirmBottomSheet(
+        visible = deletingAccountId != null,
+        onDismissRequest = { accountToDelete = null },
+        title = stringResource(R.string.login_delete_account_title),
+        message = stringResource(
+            R.string.login_delete_account_confirm,
+            deletingAccountId?.let { SessionCoordinatorV2.accountById(it)?.username } ?: "",
+        ),
+        confirmText = stringResource(R.string.common_delete),
+        onConfirm = {
+            val accountId = deletingAccountId ?: return@ConfirmBottomSheet
+            scope.launch {
+                val account = SessionCoordinatorV2.accountById(accountId)
+                withContext(Dispatchers.IO) {
+                    // 先调用服务端退出登录注销该账号会话（302 视为成功），
+                    // 登出失败不阻塞本地删除（尽力而为，API 内部已记录日志）
+                    LogoutApi.logout(account?.username ?: "", account?.cookies ?: emptyMap())
+                    // 删除账号条目；删当前激活条目时内部清空系统登录态回到未登录
+                    SessionCoordinatorV2.delete(accountId)
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { accountToDelete = null }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        )
-    }
+                accountToDelete = null
+                refresh()
+            }
+        },
+    )
 
-    // 登录失效安全提醒弹窗（仿新版 MIUI 权限弹窗：拖动手柄 + 按钮上下排列）
-    // 使用 BottomSheetDialogV2 统一弹窗形式（内容自适应 + 标题/空白随内容滚动）
-    BottomSheetDialogV2(
+    // 登录失效安全提醒弹窗（手柄 + 图标标题 + 居中说明 + 上下全宽按钮）
+    ConfirmBottomSheet(
         visible = pendingReLoginId != null,
         onDismissRequest = { pendingReLoginId = null },
         title = stringResource(R.string.account_manager_v2_relogin_title),
+        message = stringResource(R.string.account_manager_v2_relogin_message),
         icon = Icons.Outlined.WarningAmber,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.account_manager_v2_relogin_message),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Button(
-                onClick = { pendingReLoginId = null },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                ),
-            ) {
-                Text(
-                    text = stringResource(R.string.common_cancel),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-            Button(
-                onClick = {
-                    val targetId = pendingReLoginId ?: return@Button
-                    pendingReLoginId = null
-                    onNavigateToLogin(targetId)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.common_confirm),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-        }
-    }
+        confirmText = stringResource(R.string.common_confirm),
+        onConfirm = {
+            val targetId = pendingReLoginId ?: return@ConfirmBottomSheet
+            pendingReLoginId = null
+            onNavigateToLogin(targetId)
+        },
+    )
 }
 
 /**

@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.UserAgentProvider
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
@@ -84,6 +85,7 @@ internal fun WebViewHost(
     update: (WebView) -> Unit = {},
 ) {
     val darkModeEnabled = rememberWebViewDarkModeState()
+    val fontScale = LocalAppSettingsState.current.fontScale
 
     AndroidView(
         modifier = modifier,
@@ -228,6 +230,8 @@ internal fun WebViewHost(
             }
         },
         update = { webView ->
+            // WebView 是原生 View，读不到 Compose 的 Density，字体要自己同步
+            webView.settings.textZoom = (fontScale * 100).toInt()
             webView.applyWebViewDarkMode(darkModeEnabled.value)
             update(webView)
         },

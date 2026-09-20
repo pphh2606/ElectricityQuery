@@ -75,6 +75,7 @@ import edu.cqwu.electricity.cardcenter.data.BillPageInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -168,10 +169,13 @@ fun BillScreen(
         }
     }
 
-    // 加载完成后滚动到顶部
+    // 页面级加载完成后滚动到顶部（只响应当前可见 Tab 的事件，后台 Tab 的数据到达不打扰用户）
     LaunchedEffect(Unit) {
-        viewModel.scrollToTop.collectLatest {
-            listStates[pagerState.currentPage].animateScrollToItem(0)
+        viewModel.scrollToTop.collectLatest { tabNo ->
+            val index = tabTabNo.indexOf(tabNo)
+            if (index >= 0 && tabNo == uiState.activeTab) {
+                listStates[index].animateScrollToItem(0)
+            }
         }
     }
 
@@ -272,7 +276,7 @@ fun BillScreen(
 
             // ── HorizontalPager 内容区域 ──
             // 每个 page 从 tabCache 读取自己的数据，避免预加载时显示其他 tab 的错误数据。
-            // 无缓存时回退到 billPageInfo（仅对当前 activeTab 有效）。
+            // 无缓存时 pageInfo 为 null，由该 Tab 自己的加载态（perTabLoading）决定显示加载还是暂无数据。
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize()
@@ -297,7 +301,11 @@ fun BillScreen(
                        Column(modifier = Modifier.fillMaxSize()) {
                            // ⭐ 固定统计行（不随 LazyColumn 滚动）
                            if (pageInfo != null && pageInfo.records.isNotEmpty()) {
-                               BillStatsRow(pageInfo)
+                               ListStatsRow(
+                                    loadedCount = pageInfo.records.size,
+                                    currentPage = pageInfo.currentPage,
+                                    totalPages = pageInfo.totalPages,
+                                )
                            }
                            LazyColumn(
                                state = listStates[pageIndex],
@@ -346,15 +354,15 @@ fun BillScreen(
                                            }
                                        }
                                        item(key = "footer") {
-                                           BillFooterContent(uiState, pageInfo, viewModel)
+                                           BillFooterContent(uiState, pageInfo, pageTabNo, viewModel)
                                        }
                                    }
                                }
                            }
 
-                           // ── 自动加载下一页（滑到最后 3 项时触发）──
+                           // ── 自动加载下一页（滑到列表末尾前几项时触发）──
                            // 使用 derivedStateOf 检测滚动位置，所有相关状态都加入 key
-                           // 避免因 key 不完整导致切换 Tab 后底部卡在"上滑加载更多"不再触发的问题
+                           // 守卫只看本 Tab 自己的翻页状态，别的 Tab 正在翻页不会锁住本 Tab
                            val autoLoadListState = listStates[pageIndex]
                            val shouldLoadMore by remember {
                                derivedStateOf {
@@ -366,11 +374,11 @@ fun BillScreen(
                            }
                            LaunchedEffect(
                                pageTabNo, uiState.activeTab, pageInfo?.hasNext,
-                               shouldLoadMore, uiState.isLoadingMore
+                               shouldLoadMore, pageTabNo in uiState.loadingMoreTabs
                            ) {
-                               if (shouldLoadMore && pageInfo?.hasNext == true && !uiState.isLoadingMore
-                                   && pageTabNo == uiState.activeTab) {
-                                   viewModel.loadNextPage()
+                               if (shouldLoadMore && pageInfo?.hasNext == true
+                                   && pageTabNo == uiState.activeTab && pageTabNo !in uiState.loadingMoreTabs) {
+                                   viewModel.loadNextPage(pageTabNo)
                                }
                            }
                        }
@@ -614,30 +622,26 @@ private fun BillEmptyListContent(tabNo: Int) {
 }
 
 @Composable
-private fun BillStatsRow(pageInfo: BillPageInfo) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = pluralStringResource(R.plurals.bill_loaded_count, pageInfo.records.size, pageInfo.records.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = stringResource(R.string.bill_page_info, pageInfo.currentPage, pageInfo.totalPages), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-@Composable
-private fun BillFooterContent(uiState: BillUiState, pageInfo: BillPageInfo, viewModel: BillViewModel) {
+private fun BillFooterContent(
+    uiState: BillUiState,
+    pageInfo: BillPageInfo,
+    tabNo: Int,
+    viewModel: BillViewModel
+) {
     Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
-        if (uiState.isLoadingMore && uiState.loadingMoreTab == uiState.activeTab) {
-            // 仅当前活跃 Tab 触发的加载更多才显示 loading（防止切换到其他 Tab 后显示错误的加载状态）
+        if (tabNo in uiState.loadingMoreTabs) {
+            // 只显示本 Tab 自己的翻页进度，别的 Tab 正在翻页不影响这里
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(R.string.bill_fetching, uiState.loadMoreElapsed), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = stringResource(R.string.bill_fetching, uiState.moreElapsed[tabNo] ?: 0L), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else if (pageInfo.hasNext) {
-        // 自动加载由 LaunchedEffect（滑到底部最后3项）驱动，点击可手动触发翻页作为兜底
+        // 自动加载由 LaunchedEffect（滑到底部最后几项）驱动，点击可手动触发翻页作为兜底；
+        // 重复点击由 ViewModel 的同 Tab 防重兜住
         Text(
             text = stringResource(R.string.common_swipe_load_more),
-            modifier = Modifier.clickable {
-                if (!uiState.isLoadingMore) viewModel.loadNextPage()
-            },
+            modifier = Modifier.clickable { viewModel.loadNextPage(tabNo) },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
         )

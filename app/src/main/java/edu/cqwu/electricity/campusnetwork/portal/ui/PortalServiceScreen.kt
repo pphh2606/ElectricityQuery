@@ -1,8 +1,8 @@
 package edu.cqwu.electricity.campusnetwork.portal.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -28,7 +28,6 @@ import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,7 +53,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -65,6 +63,7 @@ import edu.cqwu.electricity.campusnetwork.portal.data.PortalOnlineInfo
 import edu.cqwu.electricity.campusnetwork.ui.KeyValueRows
 import edu.cqwu.electricity.campusnetwork.ui.field
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.InfoSectionTitle
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -240,55 +239,19 @@ fun PortalServiceScreen(
         onDismiss = { showServiceSheet = false },
     )
 
-    // 断开确认：与「打开外部应用」弹窗同构（拖动手柄 + 图标标题 + 居中说明 + 上下全宽按钮）
-    BottomSheetDialogV2(
+    // 断开确认弹窗
+    ConfirmBottomSheet(
         visible = showLogoutDialog,
         onDismissRequest = { showLogoutDialog = false },
         title = stringResource(R.string.portal_logout_confirm_title),
+        message = stringResource(R.string.portal_logout_confirm_message),
         icon = Icons.Outlined.LinkOff,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.portal_logout_confirm_message),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Button(
-                onClick = { showLogoutDialog = false },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                ),
-            ) {
-                Text(
-                    text = stringResource(R.string.common_cancel),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-            Button(
-                onClick = {
-                    showLogoutDialog = false
-                    viewModel.logout()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.common_confirm),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-        }
-    }
+        confirmText = stringResource(R.string.common_confirm),
+        onConfirm = {
+            showLogoutDialog = false
+            viewModel.logout()
+        },
+    )
 }
 
 // ══════════════════════════════════════════════
@@ -305,22 +268,24 @@ private fun OnlineContent(
     onOpenSelfService: () -> Unit,
     onOpenAuthPage: () -> Unit,
 ) {
-    // ── 会话状态 ──
+    // ── 会话状态（1dp 描边：本页唯一没有外层容器的区块）──
     InfoSectionTitle(text = stringResource(R.string.portal_group_session))
-    OnlineStatusRow(info = info)
-    RemainingBlock(seconds = state.remainingSeconds)
+    SettingsCard(outlined = true) {
+        OnlineStatusRow(info = info)
+        RemainingBlock(seconds = state.remainingSeconds)
 
-    KeyValueRows(
-        fields = listOf(
-            field(R.string.portal_field_traffic, trafficText(info.maxFlow)),
-            field(R.string.portal_field_ip, info.userIp),
-            field(R.string.portal_field_mac, formatMac(info.userMac)),
-            field(R.string.portal_field_gateway, info.webGateIp),
-            field(R.string.portal_field_login_type, loginTypeText(info.loginType)),
-            field(R.string.portal_field_package, info.userPackage),
-            field(R.string.portal_field_group, info.userGroup),
-        ),
-    )
+        KeyValueRows(
+            fields = listOf(
+                field(R.string.portal_field_traffic, trafficText(info.maxFlow)),
+                field(R.string.portal_field_ip, info.userIp),
+                field(R.string.portal_field_mac, formatMac(info.userMac)),
+                field(R.string.portal_field_gateway, info.webGateIp),
+                field(R.string.portal_field_login_type, loginTypeText(info.loginType)),
+                field(R.string.portal_field_package, info.userPackage),
+                field(R.string.portal_field_group, info.userGroup),
+            ),
+        )
+    }
 
     // 网关通知放在会话状态之后、服务之前
     NoticeNote(notices = state.notices)
@@ -340,19 +305,11 @@ private fun OnlineContent(
     // ── 操作 ──
     InfoSectionTitle(text = stringResource(R.string.portal_group_actions))
     SettingsCard {
-        Button(
+        LinkRow(
+            icon = Icons.Outlined.LinkOff,
+            title = stringResource(R.string.portal_action_logout),
             onClick = onLogoutClick,
-            enabled = !state.isApplying,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-            ),
-        ) {
-            Text(text = stringResource(R.string.portal_action_logout))
-        }
+        )
     }
 
     // ── 相关入口 ──
@@ -517,15 +474,23 @@ private fun MabRow(state: PortalServiceUiState, onToggle: (Boolean) -> Unit) {
     }
 }
 
-/** 设置页风格的卡片容器：16dp 圆角 + surfaceContainerLow 底色（对齐 PersonalizationScreen） */
+/**
+ * 设置页风格的卡片容器：16dp 圆角 + surfaceContainerLow 底色（对齐 PersonalizationScreen）。
+ *
+ * [outlined] 为 true 时额外描一道 1dp 的 outlineVariant 边框（与账单 / 通知卡片同款）。
+ */
 @Composable
-private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
+private fun SettingsCard(
+    outlined: Boolean = false,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
+        border = if (outlined) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
     ) {
         Column(content = content)
     }

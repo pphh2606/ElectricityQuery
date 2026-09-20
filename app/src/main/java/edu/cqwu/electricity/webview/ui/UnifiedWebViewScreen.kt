@@ -68,6 +68,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import edu.cqwu.electricity.common.net.WebVpnEncoder
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.WebViewErrorOverlay
@@ -102,6 +103,7 @@ fun UnifiedWebViewScreen(
 ) {
     val nav = LocalNavController.current
     val webDarkModeEnabled = rememberWebViewDarkModeState()
+    val fontScale = LocalAppSettingsState.current.fontScale
     // Campusphere 提醒：只弹一次
     var campusphereToastShown by remember { mutableStateOf(false) }
 
@@ -618,6 +620,9 @@ fun UnifiedWebViewScreen(
                     // 同步 canGoBack 状态（兜底，防止回调未及时触发）
                     val webView = swipeRefreshLayout.getChildAt(0) as? WebView
                     canGoBack = webView?.canGoBack() == true
+
+                    // WebView 是原生 View，读不到 Compose 的 Density，字体要自己同步
+                    webView?.settings?.textZoom = (fontScale * 100).toInt()
 
                     // 从本地登录返回后自动刷新
                     if (needsReloadAfterReturn) {

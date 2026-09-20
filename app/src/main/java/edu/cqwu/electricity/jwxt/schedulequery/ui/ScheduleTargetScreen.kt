@@ -65,6 +65,7 @@ import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
@@ -256,7 +257,7 @@ fun JwxtScheduleTargetScreen(
             TargetFilterBar(type = type, state = state, viewModel = viewModel, onPick = { picker = it })
             // 列表统计行（已加载条数 + 页码）：有了它就不再需要标题栏下那条分隔线
             if (state.pageTotal > 0) {
-                ScheduleStatsRow(
+                ListStatsRow(
                     loadedCount = state.rows.size,
                     currentPage = state.pageNumber,
                     totalPages = state.pageTotal,
@@ -508,28 +509,6 @@ private fun filterEntries(
     }
 
     return entries
-}
-
-/** 列表统计行：已加载条数（左）+ 页码（右），与认证日志 / 缴费订单页同一写法 */
-@Composable
-private fun ScheduleStatsRow(loadedCount: Int, currentPage: Int, totalPages: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = pluralStringResource(R.plurals.jwxt_schedule_loaded_count, loadedCount, loadedCount),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = stringResource(R.string.jwxt_schedule_page_info, currentPage, totalPages),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
 }
 
 /** 结果列表：滚动接近底部自动加载下一页 */

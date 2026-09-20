@@ -14,6 +14,10 @@
     <string name="common_confirm">確認</string>
     <string name="common_cancel">キャンセル</string>
     <string name="common_delete">削除</string>
+    <plurals name="common_loaded_count">
+        <item quantity="other">%1$d 件読み込み済み</item>
+    </plurals>
+    <string name="common_page_info">%1$d/%2$d ページ</string>
     <string name="common_date_range_separator">〜</string>
     <string name="common_save">保存</string>
     <string name="common_add">追加</string>

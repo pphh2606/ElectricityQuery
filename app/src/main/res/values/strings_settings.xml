@@ -93,10 +93,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="login_log_title">认证日志</string>
     <string name="login_log_detail_title">认证详情</string>
-    <plurals name="login_log_loaded_count">
-        <item quantity="other">已加载 %1$d 条</item>
-    </plurals>
-    <string name="login_log_page_info">第%1$d/%2$d页</string>
     <string name="login_log_oper_auth">认证记录</string>
     <string name="login_log_oper_account">帐号维护</string>
     <string name="login_log_oper_password">密码维护</string>

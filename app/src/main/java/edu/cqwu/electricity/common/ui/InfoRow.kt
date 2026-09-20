@@ -97,12 +97,12 @@ fun InfoSectionTitle(text: String) {
     )
 }
 
-/** 信息行之间的细分隔线：0.5dp + 左缩进 16dp，与字段行左边界对齐 */
+/** 信息行之间的细分隔线：0.5dp + 左右各缩进 16dp，与字段行的左右边界对齐 */
 @Composable
 fun InfoRowDivider() {
     HorizontalDivider(
         thickness = 0.5.dp,
         color = MaterialTheme.colorScheme.outlineVariant,
-        modifier = Modifier.padding(start = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
     )
 }

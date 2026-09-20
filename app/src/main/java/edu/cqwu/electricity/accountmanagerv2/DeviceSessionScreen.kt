@@ -53,7 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
+import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.LabeledFieldRow
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -137,30 +137,19 @@ fun DeviceSessionScreen(
     }
 
     // 踢出确认弹窗
-    pendingKick?.let { target ->
-        AppScaledAlertDialog(
-            onDismissRequest = { pendingKick = null },
-            title = { Text(text = stringResource(R.string.device_session_kick_title)) },
-            text = { Text(text = stringResource(R.string.device_session_kick_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    pendingKick = null
-                    viewModel.removeSession(target.id)
-                }) {
-                    Text(
-                        text = stringResource(R.string.device_session_kick),
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { pendingKick = null }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        )
-    }
+    ConfirmBottomSheet(
+        visible = pendingKick != null,
+        onDismissRequest = { pendingKick = null },
+        title = stringResource(R.string.device_session_kick_title),
+        message = stringResource(R.string.device_session_kick_message),
+        confirmText = stringResource(R.string.device_session_kick),
+        onConfirm = {
+            pendingKick?.let { target ->
+                pendingKick = null
+                viewModel.removeSession(target.id)
+            }
+        },
+    )
 
     // 踢出进行中（阻断交互）
     if (state.kickingSessionId != null) {

@@ -93,11 +93,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="login_log_title">Auth Logs</string>
     <string name="login_log_detail_title">Auth Details</string>
-    <plurals name="login_log_loaded_count">
-        <item quantity="one">%1$d loaded</item>
-        <item quantity="other">%1$d loaded</item>
-    </plurals>
-    <string name="login_log_page_info">Page %1$d/%2$d</string>
     <string name="login_log_oper_auth">Auth records</string>
     <string name="login_log_oper_account">Account maintenance</string>
     <string name="login_log_oper_password">Password maintenance</string>

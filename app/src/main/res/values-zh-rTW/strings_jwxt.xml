@@ -77,11 +77,6 @@
     <string name="jwxt_schedule_search_classroom">搜尋教室名稱</string>
     <string name="jwxt_schedule_search_teacher">搜尋教師姓名</string>
     <string name="jwxt_schedule_empty">沒有符合的結果</string>
-    <!-- 清單統計列：已載入筆數／頁碼 -->
-    <plurals name="jwxt_schedule_loaded_count">
-        <item quantity="other">已載入 %1$d 筆</item>
-    </plurals>
-    <string name="jwxt_schedule_page_info">第%1$d/%2$d頁</string>
     <!-- 點選某一項後查詢校區、準備進入課表時的置中彈窗文案 -->
     <string name="jwxt_schedule_opening">正在開啟課表…</string>
 </resources>

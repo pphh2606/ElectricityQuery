@@ -93,10 +93,6 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="login_log_title">認證日誌</string>
     <string name="login_log_detail_title">認證詳情</string>
-    <plurals name="login_log_loaded_count">
-        <item quantity="other">已載入 %1$d 條</item>
-    </plurals>
-    <string name="login_log_page_info">第%1$d/%2$d頁</string>
     <string name="login_log_oper_auth">認證紀錄</string>
     <string name="login_log_oper_account">帳號維護</string>
     <string name="login_log_oper_password">密碼維護</string>
