@@ -226,7 +226,7 @@
     <string name="storage_clear_caution_group">需谨慎清除</string>
     <string name="storage_clear_image_cache">图片缓存</string>
     <string name="storage_clear_crash_logs">崩溃日志</string>
-    <string name="storage_clear_temp_logs">临时日志文件</string>
+    <string name="storage_clear_app_logs">应用日志</string>
     <string name="storage_clear_webview_data">WebView 浏览数据</string>
     <string name="storage_clear_cookie_data">登录信息和cookie</string>
     <string name="storage_clear_cookie_hint">清除所有的浏览器登录数据，需重新登录</string>
@@ -240,7 +240,6 @@
     <string name="storage_clear_confirm_restart">清除完成后将自动重启应用。</string>
     <string name="storage_clear_confirm_button">清除</string>
     <string name="storage_clear_cancel_button">取消</string>
-    <string name="storage_clear_success">清除完成</string>
     <string name="storage_clear_nothing_selected">请至少选择一项</string>
     <string name="storage_clear_zero_size">0 B</string>
     <string name="about_build_time">Build Time: %1$s</string>

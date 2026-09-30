@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.settings.util
 import edu.cqwu.electricity.logging.AppLog
+import edu.cqwu.electricity.logging.FileLogWriter
 
 import android.content.Context
 import android.webkit.CookieManager
@@ -28,9 +29,13 @@ class StorageManager(private val context: Context) {
     fun getCrashLogSize(): Long =
         getDirSize(File(context.filesDir, "crash_logs"))
 
-    /** 临时日志文件：cacheDir/logs */
-    fun getTempLogSize(): Long =
-        getDirSize(File(context.cacheDir, "logs"))
+    /**
+     * 应用日志：filesDir/logs（`app-yyyyMMdd.log`）。
+     *
+     * 这是业务日志的持久化目录，反馈页预览与分享都从这里读取。
+     */
+    fun getAppLogSize(): Long =
+        getDirSize(File(context.filesDir, "logs"))
 
     /**
      * WebView 真实数据目录：dataDir/app_webview。
@@ -111,9 +116,15 @@ class StorageManager(private val context: Context) {
         deleteDir(File(context.filesDir, "crash_logs"))
     }
 
-    /** 清除临时日志文件 */
-    fun clearTempLogs() {
-        deleteDir(File(context.cacheDir, "logs"))
+    /**
+     * 清除应用日志。
+     *
+     * 必须先让 [FileLogWriter.reset] 关闭当前输出流：Linux 下未关闭的 fd 会继续写
+     * 已被删除的 inode，表现为「目录里看不到文件、磁盘空间却没释放」。
+     */
+    fun clearAppLogs() {
+        FileLogWriter.reset()
+        deleteDir(File(context.filesDir, "logs"))
     }
 
     /** 清除 WebView 浏览数据（缓存目录 + dataDir/app_webview 数据目录 + DOM 存储） */

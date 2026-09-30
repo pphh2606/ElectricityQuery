@@ -31,7 +31,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -55,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.settings.util.StorageManager
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -116,12 +116,12 @@ fun StorageClearScreen(
                 clear = { clearCrashLogs() },
             ),
             StorageItem(
-                key = "temp_logs",
+                key = "app_logs",
                 icon = Icons.Outlined.Description,
-                titleRes = R.string.storage_clear_temp_logs,
+                titleRes = R.string.storage_clear_app_logs,
                 isSafe = true,
-                getSize = { getTempLogSize() },
-                clear = { clearTempLogs() },
+                getSize = { getAppLogSize() },
+                clear = { clearAppLogs() },
             ),
             StorageItem(
                 key = "webview_data",
@@ -207,27 +207,16 @@ fun StorageClearScreen(
     }
 
     fun doClear() {
-        val needsRestart = hasCautionSelected()
         isClearing = true
         scope.launch {
             try {
                 withContext(Dispatchers.IO) {
                     items.filter { checked[it.key] == true }.forEach { it.clear(storageManager) }
                 }
-                // 重新计算大小
-                val result = withContext(Dispatchers.IO) {
-                    items.associate { it.key to StorageManager.formatSize(it.getSize(storageManager)) }
-                }
-                sizes.clear()
-                sizes.putAll(result)
-                if (needsRestart) {
-                    restartApp(context)
-                } else {
-                    snackbar.show(resources.getString(R.string.storage_clear_success), ToastUtils.Type.SUCCESS)
-                }
+                // 清完直接重启；重启后本页重新组合，各项大小自然会重新计算
+                restartApp(context)
             } catch (e: Exception) {
                 snackbar.show(resources.getString(R.string.common_clear_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-            } finally {
                 isClearing = false
             }
         }
@@ -277,7 +266,7 @@ fun StorageClearScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             if (isLoading) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                LoadingDialog(message = stringResource(R.string.common_loading))
             } else {
                 // ── 安全清除 ──
                 SectionHeader(title = stringResource(R.string.storage_clear_safe_group))
@@ -358,12 +347,8 @@ fun StorageClearScreen(
                                 resources.getString(R.string.storage_clear_nothing_selected),
                                 ToastUtils.Type.ERROR,
                             )
-                            return@Button
-                        }
-                        if (hasCautionSelected()) {
-                            showConfirmDialog = true
                         } else {
-                            doClear()
+                            showConfirmDialog = true
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -392,10 +377,15 @@ fun StorageClearScreen(
 
     // ── 确认弹窗（Android 2.x 旧式风格，更醒目） ──
     if (showConfirmDialog) {
-        val selectedNames = getSelectedNames().joinToString("\n• ", prefix = "• ")
         val confirmTitle = stringResource(R.string.storage_clear_confirm_title)
-        val confirmMessage = stringResource(R.string.storage_clear_confirm_message, selectedNames) +
-            "\n\n" + stringResource(R.string.storage_clear_confirm_restart)
+        // 只清安全项时正文仅为一句重启提示；含需谨慎项时列出将被清除的数据
+        val confirmMessage = if (!hasCautionSelected()) {
+            stringResource(R.string.storage_clear_confirm_restart)
+        } else {
+            val selectedNames = getSelectedNames().joinToString("\n• ", prefix = "• ")
+            stringResource(R.string.storage_clear_confirm_message, selectedNames) +
+                "\n\n" + stringResource(R.string.storage_clear_confirm_restart)
+        }
         val confirmText = stringResource(R.string.storage_clear_confirm_button)
         val cancelText = stringResource(R.string.storage_clear_cancel_button)
 

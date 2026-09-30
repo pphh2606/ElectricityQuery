@@ -226,7 +226,7 @@
     <string name="storage_clear_caution_group">注意が必要なクリア</string>
     <string name="storage_clear_image_cache">画像キャッシュ</string>
     <string name="storage_clear_crash_logs">クラッシュログ</string>
-    <string name="storage_clear_temp_logs">一時ログファイル</string>
+    <string name="storage_clear_app_logs">アプリのログ</string>
     <string name="storage_clear_webview_data">WebView ブラウジングデータ</string>
     <string name="storage_clear_cookie_data">ログイン情報とCookie</string>
     <string name="storage_clear_cookie_hint">すべてのブラウザのログインデータを削除します。再ログインが必要です</string>
@@ -240,7 +240,6 @@
     <string name="storage_clear_confirm_restart">クリア後、アプリが自動的に再起動されます。</string>
     <string name="storage_clear_confirm_button">クリア</string>
     <string name="storage_clear_cancel_button">キャンセル</string>
-    <string name="storage_clear_success">クリア完了</string>
     <string name="storage_clear_nothing_selected">少なくとも1つ選択してください</string>
     <string name="storage_clear_zero_size">0 B</string>
 

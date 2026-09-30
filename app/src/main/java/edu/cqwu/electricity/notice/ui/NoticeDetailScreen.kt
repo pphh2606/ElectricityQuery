@@ -15,12 +15,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -33,12 +33,14 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -52,7 +54,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +69,8 @@ import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.notice.data.NoticeApi
 import edu.cqwu.electricity.notice.data.NoticeDetailQp
+import edu.cqwu.electricity.notice.data.NoticeItem
+import edu.cqwu.electricity.notice.data.formatNoticeTime
 import edu.cqwu.electricity.common.settings.isDark
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -81,14 +87,13 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 @Composable
 fun NoticeDetailScreen(
     wid: String,
+    preview: NoticeItem? = null,
     onBack: () -> Unit,
     onOpenInBrowser: (url: String, title: String) -> Unit,
-    viewModel: NoticeViewModel? = null,
     onReLogin: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     var detail by remember { mutableStateOf<NoticeDetailQp?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
     val topBarColors = currentTopBarColors()
     var isRefreshing by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -96,6 +101,10 @@ fun NoticeDetailScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val fontScale = LocalAppSettingsState.current.fontScale
+
+    // [preview] 由导航层从 NoticePreviewHolder 取出（用户在列表点击的那一条）：
+    // 详情接口返回前先用它渲染标题/发布单位/时间/浏览量。
+    // 取不到（进程重建、将来从深链进入）时为 null，页面退化为「整屏加载中」，不会显示旧数据。
 
     // 文件/下载链接 → 系统浏览器打开（浏览器负责下载）
     fun openExternalBrowser(url: String) {
@@ -106,47 +115,34 @@ fun NoticeDetailScreen(
             // 无可用浏览器，忽略
         }
     }
-    val screenHeightPx = remember {
-        resources.displayMetrics.heightPixels
-    }
-    val screenHeightDp = with(resources.displayMetrics) {
-        (heightPixels / density).toInt()
-    }
     var contentHeightPx by remember { mutableIntStateOf(0) }
+    // 头部（标题 + 元数据行）实测高度；内容区的加载/错误态据此占满「其余整屏」并垂直居中
+    var headerHeight by remember { mutableStateOf(0.dp) }
     var loadJob by remember { mutableStateOf<Job?>(null) }
 
+    /**
+     * 加载详情。[isRefresh] = true 表示下拉刷新。
+     *
+     * **不做本地缓存，每次进入都真实请求接口**：浏览量是服务端在详情接口里累加的，
+     * 一旦命中本地缓存就跳过请求，浏览量会停在上次的值（服务端统计也随之偏低）。
+     *
+     * 「内容区是否显示加载中」不用独立状态位判断——detail 为空且没有错误时即为加载中。
+     */
     fun loadDetail(isRefresh: Boolean = false) {
         loadJob?.cancel()
         loadJob = scope.launch {
-            if (isRefresh) {
-                isRefreshing = true
-            } else {
-                isLoading = true
-            }
+            if (isRefresh) isRefreshing = true
             errorMessage = null
             requiresReLogin = false
-
-            if (!isRefresh && viewModel != null) {
-                val cached = withContext(Dispatchers.IO) { viewModel.getDetail(wid) }
-                if (cached != null) {
-                    detail = cached
-                    isLoading = false
-                    isRefreshing = false
-                    return@launch
-                }
-            }
 
             val api = NoticeApi()
             val result = withContext(Dispatchers.IO) { api.fetchNoticeDetail(wid) }
             result.onSuccess { noticeDetail ->
                 detail = noticeDetail
-                viewModel?.putDetail(wid, noticeDetail)
-                isLoading = false
                 isRefreshing = false
             }.onFailure { e ->
                 requiresReLogin = e is SessionExpiredException
                 errorMessage = if (requiresReLogin) null else e.message ?: resources.getString(R.string.notice_load_failed)
-                isLoading = false
                 isRefreshing = false
             }
         }
@@ -184,11 +180,8 @@ fun NoticeDetailScreen(
 
     DisposableEffect(wid) {
         onDispose {
+            // 只取消进行中的请求：详情数据不做本地缓存，下次进入会重新拉取最新内容
             loadJob?.cancel()
-            detail = null
-            isLoading = true
-            errorMessage = null
-            viewModel?.removeDetail(wid)
         }
     }
 
@@ -247,55 +240,53 @@ fun NoticeDetailScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                isLoading && detail == null -> {
-                    val screenH = screenHeightDp.dp
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .heightIn(min = screenH),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.notice_loading_detail),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val density = LocalDensity.current
+                // 可视高度已由外层 padding 扣掉 TopAppBar，内容区据此占满整屏
+                val availableHeight = maxHeight
+                val detailData = detail
+
+                // 头部四个字段优先取详情接口的值，缺失时回退到列表页预加载值。
+                // 详情接口返回前先用列表数据渲染头部，返回后逐字段替换为 API 内容。
+                val displayTitle = detailData?.noticeTitle?.takeIf { it.isNotBlank() }
+                    ?: preview?.noticeTitle.orEmpty()
+                val displayDepartment = detailData?.sendDepartment?.takeIf { it.isNotBlank() }
+                    ?: preview?.sendDepartment.orEmpty()
+                val displayViewCount = detailData?.clickNumber?.takeIf { it.isNotBlank() }
+                    ?: preview?.clickNumber.orEmpty()
+                val displayTime = detailData?.let { formatNoticeTime(it.sendTime, it.sendTimeDesc) }
+                    ?.takeIf { it.isNotBlank() }
+                    ?: preview?.let { formatNoticeTime(it.sendTime, it.sendTimeDesc) }.orEmpty()
+                val hasHeader = detailData != null || preview != null
+
+                val isDarkMode = LocalAppSettingsState.current.nightMode.isDark(isSystemInDarkTheme())
+                val webDarkModeEnabled = rememberWebViewDarkModeState()
+
+                val htmlContent = remember(detailData) {
+                    val content = detailData?.noticeContent
+                    if (content.isNullOrBlank()) "" else buildHtmlPage(content)
                 }
-                (errorMessage != null || requiresReLogin) && detail == null -> {
-                    ReLoginContent(
-                        errorMessage = errorMessage,
-                        requiresReLogin = requiresReLogin,
-                        onReLogin = onReLogin,
-                        onRetry = { loadDetail(isRefresh = true) },
-                        modifier = Modifier.heightIn(min = screenHeightDp.dp),
-                    )
-                }
-                detail != null -> {
-                    val isDarkMode = LocalAppSettingsState.current.nightMode.isDark(isSystemInDarkTheme())
-                    val webDarkModeEnabled = rememberWebViewDarkModeState()
-                    val detailData = detail!!
 
-                    if (detailData.noticeContent.isNotBlank()) {
-                        val timeDisplay = detailData.sendTimeDesc?.ifBlank { null }
-                            ?: detailData.sendTime.take(16)
+                // 加载/错误内容区占满头部以下的剩余空间，使其在内容区垂直居中；
+                // 160dp 下限避免标题很长时把内容压成一条缝
+                val contentAreaHeight = (availableHeight - headerHeight).coerceAtLeast(160.dp)
 
-                        val htmlContent = remember(detailData) {
-                            buildHtmlPage(detailData.noticeContent)
-                        }
-
-                        // Column + verticalScroll 统一滚动，PullToRefreshBox 可检测下拉
+                // 整页统一滚动（PullToRefreshBox 才检测得到下拉）：头部常显，正文/加载/错误同容器切换
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    // ── 头部（标题 + 元数据行）：有预加载数据或详情数据即显示，不等详情接口 ──
+                    if (hasHeader) {
                         Column(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
+                                .fillMaxWidth()
+                                .onSizeChanged { headerHeight = with(density) { it.height.toDp() } }
                         ) {
                             // ── 标题 ──
                             Text(
-                                text = detailData.noticeTitle,
+                                text = displayTitle,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface,
@@ -327,7 +318,7 @@ fun NoticeDetailScreen(
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = detailData.sendDepartment.ifBlank { stringResource(R.string.dashboard_unknown) },
+                                        text = displayDepartment.ifBlank { stringResource(R.string.dashboard_unknown) },
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -340,7 +331,7 @@ fun NoticeDetailScreen(
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = timeDisplay,
+                                        text = displayTime,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -353,22 +344,54 @@ fun NoticeDetailScreen(
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = detailData.clickNumber,
+                                        text = displayViewCount,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
+                        }
+                    }
 
+                    // 已有内容时下拉刷新失败：在内容区上方给一条可重试提示，而不是静默失败
+                    if (detailData != null && (errorMessage != null || requiresReLogin)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 8.dp)
+                                .background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(8.dp))
+                                .padding(start = 12.dp, end = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = errorMessage ?: stringResource(R.string.login_expired),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            TextButton(
+                                onClick = {
+                                    if (requiresReLogin) onReLogin() else loadDetail(isRefresh = true)
+                                }
+                            ) {
+                                Text(stringResource(if (requiresReLogin) R.string.login_relogin else R.string.common_retry))
+                            }
+                        }
+                    }
+
+                    // ── 内容区：正文 / 无正文 / 加载失败 / 加载中，按状态切换 ──
+                    when {
+                        detailData != null && htmlContent.isNotBlank() -> {
                             // ── WebView（禁用自身滚动，高度动态测量） ──
                             AndroidView(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .then(
                                         if (contentHeightPx > 0) {
-                                            Modifier.height(with(androidx.compose.ui.platform.LocalDensity.current) { contentHeightPx.toDp() })
+                                            Modifier.height(with(density) { contentHeightPx.toDp() })
                                         } else {
-                                            Modifier.height(with(androidx.compose.ui.platform.LocalDensity.current) { screenHeightPx.toDp() })
+                                            Modifier.height(contentAreaHeight)
                                         }
                                     ),
                                 factory = { ctx ->
@@ -469,14 +492,54 @@ fun NoticeDetailScreen(
                                 }
                             )
                         }
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(stringResource(R.string.notice_no_content), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                        // 详情已返回，但正文为空
+                        detailData != null -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(contentAreaHeight),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.notice_no_content),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        // 加载失败 / 登录过期：只占内容区，头部（预加载或已加载的数据）保持可读
+                        requiresReLogin || errorMessage != null -> {
+                            ReLoginContent(
+                                errorMessage = errorMessage,
+                                requiresReLogin = requiresReLogin,
+                                onReLogin = onReLogin,
+                                onRetry = { loadDetail(isRefresh = true) },
+                                modifier = Modifier.height(contentAreaHeight),
+                            )
+                        }
+
+                        // 其余情况即「首次进入、详情接口未返回」，内容区显示加载中
+                        else -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(contentAreaHeight),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    // 与通知列表页等页面级加载保持一致（默认 40dp / stroke 4dp），
+                                    // 不用分页 footer 那种 16dp 小转圈
+                                    CircularProgressIndicator()
+                                    Text(
+                                        text = stringResource(R.string.notice_loading_detail),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(top = 12.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }

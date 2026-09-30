@@ -45,6 +45,13 @@ data class TimetableUiState(
     val sections: List<JwxtSection> = emptyList(),
     /** 当前周的全部课程 */
     val courses: List<JwxtTimetableCourse> = emptyList(),
+    /**
+     * 未排课程（接口 `notArrangeList`）：没有星期与节次，进不了网格，只在顶栏「未排节次」弹窗里展示。
+     *
+     * 实测是**学期级**数据（w1/w4/w8/整学期下完全相同），所以切周时**不清空**——
+     * 按钮按「有数据才显示」处理，清空会让它在每次切周时闪一下消失。
+     */
+    val notArrangedCourses: List<JwxtTimetableCourse> = emptyList(),
     /** 会话过期（CAS 票据失效或业务码 401），UI 显示「重新登录」 */
     val requiresReLogin: Boolean = false,
     val errorMessage: String? = null,
@@ -57,6 +64,19 @@ data class TimetableUiState(
 
     /** 当前学期（导航行显示它的名字） */
     val currentTerm: JwxtScheduleTerm? get() = terms.firstOrNull { it.termCode == selectedTermCode }
+
+    /**
+     * 周视图列头的日期基准：当前周的周一（接口 `startDate` 恒为周一，见 `JwxtTermWeek.startDate`）。
+     *
+     * 学期视图下同一列对应整学期的多个日期，没有唯一解，故给空串——列头退回只显示星期名。
+     * 周次还没取到、或接口没给 `startDate` 时同样是空串。
+     */
+    val weekStartDate: String
+        get() = if (mode == TimetableMode.WEEK) {
+            weeks.firstOrNull { it.serialNumber == selectedWeek }?.startDate.orEmpty()
+        } else {
+            ""
+        }
 
     private val termIndex: Int get() = terms.indexOfFirst { it.termCode == selectedTermCode }
 
@@ -125,7 +145,10 @@ class JwxtTimetableViewModel(
     fun selectTerm(termCode: String) {
         if (termCode == _uiState.value.selectedTermCode) return
 
-        _uiState.update { it.copy(selectedTermCode = termCode, courses = emptyList()) }
+        // 未排课程是学期级的，换学期必须一起清掉（其它入口保留，见 [TimetableUiState.notArrangedCourses]）
+        _uiState.update {
+            it.copy(selectedTermCode = termCode, courses = emptyList(), notArrangedCourses = emptyList())
+        }
         launchLoad { loadTermInto(termCode) }
     }
 
@@ -212,7 +235,7 @@ class JwxtTimetableViewModel(
         val state = _uiState.value
         val week = if (state.mode == TimetableMode.WEEK) state.selectedWeek else null
         // 我的课表走 v410（服务端按会话身份取数）；查课表走 v510（带 KBLX + CODE，见类注释）
-        val fetched = if (target == null) {
+        val data = if (target == null) {
             api.fetchScheduleDetail(state.selectedTermCode, week).getOrThrow()
         } else {
             api.fetchTargetScheduleDetail(
@@ -223,12 +246,21 @@ class JwxtTimetableViewModel(
                 campusCode = target.campusCode,
             ).getOrThrow()
         }
+        val arranged = data.arrangedList.orEmpty()
         // `dayOfWeek` 只应是 1..7；越界的课定位不到任何一列，丢掉并记一行日志（否则会静默消失）
-        val courses = fetched.filter { it.dayOfWeek in 1..JwxtConstants.DAYS_IN_WEEK }
-        if (courses.size != fetched.size) {
-            AppLog.w(TAG, "丢弃 ${fetched.size - courses.size} 门 dayOfWeek 越界的课程")
+        val courses = arranged.filter { it.dayOfWeek in 1..JwxtConstants.DAYS_IN_WEEK }
+        if (courses.size != arranged.size) {
+            AppLog.w(TAG, "丢弃 ${arranged.size - courses.size} 门 dayOfWeek 越界的课程")
         }
-        _uiState.update { it.copy(isLoading = false, isRefreshing = false, courses = courses) }
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                isRefreshing = false,
+                courses = courses,
+                // 未排课程不过这一层过滤：它本来就没有星期与节次，只进弹窗
+                notArrangedCourses = data.notArrangeList.orEmpty(),
+            )
+        }
         cacheForWidgetIfCurrent(state, courses)
     }
 

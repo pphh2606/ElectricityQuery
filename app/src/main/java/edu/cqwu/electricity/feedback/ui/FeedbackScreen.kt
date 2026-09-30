@@ -62,6 +62,12 @@ import java.io.File
 
 private const val FEEDBACK_EMAIL = "2606841932@qq.com"
 
+/** 预览最多展示的行数：完整日志可能有数十 MB，全量渲染会卡死界面 */
+private const val PREVIEW_LOG_LINES = 2000
+
+/** 邮件正文内嵌日志的行数：正文过长会被邮件客户端截断 */
+private const val EMAIL_LOG_LINES = 500
+
 /**
  * 意见反馈页面
  *
@@ -100,9 +106,8 @@ fun FeedbackScreen(
     var hasCrashReports by remember { mutableStateOf(false) }
     var crashReportCount by remember { mutableIntStateOf(0) }
 
-    // 日志预加载缓存：避免预览和发送时重复读取日志缓冲
-    var cachedLogs by remember { mutableStateOf<String?>(null) }
-    var isLogsLoading by remember { mutableStateOf(false) }
+    // 读本地日志文件（IO 线程）期间显示阻断加载弹窗
+    var isPreparingLogs by remember { mutableStateOf(false) }
 
     // 日志预览对话框
     var showLogPreview by remember { mutableStateOf(false) }
@@ -120,27 +125,22 @@ fun FeedbackScreen(
         }
     }
 
-    // 创建页面时立即预加载日志，确保发送/分享时日志可用
+    // 进入页面先查一次崩溃记录，用于「存在历史崩溃记录」提示与是否附带日志的判断
     LaunchedEffect(Unit) {
-        isLogsLoading = true
-        val (hasReports, count, logs) = withContext(Dispatchers.IO) {
-            Triple(
-                CrashHandler.hasCrashReports(),
-                CrashHandler.crashReportCount(),
-                LogCapture.getRecentLogs(context)
-            )
+        val (hasReports, count) = withContext(Dispatchers.IO) {
+            CrashHandler.hasCrashReports() to CrashHandler.crashReportCount()
         }
         hasCrashReports = hasReports
         crashReportCount = count
-        cachedLogs = logs
-        isLogsLoading = false
     }
 
-    /** 获取需要附带的日志内容 */
+    /** 获取邮件正文要附带的日志（行数不宜过多，正文过长会被邮件客户端截断） */
     suspend fun getLogsToAttach(): String {
         if (!includeLogs && !hasCrashReports) return ""
-        val raw = cachedLogs ?: withContext(Dispatchers.IO) { LogCapture.getRecentLogs(context) }
-        return raw.takeIf { it.isNotBlank() && it != context.getString(R.string.feedback_log_no_logs) } ?: context.getString(R.string.feedback_log_no_logs)
+        val logs = withContext(Dispatchers.IO) {
+            LogCapture.getRecentLogs(context, lineCount = EMAIL_LOG_LINES)
+        }
+        return logs.ifBlank { context.getString(R.string.feedback_log_no_logs) }
     }
 
     fun sendByEmail() {
@@ -199,15 +199,14 @@ fun FeedbackScreen(
         isSending = true
 
         scope.launch {
-            val logs = getLogsToAttach()
+            // 分享是用户的明确动作：导出保留期内的全部日志 + 崩溃记录，不受「附带日志」开关影响
+            val logs = withContext(Dispatchers.IO) { LogCapture.getAllLogs(context) }
 
-            // 日志写入缓存文件作为附件
+            // 日志写入缓存文件作为附件（FileProvider 只暴露 cacheDir/logs）
             val logFile = withContext(Dispatchers.IO) {
                 val logDir = File(context.cacheDir, "logs")
                 logDir.mkdirs()
-                val file = File(logDir, "app_logs.txt")
-                file.writeText(logs)
-                file
+                File(logDir, "app_logs.txt").apply { writeText(logs) }
             }
 
             val logUri = FileProvider.getUriForFile(
@@ -233,9 +232,20 @@ fun FeedbackScreen(
     }
 
     fun loadLogPreview() {
-        previewLogText = cachedLogs?.ifBlank { context.getString(R.string.feedback_log_empty) }
-            ?: context.getString(R.string.feedback_log_loading)
-        showLogPreview = true
+        if (isPreparingLogs) return
+        // 读文件在 IO 线程，期间用阻断加载弹窗避免界面看起来卡住
+        scope.launch {
+            isPreparingLogs = true
+            try {
+                val logs = withContext(Dispatchers.IO) {
+                    LogCapture.getRecentLogs(context, lineCount = PREVIEW_LOG_LINES)
+                }
+                previewLogText = logs.ifBlank { context.getString(R.string.feedback_log_empty) }
+                showLogPreview = true
+            } finally {
+                isPreparingLogs = false
+            }
+        }
     }
 
     // ── 日志预览弹窗（下滑或点击外部关闭） ──
@@ -244,12 +254,20 @@ fun FeedbackScreen(
         onDismissRequest = { showLogPreview = false },
         title = stringResource(R.string.feedback_log_preview),
     ) {
-        SelectionContainer {
+        Column {
             Text(
-                text = previewLogText,
+                text = stringResource(R.string.feedback_log_tail_hint, PREVIEW_LOG_LINES),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 8.dp),
             )
+            SelectionContainer {
+                Text(
+                    text = previewLogText,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 
@@ -320,7 +338,7 @@ fun FeedbackScreen(
             ) {
                 TextButton(
                     onClick = { loadLogPreview() },
-                    enabled = !isLogsLoading,
+                    enabled = !isPreparingLogs,
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Visibility,
@@ -393,8 +411,10 @@ fun FeedbackScreen(
         }
     }
 
-    // 发送中：全屏阻断加载（不可取消）
+    // 发送/分享中：全屏阻断加载（不可取消）；预览兜底读日志文件时同理
     if (isSending) {
         LoadingDialog(message = stringResource(R.string.common_loading))
+    } else if (isPreparingLogs) {
+        LoadingDialog(message = stringResource(R.string.feedback_log_preparing))
     }
 }

@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Build
 import android.os.Process
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.logging.FileLogWriter
+import edu.cqwu.electricity.logging.LogReader
 import edu.cqwu.electricity.logging.LogRedactor
 import java.io.File
 import java.text.SimpleDateFormat
@@ -50,6 +52,9 @@ class CrashHandler private constructor(
         private const val RETENTION_DAYS = 7L
         private const val DATE_FORMAT = "yyyyMMdd_HHmmss_SSS"
         private const val LOG_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
+
+        /** 崩溃报告里附带的「崩溃前最近日志」行数 */
+        private const val RECENT_LOG_LINES = 200
 
         /** 读取单个崩溃文件的最大字节数（200KB），防止 OOM */
         private const val MAX_BYTES_PER_FILE = 200_000
@@ -115,6 +120,10 @@ class CrashHandler private constructor(
      * 字符串拼接在锁外完成，锁仅保护 [file.writeText] 文件 I/O 最小临界区。
      */
     private fun saveCrashSync(thread: Thread, throwable: Throwable) {
+        // 先把写入队列里还没落盘的日志 flush 掉（内部有 300ms 硬超时），
+        // 保证崩溃前最后几条日志不会随进程一起消失
+        FileLogWriter.flushBlocking()
+
         val file = createCrashFile() ?: return
         val content = buildCrashContent(thread, throwable)
 
@@ -191,6 +200,18 @@ class CrashHandler private constructor(
                 appendLine(LogRedactor.sanitize(stackTraceToString(cause)))
                 cause = cause.cause
                 level++
+            }
+
+            // ── 崩溃前最近日志 ──
+            // 文件里的内容在写入前已经过 LogRedactor 脱敏，这里不再二次脱敏（崩溃路径要快）
+            val recentLogs = LogReader.readTail(
+                dir = LogReader.dirOf(appContext),
+                maxLines = RECENT_LOG_LINES,
+            )
+            if (recentLogs.isNotBlank()) {
+                appendLine()
+                appendLine(appContext.getString(R.string.crash_report_recent_logs))
+                append(recentLogs)
             }
 
         }

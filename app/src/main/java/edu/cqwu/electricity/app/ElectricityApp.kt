@@ -12,6 +12,7 @@ import edu.cqwu.electricity.common.net.WebVpnSettings
 import edu.cqwu.electricity.login.domain.CasAuthFlow
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.logging.AppLog
+import edu.cqwu.electricity.logging.FileLogWriter
 import edu.cqwu.electricity.feedback.util.CrashHandler
 import edu.cqwu.electricity.jwxt.timetable.data.TimetableWidgetRepositoryV2
 import edu.cqwu.electricity.jwxt.timetable.widget.TimetableWidgetUpdaterV2
@@ -39,6 +40,8 @@ class ElectricityApp : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+        // 本地日志文件要在第一条业务日志产生之前就绪，所以放在最前面
+        FileLogWriter.init(this)
         val settingsPrefs = SettingsPreferences(this)
         WebVpnSettings.enabled = settingsPrefs.get(SettingsKeys.WEBVPN_ENABLED)
         AppLog.setMinLevel(settingsPrefs.get(SettingsKeys.LOG_LEVEL))

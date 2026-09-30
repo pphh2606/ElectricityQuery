@@ -279,9 +279,9 @@ fun AddShortcutScreen(
                                             resources.getString(R.string.shortcut_success),
                                             ToastUtils.Type.SUCCESS
                                         )
+                                        // 保留选中项与名称：部分系统会静默忽略首次请求，
+                                        // 用户要能立刻再点一次，而不是重新选择功能
                                         isCreating = false
-                                        selectedApp = null
-                                        shortcutName = ""
                                     }
                                     is ShortcutHelper.CreateResult.NotSupported -> {
                                         isCreating = false

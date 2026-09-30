@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.notice
 
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -7,6 +8,7 @@ import androidx.navigation.navArgument
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.app.animatedComposable
 import edu.cqwu.electricity.notice.ui.NoticeDetailScreen
+import edu.cqwu.electricity.notice.ui.NoticePreviewHolder
 import edu.cqwu.electricity.notice.ui.NoticeScreen
 import edu.cqwu.electricity.notice.ui.NoticeViewModel
 import edu.cqwu.electricity.common.settings.AppSettingsState
@@ -16,20 +18,29 @@ import edu.cqwu.electricity.common.settings.AppSettingsState
  *
  * 新增本模块页面时只改这个文件，不用动 `app/NavGraph.kt`。
  *
- * [noticeViewModel] 由 `AppNavGraph` 创建后传入：列表页与详情页**共用同一个实例**
- * （详情返回时靠它置 `listRefreshEnabled` 触发列表刷新），不能在各自页面上分别 `viewModel()`。
+ * 列表页的 [NoticeViewModel] 在**列表目的地内**用 `viewModel()` 创建，作用域就是这一页的
+ * `NavBackStackEntry`：出栈即销毁，从首页再次进入必然是全新实例并重新加载——这是 Navigation
+ * 的默认行为，也是通知页与账单页等页面表现一致的原因。**不要**再把它提升到 `AppNavGraph` 里共享，
+ * 否则「出栈即销毁」失效，就得靠标志位与返回键拦截去手动模拟。
+ *
+ * 详情页需要的「用户点的是哪一条」由 [NoticePreviewHolder] 传递（它在 `AppNavGraph` 中创建），
+ * 这样列表数据仍然跟着列表页的生命周期走。
  */
 internal fun NavGraphBuilder.noticeGraph(
     navController: NavHostController,
     settings: AppSettingsState,
-    noticeViewModel: NoticeViewModel,
+    previewHolder: NoticePreviewHolder,
 ) {
     // 通知公告
     animatedComposable(settings = settings, route = Routes.NOTICE) {
+        val noticeViewModel: NoticeViewModel = viewModel()
         NoticeScreen(
             viewModel = noticeViewModel,
-            onBack = { noticeViewModel.listRefreshEnabled = true; navController.popBackStack() },
-            onNavigateToNoticeDetail = { wid -> navController.navigate(Routes.noticeDetailRoute(wid)) },
+            onBack = { navController.popBackStack() },
+            onNavigateToNoticeDetail = { notice ->
+                previewHolder.select(notice)
+                navController.navigate(Routes.noticeDetailRoute(notice.wid))
+            },
             onReLogin = { navController.navigate(Routes.loginRoute()) },
         )
     }
@@ -43,11 +54,11 @@ internal fun NavGraphBuilder.noticeGraph(
         val wid = backStackEntry.arguments?.getString("wid") ?: ""
         NoticeDetailScreen(
             wid = wid,
+            preview = previewHolder.previewFor(wid),
             onBack = { navController.popBackStack() },
             onOpenInBrowser = { url, title ->
                 navController.navigate(Routes.unifiedWebViewRoute(url, title))
             },
-            viewModel = noticeViewModel,
             onReLogin = { navController.navigate(Routes.loginRoute()) },
         )
     }

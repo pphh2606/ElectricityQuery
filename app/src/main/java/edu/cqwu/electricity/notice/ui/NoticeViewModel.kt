@@ -8,17 +8,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.notice.data.NoticeApi
-import edu.cqwu.electricity.notice.data.NoticeDetailQp
 import edu.cqwu.electricity.notice.data.NoticeItem
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * 通知公告 ViewModel
+ * 通知公告列表页的 ViewModel。
  *
- * 列表数据和详情数据缓存在此，导航切换时不会销毁。
- * 从通知页返回首页时调用 [clear] 清空缓存。
+ * 挂在通知列表目的地的 `NavBackStackEntry` 作用域上，**出栈即销毁**：
+ * 从首页重新进入是全新实例（列表必然重新加载），从详情返回则实例仍在、列表与滚动位置保留。
+ * 「待打开通知」的预览数据不在这里，见 [NoticePreviewHolder]。
  */
 class NoticeViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -44,10 +44,14 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
     val hasMore: Boolean get() = items.size < totalItem
 
     /**
-     * 控制从首页进入通知页时是否需要刷新列表。
-     * 从通知页返回首页时设为 true，从详情返回列表时保持 false。
+     * 本实例是否还没加载过第一页。
+     *
+     * 本 ViewModel 挂在通知列表目的地的 `NavBackStackEntry` 作用域上：从首页进入时是**新实例**
+     * （这里为初始值 true，于是必然加载）；从详情返回列表时是**同一个实例**、列表 entry 仍在返回栈中
+     * （这里已被置为 false，于是保留列表内容与滚动位置）；退出首页后 entry 销毁、实例随之销毁，
+     * 下次进入又是新实例。因此这里不需要任何页面去手动复位。
      */
-    var listRefreshEnabled by mutableStateOf(true)
+    var needsInitialLoad by mutableStateOf(true)
 
     // ── 搜索状态 ──
     var searchKeyword by mutableStateOf("")
@@ -112,53 +116,5 @@ class NoticeViewModel(application: Application) : AndroidViewModel(application) 
         totalPage = 1
         errorMessage = null
         requiresReLogin = false
-    }
-
-    // ── 详情缓存 ──
-    private val detailCache = mutableMapOf<String, NoticeDetailQp>()
-
-    /**
-     * 获取缓存的详情，如果未缓存则请求 API
-     */
-    suspend fun getDetail(wid: String): NoticeDetailQp? {
-        detailCache[wid]?.let { return it }
-
-        val result = withContext(Dispatchers.IO) {
-            api.fetchNoticeDetail(wid)
-        }
-        result.onSuccess { qp ->
-            detailCache[wid] = qp
-            return qp
-        }
-        return null
-    }
-
-    /**
-     * 直接存入详情缓存（用于下拉刷新后缓存更新）
-     */
-    fun putDetail(wid: String, detail: NoticeDetailQp) {
-        detailCache[wid] = detail
-    }
-
-    /**
-     * 移除指定通知的详情缓存（从详情页返回时调用）
-     */
-    fun removeDetail(wid: String) {
-        detailCache.remove(wid)
-    }
-
-    /**
-     * 清空所有缓存（从通知页返回首页时调用）
-     */
-    fun clear() {
-        items = emptyList()
-        currentPage = 0
-        totalItem = 0
-        totalPage = 1
-        isLoading = true
-        isLoadingMore = false
-        errorMessage = null
-        requiresReLogin = false
-        detailCache.clear()
     }
 }

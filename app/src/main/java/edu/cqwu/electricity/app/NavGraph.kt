@@ -24,7 +24,7 @@ import edu.cqwu.electricity.jwxt.jwxtGraph
 import edu.cqwu.electricity.login.loginGraph
 import edu.cqwu.electricity.login.ui.LoginScreen
 import edu.cqwu.electricity.notice.noticeGraph
-import edu.cqwu.electricity.notice.ui.NoticeViewModel
+import edu.cqwu.electricity.notice.ui.NoticePreviewHolder
 import edu.cqwu.electricity.person.personGraph
 import edu.cqwu.electricity.profile.profileGraph
 import edu.cqwu.electricity.qrcode.qrcodeGraph
@@ -56,8 +56,10 @@ fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-    // 通知列表页与详情页共用同一个实例（详情返回时靠它触发列表刷新），所以在这里创建后传给 noticeGraph
-    val noticeViewModel: NoticeViewModel = viewModel()
+    // 通知的「用户点的是哪一条」预览数据：列表页与详情页是两个独立目的地、各自的 ViewModel 互不可见，
+    // 只有这一条数据需要跨页传递，所以单独放在这里创建后传给 noticeGraph。
+    // 注意列表数据本身不在这里共享——它跟随列表目的地的生命周期，出栈即销毁。
+    val noticePreviewHolder: NoticePreviewHolder = viewModel()
     var webViewReloadAfterLogin by rememberSaveable { mutableStateOf(false) }
     val appSettings = LocalAppSettingsState.current
 
@@ -118,7 +120,7 @@ fun AppNavGraph(
             feedbackGraph(navController, appSettings)
             jwxtGraph(navController, appSettings)
             loginGraph(navController, appSettings)
-            noticeGraph(navController, appSettings, noticeViewModel)
+            noticeGraph(navController, appSettings, noticePreviewHolder)
             personGraph(navController, appSettings)
             profileGraph(navController, appSettings)
             qrcodeGraph(navController, appSettings)

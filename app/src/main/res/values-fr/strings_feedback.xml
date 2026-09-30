@@ -14,6 +14,8 @@
     <string name="feedback_title_label">Titre (optionnel)</string>
     <string name="feedback_content_label">Contenu</string>
     <string name="feedback_preview_log">Aperçu</string>
+    <string name="feedback_log_tail_hint">Aperçu limité aux %1$d dernières lignes. Utilisez Partager pour le journal complet.</string>
+    <string name="feedback_log_preparing">Chargement des journaux…</string>
 
     <string name="crash_report_thread_group">Groupe de threads : %1$s</string>
 
@@ -22,6 +24,7 @@
     <string name="crash_report_basic_info">--- Informations de base ---</string>
 
     <string name="crash_report_stack">--- Trace de la pile de crash ---</string>
+    <string name="crash_report_recent_logs">--- Journaux récents avant le plantage ---</string>
 
     <string name="feedback_log_section_crash">═══ Enregistrements de crash ═══</string>
 
@@ -43,7 +46,6 @@
 
     <string name="crash_report_thread_priority">Priorité du thread : %1$s</string>
 
-    <string name="feedback_log_loading">(Chargement des journaux, veuillez réessayer plus tard)</string>
 
     <string name="crash_report_version_code">Code de version : %1$s</string>
 

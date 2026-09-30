@@ -13,6 +13,8 @@
     <string name="feedback_title_label">Title (optional)</string>
     <string name="feedback_content_label">Feedback Content</string>
     <string name="feedback_preview_log">Preview Log</string>
+    <string name="feedback_log_tail_hint">Preview shows the latest %1$d lines. Use Share for the full log.</string>
+    <string name="feedback_log_preparing">Loading logs…</string>
 
     <string name="crash_report_thread_group">Thread group: %1$s</string>
 
@@ -21,6 +23,7 @@
     <string name="crash_report_basic_info">--- Basic information ---</string>
 
     <string name="crash_report_stack">--- Crash stack trace ---</string>
+    <string name="crash_report_recent_logs">--- Recent logs before crash ---</string>
 
     <string name="feedback_log_section_crash">═══ Crash records ═══</string>
 
@@ -42,7 +45,6 @@
 
     <string name="crash_report_thread_priority">Thread priority: %1$s</string>
 
-    <string name="feedback_log_loading">(Logs are loading, please try again later)</string>
 
     <string name="crash_report_version_code">Version code: %1$s</string>
 

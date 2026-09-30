@@ -30,10 +30,16 @@ data class TermWeeksResponse(
     val data: List<JwxtTermWeek>? = null,
 )
 
-/** 一周；`curWeek` 为 true 即当前周 */
+/**
+ * 一周；`curWeek` 为 true 即当前周。
+ *
+ * [startDate] 形如 `2026-09-28 00:00:00`，实测**恒为周一**——课表列头的具体日期由它推算
+ * （见 `TimetableToday.columnDate`）。`endDate` 暂无调用方，不声明。
+ */
 data class JwxtTermWeek(
     val serialNumber: Int = 0,
     val curWeek: Boolean = false,
+    val startDate: String = "",
 )
 
 /** `GET biz/v510/cqwu/schedule/getQxSectionList` 响应 */

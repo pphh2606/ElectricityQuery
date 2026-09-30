@@ -66,6 +66,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.notice.data.NoticeItem
+import edu.cqwu.electricity.notice.data.formatNoticeTime
 import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -76,14 +77,15 @@ import kotlinx.coroutines.launch
 /**
  * 通知公告列表页（常驻搜索栏）
  *
- * 状态由 [NoticeViewModel] 管理，导航切换时不重新加载。
+ * 状态由 [NoticeViewModel] 管理。该 ViewModel 挂在本页目的地的作用域上，出栈即销毁，
+ * 所以从首页重新进入时列表必然重新加载；从详情返回时实例仍在，列表与滚动位置保留。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoticeScreen(
     viewModel: NoticeViewModel,
     onBack: () -> Unit,
-    onNavigateToNoticeDetail: (wid: String) -> Unit,
+    onNavigateToNoticeDetail: (notice: NoticeItem) -> Unit,
     onReLogin: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
@@ -94,15 +96,17 @@ fun NoticeScreen(
     val focusManager = LocalFocusManager.current
     val topBarColors = currentTopBarColors()
 
-    // 每次从首页进入时刷新；从详情返回时不刷新
-    // 同时清除上次的搜索状态，避免搜索残留
+    // 只在「本实例首次进入」时加载：本 ViewModel 挂在列表目的地的作用域上，
+    // 从首页进入是新实例（needsInitialLoad 为初始值 true），因此必然重新加载；
+    // 从详情返回时是同一个实例、其值已被置为 false，直接复用已有列表，
+    // 滚动位置也由 navigation-compose 的 saveable state 自动恢复。
     LaunchedEffect(Unit) {
         searchText = ""
         isSearching = false
-        if (viewModel.listRefreshEnabled || viewModel.items.isEmpty()) {
+        if (viewModel.needsInitialLoad || viewModel.items.isEmpty()) {
             viewModel.clearSearch()
             viewModel.loadPage(0, isRefresh = true)
-            viewModel.listRefreshEnabled = false
+            viewModel.needsInitialLoad = false
         }
     }
 
@@ -146,7 +150,8 @@ fun NoticeScreen(
         if (isSearching) focusRequester.requestFocus()
     }
 
-    // 搜索态下拦截系统返回键：先退出搜索，而不是退出页面
+    // 搜索态下拦截系统返回键：先退出搜索，而不是退出页面。
+    // 其余情况交给导航默认处理——出栈即销毁本目的地，下次进入是全新实例、必然重新加载
     BackHandler(enabled = isSearching) { exitSearch() }
 
     // 软键盘回车与右侧搜索按钮都走这里：提交关键词并退出搜索态
@@ -353,7 +358,8 @@ fun NoticeScreen(
                             items(viewModel.items, key = { it.wid }) { notice ->
                                 NoticeCard(
                                     notice = notice,
-                                    onClick = { onNavigateToNoticeDetail(notice.wid) }
+                                    // 整条交给导航层：它会写入 NoticePreviewHolder，详情页据此预渲染头部
+                                    onClick = { onNavigateToNoticeDetail(notice) }
                                 )
                             }
 
@@ -414,7 +420,7 @@ private fun NoticeCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 NoticeInfoChip(icon = Icons.Outlined.Person, text = notice.sendDepartment.ifBlank { stringResource(R.string.dashboard_unknown) })
-                NoticeInfoChip(icon = Icons.Outlined.AccessTime, text = notice.sendTimeDesc)
+                NoticeInfoChip(icon = Icons.Outlined.AccessTime, text = formatNoticeTime(notice.sendTime, notice.sendTimeDesc))
                 Spacer(modifier = Modifier.weight(1f))
                 NoticeInfoChip(icon = Icons.Outlined.Visibility, text = notice.clickNumber)
             }

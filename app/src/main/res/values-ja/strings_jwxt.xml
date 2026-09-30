@@ -44,6 +44,7 @@
     <string name="jwxt_timetable_prev_week">前の週</string>
     <string name="jwxt_timetable_next_week">次の週</string>
     <string name="jwxt_timetable_empty">今週の授業はありません</string>
+    <!-- ヘッダ 1 行目：曜日（2 行目は日付、週表示のみ） -->
     <string name="jwxt_timetable_mon">月</string>
     <string name="jwxt_timetable_tue">火</string>
     <string name="jwxt_timetable_wed">水</string>
@@ -56,6 +57,8 @@
     <string name="jwxt_timetable_mode_term">学期</string>
     <string name="jwxt_timetable_pick_week">週を選択</string>
     <string name="jwxt_timetable_pick_term">学期を選択</string>
+    <!-- タイトルバーの「未割当コマ」ボタンとシートの見出し（API notArrangeList。0 件なら非表示） -->
+    <string name="jwxt_timetable_unscheduled">未割当コマ</string>
 
     <!-- ── 学校全体の時間割検索（ホームのサービスタイル PK.QXKBCX のローカライズ版） ── -->
     <string name="jwxt_schedule_query_title">時間割検索</string>

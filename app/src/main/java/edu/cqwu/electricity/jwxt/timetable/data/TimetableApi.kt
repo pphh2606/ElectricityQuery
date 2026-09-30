@@ -3,7 +3,7 @@ package edu.cqwu.electricity.jwxt.timetable.data
 import edu.cqwu.electricity.jwxt.core.model.JwxtScheduleTerm
 import edu.cqwu.electricity.jwxt.core.model.JwxtSection
 import edu.cqwu.electricity.jwxt.core.model.JwxtTermWeek
-import edu.cqwu.electricity.jwxt.core.model.JwxtTimetableCourse
+import edu.cqwu.electricity.jwxt.core.model.ScheduleDetailData
 import edu.cqwu.electricity.jwxt.core.model.ScheduleDetailRequest
 import edu.cqwu.electricity.jwxt.core.model.ScheduleDetailResponse
 import edu.cqwu.electricity.jwxt.core.model.ScheduleTargetDetailRequest
@@ -65,8 +65,11 @@ class TimetableApi : JwxtApiBase() {
      * **我的**课表详情（v410，服务端按会话身份取数）；[week] 为 null 表示整学期（请求体里是空串）。
      *
      * 周次过滤由服务端完成——网页前端同样不解析「1-3周,5-9周」这类字符串。
+     *
+     * 返回**整份** `data`：画网格的取 [ScheduleDetailData.arrangedList]，
+     * 「未排节次」弹窗取 [ScheduleDetailData.notArrangeList]（网页的未排节次页面同样读这一份）。
      */
-    suspend fun fetchScheduleDetail(termCode: String, week: Int?): Result<List<JwxtTimetableCourse>> =
+    suspend fun fetchScheduleDetail(termCode: String, week: Int?): Result<ScheduleDetailData> =
         request(
             path = "biz/v410/schedule/getMyScheduleDetail",
             isPost = true,
@@ -74,14 +77,15 @@ class TimetableApi : JwxtApiBase() {
         ) { json ->
             val resp = gson.fromJson(json, ScheduleDetailResponse::class.java)
             checkBusinessCode(resp.code, resp.msg, "getMyScheduleDetail")
-            resp.data?.arrangedList.orEmpty()
+            resp.data ?: ScheduleDetailData()
         }
 
     /**
      * **指定对象**的课表详情（v510）；[kblx] 用 `ScheduleTargetType.kblx`，[week] 为 null 表示整学期。
      *
      * 与 [fetchScheduleDetail] 是两套接口，**不能互相替代**：实测在 v410 的请求体里塞 CODE / KBLX
-     * 会被服务端忽略，永远返回自己的课表。
+     * 会被服务端忽略，永远返回自己的课表。响应结构与 v410 一致，同样带回未排课程
+     * （实测教师课表有未排、教室课表恒为 0）。
      */
     suspend fun fetchTargetScheduleDetail(
         termCode: String,
@@ -89,7 +93,7 @@ class TimetableApi : JwxtApiBase() {
         kblx: String,
         code: String,
         campusCode: String,
-    ): Result<List<JwxtTimetableCourse>> =
+    ): Result<ScheduleDetailData> =
         request(
             path = "biz/v510/schedule/getScheduleDetail",
             isPost = true,
@@ -97,6 +101,6 @@ class TimetableApi : JwxtApiBase() {
         ) { json ->
             val resp = gson.fromJson(json, ScheduleDetailResponse::class.java)
             checkBusinessCode(resp.code, resp.msg, "getScheduleDetail")
-            resp.data?.arrangedList.orEmpty()
+            resp.data ?: ScheduleDetailData()
         }
 }

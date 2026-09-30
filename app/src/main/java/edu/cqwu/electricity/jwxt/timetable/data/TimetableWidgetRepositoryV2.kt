@@ -128,6 +128,7 @@ object TimetableWidgetRepositoryV2 {
 
         val courses = api.fetchScheduleDetail(term.termCode, week.serialNumber)
             .getOrElse { return Result.failure(it) }
+            .arrangedList.orEmpty()
 
         cacheFrom(term.termCode, week.serialNumber, courses, now)
         return Result.success(Unit)

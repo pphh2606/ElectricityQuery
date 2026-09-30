@@ -12,6 +12,8 @@
     <string name="feedback_title_label">標題（可選）</string>
     <string name="feedback_content_label">回饋內容</string>
     <string name="feedback_preview_log">預覽記錄</string>
+    <string name="feedback_log_tail_hint">預覽僅顯示最近 %1$d 行，完整日誌請使用「分享記錄」</string>
+    <string name="feedback_log_preparing">正在載入日誌…</string>
 
     <string name="crash_report_thread_group">執行緒群組: %1$s</string>
 
@@ -20,6 +22,7 @@
     <string name="crash_report_basic_info">--- 基本資訊 ---</string>
 
     <string name="crash_report_stack">--- 崩潰堆疊 ---</string>
+    <string name="crash_report_recent_logs">--- 崩潰前最近日誌 ---</string>
 
     <string name="feedback_log_section_crash">═══ 崩潰記錄 ═══</string>
 
@@ -41,7 +44,6 @@
 
     <string name="crash_report_thread_priority">執行緒優先順序: %1$s</string>
 
-    <string name="feedback_log_loading">（日誌載入中，請稍後再試）</string>
 
     <string name="crash_report_version_code">版本號碼: %1$s</string>
 

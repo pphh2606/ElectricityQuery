@@ -44,18 +44,21 @@
     <string name="jwxt_timetable_prev_week">الأسبوع السابق</string>
     <string name="jwxt_timetable_next_week">الأسبوع التالي</string>
     <string name="jwxt_timetable_empty">لا توجد محاضرات هذا الأسبوع</string>
-    <string name="jwxt_timetable_mon">الإثنين</string>
-    <string name="jwxt_timetable_tue">الثلاثاء</string>
-    <string name="jwxt_timetable_wed">الأربعاء</string>
-    <string name="jwxt_timetable_thu">الخميس</string>
-    <string name="jwxt_timetable_fri">الجمعة</string>
-    <string name="jwxt_timetable_sat">السبت</string>
-    <string name="jwxt_timetable_sun">الأحد</string>
+    <!-- السطر الأول في الرأس: اليوم (التاريخ في السطر الثاني، عرض الأسبوع فقط) -->
+    <string name="jwxt_timetable_mon">إثنين</string>
+    <string name="jwxt_timetable_tue">ثلاثاء</string>
+    <string name="jwxt_timetable_wed">أربعاء</string>
+    <string name="jwxt_timetable_thu">خميس</string>
+    <string name="jwxt_timetable_fri">جمعة</string>
+    <string name="jwxt_timetable_sat">سبت</string>
+    <string name="jwxt_timetable_sun">أحد</string>
     <!-- شريط التنقل: عرض الأسبوع / الفصل، وعناوين قوائم الاختيار -->
     <string name="jwxt_timetable_mode_week">أسبوع</string>
     <string name="jwxt_timetable_mode_term">فصل دراسي</string>
     <string name="jwxt_timetable_pick_week">اختر الأسبوع</string>
     <string name="jwxt_timetable_pick_term">اختر الفصل الدراسي</string>
+    <!-- زر شريط العنوان وعنوان الورقة (واجهة notArrangeList؛ يختفي عند عدم وجود بيانات) -->
+    <string name="jwxt_timetable_unscheduled">الحصص غير المجدولة</string>
 
     <!-- ── البحث في جدول الكلية (صفحة خدمة PK.QXKBCX المعرّبة) ── -->
     <string name="jwxt_schedule_query_title">البحث في الجدول</string>

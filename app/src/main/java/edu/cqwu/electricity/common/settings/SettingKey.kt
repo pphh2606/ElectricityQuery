@@ -253,5 +253,12 @@ object SettingsKeys {
     )
 }
 
+/**
+ * 默认日志等级。
+ *
+ * release 也用 [LogLevel.DEBUG]：日志会写入本地文件（`filesDir/logs`），
+ * 反馈问题时需要看到业务链路，只留 WARN 以上等于没有日志可查。
+ * 嫌日志多/占空间的用户可以在设置里自行降到警告或关闭。
+ */
 private fun defaultLogLevel(): LogLevel =
-    if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.WARN
+    if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.DEBUG

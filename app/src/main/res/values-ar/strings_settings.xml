@@ -226,7 +226,7 @@
     <string name="storage_clear_caution_group">يتطلب الحذر</string>
     <string name="storage_clear_image_cache">ذاكرة التخزين المؤقت للصور</string>
     <string name="storage_clear_crash_logs">سجلات الأعطال</string>
-    <string name="storage_clear_temp_logs">ملفات السجلات المؤقتة</string>
+    <string name="storage_clear_app_logs">سجلات التطبيق</string>
     <string name="storage_clear_webview_data">بيانات تصفح WebView</string>
     <string name="storage_clear_cookie_data">معلومات تسجيل الدخول وملفات تعريف الارتباط</string>
     <string name="storage_clear_cookie_hint">مسح جميع بيانات تسجيل الدخول في المتصفح، يتطلب إعادة تسجيل الدخول</string>
@@ -240,7 +240,6 @@
     <string name="storage_clear_confirm_restart">سيتم إعادة تشغيل التطبيق بعد المسح.</string>
     <string name="storage_clear_confirm_button">مسح</string>
     <string name="storage_clear_cancel_button">إلغاء</string>
-    <string name="storage_clear_success">اكتمل المسح</string>
     <string name="storage_clear_nothing_selected">يرجى تحديد عنصر واحد على الأقل</string>
     <string name="storage_clear_zero_size">0 B</string>
 

@@ -17,6 +17,8 @@
     <string name="feedback_title_label">العنوان (اختياري)</string>
     <string name="feedback_content_label">المحتوى</string>
     <string name="feedback_preview_log">معاينة</string>
+    <string name="feedback_log_tail_hint">تعرض المعاينة أحدث %1$d أسطر. استخدم المشاركة للحصول على السجل الكامل.</string>
+    <string name="feedback_log_preparing">جارٍ تحميل السجلات…</string>
 
     <string name="crash_report_thread_group">مجموعة الخيط: %1$s</string>
 
@@ -25,6 +27,7 @@
     <string name="crash_report_basic_info">--- المعلومات الأساسية ---</string>
 
     <string name="crash_report_stack">--- مكدس الانهيار ---</string>
+    <string name="crash_report_recent_logs">--- السجلات الأخيرة قبل العطل ---</string>
 
     <string name="feedback_log_section_crash">═══ سجلات الأعطال ═══</string>
 
@@ -46,7 +49,6 @@
 
     <string name="crash_report_thread_priority">أولوية الخيط: %1$s</string>
 
-    <string name="feedback_log_loading">(جارٍ تحميل السجلات، يرجى المحاولة لاحقاً)</string>
 
     <string name="crash_report_version_code">رقم الإصدار: %1$s</string>
 

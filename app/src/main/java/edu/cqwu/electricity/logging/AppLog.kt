@@ -8,12 +8,24 @@ import java.util.Locale
 /**
  * Central logging entry point.
  *
- * All messages are sanitized before reaching logcat or [AppLogBuffer], and
+ * All messages are sanitized before reaching logcat or [FileLogWriter], and
  * the configured minimum level controls output on both debug and release builds.
+ *
+ * 注意：`LogLevel.OFF` 时本方法在过滤阶段就返回，因此 logcat 与本地日志文件
+ * 会同时静默——这是「日志等级：关闭」的既定语义，不要在过滤之前插入写文件逻辑。
  */
 object AppLog {
     @Volatile
     private var minLevel: LogLevel = LogLevel.DEBUG
+
+    /**
+     * 时间戳格式化器按线程复用。
+     * 每行 new 一个 [SimpleDateFormat] 在「logcat + 落盘」双写场景下分配压力明显。
+     */
+    private val timeFormat = object : ThreadLocal<SimpleDateFormat>() {
+        override fun initialValue(): SimpleDateFormat =
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
+    }
 
     fun setMinLevel(level: LogLevel) {
         minLevel = level
@@ -55,7 +67,8 @@ object AppLog {
         }
         val logText = if (safeStack == null) safeMessage else "$safeMessage\n$safeStack"
 
-        AppLogBuffer.append(formatLine(level, tag, logText))
+        // 先落盘再进 logcat：崩溃路径 flush 的队列顺序与代码顺序一致
+        FileLogWriter.append(formatLine(level, tag, logText), level)
         when (level) {
             LogLevel.VERBOSE -> Log.v(tag, logText)
             LogLevel.DEBUG -> Log.d(tag, logText)
@@ -67,7 +80,7 @@ object AppLog {
     }
 
     private fun formatLine(level: LogLevel, tag: String, text: String): String {
-        val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US).format(Date())
+        val time = timeFormat.get()!!.format(Date())
         val levelChar = when (level) {
             LogLevel.VERBOSE -> "V"
             LogLevel.DEBUG -> "D"

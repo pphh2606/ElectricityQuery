@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -93,6 +94,9 @@ fun JwxtTimetableScreen(
     // 当前打开的「周次 / 学期」选择弹窗；null 表示没打开
     var picker by remember { mutableStateOf<TimetableMode?>(null) }
 
+    // 「未排节次」弹窗；内容直接读 [TimetableUiState.notArrangedCourses]，不单独请求
+    var unscheduledVisible by remember { mutableStateOf(false) }
+
     // 从登录页返回时自动重试一次（仅在确实因会话过期失败时），与教务首页、成绩页同一套处理
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -124,6 +128,17 @@ fun JwxtTimetableScreen(
                     }
                 },
                 actions = {
+                    // 未排节次：接口确实下发了未排课程时才出现（实测教师 / 教室课表可能一条都没有）
+                    if (uiState.notArrangedCourses.isNotEmpty()) {
+                        IconButton(onClick = { unscheduledVisible = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.EventBusy,
+                                contentDescription = stringResource(R.string.jwxt_timetable_unscheduled),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+
                     // 打开网页版：保留一条回到教务原网页的退路（与其它教务页面顶栏一致）
                     IconButton(onClick = { nav.navigate(Routes.unifiedWebViewRoute(webUrl, title)) }) {
                         Icon(
@@ -199,6 +214,7 @@ fun JwxtTimetableScreen(
                     else -> TimetableGrid(
                         sections = uiState.sections,
                         courses = uiState.courses,
+                        weekStartDate = uiState.weekStartDate,
                         onCourseClick = {
                             detailCourse = it
                             detailVisible = true
@@ -216,6 +232,15 @@ fun JwxtTimetableScreen(
     ) {
         // detailCourse 在关闭后仍保留，弹窗的退出动画里不会变成空壳
         detailCourse?.let { CourseDetailContent(it) }
+    }
+
+    // 未排节次弹窗：数据随课表一起到达；按钮没数据时不显示，所以这里不会有空态
+    BottomSheetDialogV2(
+        visible = unscheduledVisible,
+        onDismissRequest = { unscheduledVisible = false },
+        title = stringResource(R.string.jwxt_timetable_unscheduled),
+    ) {
+        uiState.notArrangedCourses.forEach { UnscheduledCourseContent(it) }
     }
 
     // 周次 / 学期选择弹窗：同一个弹窗，按当前模式列不同的项
@@ -349,21 +374,44 @@ private fun NavigatorRow(
 }
 
 /**
- * 详情弹窗内容：用服务端排好版的 `titleDetail`（比卡片正文更完整）逐行显示。
+ * 详情类弹窗的正文：服务端排好版的逐行文本原样显示。
  *
  * 正文里的 `<a data-kblx=…>教师</a>` 这类标签由 [HtmlFormParser.stripHtml] 去掉（Compose 不解析 HTML）；
+ * [boldFirst] 为 true 时首行加粗——网页对未排课程就是这么排的。
+ */
+@Composable
+private fun DetailLines(lines: List<String>, boldFirst: Boolean = false) {
+    lines.map(HtmlFormParser::stripHtml)
+        .filter { it.isNotBlank() }
+        .forEachIndexed { index, line ->
+            val first = boldFirst && index == 0
+            Text(
+                text = line,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = if (first) FontWeight.Bold else null,
+                color = if (first) MaterialTheme.colorScheme.onSurface
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+}
+
+/**
+ * 课程详情弹窗内容：用服务端排好版的 `titleDetail`（比卡片正文更完整）逐行显示。
+ *
  * 接口给空列表时弹窗只剩标题，不再多占一句「暂无课程」的文案。
  */
 @Composable
 private fun CourseDetailContent(course: JwxtTimetableCourse) {
-    course.titleDetail.orEmpty()
-        .map(HtmlFormParser::stripHtml)
-        .filter { it.isNotBlank() }
-        .forEach { line ->
-            Text(
-                text = line,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+    DetailLines(course.titleDetail.orEmpty())
+}
+
+/**
+ * 未排节次弹窗里的一门课：用 `cellDetail` 逐行显示、首行加粗（网页的未排节次页面同款）。
+ *
+ * 行数**不固定**（实测我的课表 4~5 行、教师课表只有 1 行课程名），所以只能逐行渲染、
+ * 不能按下标取字段。
+ */
+@Composable
+private fun UnscheduledCourseContent(course: JwxtTimetableCourse) {
+    DetailLines(course.cellDetail.orEmpty().map { it.text }, boldFirst = true)
 }

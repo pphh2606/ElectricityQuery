@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,12 +29,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.isDark
@@ -46,6 +49,7 @@ import edu.cqwu.electricity.jwxt.timetable.domain.CARD_HORIZONTAL_PADDING
 import edu.cqwu.electricity.jwxt.timetable.domain.CARD_LINE_HEIGHT
 import edu.cqwu.electricity.jwxt.timetable.domain.DAY_COLUMN_WIDTH
 import edu.cqwu.electricity.jwxt.timetable.domain.DayLanes
+import edu.cqwu.electricity.jwxt.timetable.domain.TimetableToday
 import edu.cqwu.electricity.jwxt.timetable.domain.cardMaxLines
 import edu.cqwu.electricity.jwxt.timetable.domain.courseCardText
 import edu.cqwu.electricity.jwxt.timetable.domain.layoutDay
@@ -113,11 +117,13 @@ private fun rememberRowHeights(
  * 课表网格：上方是星期表头（固定），下方是「节次列 + 7 个星期列」的整体纵向滚动区。
  *
  * 调用方已保证 [sections] 与 [courses] 都非空（为空的情况在页面里显示空状态）。
+ * [weekStartDate] 是当前周的周一（只有周视图有），表头据此显示「09-28(一)」。
  */
 @Composable
 internal fun TimetableGrid(
     sections: List<JwxtSection>,
     courses: List<JwxtTimetableCourse>,
+    weekStartDate: String,
     onCourseClick: (JwxtTimetableCourse) -> Unit,
 ) {
     // 横向滚动位置由表头与网格共享，滑动时两行始终对齐；纵向同理（节次列与网格）
@@ -140,7 +146,7 @@ internal fun TimetableGrid(
         Row(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.width(SECTION_COLUMN_WIDTH))
             Row(modifier = Modifier.horizontalScroll(horizontalScroll)) {
-                DayHeaders(dayLanes)
+                DayHeaders(dayLanes, weekStartDate)
             }
         }
 
@@ -174,25 +180,70 @@ internal fun TimetableGrid(
     }
 }
 
-/** 星期表头：每格宽度与它下面的网格列一致（撞课那天会一起变宽，才不会错位） */
+/**
+ * 星期表头：每格宽度与它下面的网格列一致（撞课那天会一起变宽，才不会错位）。
+ *
+ * 两行显示（与教务网页一致）：**星期在上、日期在下**。两行都只做定位用、不抢课程正文的视线——
+ * 星期用次级文字色（`onSurfaceVariant`），日期再淡一档（`outline`）。
+ * [weekStartDate] 为空时（学期视图没有唯一日期、或接口没给 `startDate`）只显示星期那一行。
+ */
 @Composable
-private fun DayHeaders(dayLanes: Map<Int, DayLanes>) {
+private fun DayHeaders(dayLanes: Map<Int, DayLanes>, weekStartDate: String) {
+    // 七列共用一个基准日期，切周时随 weekStartDate 重算一次即可
+    val dates = remember(weekStartDate) {
+        (1..JwxtConstants.DAYS_IN_WEEK).map { TimetableToday.columnDate(weekStartDate, it) }
+    }
+
     DAY_LABEL_RES.forEachIndexed { index, label ->
         Box(
             modifier = Modifier.width(dayLanes.getValue(index + 1).width),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = stringResource(label),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                HeaderLine(
+                    text = stringResource(label),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                dates[index].takeIf { it.isNotEmpty() }?.let { date ->
+                    HeaderLine(
+                        text = date,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                    )
+                }
+            }
         }
     }
 }
 
-/** 左侧节次列：每节高度与网格一致（接口不给节次时间，所以只显示「第N节」）；宽度由调用方给 */
+/**
+ * 表头的一行文字：放不下时自动缩字号。
+ *
+ * 列宽固定 64dp，而全局字号可放大到 1.5 倍（设置 → 个性化），不缩就会被裁掉末位——
+ * 阿拉伯语那种较长的星期名在大字号下确实会超宽。上限取样式自身的字号，正常字号下观感不变。
+ */
+@Composable
+private fun HeaderLine(text: String, style: TextStyle, color: Color) {
+    Text(
+        text = text,
+        style = style,
+        color = color,
+        maxLines = 1,
+        autoSize = TextAutoSize.StepBased(
+            minFontSize = 8.sp,
+            maxFontSize = style.fontSize,
+            stepSize = 0.5.sp,
+        ),
+    )
+}
+
+/**
+ * 左侧节次列：每节高度与网格一致，只显示节次号（接口给的是「第N节」，这里取其中的数字）。
+ *
+ * 号从文案里取、不用列表下标：学校可能配不连续的节次，下标就不等于节次号了。
+ * 字号与颜色对齐上方星期表头那一行，让两处定位信息同处一个层级；宽度由调用方给。
+ */
 @Composable
 private fun SectionColumn(sections: List<JwxtSection>, rowHeights: List<Dp>) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -204,11 +255,11 @@ private fun SectionColumn(sections: List<JwxtSection>, rowHeights: List<Dp>) {
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = section.name,
-                    style = MaterialTheme.typography.labelSmall,
+                    text = section.name.filter(Char::isDigit).ifEmpty { section.name },
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    maxLines = 2,
+                    maxLines = 1,
                 )
             }
         }
@@ -316,7 +367,7 @@ private fun Color.toNightCardColor(): Color {
     return Color(android.graphics.Color.HSVToColor(hsv))
 }
 
-/** 星期表头的文案，下标 0 对应周一（接口 `dayOfWeek` 为 1..7） */
+/** 星期表头第一行的单字，下标 0 对应周一（接口 `dayOfWeek` 为 1..7） */
 private val DAY_LABEL_RES = intArrayOf(
     R.string.jwxt_timetable_mon,
     R.string.jwxt_timetable_tue,
@@ -327,7 +378,14 @@ private val DAY_LABEL_RES = intArrayOf(
     R.string.jwxt_timetable_sun,
 )
 
-private val SECTION_COLUMN_WIDTH = 44.dp
+/**
+ * 左侧节次列宽。
+ *
+ * 列里只有一个 1~2 位的数字（见 [SectionColumn]），44dp 是老版「第N节」三个字的宽度。
+ * 12sp 的两位数字约 13dp，全局字号最大 1.5 倍时约 20dp，取 24dp 留一点余量；
+ * 省下来的宽度全让给课表，一屏能多露出小半列。
+ */
+private val SECTION_COLUMN_WIDTH = 24.dp
 
 private val CARD_CORNER = 6.dp
 

@@ -12,6 +12,8 @@
     <string name="feedback_title_label">タイトル（任意）</string>
     <string name="feedback_content_label">フィードバック内容</string>
     <string name="feedback_preview_log">ログをプレビュー</string>
+    <string name="feedback_log_tail_hint">プレビューは最新 %1$d 行のみ表示します。全文は共有をご利用ください</string>
+    <string name="feedback_log_preparing">ログを読み込んでいます…</string>
 
     <string name="crash_report_thread_group">スレッドグループ: %1$s</string>
 
@@ -20,6 +22,7 @@
     <string name="crash_report_basic_info">--- 基本情報 ---</string>
 
     <string name="crash_report_stack">--- クラッシュスタック ---</string>
+    <string name="crash_report_recent_logs">--- クラッシュ直前のログ ---</string>
 
     <string name="feedback_log_section_crash">═══ クラッシュ記録 ═══</string>
 
@@ -41,7 +44,6 @@
 
     <string name="crash_report_thread_priority">スレッド優先度: %1$s</string>
 
-    <string name="feedback_log_loading">(ログを読み込み中です。後でもう一度お試しください)</string>
 
     <string name="crash_report_version_code">バージョンコード: %1$s</string>
 

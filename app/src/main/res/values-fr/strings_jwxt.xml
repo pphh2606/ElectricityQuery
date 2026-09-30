@@ -44,6 +44,7 @@
     <string name="jwxt_timetable_prev_week">Semaine précédente</string>
     <string name="jwxt_timetable_next_week">Semaine suivante</string>
     <string name="jwxt_timetable_empty">Aucun cours cette semaine</string>
+    <!-- Première ligne de l\'en-tête : le jour (la date suit en 2e ligne, vue semaine) -->
     <string name="jwxt_timetable_mon">Lun</string>
     <string name="jwxt_timetable_tue">Mar</string>
     <string name="jwxt_timetable_wed">Mer</string>
@@ -56,6 +57,8 @@
     <string name="jwxt_timetable_mode_term">Semestre</string>
     <string name="jwxt_timetable_pick_week">Choisir une semaine</string>
     <string name="jwxt_timetable_pick_term">Choisir un semestre</string>
+    <!-- Bouton de la barre de titre et titre de la feuille (API notArrangeList ; masqué si vide) -->
+    <string name="jwxt_timetable_unscheduled">Séances non planifiées</string>
 
     <!-- ── Recherche d\'emploi du temps (page localisée du service PK.QXKBCX) ── -->
     <string name="jwxt_schedule_query_title">Recherche d\'emploi du temps</string>

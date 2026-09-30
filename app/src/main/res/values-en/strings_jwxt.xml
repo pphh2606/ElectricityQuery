@@ -40,6 +40,7 @@
     <string name="jwxt_timetable_prev_week">Previous week</string>
     <string name="jwxt_timetable_next_week">Next week</string>
     <string name="jwxt_timetable_empty">No classes this week</string>
+    <!-- First header line: the weekday (the date follows on the second line, week view only) -->
     <string name="jwxt_timetable_mon">Mon</string>
     <string name="jwxt_timetable_tue">Tue</string>
     <string name="jwxt_timetable_wed">Wed</string>
@@ -52,6 +53,8 @@
     <string name="jwxt_timetable_mode_term">Term</string>
     <string name="jwxt_timetable_pick_week">Pick a week</string>
     <string name="jwxt_timetable_pick_term">Pick a term</string>
+    <!-- Title-bar "unscheduled sections" button and sheet title (API notArrangeList; hidden when empty) -->
+    <string name="jwxt_timetable_unscheduled">Unscheduled sections</string>
 
     <!-- ── School timetable query (localized page for the home-grid service PK.QXKBCX) ── -->
     <string name="jwxt_schedule_query_title">School timetable query</string>

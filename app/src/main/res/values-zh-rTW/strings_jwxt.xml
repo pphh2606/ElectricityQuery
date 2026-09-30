@@ -44,18 +44,21 @@
     <string name="jwxt_timetable_prev_week">上一週</string>
     <string name="jwxt_timetable_next_week">下一週</string>
     <string name="jwxt_timetable_empty">本週暫無課程</string>
-    <string name="jwxt_timetable_mon">週一</string>
-    <string name="jwxt_timetable_tue">週二</string>
-    <string name="jwxt_timetable_wed">週三</string>
-    <string name="jwxt_timetable_thu">週四</string>
-    <string name="jwxt_timetable_fri">週五</string>
-    <string name="jwxt_timetable_sat">週六</string>
-    <string name="jwxt_timetable_sun">週日</string>
+    <!-- 星期表頭的第一行：單字（第二行是日期，只有週檢視有） -->
+    <string name="jwxt_timetable_mon">一</string>
+    <string name="jwxt_timetable_tue">二</string>
+    <string name="jwxt_timetable_wed">三</string>
+    <string name="jwxt_timetable_thu">四</string>
+    <string name="jwxt_timetable_fri">五</string>
+    <string name="jwxt_timetable_sat">六</string>
+    <string name="jwxt_timetable_sun">日</string>
     <!-- 導覽列：週／學期兩種檢視，以及點擊中間彈出的選擇清單標題 -->
     <string name="jwxt_timetable_mode_week">週</string>
     <string name="jwxt_timetable_mode_term">學期</string>
     <string name="jwxt_timetable_pick_week">選擇週次</string>
     <string name="jwxt_timetable_pick_term">選擇學期</string>
+    <!-- 頂欄「未排節次」按鈕與彈窗標題（介面 notArrangeList；沒有未排課程時按鈕不顯示） -->
+    <string name="jwxt_timetable_unscheduled">未排節次</string>
 
     <!-- ── 全校課表查詢（首頁九宮格 PK.QXKBCX 服務的本地化頁面） ── -->
     <string name="jwxt_schedule_query_title">全校課表查詢</string>

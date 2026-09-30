@@ -18,6 +18,9 @@ object TimetableToday {
 
     private const val DATE_PATTERN = "yyyy-MM-dd"
 
+    /** 课表列头的日期格式：只有月日（`09-28`），带年份太长、列宽放不下 */
+    private const val COLUMN_DATE_PATTERN = "MM-dd"
+
     /** 设备当前日期 `yyyy-MM-dd` */
     fun dateString(now: Date = Date()): String = formatter().format(now)
 
@@ -49,6 +52,24 @@ object TimetableToday {
         return formatter().format(calendar.time)
     }
 
+    /**
+     * 一周里第 [dayOfWeek] 列的日期 `MM-dd`（周一 = 1 … 周日 = 7）。
+     *
+     * [weekStartDate] 取接口 `getTermWeeks` 的 `startDate`（形如 `2026-09-28 00:00:00`，恒为周一）——
+     * 「第 N 周的周一」只能来自接口，**不能拿 [weekStartDateString]**：那算的是设备当前日期所在周的周一，
+     * 用户翻到别周时两者不是一回事。
+     *
+     * 取不到或解析不了时返回空串，调用方退回只显示星期名：宁可少显示，也不显示错的日期。
+     */
+    fun columnDate(weekStartDate: String, dayOfWeek: Int): String {
+        val start = runCatching { formatter().parse(weekStartDate.take(10)) }.getOrNull() ?: return ""
+        val calendar = Calendar.getInstance().apply {
+            time = start
+            add(Calendar.DAY_OF_MONTH, dayOfWeek - 1)
+        }
+        return formatter(COLUMN_DATE_PATTERN).format(calendar.time)
+    }
+
     /** 每次新建：SimpleDateFormat 不是线程安全的，而这里的调用频率极低（一次刷新一次） */
-    private fun formatter() = SimpleDateFormat(DATE_PATTERN, Locale.US)
+    private fun formatter(pattern: String = DATE_PATTERN) = SimpleDateFormat(pattern, Locale.US)
 }
