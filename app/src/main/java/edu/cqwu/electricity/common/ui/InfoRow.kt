@@ -52,31 +52,35 @@ fun InfoRow(
     maxLines: Int = 1,
 ) {
     val fixedLabel = labelWidth != null
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = if (fixedLabel) {
-            Arrangement.spacedBy(12.dp)
-        } else {
-            Arrangement.SpaceBetween
-        },
-        verticalAlignment = Alignment.Top,
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = if (fixedLabel) Modifier.width(labelWidth) else Modifier,
-        )
-        Text(
-            text = value.ifBlank { "-" },
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = maxLines,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = if (fixedLabel) TextAlign.End else TextAlign.Start,
-            modifier = if (fixedLabel) Modifier.weight(1f) else Modifier,
-        )
+    // 名称与值长按可选中（系统选择菜单），复制后会自动取消选中（见 [SelectableContainer]）；
+    // 外层不要再包选择容器，嵌套会导致选择异常
+    SelectableContainer {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = if (fixedLabel) {
+                Arrangement.spacedBy(12.dp)
+            } else {
+                Arrangement.SpaceBetween
+            },
+            verticalAlignment = Alignment.Top,
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = if (fixedLabel) Modifier.width(labelWidth) else Modifier,
+            )
+            Text(
+                text = value.ifBlank { "-" },
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = if (fixedLabel) TextAlign.End else TextAlign.Start,
+                modifier = if (fixedLabel) Modifier.weight(1f) else Modifier,
+            )
+        }
     }
 }
 

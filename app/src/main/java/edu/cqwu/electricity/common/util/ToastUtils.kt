@@ -9,6 +9,9 @@ object ToastUtils {
 
     enum class Type {
         SUCCESS,
-        ERROR
+        ERROR,
+
+        /** 中性提示（如「允许网站打开「XX」吗？」的询问）：既不代表成功也不代表错误 */
+        INFO
     }
 }

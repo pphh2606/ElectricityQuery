@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -51,6 +50,7 @@ import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.SelectableContainer
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -244,8 +244,8 @@ private fun MessageDetailContent(message: ConsultationMessage) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 留言正文（可复制）
-        SelectionContainer {
+        // 留言正文（可复制；复制后会自动取消选中）
+        SelectableContainer {
             Text(
                 text = message.zxnr,
                 style = MaterialTheme.typography.bodyLarge,
@@ -303,8 +303,8 @@ private fun MessageDetailContent(message: ConsultationMessage) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 回复正文
-            SelectionContainer {
+            // 回复正文（复制后会自动取消选中）
+            SelectableContainer {
                 Text(
                     text = message.hfnr,
                     style = MaterialTheme.typography.bodyLarge,

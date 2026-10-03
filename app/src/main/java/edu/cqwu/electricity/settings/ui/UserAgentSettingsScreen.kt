@@ -3,6 +3,7 @@ package edu.cqwu.electricity.settings.ui
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -269,27 +270,31 @@ private fun UaEntryRow(
             )
         }
 
+        // trailing 三态统一占 48dp —— 与 [IconButton] 的实际布局尺寸一致（它内部带
+        // minimumInteractiveComponentSize，至少保留 48dp），编辑模式前后图标中心与行高都不变；
+        // 删除同样用 IconButton，与账号管理页保持同一范式（圆形涟漪 + 48dp 触控）。
         if (isEditMode) {
             if (entry.isBuiltin) {
-                // 内置预设不可删除：置灰图标占位，保证行高与图标位置不跳动
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(8.dp),
-                )
+                // 内置预设不可删除：同宽占位 + 置灰图标，保证行高与图标位置不跳动
+                Box(
+                    modifier = Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
             } else {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(R.string.common_delete),
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable(onClick = onDelete)
-                        .padding(8.dp),
-                )
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = stringResource(R.string.common_delete),
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
         } else {
             IconButton(onClick = onEdit) {

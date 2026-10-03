@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -118,7 +120,8 @@ fun AppShell(
                 hostState = snackbarController.hostState,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    // 同时避让导航栏与输入法：键盘收起时 ime 为 0，取并集后与只避让导航栏完全一致
+                    .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
                     .padding(bottom = 60.dp),
                 snackbar = { data ->
                     // 从 SnackbarVisuals 中提取类型信息，确保多 Snackbar 排队时颜色与实例一一绑定
@@ -140,6 +143,8 @@ fun AppShell(
                     val contentColor = when (type) {
                         ToastUtils.Type.ERROR   -> Color(0xFFC62828) // Red 800
                         ToastUtils.Type.SUCCESS -> Color(0xFF2E7D32) // Green 800
+                        // 中性提示（「允许网站打开…吗？」）：既不是成功也不是错误
+                        ToastUtils.Type.INFO    -> MaterialTheme.colorScheme.onSurface
                     }
 
                     SwipeToDismissBox(

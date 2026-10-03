@@ -8,10 +8,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
@@ -28,17 +26,8 @@ import edu.cqwu.electricity.common.settings.ThemeColorSource
 import edu.cqwu.electricity.common.settings.TopBarStyle
 import edu.cqwu.electricity.common.settings.isDark
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-)
+/** Android 12 以下没有系统动态取色，用它作为固定种子生成整套默认色板 */
+private val DefaultSeedColor = Color(0xFF66CCFF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,8 +91,8 @@ fun 电费查询Theme(
                 isDark = darkTheme
             )
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        // Android 12 以下取不到系统动态色，用固定种子生成整套色板
+        else -> dynamicColorScheme(seedColor = DefaultSeedColor, isDark = darkTheme)
     }.let { base ->
         if (darkTheme && pureBlack) {
             base.copy(

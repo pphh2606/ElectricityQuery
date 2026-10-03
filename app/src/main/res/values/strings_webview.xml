@@ -43,4 +43,9 @@
     <string name="webview_campusphere_warning">正在访问今日校园专属内容，可能存在不兼容现象，建议使用今日校园APP打开</string>
     <string name="webview_no_download_tool">未找到可用的下载工具</string>
     <string name="webview_cannot_open_network_settings">无法打开网络设置</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  网页唤起外部应用的确认提示                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_external_app_message">允许网站打开「%1$s」吗？</string>
+    <string name="webview_external_app_message_generic">允许网站打开外部应用吗？</string>
 </resources>

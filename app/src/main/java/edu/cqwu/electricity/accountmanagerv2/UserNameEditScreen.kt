@@ -19,8 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -35,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -43,7 +42,7 @@ import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
  * 修改用户名页（登录别名 + 昵称）— 布局对应 CAS 网页 mobileUserAttrEdit.do：
- * 顶部提示文字 → 登录别名 / 昵称（下划线输入框）→ 右下角保存按钮。
+ * 顶部提示文字 → 登录别名 / 昵称（12dp 圆角轮廓输入框）→ 右下角保存按钮。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,12 +115,12 @@ fun UserNameEditScreen(
                         // 对应网页 form-tip
                         Text(
                             text = stringResource(R.string.user_name_edit_tip),
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
 
                         // 对应网页 form-group：登录别名
-                        TextField(
+                        AppOutlinedTextField(
                             value = state.alias,
                             onValueChange = viewModel::onAliasChange,
                             modifier = Modifier.fillMaxWidth(),
@@ -150,14 +149,10 @@ fun UserNameEditScreen(
                                     },
                                 )
                             },
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                            ),
                         )
 
                         // 对应网页 form-group：昵称
-                        TextField(
+                        AppOutlinedTextField(
                             value = state.nickName,
                             onValueChange = viewModel::onNickNameChange,
                             modifier = Modifier.fillMaxWidth(),
@@ -171,11 +166,6 @@ fun UserNameEditScreen(
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             },
-                            placeholder = { Text(stringResource(R.string.user_name_edit_nickname_placeholder)) },
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                            ),
                         )
                     }
 

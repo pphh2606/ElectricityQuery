@@ -32,7 +32,7 @@
 | 相机/扫码 | CameraX 1.4.2 + ZXing 3.5.4 |
 | 存储安全 | AndroidX Security Crypto 1.1.0（AES 加密凭据/设置） |
 | 取色 | MaterialKolor 3.0.1 |
-| 其余 | core-ktx 1.17.0、lifecycle 2.9.4（runtime/compose）、activity-compose 1.11.0、appcompat 1.6.1、SwipeRefreshLayout 1.2.0 |
+| 其余 | core-ktx 1.17.0、lifecycle 2.9.4（runtime/compose）、activity-compose 1.11.0、appcompat 1.6.1 |
 | 构建 | AGP 9.1.1 + Gradle 9.3.1 + Version Catalog；Java 11 |
 
 ## SDK 与系统适配

@@ -20,6 +20,9 @@
     <string name="settings_account_manager_desc">切換帳號、管理登入狀態</string>
     <string name="account_manager_v2_username">修改使用者名稱</string>
     <string name="account_manager_v2_password">修改密碼</string>
+    <string name="account_manager_v2_phone_bind">手機綁定</string>
+    <string name="account_manager_v2_email_bind">郵箱綁定</string>
+    <string name="account_manager_v2_advanced_setting">進階設定</string>
     <string name="account_manager_v2_login_time">登入時間:%1$s</string>
     <string name="account_manager_v2_relogin_title">安全提醒</string>
     <string name="account_manager_v2_relogin_message">身分驗證失敗，請重新登入。</string>
@@ -56,6 +59,7 @@
     <string name="password_change_captcha_click_hint">點擊圖片刷新驗證碼</string>
     <string name="password_change_strength">密碼長度至少8位；字元種類至少3種（數字，大寫字母，小寫字母，標點符號）</string>
     <string name="password_change_save">儲存</string>
+    <string name="password_change_forgot">忘記密碼</string>
     <string name="password_change_saving">正在提交…</string>
     <string name="password_change_failed">修改失敗，請重試</string>
     <string name="password_change_no_account">請先登入後再修改密碼</string>
@@ -136,7 +140,7 @@
     <string name="personalization_dynamic_color_supported">跟隨系統桌布自動擷取主題色</string>
     <string name="personalization_dynamic_color_unsupported">此裝置不支援動態取色</string>
     <string name="personalization_custom_color">自訂色彩</string>
-    <string name="personalization_custom_color_desc">使用選定的色彩產生主題</string>
+    <string name="personalization_custom_color_desc">點擊進行變更:%1$s</string>
     <string name="personalization_topbar_color">標題列色彩</string>
     <string name="personalization_qrcode_settings">QR 碼設定</string>
     <string name="personalization_qrcode_desc">色彩、圓角等自訂樣式</string>
@@ -145,10 +149,9 @@
     <string name="personalization_reduce_motion">減少動畫</string>
     <string name="personalization_reduce_motion_override">（被減少動畫覆蓋）</string>
     <string name="personalization_choose_color">選取主題色</string>
-    <string name="personalization_choose_color_desc">選取一種色彩作為應用程式主題色</string>
-    <string name="personalization_choose_color_hue">色相</string>
-    <string name="personalization_choose_color_saturation">飽和度</string>
-    <string name="personalization_choose_color_value">明度</string>
+    <string name="personalization_choose_color_red">R</string>
+    <string name="personalization_choose_color_green">G</string>
+    <string name="personalization_choose_color_blue">B</string>
     <string name="personalization_choose_color_hex">HEX</string>
     <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
     <string name="personalization_choose_color_hex_error">請輸入有效的 HEX 色彩</string>

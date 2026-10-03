@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -61,12 +62,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.NightMode
@@ -327,7 +330,7 @@ fun PersonalizationScreen(
                     )
                     ThemeColorRow(
                         icon = Icons.Outlined.Colorize, title = stringResource(R.string.personalization_custom_color),
-                        subtitle = stringResource(R.string.personalization_custom_color_desc),
+                        subtitle = stringResource(R.string.personalization_custom_color_desc, customSeedColor.toHex()),
                         selected = appSettings.colorSource is ThemeColorSource.Custom,
                         onClick = {
                             showColorPicker = true
@@ -591,16 +594,19 @@ private fun ColorPickerDialog(
     onDismiss: () -> Unit,
 ) {
     val openedColor = remember(visible) { initialColor }
-    val initialHsv = remember(openedColor) { openedColor.toHsv() }
-    var hue by remember(openedColor) { mutableFloatStateOf(initialHsv.hue) }
-    var saturation by remember(openedColor) { mutableFloatStateOf(initialHsv.saturation) }
-    var value by remember(openedColor) { mutableFloatStateOf(initialHsv.value) }
-    var selectedColor by remember(openedColor) { mutableStateOf(openedColor) }
+    // R/G/B 三个通道是唯一可变状态（0..255），HEX 文本与回传色都由它派生
+    var red by remember(openedColor) { mutableFloatStateOf(openedColor.red * 255f) }
+    var green by remember(openedColor) { mutableFloatStateOf(openedColor.green * 255f) }
+    var blue by remember(openedColor) { mutableFloatStateOf(openedColor.blue * 255f) }
     var hexInput by remember(openedColor) { mutableStateOf(openedColor.toHex()) }
     var hexError by remember { mutableStateOf(false) }
 
-    fun updateSelectedColor(color: Color) {
-        selectedColor = color
+    /** 任一通道变化：刷新 HEX 文本并立即回传（沿用即拖即应用的交互） */
+    fun applyRgb(r: Float, g: Float, b: Float) {
+        val color = Color(r / 255f, g / 255f, b / 255f)
+        red = r
+        green = g
+        blue = b
         hexInput = color.toHex()
         hexError = false
         onColorPreview(color)
@@ -612,11 +618,7 @@ private fun ColorPickerDialog(
         if (parsed == null) {
             hexError = true
         } else {
-            val hsv = parsed.toHsv()
-            hue = hsv.hue
-            saturation = hsv.saturation
-            value = hsv.value
-            updateSelectedColor(parsed)
+            applyRgb(parsed.red * 255f, parsed.green * 255f, parsed.blue * 255f)
         }
     }
 
@@ -627,97 +629,108 @@ private fun ColorPickerDialog(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(
-                text = stringResource(R.string.personalization_choose_color_desc),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Row(
+            OutlinedTextField(
+                value = hexInput,
+                onValueChange = ::applyHex,
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(selectedColor, RoundedCornerShape(12.dp))
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            shape = RoundedCornerShape(12.dp),
-                        ),
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                OutlinedTextField(
-                    value = hexInput,
-                    onValueChange = ::applyHex,
-                    modifier = Modifier.weight(1f),
-                    label = { Text(stringResource(R.string.personalization_choose_color_hex)) },
-                    placeholder = { Text(stringResource(R.string.personalization_choose_color_hex_placeholder)) },
-                    isError = hexError,
-                    supportingText = if (hexError) {
-                        { Text(stringResource(R.string.personalization_choose_color_hex_error)) }
-                    } else {
-                        null
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Ascii,
-                        imeAction = ImeAction.Done,
+                shape = RoundedCornerShape(12.dp),
+                label = { Text(stringResource(R.string.personalization_choose_color_hex)) },
+                placeholder = { Text(stringResource(R.string.personalization_choose_color_hex_placeholder)) },
+                isError = hexError,
+                supportingText = if (hexError) {
+                    { Text(stringResource(R.string.personalization_choose_color_hex_error)) }
+                } else {
+                    null
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Ascii,
+                    imeAction = ImeAction.Done,
+                ),
+            )
+            RgbSliderRow(
+                label = stringResource(R.string.personalization_choose_color_red),
+                value = red,
+                gradient = Brush.horizontalGradient(
+                    listOf(
+                        Color(0f, green / 255f, blue / 255f),
+                        Color(1f, green / 255f, blue / 255f),
                     ),
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            HsvSliderRow(
-                label = stringResource(R.string.personalization_choose_color_hue),
-                value = hue,
-                valueRange = 0f..360f,
-                onValueChange = { newHue ->
-                    hue = newHue
-                    updateSelectedColor(Color.hsv(newHue, saturation, value))
-                },
+                ),
+                onValueChange = { applyRgb(it, green, blue) },
             )
-            HsvSliderRow(
-                label = stringResource(R.string.personalization_choose_color_saturation),
-                value = saturation,
-                valueRange = 0f..1f,
-                onValueChange = { newSaturation ->
-                    saturation = newSaturation
-                    updateSelectedColor(Color.hsv(hue, newSaturation, value))
-                },
+            RgbSliderRow(
+                label = stringResource(R.string.personalization_choose_color_green),
+                value = green,
+                gradient = Brush.horizontalGradient(
+                    listOf(
+                        Color(red / 255f, 0f, blue / 255f),
+                        Color(red / 255f, 1f, blue / 255f),
+                    ),
+                ),
+                onValueChange = { applyRgb(red, it, blue) },
             )
-            HsvSliderRow(
-                label = stringResource(R.string.personalization_choose_color_value),
-                value = value,
-                valueRange = 0f..1f,
-                onValueChange = { newValue ->
-                    value = newValue
-                    updateSelectedColor(Color.hsv(hue, saturation, newValue))
-                },
+            RgbSliderRow(
+                label = stringResource(R.string.personalization_choose_color_blue),
+                value = blue,
+                gradient = Brush.horizontalGradient(
+                    listOf(
+                        Color(red / 255f, green / 255f, 0f),
+                        Color(red / 255f, green / 255f, 1f),
+                    ),
+                ),
+                onValueChange = { applyRgb(red, green, it) },
             )
         }
     }
 }
 
+/**
+ * RGB 单通道滑块行：左侧通道字母、中间渐变轨道滑块、右侧当前数值（0..255）。
+ *
+ * 轨道用该通道的水平渐变自绘（[Slider] 的 track 槽位），thumb 仍取 M3 默认样式；
+ * 自绘轨道只影响绘制，不影响滑块的点击与拖动手势。
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HsvSliderRow(
+private fun RgbSliderRow(
     label: String,
     value: Float,
-    valueRange: ClosedFloatingPointRange<Float>,
+    gradient: Brush,
     onValueChange: (Float) -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.width(20.dp),
         )
         Slider(
             value = value,
             onValueChange = onValueChange,
-            valueRange = valueRange,
-            modifier = Modifier.fillMaxWidth(),
+            valueRange = 0f..255f,
+            modifier = Modifier.weight(1f),
+            track = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .background(gradient, CircleShape),
+                )
+            },
+        )
+        Text(
+            text = value.roundToInt().toString(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.width(40.dp),
+            textAlign = TextAlign.End,
         )
     }
 }

@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.qrcode.ui
 
+import edu.cqwu.electricity.common.ui.SelectableContainer
+
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import android.app.Activity
@@ -10,15 +12,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -457,7 +460,11 @@ fun QrCodeDisplayScreen(
                             qrCodeContent?.let { content ->
                                 QrCodeView(
                                     content = content,
-                                    modifier = Modifier.size(320.dp),
+                                    // 保持正方形：窄屏取可用宽度，宽屏上限 320dp，四周留白才相等
+                                    modifier = Modifier
+                                        .widthIn(max = 320.dp)
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f),
                                     squareCornerFraction = qrCornerFraction,
                                     primaryColor = qrEffectivePrimaryColor,
                                     backgroundColor = qrBackgroundColor,
@@ -483,8 +490,8 @@ fun QrCodeDisplayScreen(
 
                             Spacer(modifier = Modifier.height(24.dp))
 
-                            // 二维码内容（灰色小字，长按可复制）
-                            SelectionContainer {
+                            // 二维码内容（灰色小字，长按可复制；复制后自动取消选中）
+                            SelectableContainer {
                                 Text(
                                     text = qrCodeContent ?: "",
                                     style = MaterialTheme.typography.bodySmall.copy(

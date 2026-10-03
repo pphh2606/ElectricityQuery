@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.InfoRow
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -186,18 +187,13 @@ fun DetailScreen(
             ) {
                 when {
                     detailState.error != null -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = detailState.error?.resolve(resources) ?: stringResource(R.string.common_unknown_error),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
+                        ReLoginContent(
+                            errorMessage = detailState.error?.resolve(resources)
+                                ?: stringResource(R.string.common_unknown_error),
+                            requiresReLogin = false,
+                            onReLogin = {},
+                            onRetry = { viewModel.loadCurrentData() },
+                        )
                     }
     
                     else -> {

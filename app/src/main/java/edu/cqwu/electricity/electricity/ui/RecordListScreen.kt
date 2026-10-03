@@ -294,6 +294,7 @@ fun RecordListScreen(
                                     chartContent = chartPages.getOrNull(0),
                                     tablePage = pages.getOrNull(0),
                                     columns = columns,
+                                    onRetry = onRefresh,
                                 )
                             }
                         } else {
@@ -307,6 +308,7 @@ fun RecordListScreen(
                                     chartContent = chartPages.getOrNull(pageIndex),
                                     tablePage = pages.getOrNull(pageIndex),
                                     columns = columns,
+                                    onRetry = onRefresh,
                                 )
                             }
                         }
@@ -327,14 +329,19 @@ private fun RecordPageContentV2(
     chartContent: RecordChartContentV2?,
     tablePage: RecordTablePageV2?,
     columns: List<TableColumn>,
+    onRetry: () -> Unit,
 ) {
     when {
         chartMode && chartContent != null -> {
-            RecordChartArea(content = chartContent, modifier = Modifier.fillMaxSize())
+            RecordChartArea(
+                content = chartContent,
+                modifier = Modifier.fillMaxSize(),
+                onRetry = onRetry,
+            )
         }
 
         tablePage != null -> {
-            RecordTableArea(columns = columns, page = tablePage)
+            RecordTableArea(columns = columns, page = tablePage, onRetry = onRetry)
         }
     }
 }

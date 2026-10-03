@@ -5,6 +5,7 @@ package edu.cqwu.electricity.feeservicehall.ui
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -38,7 +39,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -195,14 +195,13 @@ private fun OrderFilterPanel(
     onReset: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        OutlinedTextField(
+        AppOutlinedTextField(
             value = projectName,
             onValueChange = onProjectNameChange,
             label = { Text(stringResource(R.string.fee_order_project_name)) },
             singleLine = true,
             leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
         )
         Spacer(Modifier.height(8.dp))
         DateRangeFilterRow(

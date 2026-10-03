@@ -43,4 +43,9 @@
     <string name="webview_campusphere_warning">正在存取今日校園專屬內容，可能存在不相容現象，建議使用今日校園 App 開啟</string>
     <string name="webview_no_download_tool">找不到可用的下載工具</string>
     <string name="webview_cannot_open_network_settings">無法開啟網路設定</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  網頁喚起外部應用程式的確認提示               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_external_app_message">允許網站開啟「%1$s」嗎？</string>
+    <string name="webview_external_app_message_generic">允許網站開啟外部應用程式嗎？</string>
 </resources>

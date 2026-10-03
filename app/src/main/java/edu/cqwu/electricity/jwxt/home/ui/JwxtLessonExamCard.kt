@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Card
@@ -28,6 +28,7 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +43,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.SelectableContainer
+import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.todaylesson.data.JwxtLessonUi
+import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import kotlinx.coroutines.launch
 
 /**
@@ -62,7 +66,7 @@ import kotlinx.coroutines.launch
  * 两个 tab 内容不等高会让切换时整页上移，所以每一页都把两份内容叠放（非当前份透明占位），
  * 使两页等高、都等于内容较多的那一页。
  *
- * 当前 tab 的文字包在 `SelectionContainer` 里，可长按选取复制；透明的那一份不参与选择。
+ * 当前 tab 的文字包在 `SelectableContainer` 里，可长按选取复制；透明的那一份不参与选择。
  */
 @Composable
 internal fun JwxtLessonExamCard(
@@ -75,6 +79,16 @@ internal fun JwxtLessonExamCard(
 ) {
     val pagerState = rememberPagerState(pageCount = { TAB_COUNT })
     val scope = rememberCoroutineScope()
+
+    // 卡片级失败（整页加载成功、只有今日课程/考试单个接口失败）改用 toast 提示，
+    // 卡片内容区留白——不能把失败显示成「今日无课/暂无考试」。
+    val snackbar = LocalSnackbarController.current
+    LaunchedEffect(lessonError) {
+        lessonError?.let { snackbar.show(it, ToastUtils.Type.ERROR) }
+    }
+    LaunchedEffect(examError) {
+        examError?.let { snackbar.show(it, ToastUtils.Type.ERROR) }
+    }
 
     Card(
         modifier = Modifier
@@ -114,12 +128,16 @@ internal fun JwxtLessonExamCard(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
-                    // 当前 tab：包 SelectionContainer，文字可长按选取复制
+                    // 当前 tab：包 SelectableContainer，文字可长按选取复制（复制后自动取消选中）
                     TabPage(selected = page == 0) {
-                        LessonTabContent(lessons = lessons, error = lessonError, onMoreLessons = onMoreLessons)
+                        LessonTabContent(
+                            lessons = lessons,
+                            hasError = lessonError != null,
+                            onMoreLessons = onMoreLessons,
+                        )
                     }
                     // 另一 tab：透明占位，只负责把卡片撑到两页中的较高者，不参与选择
-                    TabPage(selected = page == 1) { ExamTabContent(exams = exams, error = examError) }
+                    TabPage(selected = page == 1) { ExamTabContent(exams = exams, hasError = examError != null) }
                 }
             }
         }
@@ -129,21 +147,21 @@ internal fun JwxtLessonExamCard(
 /**
  * 一页 tab 的内容。
  *
- * [selected] 为 false 时透明占位（让两个 tab 等高），且**不包 [SelectionContainer]**——
+ * [selected] 为 false 时透明占位（让两个 tab 等高），且**不包 [SelectableContainer]**——
  * 两份内容叠在同一位置，若都参与选择会选到另一 tab 的文字。
  */
 @Composable
 private fun TabPage(selected: Boolean, content: @Composable () -> Unit) {
     Box(modifier = if (selected) Modifier else HiddenTabContent) {
-        if (selected) SelectionContainer { content() } else content()
+        if (selected) SelectableContainer { content() } else content()
     }
 }
 
-/** 今日课程页：失败 → 错误文案；空 → 空状态；否则按节次逐条渲染（ViewModel 已排序） */
+/** 今日课程页：失败 → 留白（错误已由 toast 提示）；空 → 空状态；否则按节次逐条渲染（ViewModel 已排序） */
 @Composable
 private fun LessonTabContent(
     lessons: List<JwxtLessonUi>,
-    error: String?,
+    hasError: Boolean,
     onMoreLessons: () -> Unit,
 ) {
     // 自带 Column：外层是"两个 tab 叠放取最大高度"的 Box，而 Box 会把子项叠在同一位置，
@@ -153,7 +171,8 @@ private fun LessonTabContent(
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         when {
-            error != null -> TabMessage(error)
+            // 失败时留白：显示成「今日无课」等于把失败说成了没有数据
+            hasError -> Spacer(modifier = Modifier.fillMaxWidth().height(TAB_CONTENT_HEIGHT))
             lessons.isEmpty() -> TabMessage(stringResource(R.string.jwxt_lesson_empty))
             else -> lessons.forEachIndexed { index, lesson ->
                 if (index > 0) ItemDivider()
@@ -197,16 +216,17 @@ private fun MoreLessonsRow(onClick: () -> Unit) {
     }
 }
 
-/** 本学期考试页：失败 → 错误文案；空 → 空状态；否则逐条渲染（ViewModel 已按考试时间升序） */
+/** 本学期考试页：失败 → 留白（错误已由 toast 提示）；空 → 空状态；否则逐条渲染（ViewModel 已按考试时间升序） */
 @Composable
-private fun ExamTabContent(exams: List<JwxtExamUi>, error: String?) {
+private fun ExamTabContent(exams: List<JwxtExamUi>, hasError: Boolean) {
     // 同 LessonTabContent：垂直排列由内容自己负责，外层 Box 只做叠放定高
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         when {
-            error != null -> TabMessage(error)
+            // 失败时留白：显示成「暂无考试」等于把失败说成了没有数据
+            hasError -> Spacer(modifier = Modifier.fillMaxWidth().height(TAB_CONTENT_HEIGHT))
             exams.isEmpty() -> TabMessage(stringResource(R.string.jwxt_exam_empty))
             else -> exams.forEachIndexed { index, exam ->
                 if (index > 0) ItemDivider()

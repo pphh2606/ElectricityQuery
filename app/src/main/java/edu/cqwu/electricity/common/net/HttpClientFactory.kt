@@ -90,8 +90,8 @@ object HttpClientFactory {
     }
 
     /**
-     * 账号隔离客户端：用账号持久化 cookie 构建独立 UserCookieStore + UserAwareCookieJar，
-     * 直连 authserver（修改用户名/密码、设备管理、认证日志、登出等 CAS 页面接口共用）。
+     * 账号隔离客户端：仅用于单次请求。多步业务流程（页面下发盐、验证码等一次性数据后再提交）
+     * 必须改用 [IsolatedSession]，否则每一步各建一个会话，服务端会为每步重建 session。
      *
      * @param cookies 账号持久化的 cookie 集合
      * @param followRedirects 是否自动跟随重定向（登出等需拿到首个 3xx 响应时传 false）
@@ -99,14 +99,7 @@ object HttpClientFactory {
     fun createIsolated(
         cookies: Map<String, Map<String, String>>,
         followRedirects: Boolean = true,
-    ): OkHttpClient {
-        val store = UserCookieStore().also { it.loadFrom(cookies) }
-        return create(
-            cookieJar = UserAwareCookieJar(store),
-            includeWebVpn = false,
-            followRedirects = followRedirects,
-        )
-    }
+    ): OkHttpClient = IsolatedSession(cookies, followRedirects).client
 
     fun create(
         cookieJar: CookieJar? = null,
@@ -181,4 +174,47 @@ object HttpClientFactory {
             return ipv4 + ipv6
         }
     }
+}
+
+/**
+ * 账号隔离的 HTTP 会话：一个 OkHttpClient 配一份私有的 cookie 容器。
+ *
+ * CAS 把页面下发的一次性数据（`pwdDefaultEncryptSalt`、图形验证码）存在 JSESSIONID 对应的
+ * session 里，所以「取页面 → 取验证码 → 提交」必须复用同一个实例。逐个请求新建会话时，
+ * 服务端会为每一步重建 session：登录态能靠 CASTGC 恢复，但盐与验证码留在旧 session 里，
+ * 提交时就会报 `password decrypt is error!` 或验证码错误。
+ */
+class IsolatedSession(
+    cookies: Map<String, Map<String, String>>,
+    followRedirects: Boolean = true,
+) {
+
+    private val store = UserCookieStore().also { it.loadFrom(cookies) }
+
+    val client: OkHttpClient = HttpClientFactory.create(
+        cookieJar = UserAwareCookieJar(store),
+        includeWebVpn = false,
+        followRedirects = followRedirects,
+    )
+}
+
+/**
+ * 页面级会话：加载、刷新页面时开启新会话，其后的校验与提交复用同一个。
+ *
+ * 供「页面下发一次性数据，后续请求使用」的 CAS 页面接口使用（修改密码、修改用户名、
+ * 设备会话等），保证一次业务流程始终落在服务端的同一个 session 上。
+ */
+class PageSession {
+
+    @Volatile
+    private var current: IsolatedSession? = null
+
+    /** 开启新会话（加载或刷新页面时调用） */
+    fun restart() {
+        current = null
+    }
+
+    /** 取当前会话；尚未建立时按账号 cookie 新建 */
+    fun of(cookies: Map<String, Map<String, String>>): IsolatedSession =
+        current ?: IsolatedSession(cookies).also { current = it }
 }

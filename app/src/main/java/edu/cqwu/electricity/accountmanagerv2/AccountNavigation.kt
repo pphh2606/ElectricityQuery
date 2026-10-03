@@ -23,6 +23,9 @@ internal fun NavGraphBuilder.accountManagerGraph(
             onNavigateToAddAccount = { navController.navigate(Routes.NEW_ACCOUNT_LOGIN) },
             onNavigateToUserNameEdit = { navController.navigate(Routes.USER_NAME_EDIT) },
             onNavigateToPasswordEdit = { navController.navigate(Routes.PASSWORD_CHANGE) },
+            onNavigateToWebView = { url, title ->
+                navController.navigate(Routes.unifiedWebViewRoute(url, title))
+            },
             onNavigateToDeviceSession = { navController.navigate(Routes.DEVICE_SESSION) },
             onNavigateToLoginLog = { navController.navigate(Routes.LOGIN_LOG) },
         )

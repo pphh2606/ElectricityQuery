@@ -20,6 +20,9 @@
     <string name="settings_account_manager_desc">アカウントの切り替え、ログイン状態の管理</string>
     <string name="account_manager_v2_username">ユーザー名を変更</string>
     <string name="account_manager_v2_password">パスワードを変更</string>
+    <string name="account_manager_v2_phone_bind">電話番号の連携</string>
+    <string name="account_manager_v2_email_bind">メールの連携</string>
+    <string name="account_manager_v2_advanced_setting">詳細設定</string>
     <string name="account_manager_v2_login_time">ログイン時間:%1$s</string>
     <string name="account_manager_v2_relogin_title">安全通知</string>
     <string name="account_manager_v2_relogin_message">認証に失敗しました。もう一度ログインしてください。</string>
@@ -56,6 +59,7 @@
     <string name="password_change_captcha_click_hint">画像をタップして認証コードを更新</string>
     <string name="password_change_strength">パスワードは8文字以上、かつ3種類以上の文字種（数字、大文字、小文字、記号）を含む必要があります</string>
     <string name="password_change_save">保存</string>
+    <string name="password_change_forgot">パスワードを忘れた</string>
     <string name="password_change_saving">送信中…</string>
     <string name="password_change_failed">変更に失敗しました。もう一度お試しください</string>
     <string name="password_change_no_account">パスワードを変更するには、先にログインしてください</string>
@@ -136,7 +140,7 @@
     <string name="personalization_dynamic_color_supported">システム壁紙に合わせてテーマカラーを自動抽出</string>
     <string name="personalization_dynamic_color_unsupported">このデバイスはダイナミックカラーに対応していません</string>
     <string name="personalization_custom_color">カスタムカラー</string>
-    <string name="personalization_custom_color_desc">選択した色でテーマを生成</string>
+    <string name="personalization_custom_color_desc">タップして変更:%1$s</string>
     <string name="personalization_topbar_color">タイトルバーの色</string>
     <string name="personalization_qrcode_settings">QRコード設定</string>
     <string name="personalization_qrcode_desc">色、角丸などのカスタムスタイル</string>
@@ -145,10 +149,9 @@
     <string name="personalization_reduce_motion">アニメーションを減らす</string>
     <string name="personalization_reduce_motion_override">（アニメーション減少により上書き）</string>
     <string name="personalization_choose_color">テーマカラーを選択</string>
-    <string name="personalization_choose_color_desc">アプリのテーマカラーとして色を選択</string>
-    <string name="personalization_choose_color_hue">色相</string>
-    <string name="personalization_choose_color_saturation">彩度</string>
-    <string name="personalization_choose_color_value">明度</string>
+    <string name="personalization_choose_color_red">R</string>
+    <string name="personalization_choose_color_green">G</string>
+    <string name="personalization_choose_color_blue">B</string>
     <string name="personalization_choose_color_hex">HEX</string>
     <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
     <string name="personalization_choose_color_hex_error">有効な HEX カラーを入力してください</string>

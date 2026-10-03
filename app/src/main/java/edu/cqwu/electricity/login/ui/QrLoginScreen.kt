@@ -2,6 +2,7 @@ package edu.cqwu.electricity.login.ui
 
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
+import edu.cqwu.electricity.common.ui.SelectableContainer
 import edu.cqwu.electricity.logging.AppLog
 
 import android.app.Activity
@@ -19,13 +20,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -237,8 +239,11 @@ fun QrLoginScreen(
                             // 使用本地 QrCodeView 渲染二维码（与支付码页面一致）
                             // 支持用户自定义的颜色模式、圆角等主题设置
                             Box(
+                                // 保持正方形：窄屏取可用宽度，宽屏上限 320dp，四周留白才相等
                                 modifier = Modifier
-                                    .size(320.dp),
+                                    .widthIn(max = 320.dp)
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 QrCodeView(
@@ -252,8 +257,8 @@ fun QrLoginScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            // 二维码网址内容（灰色小字，居中，长按可复制）
-                            SelectionContainer {
+                            // 二维码网址内容（灰色小字，居中，长按可复制；复制后自动取消选中）
+                            SelectableContainer {
                                 Text(
                                     text = state.content,
                                     style = MaterialTheme.typography.bodySmall,

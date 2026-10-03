@@ -18,11 +18,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -69,11 +67,11 @@ import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.LanguageSwitchButton
 import edu.cqwu.electricity.common.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.PasswordRecoverySheet
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
-import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 
@@ -114,11 +112,8 @@ fun LoginScreen(
     var showSecurityNotice by remember { mutableStateOf(false) }
     // 其他登录方式弹窗
     var showOtherLoginSheet by remember { mutableStateOf(false) }
-    // 找回密码弹窗
+    // 找回密码弹窗（含半屏 WebView）
     var showRecoverySheet by remember { mutableStateOf(false) }
-    // WebView 半屏弹窗（找回密码用）
-    var webViewUrl by remember { mutableStateOf<String?>(null) }
-    var webViewTitle by remember { mutableStateOf("") }
     val snackbar = LocalSnackbarController.current
 
     // 收集一次性事件（替代 LaunchedEffect(uiState.error/loginResult/autoLoginResult)）
@@ -435,39 +430,9 @@ fun LoginScreen(
         )
     }
 
-    // ========== 找回密码弹窗 ==========
-    val phoneRecoveryTitle = stringResource(R.string.login_method_phone_recovery)
-    val emailRecoveryTitle = stringResource(R.string.login_method_email_recovery)
-    BottomSheetDialogV2(
+    // ========== 找回密码弹窗（含半屏 WebView） ==========
+    PasswordRecoverySheet(
         visible = showRecoverySheet,
         onDismissRequest = { showRecoverySheet = false },
-        title = stringResource(R.string.login_password_recovery),
-    ) {
-        BottomSheetItem(
-            icon = Icons.Outlined.Phone,
-            title = phoneRecoveryTitle,
-            onClick = {
-                showRecoverySheet = false
-                webViewTitle = phoneRecoveryTitle
-                webViewUrl = "https://authserver.cqwu.edu.cn/authserver/mobileGetPasswordController.do"
-            }
-        )
-        BottomSheetItem(
-            icon = Icons.Outlined.Email,
-            title = emailRecoveryTitle,
-            onClick = {
-                showRecoverySheet = false
-                webViewTitle = emailRecoveryTitle
-                webViewUrl = "https://authserver.cqwu.edu.cn/authserver/moblieFindPwdByMailPage.do"
-            }
-        )
-    }
-
-    // ========== 找回密码 WebView 半屏弹窗 ==========
-    WebViewBottomSheet(
-        visible = webViewUrl != null,
-        onDismissRequest = { webViewUrl = null },
-        url = webViewUrl ?: "",
-        title = webViewTitle
     )
 }

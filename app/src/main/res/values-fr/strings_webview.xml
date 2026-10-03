@@ -43,4 +43,9 @@
     <string name="webview_campusphere_warning">Vous accédez à du contenu Campusphere. Des problèmes de compatibilité peuvent survenir. Utilisez de préférence l\'application Campusphere.</string>
     <string name="webview_no_download_tool">Aucun outil de téléchargement trouvé</string>
     <string name="webview_cannot_open_network_settings">Impossible d\'ouvrir les paramètres réseau</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Confirmation d ouverture d une app externe  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_external_app_message">Autoriser ce site à ouvrir %1$s ?</string>
+    <string name="webview_external_app_message_generic">Autoriser ce site à ouvrir une application externe ?</string>
 </resources>

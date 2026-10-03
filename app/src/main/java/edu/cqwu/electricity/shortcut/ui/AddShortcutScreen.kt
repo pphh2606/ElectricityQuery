@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -37,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -93,22 +96,26 @@ fun AddShortcutScreen(
 
     var categories by remember { mutableStateOf<List<HomeCategory>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    var loadError by remember { mutableStateOf<String?>(null) }
+    var isRefreshing by remember { mutableStateOf(false) }
     var selectedApp by remember { mutableStateOf<HomeApp?>(null) }
     var shortcutName by remember { mutableStateOf("") }
     var showFunctionSheet by remember { mutableStateOf(false) }
     var isCreating by remember { mutableStateOf(false) }
 
-    // 加载首页功能列表
-    LaunchedEffect(Unit) {
+    // 加载首页功能列表；失败只在底部提示一次（toast），内容区不再内联错误文案
+    suspend fun loadCategories() {
         val loader = HomeJsonLoader(context)
         val result = withContext(Dispatchers.IO) { loader.loadCategories() }
         result.onSuccess { categories = it }
-            .onFailure { e ->
-                loadError = e.message ?: resources.getString(R.string.common_load_failed)
+            .onFailure {
                 snackbar.show(resources.getString(R.string.common_load_failed), ToastUtils.Type.ERROR)
             }
         isLoading = false
+        isRefreshing = false
+    }
+
+    LaunchedEffect(Unit) {
+        loadCategories()
     }
 
     // 选中功能时自动填充名称
@@ -148,24 +155,20 @@ fun AddShortcutScreen(
                     CircularProgressIndicator()
                 }
             }
-            loadError != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = loadError ?: "",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
             else -> {
+                // 加载失败时不再在内容区显示错误文案（toast 已提示），页面保留下拉重试入口
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = {
+                        isRefreshing = true
+                        scope.launch { loadCategories() }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                         .padding(innerPadding)
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -310,6 +313,7 @@ fun AddShortcutScreen(
                             fontWeight = FontWeight.Bold
                         )
                     }
+                }
                 }
             }
         }

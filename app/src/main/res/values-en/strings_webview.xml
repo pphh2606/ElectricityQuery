@@ -43,4 +43,9 @@
     <string name="webview_campusphere_warning">You are visiting Campusphere content which may not be fully compatible. Please use the Campusphere app instead.</string>
     <string name="webview_no_download_tool">No download tool found</string>
     <string name="webview_cannot_open_network_settings">Cannot open network settings</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  Confirm prompt for opening an external app  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_external_app_message">Allow this website to open %1$s?</string>
+    <string name="webview_external_app_message_generic">Allow this website to open an external app?</string>
 </resources>

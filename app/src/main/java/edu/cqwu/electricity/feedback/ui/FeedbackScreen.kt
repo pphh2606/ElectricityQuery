@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.feedback.ui
 import edu.cqwu.electricity.logging.AppLog
 
+import edu.cqwu.electricity.common.ui.SelectableContainer
+
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import android.content.Intent
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -261,7 +262,7 @@ fun FeedbackScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
-            SelectionContainer {
+            SelectableContainer {
                 Text(
                     text = previewLogText,
                     style = MaterialTheme.typography.bodySmall,

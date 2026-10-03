@@ -43,4 +43,9 @@
     <string name="webview_campusphere_warning">أنت تتصفح محتوى Campusphere. قد تحدث مشاكل توافق. يُنصح باستخدام تطبيق Campusphere.</string>
     <string name="webview_no_download_tool">لم يتم العثور على أداة تنزيل</string>
     <string name="webview_cannot_open_network_settings">تعذر فتح إعدادات الشبكة</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  تأكيد فتح تطبيق خارجي                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_external_app_message">هل تسمح للموقع بفتح %1$s؟</string>
+    <string name="webview_external_app_message_generic">هل تسمح للموقع بفتح تطبيق خارجي؟</string>
 </resources>

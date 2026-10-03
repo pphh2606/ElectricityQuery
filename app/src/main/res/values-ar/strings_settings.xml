@@ -20,6 +20,9 @@
     <string name="settings_account_manager_desc">تبديل الحسابات وإدارة حالة تسجيل الدخول</string>
     <string name="account_manager_v2_username">تعديل اسم المستخدم</string>
     <string name="account_manager_v2_password">تعديل كلمة المرور</string>
+    <string name="account_manager_v2_phone_bind">ربط الهاتف</string>
+    <string name="account_manager_v2_email_bind">ربط البريد الإلكتروني</string>
+    <string name="account_manager_v2_advanced_setting">إعدادات متقدمة</string>
     <string name="account_manager_v2_login_time">وقت تسجيل الدخول: %1$s</string>
     <string name="account_manager_v2_relogin_title">تنبيه أمني</string>
     <string name="account_manager_v2_relogin_message">فشل التحقق من الهوية، يرجى تسجيل الدخول مرة أخرى.</string>
@@ -56,6 +59,7 @@
     <string name="password_change_captcha_click_hint">اضغط على الصورة لتحديث رمز التحقق</string>
     <string name="password_change_strength">يجب أن تتكون كلمة المرور من 8 أحرف على الأقل وتحتوي على 3 أنواع على الأقل من الأحرف (أرقام، أحرف كبيرة، أحرف صغيرة، علامات ترقيم)</string>
     <string name="password_change_save">حفظ</string>
+    <string name="password_change_forgot">نسيت كلمة المرور</string>
     <string name="password_change_saving">جارٍ الإرسال…</string>
     <string name="password_change_failed">فشل التعديل، يرجى المحاولة مرة أخرى</string>
     <string name="password_change_no_account">يرجى تسجيل الدخول أولاً لتعديل كلمة المرور</string>
@@ -136,7 +140,7 @@
     <string name="personalization_dynamic_color_supported">استخراج لون السمة من خلفية النظام</string>
     <string name="personalization_dynamic_color_unsupported">اللون الديناميكي غير مدعوم على هذا الجهاز</string>
     <string name="personalization_custom_color">لون مخصص</string>
-    <string name="personalization_custom_color_desc">إنشاء سمة من اللون المختار</string>
+    <string name="personalization_custom_color_desc">اضغط للتغيير:%1$s</string>
     <string name="personalization_topbar_color">لون شريط العنوان</string>
     <string name="personalization_qrcode_settings">إعدادات رمز QR</string>
     <string name="personalization_qrcode_desc">اللون، الزوايا المستديرة وأنماط أخرى</string>
@@ -145,10 +149,9 @@
     <string name="personalization_reduce_motion">تقليل الحركة</string>
     <string name="personalization_reduce_motion_override">(تم تجاوزه بواسطة تقليل الحركة)</string>
     <string name="personalization_choose_color">اختيار لون السمة</string>
-    <string name="personalization_choose_color_desc">اختر لونًا ليكون سمة التطبيق</string>
-    <string name="personalization_choose_color_hue">الدرجة اللونية</string>
-    <string name="personalization_choose_color_saturation">التشبع</string>
-    <string name="personalization_choose_color_value">القيمة</string>
+    <string name="personalization_choose_color_red">R</string>
+    <string name="personalization_choose_color_green">G</string>
+    <string name="personalization_choose_color_blue">B</string>
     <string name="personalization_choose_color_hex">HEX</string>
     <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
     <string name="personalization_choose_color_hex_error">أدخل لون HEX صالح</string>

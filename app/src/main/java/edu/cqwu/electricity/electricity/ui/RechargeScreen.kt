@@ -142,6 +142,14 @@ fun RechargeScreen(
         }
     }
 
+    // ── 查询房间/学号错误：同样用 toast 提示，并清空状态避免重复弹出 ──
+    LaunchedEffect(recharge.queryError) {
+        recharge.queryError?.let {
+            snackbar.show(it, ToastUtils.Type.ERROR)
+            viewModel.clearQueryError()
+        }
+    }
+
     // 是否有有效金额且未超出单次充值上限
     val effectiveRechargeAmount = recharge.selectedAmount
         ?: recharge.customAmount.trim().toDoubleOrNull()
@@ -222,18 +230,7 @@ fun RechargeScreen(
                         }
                     }
 
-                    // 错误提示
-                    val errorMsg = recharge.queryError
-                    if (errorMsg != null) {
-                        item(key = "query_error") {
-                            Text(
-                                text = errorMsg,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
+                    // 查询/房间错误已改为 toast 提示（见上文 LaunchedEffect(queryError)），此处不再内联展示
 
                     // ============================================================
                     //  查询成功后：显示充值内容

@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -54,7 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
-import edu.cqwu.electricity.common.ui.LabeledFieldRow
+import edu.cqwu.electricity.common.ui.InfoLabelWidth
+import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -274,38 +274,35 @@ private fun SessionCard(
                 )
             }
 
-            // ── 展开区：HTML 完整内容（字段支持长按选取复制）──
+            // ── 展开区：HTML 完整内容（名称与值长按可选中，由 InfoRow 内部提供）──
             AnimatedVisibility(visible = expanded) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    SelectionContainer {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                        ) {
-                            // 两个 IP（IPv6/IPv4）合并为同一字段，换行显示
-                            val ipText = listOfNotNull(session.ipv6, session.ipv4).joinToString("\n")
-                            if (ipText.isNotEmpty()) {
-                                LabeledFieldRow(
-                                    label = stringResource(R.string.device_session_ip_label),
-                                    value = ipText,
-                                )
-                            }
-                            LabeledFieldRow(
-                                label = stringResource(R.string.device_session_auth_label),
-                                value = session.authType,
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                    ) {
+                        // 两个 IP（IPv6/IPv4）合并为同一字段，换行显示
+                        val ipText = listOfNotNull(session.ipv6, session.ipv4).joinToString("\n")
+                        if (ipText.isNotEmpty()) {
+                            InfoRow(
+                                label = stringResource(R.string.device_session_ip_label),
+                                value = ipText,
                             )
-                            LabeledFieldRow(
-                                label = stringResource(R.string.device_session_client_label),
-                                value = session.clientType,
+                        }
+                        InfoRow(
+                            label = stringResource(R.string.device_session_auth_label),
+                            value = session.authType,
+                        )
+                        InfoRow(
+                            label = stringResource(R.string.device_session_client_label),
+                            value = session.clientType,
+                        )
+                        if (session.loginTimeText.isNotEmpty()) {
+                            InfoRow(
+                                label = stringResource(R.string.device_session_time_label),
+                                value = session.loginTimeText,
                             )
-                            if (session.loginTimeText.isNotEmpty()) {
-                                LabeledFieldRow(
-                                    label = stringResource(R.string.device_session_time_label),
-                                    value = session.loginTimeText,
-                                )
-                            }
                         }
                     }
 
@@ -379,4 +376,16 @@ private fun EmptySessions(modifier: Modifier = Modifier) {
             )
         }
     }
+}
+
+/** 会话字段行：复用通用键值行，仅统一本页行距 */
+@Composable
+private fun InfoRow(label: String, value: String) {
+    CommonInfoRow(
+        label = label,
+        value = value,
+        modifier = Modifier.padding(vertical = 8.dp),
+        labelWidth = InfoLabelWidth,
+        maxLines = Int.MAX_VALUE,
+    )
 }

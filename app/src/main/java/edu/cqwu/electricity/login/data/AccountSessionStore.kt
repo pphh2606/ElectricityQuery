@@ -18,7 +18,7 @@ import java.util.UUID
  * - 扫码登录：只有登录用户名 + 登录状态，没有密码；
  * - 未勾选"记住密码"：只有登录用户名 + 登录状态，密码不落盘。
  *
- * [id] 为条目唯一标识（UUID）：同一登录用户名可通过不同登录方式产生多个条目，切换/删除按 id 定位。
+ * [id] 为条目唯一标识（UUID）：同一登录用户名只保留一条（同名再登录会原地更新该条目），切换/删除按 id 定位。
  */
 data class SavedAccount(
     val id: String,
@@ -130,6 +130,9 @@ object AccountSessionStore {
      *
      * 登录成功之前当前登录态保持不变（登录过程使用隔离的临时 store，调用方仅在成功后提交）。
      *
+     * 同一登录用户名只保留一条条目：已存在同名条目时**原地更新**它（不新增），
+     * 避免同一用户反复登录堆出多条记录、出现过期与未过期会话并存的困惑。
+     *
      * @param username 登录用户名（学号或登录别名）
      * @param password 密码；仅当 [rememberPassword] 为 true 时才落盘（扫码登录传 null + false）
      * @param rememberPassword 是否记住密码
@@ -143,17 +146,42 @@ object AccountSessionStore {
         cookies: Map<String, Map<String, String>>,
         studentId: String? = null,
     ) {
-        // 每次登录新增独立条目（允许同一登录用户名多个条目，用于多账号切换测试）
+        val accounts = getAllAccounts().toMutableList()
+        val now = System.currentTimeMillis()
+        // 同名账号只保留一条：已存在就原地更新（登录态 cookie、登录时间、学号、密码），不再追加新条目。
+        // 密码只在本次"带了新密码且勾选记住密码"时才覆盖；扫码登录等无密码路径保留原有密码。
+        val existingIndex = accounts.indexOfFirst { it.username == username }
+        if (existingIndex >= 0) {
+            val old = accounts[existingIndex]
+            val hasNewPassword = rememberPassword && !password.isNullOrEmpty()
+            accounts[existingIndex] = old.copy(
+                password = if (hasNewPassword) password else old.password,
+                rememberPassword = if (hasNewPassword) true else old.rememberPassword,
+                lastLoginTime = now,
+                // 本次登录态覆盖旧登录态；异常拿不到 cookie 时保留原有登录态，避免把有效会话清空
+                cookies = if (cookies.isEmpty()) old.cookies else cookies,
+                studentId = studentId ?: old.studentId,
+            )
+            saveAccounts(accounts)
+            AppLog.d(
+                "AccountSessionStore",
+                "commitLogin(同名更新): $username, 记住密码=${accounts[existingIndex].rememberPassword}, " +
+                    "cookie域数=${accounts[existingIndex].cookies.size}, studentId=${accounts[existingIndex].studentId ?: "-"}"
+            )
+            activate(old.id)
+            return
+        }
+
         val account = SavedAccount(
             id = UUID.randomUUID().toString(),
             username = username,
             password = if (rememberPassword) password else null,
-            lastLoginTime = System.currentTimeMillis(),
+            lastLoginTime = now,
             rememberPassword = rememberPassword,
             cookies = cookies,
             studentId = studentId,
         )
-        saveAccounts(getAllAccounts() + account)
+        saveAccounts(accounts + account)
         AppLog.d("AccountSessionStore", "commitLogin: $username, 记住密码=$rememberPassword, cookie域数=${cookies.size}, studentId=${studentId ?: "-"}")
         activate(account.id)
     }

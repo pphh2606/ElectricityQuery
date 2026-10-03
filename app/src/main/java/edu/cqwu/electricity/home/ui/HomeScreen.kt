@@ -85,6 +85,7 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.common.ui.AppIconBox
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.FeatureGrid
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.settings.CustomServiceEntry
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeApp
@@ -306,20 +307,23 @@ fun HomePageContent(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
+            // 首载失败（还没有任何内容）：整页错误态 + 重试；已加载后的下拉刷新失败只弹 toast，
+            // 不再把整个首页内容顶掉（HomeViewModel.refresh 失败时会保留 categories）。
+            LaunchedEffect(uiState.error, uiState.categories.isEmpty()) {
+                val message = uiState.error
+                if (message != null && uiState.categories.isNotEmpty()) {
+                    snackbar.show(message, ToastUtils.Type.ERROR)
+                }
+            }
+
             when {
-                uiState.error != null -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = uiState.error ?: stringResource(R.string.home_load_failed),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
+                uiState.error != null && uiState.categories.isEmpty() -> {
+                    ReLoginContent(
+                        errorMessage = uiState.error,
+                        requiresReLogin = false,
+                        onReLogin = {},
+                        onRetry = { homeViewModel.refresh() },
+                    )
                 }
                 isSearching -> {
                     // ── 搜索模式：平铺搜索结果（懒加载） ──

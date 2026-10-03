@@ -130,7 +130,6 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil.compose)
-    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.zxing.core)
     implementation(libs.material.kolor)
     implementation(libs.androidx.camera.core)

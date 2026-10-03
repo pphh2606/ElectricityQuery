@@ -43,4 +43,9 @@
     <string name="webview_campusphere_warning">今日のキャンパス専用コンテンツにアクセスしています。互換性の問題が発生する可能性があります。今日のキャンパスアプリでの使用をお勧めします</string>
     <string name="webview_no_download_tool">利用可能なダウンロードツールが見つかりません</string>
     <string name="webview_cannot_open_network_settings">ネットワーク設定を開けません</string>
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  外部アプリを開く確認                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <string name="webview_external_app_message">このサイトが「%1$s」を開くことを許可しますか？</string>
+    <string name="webview_external_app_message_generic">このサイトが外部アプリを開くことを許可しますか？</string>
 </resources>

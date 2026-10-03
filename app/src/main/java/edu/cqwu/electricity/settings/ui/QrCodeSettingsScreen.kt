@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -123,7 +125,11 @@ fun QrCodeSettingsScreen(
                 ) {
                     QrCodeView(
                         content = "QR Code Preview",
-                        modifier = Modifier.size(240.dp),
+                        // 保持正方形：窄屏取可用宽度，宽屏上限 240dp，四周留白才相等
+                        modifier = Modifier
+                            .widthIn(max = 240.dp)
+                            .fillMaxWidth()
+                            .aspectRatio(1f),
                         squareCornerFraction = cornerFraction,
                         primaryColor = effectivePrimaryColor,
                         backgroundColor = qrBackgroundColor,

@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.common.net.HttpClientFactory
+import edu.cqwu.electricity.common.net.PageSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,12 +42,15 @@ data class DeviceSession(
  * - GET  userOnline.do      → HTML 表格：按认证类型分组列出全部在线会话
  * - POST removeOnlineUser.do → {"res":"success"} 踢出指定会话（tokenId=会话UUID）
  *
- * 无状态设计：每次调用用账号 cookie 构建隔离的 UserCookieStore + OkHttpClient
- * （同 UserNameEditApi / PasswordChangeApi 模式），响应为 CAS 登录页时抛 [SessionExpiredException]。
+ * 列表与踢出共用一个 [PageSession]（加载列表时重建），保证踢出请求落在同一个已认证会话上。
+ * 响应为 CAS 登录页时抛 [SessionExpiredException]。
  */
 class DeviceSessionApi {
 
     private val gson = Gson()
+
+    /** 本次页面会话：列表与踢出共用一个 */
+    private val session = PageSession()
 
     companion object {
         private const val TAG = "DeviceSessionApi"
@@ -70,8 +73,9 @@ class DeviceSessionApi {
      */
     suspend fun loadSessions(cookies: Map<String, Map<String, String>>): Result<List<DeviceSession>> =
         withContext(Dispatchers.IO) {
+            session.restart()
             try {
-                val html = HttpClientFactory.createIsolated(cookies).newCall(
+                val html = session.of(cookies).client.newCall(
                     Request.Builder()
                         .url(ONLINE_URL)
                         .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -100,7 +104,7 @@ class DeviceSessionApi {
     suspend fun removeSession(cookies: Map<String, Map<String, String>>, sessionId: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
-                val body = HttpClientFactory.createIsolated(cookies).newCall(
+                val body = session.of(cookies).client.newCall(
                     Request.Builder()
                         .url(REMOVE_URL)
                         .post(FormBody.Builder().add("tokenId", sessionId).build())

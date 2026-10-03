@@ -75,6 +75,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="account_manager_add">新增帳號</string>
     <string name="account_manager_switching">正在驗證登入狀態…</string>
+    <string name="account_manager_logging_out">登出中…</string>
     <string name="account_manager_switch_success">已切換到 %1$s</string>
     <string name="account_manager_switch_failed">切換失敗，請重試</string>
     <string name="account_manager_switch_network_error">網路錯誤，暫時無法驗證登入狀態，請稍後重試</string>

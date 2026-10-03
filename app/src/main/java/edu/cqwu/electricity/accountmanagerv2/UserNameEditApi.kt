@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.common.net.HttpClientFactory
+import edu.cqwu.electricity.common.net.PageSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,12 +36,16 @@ data class UserNameSubmitResult(
  * - POST checkAlias.do        → {"jsonValidateReturn":true/false} 别名校验
  * - POST mobileUserAttrEdit.do → {"returnValue":"修改成功","isSuccess":true} 保存
  *
- * 无状态设计：每次调用用账号 cookie 构建隔离的 UserCookieStore + OkHttpClient
- * （同 SessionManager.validateCookie 模式），响应为 CAS 登录页时抛 [SessionExpiredException]。
+ * 取页面、校验别名、保存共用一个 [PageSession]（加载页面时重建），与网页保持同一 session，
+ * 避免提交被 CAS 重定向回登录页而静默变成 GET。
+ * 响应为 CAS 登录页时抛 [SessionExpiredException]。
  */
 class UserNameEditApi {
 
     private val gson = Gson()
+
+    /** 本次页面会话：取页面、校验别名、保存共用一个 */
+    private val session = PageSession()
 
     companion object {
         private const val TAG = "UserNameEditApi"
@@ -53,8 +57,9 @@ class UserNameEditApi {
     /** 加载当前登录别名与昵称 */
     suspend fun loadCurrent(cookies: Map<String, Map<String, String>>): Result<UserNameEditInfo> =
         withContext(Dispatchers.IO) {
+            session.restart()
             try {
-                val html = HttpClientFactory.createIsolated(cookies).newCall(
+                val html = session.of(cookies).client.newCall(
                     Request.Builder()
                         .url(EDIT_URL)
                         .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -83,7 +88,7 @@ class UserNameEditApi {
     suspend fun checkAlias(cookies: Map<String, Map<String, String>>, value: String): Result<Boolean> =
         withContext(Dispatchers.IO) {
             try {
-                val body = HttpClientFactory.createIsolated(cookies).newCall(
+                val body = session.of(cookies).client.newCall(
                     Request.Builder()
                         .url(CHECK_ALIAS_URL)
                         .post(FormBody.Builder().add("validateValue", value).build())
@@ -111,7 +116,7 @@ class UserNameEditApi {
         nickName: String,
     ): Result<UserNameSubmitResult> = withContext(Dispatchers.IO) {
         try {
-            val body = HttpClientFactory.createIsolated(cookies).newCall(
+            val body = session.of(cookies).client.newCall(
                 Request.Builder()
                     .url(EDIT_URL)
                     .post(

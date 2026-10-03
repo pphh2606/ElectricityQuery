@@ -30,8 +30,8 @@ data class PasswordChangeUiState(
     val confirmPassword: String = "",
     val captcha: String = "",
 
-    /** 验证码图片 URL（带时间戳，每次刷新变化以绕过缓存） */
-    val captchaUrl: String = "",
+    /** 验证码图片字节（与取盐、提交同一会话下载，避免与提交落在不同 session） */
+    val captchaImage: ByteArray? = null,
     /** 新密码本地强度校验失败提示（长度/字符种类） */
     val passwordError: String? = null,
     /** 两次新密码不一致提示 */
@@ -87,9 +87,10 @@ class PasswordChangeViewModel(application: Application) : AndroidViewModel(appli
                             confirmError = null,
                             captchaError = null,
                             changeSucceeded = false,
-                            captchaUrl = api.captchaUrl(),
+                            captchaImage = null,
                         )
                     }
+                    loadCaptcha(account.cookies)
                 }
                 .onFailure { e -> handleLoadFailure(e) }
         }
@@ -111,15 +112,26 @@ class PasswordChangeViewModel(application: Application) : AndroidViewModel(appli
         _uiState.update { it.copy(captcha = value, captchaError = null) }
     }
 
-    /** 刷新验证码图片（点击验证码图调用） */
+    /** 刷新验证码图片（点击验证码图调用）— 复用当前会话，服务端在该会话内换一张 */
     fun refreshCaptcha() {
-        _uiState.update {
-            it.copy(
-                captcha = "",
-                captchaError = null,
-                captchaUrl = api.captchaUrl(),
-            )
-        }
+        val account = SessionCoordinatorV2.currentAccount() ?: return
+        _uiState.update { it.copy(captcha = "", captchaError = null) }
+        viewModelScope.launch { loadCaptcha(account.cookies) }
+    }
+
+    /** 取验证码图片（复用当前页面会话）；失败只提示，不打断页面 */
+    private suspend fun loadCaptcha(cookies: Map<String, Map<String, String>>) {
+        api.loadCaptcha(cookies)
+            .onSuccess { bytes -> _uiState.update { it.copy(captchaImage = bytes) } }
+            .onFailure { e ->
+                _uiState.update {
+                    it.copy(
+                        captchaImage = null,
+                        message = e.message ?: getString(R.string.password_change_load_failed),
+                        messageIsError = true,
+                    )
+                }
+            }
     }
 
     /** 提交修改：本地校验通过后提交，失败消息由 UI 消费展示 */
@@ -127,15 +139,17 @@ class PasswordChangeViewModel(application: Application) : AndroidViewModel(appli
         val state = _uiState.value
 
         // 本地校验 1：新密码强度（长度至少8位；字符种类至少3种）
+        // 文案统一走 Snackbar 提示；error 字段只用于给对应输入框描错误色
         val pwdError = validatePasswordStrength(state.newPassword)
         if (pwdError != null) {
-            _uiState.update { it.copy(passwordError = pwdError) }
+            _uiState.update { it.copy(passwordError = pwdError, message = pwdError, messageIsError = true) }
             return
         }
 
         // 本地校验 2：两次新密码一致
         if (state.newPassword != state.confirmPassword) {
-            _uiState.update { it.copy(confirmError = getString(R.string.password_change_confirm_mismatch)) }
+            val mismatch = getString(R.string.password_change_confirm_mismatch)
+            _uiState.update { it.copy(confirmError = mismatch, message = mismatch, messageIsError = true) }
             return
         }
 
@@ -145,7 +159,8 @@ class PasswordChangeViewModel(application: Application) : AndroidViewModel(appli
             return
         }
         if (state.captcha.isBlank()) {
-            _uiState.update { it.copy(captchaError = getString(R.string.password_change_captcha_empty)) }
+            val captchaEmpty = getString(R.string.password_change_captcha_empty)
+            _uiState.update { it.copy(captchaError = captchaEmpty, message = captchaEmpty, messageIsError = true) }
             return
         }
 
@@ -167,16 +182,16 @@ class PasswordChangeViewModel(application: Application) : AndroidViewModel(appli
                     LogoutApi.logout(account.username, account.cookies)
                     _uiState.update { it.copy(isSaving = false, changeSucceeded = true) }
                 } else {
-                    // 失败（多为验证码错误）：提示错误消息并自动刷新验证码
+                    // 失败（多为验证码错误）：提示错误消息并在同一会话内换一张验证码
                     _uiState.update {
                         it.copy(
                             isSaving = false,
                             message = result.message.ifBlank { getString(R.string.password_change_failed) },
                             messageIsError = true,
                             captcha = "",
-                            captchaUrl = api.captchaUrl(),
                         )
                     }
+                    loadCaptcha(account.cookies)
                 }
             }.onFailure { e ->
                 if (e is SessionExpiredException) {

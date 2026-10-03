@@ -1,5 +1,7 @@
 package edu.cqwu.electricity.accountmanagerv2
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,28 +28,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import edu.cqwu.electricity.common.ui.LoadingDialog
+import edu.cqwu.electricity.common.ui.PasswordRecoverySheet
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -72,6 +77,7 @@ fun PasswordChangeScreen(
     val snackbar = LocalSnackbarController.current
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    var showRecoverySheet by remember { mutableStateOf(false) }
 
     // 失败/提示消息（Snackbar 展示后消费）
     LaunchedEffect(state.message) {
@@ -122,6 +128,7 @@ fun PasswordChangeScreen(
                 else -> PasswordChangeContent(
                     state = state,
                     viewModel = viewModel,
+                    onForgotPassword = { showRecoverySheet = true },
                 )
             }
         }
@@ -150,12 +157,19 @@ fun PasswordChangeScreen(
     if (state.isSaving) {
         LoadingDialog(message = stringResource(R.string.password_change_saving))
     }
+
+    // 找回密码弹窗（与登录页共用，含半屏 WebView）
+    PasswordRecoverySheet(
+        visible = showRecoverySheet,
+        onDismissRequest = { showRecoverySheet = false },
+    )
 }
 
 @Composable
 private fun PasswordChangeContent(
     state: PasswordChangeUiState,
     viewModel: PasswordChangeViewModel,
+    onForgotPassword: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -173,7 +187,7 @@ private fun PasswordChangeContent(
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(R.string.password_change_tip),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
@@ -188,21 +202,18 @@ private fun PasswordChangeContent(
                 value = state.oldPassword,
                 onValueChange = viewModel::onOldPasswordChange,
                 label = stringResource(R.string.password_change_old_label),
-                placeholder = stringResource(R.string.password_change_old_placeholder),
                 icon = Icons.Outlined.Lock,
                 enabled = !state.isSaving,
             )
 
-            // 对应网页 form-group：新密码（带强度校验提示）
+            // 对应网页 form-group：新密码
             PasswordField(
                 value = state.newPassword,
                 onValueChange = viewModel::onNewPasswordChange,
                 label = stringResource(R.string.password_change_new_label),
-                placeholder = stringResource(R.string.password_change_new_placeholder),
                 icon = Icons.Outlined.VerifiedUser,
                 enabled = !state.isSaving,
                 isError = state.passwordError != null,
-                supportingText = state.passwordError,
             )
 
             // 对应网页 form-group：确认新密码
@@ -210,11 +221,9 @@ private fun PasswordChangeContent(
                 value = state.confirmPassword,
                 onValueChange = viewModel::onConfirmPasswordChange,
                 label = stringResource(R.string.password_change_confirm_label),
-                placeholder = stringResource(R.string.password_change_confirm_placeholder),
                 icon = Icons.Outlined.VerifiedUser,
                 enabled = !state.isSaving,
                 isError = state.confirmError != null,
-                supportingText = state.confirmError,
             )
 
             // 对应网页 form-group：验证码（输入框 + 图片，点击图片换一张）
@@ -223,14 +232,13 @@ private fun PasswordChangeContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                TextField(
+                AppOutlinedTextField(
                     value = state.captcha,
                     onValueChange = viewModel::onCaptchaChange,
                     modifier = Modifier.weight(1f),
                     enabled = !state.isSaving,
                     singleLine = true,
                     label = { Text(stringResource(R.string.password_change_captcha_label)) },
-                    placeholder = { Text(stringResource(R.string.password_change_captcha_placeholder)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.Shield,
@@ -239,32 +247,30 @@ private fun PasswordChangeContent(
                         )
                     },
                     isError = state.captchaError != null,
-                    supportingText = {
-                        if (state.captchaError != null) {
-                            Text(
-                                text = state.captchaError,
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        }
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                    ),
                 )
                 // 对应网页 captchaImg，点击换验证码
+                // 尺寸与左侧输入框等高（M3 outlined 为 56dp），使上下边缘平齐；等比放大的宽度按 95:38 推算为 140dp
                 Box(
                     modifier = Modifier
-                        .size(width = 95.dp, height = 38.dp)
-                        .clip(RoundedCornerShape(6.dp))
+                        .size(width = 140.dp, height = 56.dp)
+                        .clip(RoundedCornerShape(12.dp))
                         .clickable(onClick = viewModel::refreshCaptcha),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AsyncImage(
-                        model = state.captchaUrl,
-                        contentDescription = stringResource(R.string.password_change_captcha_label),
-                        modifier = Modifier.fillMaxSize(),
-                    )
+                    state.captchaImage?.let { bytes ->
+                        val bitmap = remember(bytes) {
+                            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+                        }
+                        if (bitmap != null) {
+                            Image(
+                                bitmap = bitmap,
+                                contentDescription = stringResource(R.string.password_change_captcha_label),
+                                modifier = Modifier.fillMaxSize(),
+                                // 硬拉伸铺满 140×56：上下左右全贴边、不裁内容，代价是不再保持原图比例
+                                contentScale = ContentScale.FillBounds,
+                            )
+                        }
+                    }
                 }
             }
             Text(
@@ -274,18 +280,33 @@ private fun PasswordChangeContent(
             )
         }
 
-        // 对应网页 form-footer：保存（右下角固定）
-        Button(
-            onClick = viewModel::save,
+        // 对应网页 form-footer：忘记密码 + 保存（右下角固定）
+        Row(
             modifier = Modifier
-                .align(Alignment.End)
+                .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            enabled = !state.isSaving,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = stringResource(R.string.password_change_save),
-                fontWeight = FontWeight.Bold,
-            )
+            TextButton(
+                onClick = onForgotPassword,
+                enabled = !state.isSaving,
+            ) {
+                Text(
+                    text = stringResource(R.string.password_change_forgot),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            Button(
+                onClick = viewModel::save,
+                enabled = !state.isSaving,
+            ) {
+                Text(
+                    text = stringResource(R.string.password_change_save),
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }
@@ -295,20 +316,17 @@ private fun PasswordField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    placeholder: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     enabled: Boolean,
     isError: Boolean = false,
-    supportingText: String? = null,
 ) {
-    TextField(
+    AppOutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
         enabled = enabled,
         singleLine = true,
         label = { Text(label) },
-        placeholder = { Text(placeholder) },
         leadingIcon = {
             Icon(
                 imageVector = icon,
@@ -317,17 +335,5 @@ private fun PasswordField(
             )
         },
         isError = isError,
-        supportingText = {
-            if (supportingText != null) {
-                Text(
-                    text = supportingText,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-        ),
     )
 }

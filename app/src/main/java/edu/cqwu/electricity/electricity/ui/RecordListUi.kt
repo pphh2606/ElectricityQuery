@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.ChartDataV2
 import edu.cqwu.electricity.common.ui.LineChartV2
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.chartDataHasPointsV2
 import edu.cqwu.electricity.theme.ui.UiMessage
 
@@ -149,22 +150,29 @@ data class RecordTablePageV2(
  * 通用记录结果区：错误态 / 加载留白 / 数据表格（含底部总计）/ 空态 切换。
  *
  * 供记录页外壳在"无 Tab（补助记录）或有 Tab 分页（用量报表）"两种布局中复用：
- * - 出错时显示错误文案
+ * - 出错时显示统一错误态（[ReLoginContent]：居中文案 + 重试按钮）
  * - 查询中（[RecordTablePageV2.isLoading]）且无数据时**留白**
  * - 有数据时显示表格，查询完成但无数据显示空态
  *
  * @param columns 表格列定义
  * @param page 该页内容（行/总计/错误/空态/加载留白）
+ * @param onRetry 错误态的重试回调（通常是页面的下拉刷新入口）
  */
 @Composable
 fun RecordTableArea(
     columns: List<TableColumn>,
     page: RecordTablePageV2,
+    onRetry: () -> Unit,
 ) {
     val error = page.error
     when {
         error != null -> {
-            RecordCenteredText(error, MaterialTheme.colorScheme.error)
+            ReLoginContent(
+                errorMessage = error,
+                requiresReLogin = false,
+                onReLogin = {},
+                onRetry = onRetry,
+            )
         }
 
         page.isLoading -> {
@@ -224,16 +232,24 @@ data class RecordChartContentV2(
 
 /**
  * 折线图视图内容区（与表格共享错误/加载留白/空态语义）。
+ *
+ * @param onRetry 错误态的重试回调（通常是页面的下拉刷新入口）
  */
 @Composable
 fun RecordChartArea(
     content: RecordChartContentV2,
     modifier: Modifier = Modifier,
+    onRetry: () -> Unit,
 ) {
     val error = content.error
     when {
         error != null -> {
-            RecordCenteredText(error, MaterialTheme.colorScheme.error)
+            ReLoginContent(
+                errorMessage = error,
+                requiresReLogin = false,
+                onReLogin = {},
+                onRetry = onRetry,
+            )
         }
 
         content.isLoading -> {

@@ -52,7 +52,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
-import edu.cqwu.electricity.common.ui.LabeledFieldRow
+import edu.cqwu.electricity.common.ui.InfoLabelWidth
+import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -309,42 +310,33 @@ fun LoginLogScreen(
             onDismissRequest = viewModel::dismissRecord,
             title = stringResource(R.string.login_log_detail_title),
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 val ipText = listOfNotNull(record.ipv6, record.ipv4).joinToString("\n")
                 if (ipText.isNotEmpty()) {
-                    LabeledFieldRow(
+                    InfoRow(
                         label = stringResource(R.string.login_log_ip),
                         value = ipText,
-                        labelBold = true,
                     )
                 }
-                LabeledFieldRow(
+                InfoRow(
                     label = stringResource(R.string.login_log_login_time),
                     value = record.loginTimeText,
-                    labelBold = true,
                 )
-                LabeledFieldRow(
+                InfoRow(
                     label = stringResource(R.string.login_log_logout_time),
-                    value = record.logoutTimeText.ifBlank { "-" },
-                    labelBold = true,
+                    value = record.logoutTimeText,
                 )
-                LabeledFieldRow(
+                InfoRow(
                     label = stringResource(R.string.login_log_auth_type),
                     value = record.authType,
-                    labelBold = true,
                 )
-                LabeledFieldRow(
+                InfoRow(
                     label = stringResource(R.string.login_log_client_type),
                     value = record.clientType,
-                    labelBold = true,
                 )
-                LabeledFieldRow(
+                InfoRow(
                     label = stringResource(R.string.login_log_result),
                     value = record.result,
-                    labelBold = true,
                 )
             }
         }
@@ -400,3 +392,15 @@ private fun LoginRecordCard(
 }
 
 /** 列表底部的分页提示已统一到 [PagingFooter]（common/ui） */
+
+/** 认证字段行：复用通用键值行，仅统一本页行距 */
+@Composable
+private fun InfoRow(label: String, value: String) {
+    CommonInfoRow(
+        label = label,
+        value = value,
+        modifier = Modifier.padding(vertical = 8.dp),
+        labelWidth = InfoLabelWidth,
+        maxLines = Int.MAX_VALUE,
+    )
+}

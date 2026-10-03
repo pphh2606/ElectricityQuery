@@ -65,4 +65,14 @@
             android:exported="false" />
     </application>
 
+    <!-- 放开「能响应 VIEW + BROWSABLE 的应用」的可见性，供 WebViewExternalApp 判断
+         某个 scheme 有没有 App 可处理。不申请 QUERY_ALL_PACKAGES，只靠这条通配声明。 -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="*" />
+        </intent>
+    </queries>
+
 </manifest>

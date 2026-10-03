@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.feeservicehall.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +68,7 @@ fun OrderDetailContent(
         if (onContinuePayment != null || onCloseOrder != null) {
             Spacer(Modifier.height(16.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 if (onCloseOrder != null) {
@@ -85,128 +88,134 @@ fun OrderDetailContent(
 
 @Composable
 private fun OrderSummaryCard(order: OrderRecord) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(vertical = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        // 项目图标
-        Box(
+        Column(
             modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center,
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (order.imgUrl != null) {
-                AsyncImage(
-                    model = order.imgUrl, contentDescription = null,
-                    modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Fit,
-                )
-            } else {
-                Icon(Icons.Outlined.Receipt, contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(32.dp))
+            // 项目图标
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (order.imgUrl != null) {
+                    AsyncImage(
+                        model = order.imgUrl, contentDescription = null,
+                        modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Fit,
+                    )
+                } else {
+                    Icon(Icons.Outlined.Receipt, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(32.dp))
+                }
             }
+
+            Spacer(Modifier.height(12.dp))
+
+            // 金额
+            Text(
+                text = "¥%.2f".format(order.amountYuan),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            // 项目名称
+            Text(
+                text = order.projectName ?: order.productDesc ?: stringResource(R.string.dashboard_unknown),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            // 状态标签
+            val statusColor = when (order.status) {
+                "COMPLETED" -> Color(0xFF4CAF50)
+                "PENDING" -> Color(0xFFFF9800)
+                "REFUND" -> Color(0xFF2196F3)
+                "CLOSED" -> Color(0xFF9E9E9E)
+                else -> Color(0xFF9E9E9E)
+            }
+            Text(
+                text = if (order.statusRes != null) stringResource(order.statusRes!!) else order.status.ifBlank { stringResource(R.string.common_unknown) },
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium,
+                color = statusColor,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(statusColor.copy(alpha = 0.1f))
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+            )
         }
-
-        Spacer(Modifier.height(12.dp))
-
-        // 金额
-        Text(
-            text = "¥%.2f".format(order.amountYuan),
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-
-        Spacer(Modifier.height(4.dp))
-
-        // 项目名称
-        Text(
-            text = order.projectName ?: order.productDesc ?: stringResource(R.string.dashboard_unknown),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        // 状态标签
-        val statusColor = when (order.status) {
-            "COMPLETED" -> Color(0xFF4CAF50)
-            "PENDING" -> Color(0xFFFF9800)
-            "REFUND" -> Color(0xFF2196F3)
-            "CLOSED" -> Color(0xFF9E9E9E)
-            else -> Color(0xFF9E9E9E)
-        }
-        Text(
-            text = if (order.statusRes != null) stringResource(order.statusRes!!) else order.status.ifBlank { stringResource(R.string.common_unknown) },
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Medium,
-            color = statusColor,
-            modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(statusColor.copy(alpha = 0.1f))
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-        )
     }
 }
 
 @Composable
 private fun OrderInfoSection(order: OrderRecord) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .padding(16.dp),
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Text(
-            text = stringResource(R.string.fee_order_info),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.fee_order_info),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
 
-        Spacer(Modifier.height(12.dp))
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            Spacer(Modifier.height(8.dp))
 
-        InfoRow(label = stringResource(R.string.fee_order_no), value = order.orderNo)
-        InfoRow(label = stringResource(R.string.fee_order_product_desc), value = order.productDesc ?: stringResource(R.string.common_dash))
-        InfoRow(label = stringResource(R.string.fee_order_create_time), value = order.createDate ?: stringResource(R.string.common_dash))
+            InfoRow(label = stringResource(R.string.fee_order_no), value = order.orderNo)
+            InfoRow(label = stringResource(R.string.fee_order_product_desc), value = order.productDesc ?: stringResource(R.string.common_dash))
+            InfoRow(label = stringResource(R.string.fee_order_create_time), value = order.createDate ?: stringResource(R.string.common_dash))
 
-        if (order.actualCloseTime != null) {
-            InfoRow(label = stringResource(R.string.fee_order_complete_time), value = order.actualCloseTime)
-        }
-        if (order.updateDate != null) {
-            InfoRow(label = stringResource(R.string.fee_order_update_time), value = order.updateDate)
-        }
-        if (order.schdualCloseTime != null) {
-            InfoRow(label = stringResource(R.string.fee_order_close_time), value = order.schdualCloseTime)
-        }
+            if (order.actualCloseTime != null) {
+                InfoRow(label = stringResource(R.string.fee_order_complete_time), value = order.actualCloseTime)
+            }
+            if (order.updateDate != null) {
+                InfoRow(label = stringResource(R.string.fee_order_update_time), value = order.updateDate)
+            }
+            if (order.schdualCloseTime != null) {
+                InfoRow(label = stringResource(R.string.fee_order_close_time), value = order.schdualCloseTime)
+            }
 
-        InfoRow(
-            label = stringResource(R.string.fee_order_channel),
-            value = if (order.tradeChannelRes != null) stringResource(order.tradeChannelRes!!)
-                    else order.tradeChannel?.ifBlank { stringResource(R.string.common_unknown) } ?: stringResource(R.string.common_unknown)
-        )
+            InfoRow(
+                label = stringResource(R.string.fee_order_channel),
+                value = if (order.tradeChannelRes != null) stringResource(order.tradeChannelRes!!)
+                        else order.tradeChannel?.ifBlank { stringResource(R.string.common_unknown) } ?: stringResource(R.string.common_unknown)
+            )
 
-        if (order.balanceOrderTradeOrderNo != null) {
-            InfoRow(label = stringResource(R.string.fee_order_transaction_no), value = order.balanceOrderTradeOrderNo)
-        }
-        if (order.engName != null) {
-            InfoRow(label = stringResource(R.string.fee_order_project_id), value = order.engName)
-        }
-        if (order.partnerId != null) {
-            InfoRow(label = stringResource(R.string.fee_order_partner), value = order.partnerId)
+            if (order.balanceOrderTradeOrderNo != null) {
+                InfoRow(label = stringResource(R.string.fee_order_transaction_no), value = order.balanceOrderTradeOrderNo)
+            }
+            if (order.engName != null) {
+                InfoRow(label = stringResource(R.string.fee_order_project_id), value = order.engName)
+            }
+            if (order.partnerId != null) {
+                InfoRow(label = stringResource(R.string.fee_order_partner), value = order.partnerId)
+            }
         }
     }
 }

@@ -20,6 +20,9 @@
     <string name="settings_account_manager_desc">Switch accounts, manage login state</string>
     <string name="account_manager_v2_username">Change Username</string>
     <string name="account_manager_v2_password">Change Password</string>
+    <string name="account_manager_v2_phone_bind">Bind Phone</string>
+    <string name="account_manager_v2_email_bind">Bind Email</string>
+    <string name="account_manager_v2_advanced_setting">Advanced Settings</string>
     <string name="account_manager_v2_login_time">Login time: %1$s</string>
     <string name="account_manager_v2_relogin_title">Security Alert</string>
     <string name="account_manager_v2_relogin_message">Authentication failed. Please log in again.</string>
@@ -56,6 +59,7 @@
     <string name="password_change_captcha_click_hint">Tap the image to refresh the captcha</string>
     <string name="password_change_strength">Password must be at least 8 characters and contain at least 3 character types (digits, uppercase, lowercase, punctuation)</string>
     <string name="password_change_save">Save</string>
+    <string name="password_change_forgot">Forgot Password</string>
     <string name="password_change_saving">Submitting…</string>
     <string name="password_change_failed">Failed to change. Please try again.</string>
     <string name="password_change_no_account">Please log in first to change your password</string>
@@ -136,7 +140,7 @@
     <string name="personalization_dynamic_color_supported">Extract theme color from system wallpaper</string>
     <string name="personalization_dynamic_color_unsupported">Dynamic color not supported on this device</string>
     <string name="personalization_custom_color">Custom Color</string>
-    <string name="personalization_custom_color_desc">Use selected color to generate theme</string>
+    <string name="personalization_custom_color_desc">Tap to change:%1$s</string>
     <string name="personalization_topbar_color">Top Bar Color</string>
     <string name="personalization_qrcode_settings">QR Code Settings</string>
     <string name="personalization_qrcode_desc">Color, corner radius, and other custom styles</string>
@@ -145,10 +149,9 @@
     <string name="personalization_reduce_motion">Reduce Motion</string>
     <string name="personalization_reduce_motion_override">(Overridden by Reduce Motion)</string>
     <string name="personalization_choose_color">Choose Theme Color</string>
-    <string name="personalization_choose_color_desc">Select a color as the app theme color</string>
-    <string name="personalization_choose_color_hue">Hue</string>
-    <string name="personalization_choose_color_saturation">Saturation</string>
-    <string name="personalization_choose_color_value">Value</string>
+    <string name="personalization_choose_color_red">R</string>
+    <string name="personalization_choose_color_green">G</string>
+    <string name="personalization_choose_color_blue">B</string>
     <string name="personalization_choose_color_hex">HEX</string>
     <string name="personalization_choose_color_hex_placeholder">#RRGGBB</string>
     <string name="personalization_choose_color_hex_error">Enter a valid HEX color</string>

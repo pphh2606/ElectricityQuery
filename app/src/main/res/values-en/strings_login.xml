@@ -75,6 +75,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="account_manager_add">Add Account</string>
     <string name="account_manager_switching">Verifying login state…</string>
+    <string name="account_manager_logging_out">Signing out…</string>
     <string name="account_manager_switch_success">Switched to %1$s</string>
     <string name="account_manager_switch_failed">Switch failed, please try again</string>
     <string name="account_manager_switch_network_error">Network error, unable to verify login state. Please try again later</string>

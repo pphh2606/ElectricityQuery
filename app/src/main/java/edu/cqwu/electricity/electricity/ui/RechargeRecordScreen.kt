@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -251,18 +252,13 @@ fun RechargeRecordScreen(
                 // ========== 查询结果区域 ==========
                 when {
                     recordState.error != null -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = recordState.error ?: stringResource(R.string.common_unknown_error),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
+                        ReLoginContent(
+                            errorMessage = recordState.error
+                                ?: stringResource(R.string.common_unknown_error),
+                            requiresReLogin = false,
+                            onReLogin = {},
+                            onRetry = { viewModel.queryRechargeRecords(roomId) },
+                        )
                     }
 
                     recordState.list.isNotEmpty() -> {

@@ -75,6 +75,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <string name="account_manager_add">アカウントを追加</string>
     <string name="account_manager_switching">ログイン状態を検証中…</string>
+    <string name="account_manager_logging_out">ログアウト中…</string>
     <string name="account_manager_switch_success">%1$s に切り替えました</string>
     <string name="account_manager_switch_failed">切り替えに失敗しました。もう一度お試しください</string>
     <string name="account_manager_switch_network_error">ネットワークエラーが発生しました。ログイン状態を確認できないため、しばらくしてからお試しください</string>

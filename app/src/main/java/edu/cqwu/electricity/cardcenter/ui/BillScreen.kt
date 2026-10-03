@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.cardcenter.ui
 
+import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import androidx.compose.animation.AnimatedVisibility
@@ -43,7 +44,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -435,7 +435,7 @@ private fun FilterPanel(
     Column(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        OutlinedTextField(
+        AppOutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
             label = { Text(stringResource(R.string.bill_merchant_name)) },
@@ -443,8 +443,7 @@ private fun FilterPanel(
             leadingIcon = {
                 Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp))
             },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         DateRangeFilterRow(

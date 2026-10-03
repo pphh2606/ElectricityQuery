@@ -5,7 +5,7 @@ import edu.cqwu.electricity.login.data.AesEncrypt
 import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.common.net.HttpClientFactory
+import edu.cqwu.electricity.common.net.PageSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,12 +38,15 @@ data class PasswordChangeSubmitResult(
  * - POST mobilePasswordChange.do → {"success":true/false,"errorMsg":"..."} 提交修改
  *
  * 密码加密复用 [AesEncrypt.encryptPassword]（AES-CBC，key/IV 取盐值随机前缀）。
- * 无状态设计：每次调用用账号 cookie 构建隔离的 UserCookieStore + OkHttpClient
- * （同 UserNameEditApi 模式），响应为 CAS 登录页时抛 [SessionExpiredException]。
+ * 三步共用一个 [PageSession]：盐与验证码都由服务端存在该会话里，换会话必然解密失败。
+ * 响应为 CAS 登录页时抛 [SessionExpiredException]。
  */
 class PasswordChangeApi {
 
     private val gson = Gson()
+
+    /** 本次页面会话：取盐、取验证码、提交共用一个，避免服务端为每一步重建 session */
+    private val session = PageSession()
 
     companion object {
         private const val TAG = "PasswordChangeApi"
@@ -55,8 +58,9 @@ class PasswordChangeApi {
     /** 加载修改密码页面，解析加密盐（页面请求本身携带登录 cookie，验证会话有效性） */
     suspend fun loadPage(cookies: Map<String, Map<String, String>>): Result<PasswordChangePageInfo> =
         withContext(Dispatchers.IO) {
+            session.restart()
             try {
-                val html = HttpClientFactory.createIsolated(cookies).newCall(
+                val html = session.of(cookies).client.newCall(
                     Request.Builder()
                         .url(CHANGE_URL)
                         .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -78,8 +82,28 @@ class PasswordChangeApi {
             }
         }
 
-    /** 验证码图片 URL（每次调用追加时间戳，绕过浏览器/OkHttp 缓存强制刷新） */
-    fun captchaUrl(): String = "$CAPTCHA_URL?ts=${System.currentTimeMillis()}"
+    /** 下载图形验证码（与取盐、提交同一个会话：服务端把验证码也存在该 session 里） */
+    suspend fun loadCaptcha(cookies: Map<String, Map<String, String>>): Result<ByteArray> =
+        withContext(Dispatchers.IO) {
+            try {
+                val bytes = session.of(cookies).client.newCall(
+                    Request.Builder()
+                        .url("$CAPTCHA_URL?ts=${System.currentTimeMillis()}")
+                        .addHeader("X-Requested-With", "XMLHttpRequest")
+                        .get()
+                        .build()
+                ).execute().use { resp ->
+                    if (!resp.isSuccessful) throw IOException("HTTP ${resp.code}")
+                    resp.body.bytes()
+                }
+                Result.success(bytes)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                AppLog.e(TAG, "加载验证码失败", e)
+                Result.failure(e)
+            }
+        }
 
     /** 提交修改密码（密码均先 AES 加密，与服务端网页行为一致） */
     suspend fun submit(
@@ -91,7 +115,7 @@ class PasswordChangeApi {
         captcha: String,
     ): Result<PasswordChangeSubmitResult> = withContext(Dispatchers.IO) {
         try {
-            val body = HttpClientFactory.createIsolated(cookies).newCall(
+            val body = session.of(cookies).client.newCall(
                 Request.Builder()
                     .url(CHANGE_URL)
                     .post(

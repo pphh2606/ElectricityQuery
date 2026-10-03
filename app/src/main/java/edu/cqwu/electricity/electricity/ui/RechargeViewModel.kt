@@ -252,6 +252,16 @@ class RechargeViewModel(application: Application) : AndroidViewModel(application
         _uiState.update { it.copy(createOrderError = null) }
     }
 
+    /**
+     * 清除查询房间/学号的错误。
+     *
+     * 该错误已改为 Snackbar 提示（不再内联在表单中），提示后由 UI 调用本方法清空，
+     * 避免残留的错误状态在下次进入页面时重复弹出。
+     */
+    fun clearQueryError() {
+        _uiState.update { it.copy(queryError = null) }
+    }
+
     // ================================================================
     //  支付方式选择（委托给 paymentFlowDelegate）
     // ================================================================
