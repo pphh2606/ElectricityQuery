@@ -107,7 +107,59 @@ jobs:
           git commit -m "Update CI metadata"
           git push origin main
 
+  publish-release:
+    # 发布 Release 时由 CI 构建 release APK，并挂到该 Release 的资产上。
+    # 这样稳定版资产来自可追溯的 CI 构建，不需要本地构建后手工上传；
+    # Release 事件使用的是默认分支上的本文件，所以改动必须先合入 main 才生效。
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    permissions:
+      # 上传 Release 资产需要写权限，仓库默认的只读 GITHUB_TOKEN 不够用
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          # 只装 platform-tools：该 action 默认还会装已从 SDK 仓库下架的 legacy `tools` 包，
+          # 会导致 sdkmanager 报 "Failed to find package 'tools'" 并以退出码 1 中断整个作业
+          packages: 'platform-tools'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant Gradle wrapper permission
+        run: chmod +x gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK to release
+        # gh 由 ubuntu-latest 预装；--clobber 允许重跑时覆盖同名资产
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" app/build/outputs/apk/release/app-release.apk --clobber
+
   sync-stable:
+    # 必须等 publish-release 把 APK 传完，否则 releases/latest 里还没有资产，
+    # sync_latest_stable.py 会以「No APK asset found」失败
+    needs: publish-release
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
 
