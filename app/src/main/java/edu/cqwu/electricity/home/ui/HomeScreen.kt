@@ -15,6 +15,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,11 +24,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -55,12 +58,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -71,22 +76,33 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.ui.AppIconBox
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.FeatureGrid
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.isHazeBlurSupported
 import edu.cqwu.electricity.common.settings.CustomServiceEntry
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeApp
@@ -109,9 +125,22 @@ fun HomeTopBar(
     onSearchQueryChange: (String) -> Unit,
     onToggleSearch: () -> Unit,
     onCloseSearch: () -> Unit,
+    containerColor: Color? = null,
 ) {
     val nav = LocalNavController.current
-    val topBarColors = currentTopBarColors()
+    val baseColors = currentTopBarColors()
+    // 毛玻璃模式下标题栏底色必须透明，否则会盖住 Haze 模糊层
+    val topBarColors = if (containerColor != null) {
+        TopAppBarDefaults.topAppBarColors(
+            containerColor = containerColor,
+            scrolledContainerColor = containerColor,
+            navigationIconContentColor = baseColors.navigationIconContentColor,
+            titleContentColor = baseColors.titleContentColor,
+            actionIconContentColor = baseColors.actionIconContentColor,
+        )
+    } else {
+        baseColors
+    }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -214,14 +243,109 @@ fun HomeTopBar(
 }
 
 /**
- * 首页页面内容（不含 Scaffold / TopAppBar / BottomBar），
- * 由 [MainTabScreen] 的 HorizontalPager 在 page 0 中调用。
+ * 首页整页容器：内容铺满并作为 Haze 模糊源，标题栏 + 分类索引条作为顶部浮层做毛玻璃。
+ *
+ * 刻意用 Box 叠层而不是 Column：标题栏必须与内容重叠，内容才能滚到标题栏背后，
+ * Haze 才有可模糊的源。顶部留白 [contentTopInset] 由内部 LazyColumn 的第一个 item
+ * 承担，滚动时该 item 会被推出标题栏区域，内容自然进入背后。
+ */
+@Composable
+fun HomePage(
+    homeViewModel: HomeViewModel = viewModel(),
+    modifier: Modifier = Modifier,
+) {
+    val uiState by homeViewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val hazeState = remember { HazeState() }
+    val blurSupported = isHazeBlurSupported()
+    val appSettings = LocalAppSettingsState.current
+    val blurRadius = appSettings.sheetBlurRadius.coerceIn(16f, 32f).dp
+
+    // 浮层实测高度（状态栏 + 标题栏 + 分类条），随搜索模式、分类条显隐自动修正，
+    // 避免把高度写死导致标题栏与内容错位
+    var headerHeightPx by remember { mutableIntStateOf(0) }
+    val contentTopInset: Dp = with(LocalDensity.current) { headerHeightPx.toDp() }
+
+    // Android 12+ 走 Haze 毛玻璃；更老的系统没有 RenderEffect，退回不透明标题栏
+    val headerModifier = if (blurSupported) {
+        Modifier.hazeEffect(
+            state = hazeState,
+            style = HazeStyle(
+                blurRadius = blurRadius,
+                tint = HazeTint(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f)),
+            ),
+        )
+    } else {
+        Modifier.background(MaterialTheme.colorScheme.surface)
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        // ① 内容层：整页作为模糊源
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .hazeSource(hazeState)
+        ) {
+            HomePageContent(
+                homeViewModel = homeViewModel,
+                listState = listState,
+                contentTopInset = contentTopInset,
+            )
+        }
+
+        // ② 顶部浮层：标题栏 + 分类条，压在内容之上并模糊其背后的内容
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .onSizeChanged { headerHeightPx = it.height }
+                .then(headerModifier)
+                // 标题栏空白区域的点击不要穿透到底下的列表
+                .pointerInput(Unit) { detectTapGestures { } }
+        ) {
+            HomeTopBar(
+                searchQuery = uiState.searchQuery,
+                isSearching = uiState.isSearching,
+                onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
+                onToggleSearch = { homeViewModel.enterSearchMode() },
+                onCloseSearch = { homeViewModel.clearSearch() },
+                containerColor = if (blurSupported) Color.Transparent else null,
+            )
+
+            if (!uiState.isLoading && uiState.error == null && !uiState.isSearching) {
+                // LazyColumn 里 item 0 是顶部留白，item 1 才是「我的服务」，分类从 2 开始
+                val activeIndex =
+                    (listState.firstVisibleItemIndex - 1).coerceIn(0, uiState.categories.size)
+                val showDivider = listState.firstVisibleItemIndex > 1 ||
+                    (listState.firstVisibleItemIndex == 1 && listState.firstVisibleItemScrollOffset > 0)
+                HomeSectionIndex(
+                    categoryNames = uiState.categories.map { it.categoryName },
+                    activeIndex = activeIndex,
+                    showDivider = showDivider,
+                    onSectionClick = { index ->
+                        scope.launch { listState.animateScrollToItem(index + 1) }
+                    },
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 首页页面内容（不含 TopAppBar / BottomBar），
+ * 由 [HomePage] 作为 Haze 模糊源包住调用。
  * 支持搜索模式：搜索时显示过滤结果网格，无搜索时显示原始分类列表。
  * 支持编辑模式：在分类列表上方显示「我的服务」区域。
+ *
+ * @param listState 由 [HomePage] 持有，供顶部浮层的分类索引条联动
+ * @param contentTopInset 顶部浮层高度，作为列表第一个 item 的留白（必须随列表滚走，不能写进 contentPadding）
  */
 @Composable
 fun HomePageContent(
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = viewModel(),
+    listState: LazyListState = rememberLazyListState(),
+    contentTopInset: Dp = 0.dp,
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -235,20 +359,6 @@ fun HomePageContent(
 
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
-    val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-
-    // LazyColumn item 顺序与索引一致：0 = 我的服务，1..n = 分类
-    val activeSectionIndex by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex.coerceIn(0, uiState.categories.size)
-        }
-    }
-    val showIndexDivider by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
-        }
-    }
 
     // 外部 Intent 确认弹窗状态：（appName, url）
     var pendingExternalIntent by remember { mutableStateOf<Pair<String, String>?>(null) }
@@ -297,19 +407,6 @@ fun HomePageContent(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        if (!uiState.isLoading && uiState.error == null && !uiState.isSearching) {
-            HomeSectionIndex(
-                categoryNames = uiState.categories.map { it.categoryName },
-                activeIndex = activeSectionIndex,
-                showDivider = showIndexDivider,
-                onSectionClick = { index ->
-                    scope.launch {
-                        listState.animateScrollToItem(index)
-                    }
-                },
-            )
-        }
-
         PullToRefreshBox(
             // 首次加载与手动下拉共用同一刷新指示器（不再显示页面中央转圈）
             isRefreshing = uiState.isRefreshing || uiState.isLoading,
@@ -356,6 +453,7 @@ fun HomePageContent(
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                         ) {
+                            item(key = "top_inset") { Spacer(Modifier.height(contentTopInset)) }
                             // 搜索结果标题
                             item(key = "search_header") {
                                 Text(
@@ -404,6 +502,8 @@ fun HomePageContent(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
+                        // 顶部留白：让内容初始时从标题栏下方开始，滚动后内容才能进入标题栏背后
+                        item(key = "top_inset") { Spacer(Modifier.height(contentTopInset)) }
                         // ── 我的服务区域（始终在分类列表顶部） ──
                         item(key = "my_services") {
                             MyServicesSection(

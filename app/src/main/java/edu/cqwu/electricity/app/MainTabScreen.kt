@@ -13,7 +13,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,8 +29,7 @@ import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
 import edu.cqwu.electricity.hall.ui.HallPageContent
 import edu.cqwu.electricity.hall.ui.HallViewModel
-import edu.cqwu.electricity.home.ui.HomePageContent
-import edu.cqwu.electricity.home.ui.HomeTopBar
+import edu.cqwu.electricity.home.ui.HomePage
 import edu.cqwu.electricity.home.ui.HomeViewModel
 import edu.cqwu.electricity.profile.ui.ProfilePageContent
 import edu.cqwu.electricity.profile.ui.ProfileTopBar
@@ -90,21 +88,7 @@ fun MainTabScreen(
         ) { page ->
             when (page) {
                 0 -> {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        val uiState by homeViewModel.uiState.collectAsState()
-                        HomeTopBar(
-                            searchQuery = uiState.searchQuery,
-                            isSearching = uiState.isSearching,
-                            onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
-                            onToggleSearch = { homeViewModel.enterSearchMode() },
-                            onCloseSearch = { homeViewModel.clearSearch() },
-                        )
-                        Box(modifier = Modifier.weight(1f)) {
-                            HomePageContent(
-                                homeViewModel = homeViewModel,
-                            )
-                        }
-                    }
+                    HomePage(homeViewModel = homeViewModel)
                 }
                 1 -> {
                     val hallViewModel: HallViewModel = viewModel()
