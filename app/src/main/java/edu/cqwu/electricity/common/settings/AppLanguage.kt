@@ -1,5 +1,6 @@
 package edu.cqwu.electricity.common.settings
 
+import android.content.Context
 import androidx.annotation.StringRes
 import edu.cqwu.electricity.R
 import java.util.Locale
@@ -35,6 +36,26 @@ enum class AppLanguage(
         }
 
     companion object {
+        /** i18n 映射文件里简体中文不需要映射段，直接显示 JSON 原文 */
+        private const val SIMPLIFIED_CHINESE_TAG = "zh-CN"
+
+        /**
+         * 当前语言在 i18n 映射文件里的键；简体中文返回 null，表示直接显示 JSON 原文。
+         *
+         * Android 13 起应用语言由平台 per-app language 管理，不再走 attachBaseContext 包装，
+         * 因此不能只看 [Locale.getDefault]，要以 [SettingsPreferences] 为准；
+         * 只有「跟随系统」时才回退到系统语言。首页与大厅共用这一份实现，避免两处漂移。
+         */
+        fun currentI18nKey(context: Context): String? {
+            val selected = SettingsPreferences(context).getAppLanguage()
+            val language = if (selected == SYSTEM) {
+                fromLanguageTag(Locale.getDefault().toLanguageTag())
+            } else {
+                selected
+            }
+            return language.localeTag?.takeIf { it != SIMPLIFIED_CHINESE_TAG }
+        }
+
         fun fromValue(value: String): AppLanguage {
             return entries.firstOrNull { it.value == value } ?: SYSTEM
         }

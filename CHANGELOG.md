@@ -1,34 +1,25 @@
 ## 新增功能
-1. 账号管理页新增手机绑定、邮箱绑定、高级设置三个入口，点开用内置浏览器进入学校统一身份认证页面；经 onNavigateToWebView 回调与 unifiedWebViewRoute 跳转
-2. 修改密码页新增「忘记密码」，与登录页共用新抽出的 PasswordRecoverySheet 弹窗
-3. 网页唤起外部应用前先弹确认，点「确定」才跳转；WebViewExternalApp 用 resolveActivityInfo 取应用名填入文案，确认走 Snackbar 的 INFO 类型
-4. 手机上没装对应 App 时完全静默，不再出现 ERR_UNKNOWN_URL_SCHEME 界面；查不到可处理应用就只记日志并接管 URL，可见性靠 AndroidManifest 的 queries 通配声明而非 QUERY_ALL_PACKAGES
-5. 长按复制文字后高亮自动消失；SelectableContainer 监听剪贴板写入并重建 SelectionContainer 清掉选区状态
-6. 主题色弹窗改用 R、G、B 三个滑块调色并实时显示数值，「自定义颜色」一栏同时显示当前 HEX；Slider 轨道按通道自绘渐变，拖动仍即拖即应用
+1. 首页的应用名和分类名会跟随应用语言切换显示；新增 assets/i18n/home_apps_i18n.json，由 mergeHomeI18n 纯函数按 appId 与 categoryId 查表合并译文，缺译文时回退 JSON 中文原文
+2. 办事大厅的应用名和分类名同样支持多语言；因为登录后服务端数据会整体替换本地快照，HallI18n 改为在显示处按 ID 查表，而不是把译文合并进数据层
+3. 英文界面下用中文关键词也能搜到首页应用；HomeApp 与 HomeCategory 新增 originalName、originalCategoryName 保存本地化前的原文，搜索条件同时匹配译文、原文与服务端别名
+4. 切换语言后首页会静默刷新为新语言；HomeViewModel 新增 reloadForLanguageChange，以 LocalConfiguration 变化为信号比对语言键后重载，不显示下拉刷新指示器
 
 ## Bug 修复
-1. 修改密码不再报解密失败或验证码错误；取盐、取验证码与提交复用同一个 PageSession，替换原先每次请求都新建隔离客户端的写法
-2. 刷新或重试时错误浮层不再一闪而过、加载指示立刻出现；reloadWithLoading 先清错误状态再置加载态，并补上 API 23 以下的旧版 onReceivedError 签名兜底
-3. 首页、用电明细、充值记录、用量报表加载失败统一为居中提示加「重试」按钮；这些位置改用 ReLoginContent，requiresReLogin 传 false
-4. 下拉刷新失败不再把已有内容顶掉；首页在 categories 非空时错误只走 Snackbar 提示
-5. 今日课程与考试卡片单接口失败不再显示成「今日无课」「暂无考试」；改传 hasError 布尔量，失败时内容区留白
-6. 添加快捷方式与删除账号不再卡住界面；列表失败改为下拉重试，删除账号包 try finally 保证加载弹窗一定收起
-7. 键盘不再遮挡银行卡绑定页按钮与底部提示条；Scaffold 补 imePadding，Snackbar 的 windowInsetsPadding 取导航栏与输入法并集
-8. 同一用户名重复登录不再堆出多条账号记录；commitLogin 命中同名条目时原地更新并复用原 id
+1. 留言详情里较长的科室或姓名不再把右侧时间挤成竖排；信息行改为左侧 weight 1f 不限行、右侧时间单行加省略号，并按 Top 对齐
+2. 通知列表搜索时不再重复显示结果标题；统计行左侧改为显示搜索关键词与结果数，删除列表内重复的 search_header 条目
 
 ## 界面与交互优化
-1. 全项目轮廓输入框统一 12dp 圆角，标签浮起后停在左侧图标右边；新增 AppOutlinedTextField，桥接 TextFieldState 以使用仅 state 重载开放的 labelPosition
-2. 详情页键值行外观统一且键与值都能长按复制；InfoRow 内置选择容器，LabeledFieldRow 不再使用
-3. 账号行与浏览器标识行的删除按钮点击区域变大、图标不再跳动；删除改用 IconButton，勾选、删除、占位三态统一占 48dp
-4. 二维码在窄屏自动缩小且四周留白相等；固定尺寸改为 widthIn 加 aspectRatio，QrCodeView 按画布短边取正方形并用 drawWithCache 缓存路径
+1. 通知列表标题栏只保留「通知公告」；标题改用 TopAppBar 默认 titleLarge 与其他页面统一，总数从标题下移到列表统计行
+2. 通知列表顶部统计行左侧改为「共 N 条通知」，不再显示「已加载 N 条」；由 ListStatsRow 的 loadedText 参数驱动，右侧页码保持不变
+3. 通知详情标题放大到与其他页面一致；去掉 titleMedium 改用 TopAppBar 默认 titleLarge，并加单行省略避免与右侧操作按钮挤压
+4. 留言列表改为与账单页一致的无阴影描边卡片；用 Card 搭配 1dp outlineVariant 描边与 16dp 圆角，条目间距 8dp，替换原来的分隔条样式
+5. 留言咨询区列表改为图标加名称的整行样式；44dp surfaceVariant 图标底板配 Forum 图标与右箭头，名称不限行完整显示，行间用 0.5dp 分割线
 
 ## 架构改进
-1. 内置浏览器从单文件拆成状态、回调、外跳三块且行为不变；状态收敛为 UnifiedWebViewUiState，客户端移到 UnifiedWebViewClients.kt，WebSettings 初始化抽成共享函数
-2. 多步 CAS 接口有了统一会话抽象；HttpClientFactory 新增 IsolatedSession 与 PageSession 供修改密码、修改用户名、设备会话复用
-3. 加载指示器与默认色板收敛到统一实现；SwipeRefreshLayout 换成 Material3 的 PullToRefreshBox，Android 12 以下改用固定种子色生成默认色板
+1. 语言键解析收敛到一处，首页与大厅共用；AppLanguage.currentI18nKey 优先读取 SettingsPreferences 的选择，只在跟随系统时回退 Locale.getDefault，简体中文返回 null
+2. 首页数据缓存改为按语言键失效；HomeJsonLoader 同时缓存 categories 与 languageKey，语言不一致时重新解析并合并，避免切语言后拿到旧译文
+3. 列表统计行左侧文案可收缩，长文案不再挤掉页码；ListStatsRow 左侧加 weight 1f 与 fill false 以及单行省略，右侧固定单行并加 16dp 起始间距
 
-## 依赖变更
-1. 移除 SwipeRefreshLayout 依赖；libs.versions.toml 与 app/build.gradle.kts 同步删除对应版本与库声明
-
-## 删除的文件
-1. 删除 LabeledFieldRow.kt 与 theme/ui/Color.kt；键值行由 InfoRow 承担，内置紫色色值不再使用
+## 新增文件
+1. app/src/main/assets/i18n/home_apps_i18n.json：首页应用与分类的多语言映射表
+2. app/src/main/assets/i18n/hall_apps_i18n.json：办事大厅应用与分类的多语言映射表

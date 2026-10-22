@@ -1,0 +1,413 @@
+{
+  "schema": 1,
+  "apps": {
+    "17852895911767506": {
+      "en": "Mobile Academic",
+      "zh-TW": "行動教務",
+      "ja": "モバイル教務",
+      "fr": "Scolarité mobile",
+      "ar": "الشؤون الأكاديمية"
+    },
+    "4741788073121251": {
+      "en": "My Schedule",
+      "zh-TW": "個人日程",
+      "ja": "個人スケジュール",
+      "fr": "Agenda perso",
+      "ar": "جدولي"
+    },
+    "4804236383747498": {
+      "en": "Notices",
+      "zh-TW": "通知公告",
+      "ja": "お知らせ",
+      "fr": "Annonces",
+      "ar": "الإشعارات"
+    },
+    "5097908523272550": {
+      "en": "Advisor Notices",
+      "zh-TW": "輔導員通知",
+      "ja": "辅导员のお知らせ",
+      "fr": "Avis du tuteur",
+      "ar": "إشعارات المرشد"
+    },
+    "5132723274514478": {
+      "en": "Leave Request",
+      "zh-TW": "請假",
+      "ja": "欠席届",
+      "fr": "Demande de congé",
+      "ar": "طلب إجازة"
+    },
+    "5145782291715170": {
+      "en": "Info Collection",
+      "zh-TW": "資訊收集",
+      "ja": "情報収集",
+      "fr": "Collecte d'infos",
+      "ar": "جمع المعلومات"
+    },
+    "5175012971079146": {
+      "en": "Room Check",
+      "zh-TW": "查寢",
+      "ja": "部屋点検",
+      "fr": "Contrôle chambre",
+      "ar": "تفقد الغرف"
+    },
+    "5179216461428046": {
+      "en": "Check-in",
+      "zh-TW": "簽到",
+      "ja": "チェックイン",
+      "fr": "Pointage",
+      "ar": "تسجيل الحضور"
+    },
+    "5215256879824476": {
+      "en": "Scan",
+      "zh-TW": "掃一掃",
+      "ja": "スキャン",
+      "fr": "Scanner",
+      "ar": "مسح ضوئي"
+    },
+    "5223074298947799": {
+      "en": "School Home",
+      "zh-TW": "學校首頁",
+      "ja": "大学ホーム",
+      "fr": "Site de l'école",
+      "ar": "موقع الجامعة"
+    },
+    "5339732631940410": {
+      "en": "Pay Code",
+      "zh-TW": "支付碼",
+      "ja": "支払コード",
+      "fr": "Code de paie",
+      "ar": "رمز الدفع"
+    },
+    "5339755469114438": {
+      "en": "Card Center",
+      "zh-TW": "卡中心",
+      "ja": "カードセンター",
+      "fr": "Espace carte",
+      "ar": "مركز البطاقة"
+    },
+    "5350760556213516": {
+      "en": "Payment Hall",
+      "zh-TW": "繳費服務大廳",
+      "ja": "支払い窓口",
+      "fr": "Hall de paiement",
+      "ar": "قاعة الدفع"
+    },
+    "5360678083990865": {
+      "en": "Tuition & Housing",
+      "zh-TW": "學宿費",
+      "ja": "学費・寮費",
+      "fr": "Frais scolaires",
+      "ar": "الرسوم الدراسية"
+    },
+    "5414037917137771": {
+      "en": "Face Capture",
+      "zh-TW": "人臉採集",
+      "ja": "顔写真登録",
+      "fr": "Capture du visage",
+      "ar": "تسجيل الوجه"
+    },
+    "5416679606401266": {
+      "en": "Bind Bank Card",
+      "zh-TW": "學生綁定銀行卡",
+      "ja": "銀行カード登録",
+      "fr": "Lier une carte",
+      "ar": "ربط البطاقة البنكية"
+    },
+    "5507443717835441": {
+      "en": "Event Signup",
+      "zh-TW": "活動報名",
+      "ja": "イベント申込",
+      "fr": "Inscription event",
+      "ar": "تسجيل الفعاليات"
+    },
+    "5889895150092139": {
+      "en": "Return Request",
+      "zh-TW": "返校申請",
+      "ja": "帰校申請",
+      "fr": "Retour au campus",
+      "ar": "طلب العودة"
+    },
+    "6204672076294065": {
+      "en": "My Info",
+      "zh-TW": "我的資訊",
+      "ja": "マイ情報",
+      "fr": "Mes infos",
+      "ar": "معلوماتي"
+    },
+    "6231227757845233": {
+      "en": "Student Affairs",
+      "zh-TW": "掌上學工",
+      "ja": "学生支援",
+      "fr": "Vie étudiante",
+      "ar": "شؤون الطلاب"
+    },
+    "6251198080206918": {
+      "en": "Feedback",
+      "zh-TW": "我有話說",
+      "ja": "意見箱",
+      "fr": "Retour d'info",
+      "ar": "ملاحظاتي"
+    },
+    "6279586856782415": {
+      "en": "Student Profile",
+      "zh-TW": "學生基本資訊",
+      "ja": "学生基本情報",
+      "fr": "Profil étudiant",
+      "ar": "البيانات الأساسية"
+    },
+    "6285744921802341": {
+      "en": "Dorm Inspection",
+      "zh-TW": "宿管查寢",
+      "ja": "寮の点検",
+      "fr": "Inspection dortoir",
+      "ar": "تفتيش السكن"
+    },
+    "6302979952815147": {
+      "en": "Orientation",
+      "zh-TW": "迎新服務",
+      "ja": "新入生案内",
+      "fr": "Accueil nouveaux",
+      "ar": "خدمة المستجدين"
+    },
+    "6364440215960819": {
+      "en": "Second Classroom",
+      "zh-TW": "第二課堂",
+      "ja": "第二課堂",
+      "fr": "Périscolaire",
+      "ar": "الأنشطة اللاصفية"
+    },
+    "6364440939814519": {
+      "en": "Student Events",
+      "zh-TW": "學生活動",
+      "ja": "学生イベント",
+      "fr": "Activités étudiantes",
+      "ar": "أنشطة الطلاب"
+    },
+    "6531454661657242": {
+      "en": "Advising Booking",
+      "zh-TW": "學業指導預約",
+      "ja": "学習指導予約",
+      "fr": "Rendez-vous conseil",
+      "ar": "حجز الإرشاد"
+    },
+    "6617751711457186": {
+      "en": "Ruijie UClass",
+      "zh-TW": "銳捷 UClass",
+      "ja": "Ruijie UClass",
+      "fr": "Ruijie UClass",
+      "ar": "Ruijie UClass"
+    },
+    "6663211382089680": {
+      "en": "Knowledge Base",
+      "zh-TW": "知識庫",
+      "ja": "ナレッジベース",
+      "fr": "Base de connaissances",
+      "ar": "قاعدة المعرفة"
+    },
+    "6663411091396865": {
+      "en": "Mental Health",
+      "zh-TW": "心理健康",
+      "ja": "メンタルヘルス",
+      "fr": "Santé mentale",
+      "ar": "الصحة النفسية"
+    },
+    "6783395027802653": {
+      "en": "Video Meeting",
+      "zh-TW": "視訊會議",
+      "ja": "ビデオ会議",
+      "fr": "Visioconférence",
+      "ar": "اجتماع بالفيديو"
+    },
+    "6832506745234826": {
+      "en": "Holiday Travel",
+      "zh-TW": "節假日離返校",
+      "ja": "休暇の帰省申請",
+      "fr": "Départs vacances",
+      "ar": "سفر العطلات"
+    },
+    "6835345375531966": {
+      "en": "Lab Safety",
+      "zh-TW": "實驗室安全平台",
+      "ja": "実験室安全管理",
+      "fr": "Sécurité labo",
+      "ar": "سلامة المختبرات"
+    },
+    "6980342349549853": {
+      "en": "Bus Code",
+      "zh-TW": "乘車碼",
+      "ja": "乗車コード",
+      "fr": "Code de bus",
+      "ar": "رمز الحافلة"
+    },
+    "6995954546378878": {
+      "en": "Calendar",
+      "zh-TW": "日程",
+      "ja": "スケジュール",
+      "fr": "Agenda",
+      "ar": "التقويم"
+    },
+    "7028774645840086": {
+      "en": "Service Desk",
+      "zh-TW": "學生服務台",
+      "ja": "学生サービス窓口",
+      "fr": "Accueil étudiants",
+      "ar": "مكتب خدمة الطلاب"
+    },
+    "7127337389292523": {
+      "en": "Bulk Notice",
+      "zh-TW": "群發通知",
+      "ja": "一斉通知",
+      "fr": "Annonce groupée",
+      "ar": "إشعار جماعي"
+    },
+    "7368564364291427": {
+      "en": "Finance Portal",
+      "zh-TW": "財務平台",
+      "ja": "財務ポータル",
+      "fr": "Portail financier",
+      "ar": "المنصة المالية"
+    },
+    "7402080728725206": {
+      "en": "AI Assistant",
+      "zh-TW": "AI 助手",
+      "ja": "AIアシスタント",
+      "fr": "Assistant IA",
+      "ar": "مساعد AI"
+    },
+    "7591154162635150": {
+      "en": "Network Repair",
+      "zh-TW": "網路故障報修",
+      "ja": "ネット修理依頼",
+      "fr": "Panne réseau",
+      "ar": "أعطال الشبكة"
+    },
+    "7624123418505155": {
+      "en": "Dorm Electricity",
+      "zh-TW": "宿舍電費儲值",
+      "ja": "寮の電気代",
+      "fr": "Électricité dortoir",
+      "ar": "كهرباء السكن"
+    },
+    "7641221819350741": {
+      "en": "Free Classrooms",
+      "zh-TW": "空閒教室",
+      "ja": "空き教室",
+      "fr": "Salles libres",
+      "ar": "القاعات الفارغة"
+    },
+    "7643175475448578": {
+      "en": "Campus Network",
+      "zh-TW": "校園網自助服務",
+      "ja": "学内ネット自助",
+      "fr": "Réseau autonome",
+      "ar": "خدمة الشبكة الذاتية"
+    },
+    "7652579043492593": {
+      "en": "Community Duty",
+      "zh-TW": "社區值班",
+      "ja": "コミュニティ当番",
+      "fr": "Service de garde",
+      "ar": "مناوبة السكن"
+    },
+    "7756198602533764": {
+      "en": "Huiyan",
+      "zh-TW": "會眼",
+      "ja": "会眼",
+      "fr": "Huiyan",
+      "ar": "Huiyan"
+    },
+    "7768465818526925": {
+      "en": "Lost & Found",
+      "zh-TW": "失物招領",
+      "ja": "遺失物",
+      "fr": "Objets trouvés",
+      "ar": "المفقودات"
+    },
+    "7768470048823278": {
+      "en": "Speed Test",
+      "zh-TW": "校內網路測速",
+      "ja": "速度テスト",
+      "fr": "Test de débit",
+      "ar": "قياس السرعة"
+    },
+    "7769351811716722": {
+      "en": "Browser Test",
+      "zh-TW": "瀏覽器相容性測試",
+      "ja": "ブラウザ互換テスト",
+      "fr": "Test navigateur",
+      "ar": "اختبار المتصفح"
+    },
+    "7840869642248515": {
+      "en": "Academic System",
+      "zh-TW": "本科教務系統",
+      "ja": "教務システム",
+      "fr": "Scolarité",
+      "ar": "النظام الأكاديمي"
+    },
+    "7842653894427814": {
+      "en": "Grad Mobile",
+      "zh-TW": "研究生行動端",
+      "ja": "大学院モバイル",
+      "fr": "Mobile master",
+      "ar": "تطبيق الدراسات العليا"
+    },
+    "7888529148691600": {
+      "en": "Timetable",
+      "zh-TW": "我的課表",
+      "ja": "時間割",
+      "fr": "Emploi du temps",
+      "ar": "الجدول الدراسي"
+    }
+  },
+  "categories": {
+    "2__5fc401de-e2b6-4825-9779-953cd3cd0a11": {
+      "en": "Finance",
+      "zh-TW": "財務資產",
+      "ja": "財務・資産",
+      "fr": "Finance",
+      "ar": "الشؤون المالية"
+    },
+    "2__3130b132-e232-4c7d-9792-11dc6bcef37c": {
+      "en": "Office",
+      "zh-TW": "辦公服務",
+      "ja": "事務サービス",
+      "fr": "Bureau",
+      "ar": "الخدمات المكتبية"
+    },
+    "2__46bdd645-1b55-4bc0-955e-afeabbe5f6c1": {
+      "en": "Teaching & Research",
+      "zh-TW": "教學科研",
+      "ja": "教育・研究",
+      "fr": "Enseignement",
+      "ar": "التعليم والبحث"
+    },
+    "2__cdfce41a-6cc3-4967-a0df-e1ba12d80d03": {
+      "en": "Student Services",
+      "zh-TW": "學工服務",
+      "ja": "学生サービス",
+      "fr": "Vie étudiante",
+      "ar": "شؤون الطلاب"
+    },
+    "2__c3644232-0802-4ab9-b78e-50390af33c04": {
+      "en": "Public Services",
+      "zh-TW": "公共服務",
+      "ja": "公共サービス",
+      "fr": "Services publics",
+      "ar": "الخدمات العامة"
+    },
+    "549940235341922304": {
+      "en": "Fudaomao",
+      "zh-TW": "輔導貓",
+      "ja": "輔導猫",
+      "fr": "Fudaomao",
+      "ar": "Fudaomao"
+    },
+    "-1": {
+      "en": "Others",
+      "zh-TW": "其它",
+      "ja": "その他",
+      "fr": "Autres",
+      "ar": "أخرى"
+    }
+  }
+}

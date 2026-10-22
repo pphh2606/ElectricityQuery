@@ -61,6 +61,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.R
@@ -191,8 +192,10 @@ fun NoticeDetailScreen(
                 title = {
                     Text(
                         text = stringResource(R.string.notice_detail_title),
-                        style = MaterialTheme.typography.titleMedium,
+                        // 与其他页面一致：用 TopAppBar 默认 titleLarge，不再压成 titleMedium
                         fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },

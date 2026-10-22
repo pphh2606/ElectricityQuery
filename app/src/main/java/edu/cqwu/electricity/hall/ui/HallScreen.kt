@@ -70,7 +70,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.settings.AppLanguage
 import edu.cqwu.electricity.hall.data.HallCategory
+import edu.cqwu.electricity.hall.data.HallI18n
 import edu.cqwu.electricity.hall.data.HallItem
 import edu.cqwu.electricity.hall.data.HallServiceLabel
 import edu.cqwu.electricity.logging.AppLog
@@ -102,6 +104,12 @@ fun HallPageContent(
     val hallPagerState = rememberPagerState(pageCount = { 3 })
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
+
+    // 大厅名称解析器：界面显示的是接口给的 appName / categoryName，
+    // 而登录后服务端数据会整体替换本地快照，所以只能在显示处按 ID 查译文
+    val context = LocalContext.current
+    val languageKey = AppLanguage.currentI18nKey(context)
+    val hallI18n = remember(languageKey) { HallI18n.load(context, languageKey) }
 
     // 收藏点击回调：仅触发 ViewModel 网络请求（不再乐观显示 Toast）
     val handleFavoriteClick: (HallItem) -> Unit = { item ->
@@ -171,9 +179,15 @@ fun HallPageContent(
                             categories = uiState.categories,
                             isLoggedIn = uiState.isLoggedIn,
                             togglingAppId = uiState.togglingFavoriteAppId,
+                            hallI18n = hallI18n,
                             onItemClick = { item ->
                                 val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                nav.navigate(Routes.unifiedWebViewRoute(url, item.appName))
+                                nav.navigate(
+                                    Routes.unifiedWebViewRoute(
+                                        url,
+                                        hallI18n.appName(item.appId, item.appName),
+                                    )
+                                )
                             },
                             onFavoriteClick = handleFavoriteClick,
                         )
@@ -185,9 +199,15 @@ fun HallPageContent(
                             isLoading = uiState.isFavoriteLoading,
                             requiresReLogin = uiState.requiresReLogin,
                             errorMessage = uiState.errorMessage,
+                            hallI18n = hallI18n,
                             onItemClick = { item ->
                                 val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                nav.navigate(Routes.unifiedWebViewRoute(url, item.appName))
+                                nav.navigate(
+                                    Routes.unifiedWebViewRoute(
+                                        url,
+                                        hallI18n.appName(item.appId, item.appName),
+                                    )
+                                )
                             },
                             onReLogin = { nav.navigate(Routes.loginRoute()) },
                             onRetry = { hallViewModel.loadFavorites() },
@@ -197,6 +217,7 @@ fun HallPageContent(
                         // 「搜索」Tab
                         HallSearchTab(
                             uiState = uiState,
+                            hallI18n = hallI18n,
                             onQueryChange = { hallViewModel.setSearchQuery(it) },
                             onSearch = { hallViewModel.performSearch() },
                             onReLogin = { nav.navigate(Routes.loginRoute()) },
@@ -205,7 +226,12 @@ fun HallPageContent(
                             onCategorySelect = { hallViewModel.selectCategoryLabel(it) },
                             onItemClick = { item ->
                                 val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                nav.navigate(Routes.unifiedWebViewRoute(url, item.appName))
+                                nav.navigate(
+                                    Routes.unifiedWebViewRoute(
+                                        url,
+                                        hallI18n.appName(item.appId, item.appName),
+                                    )
+                                )
                             },
                         )
                     }
@@ -222,6 +248,7 @@ fun HallPageContent(
 @Composable
 private fun HallSearchTab(
     uiState: HallUiState,
+    hallI18n: HallI18n,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     onReLogin: () -> Unit,
@@ -288,6 +315,7 @@ private fun HallSearchTab(
                     } else {
                         FlatAppsList(
                             items = uiState.searchResults,
+                            hallI18n = hallI18n,
                             onItemClick = onItemClick,
                         )
                     }
@@ -387,6 +415,7 @@ private fun AllAppsList(
     categories: List<HallCategory>,
     isLoggedIn: Boolean,
     togglingAppId: String?,
+    hallI18n: HallI18n,
     onItemClick: (HallItem) -> Unit,
     onFavoriteClick: ((HallItem) -> Unit)? = null,
 ) {
@@ -421,6 +450,7 @@ private fun AllAppsList(
         if (categories.isNotEmpty()) {
             HallSectionIndex(
                 categories = categories,
+                hallI18n = hallI18n,
                 activeIndex = activeSectionIndex,
                 showDivider = showIndexDivider,
                 onSectionClick = { index ->
@@ -440,11 +470,12 @@ private fun AllAppsList(
         ) {
             categories.forEach { category ->
                 item(key = "header_${category.categoryId}") {
-                    HallCategoryHeader(category.categoryName)
+                    HallCategoryHeader(hallI18n.categoryName(category.categoryId, category.categoryName))
                 }
                 items(category.appList, key = { it.appId }) { item ->
                     HallListItem(
                         item = item,
+                        displayName = hallI18n.appName(item.appId, item.appName),
                         isLoggedIn = isLoggedIn,
                         isTogglingFavorite = togglingAppId == item.appId,
                         onClick = { onItemClick(item) },
@@ -466,6 +497,7 @@ private fun AllAppsList(
 @Composable
 private fun HallSectionIndex(
     categories: List<HallCategory>,
+    hallI18n: HallI18n,
     activeIndex: Int,
     showDivider: Boolean,
     onSectionClick: (Int) -> Unit,
@@ -478,7 +510,7 @@ private fun HallSectionIndex(
         ) {
             itemsIndexed(categories, key = { _, category -> category.categoryId }) { index, category ->
                 SectionFilterChip(
-                    text = category.categoryName,
+                    text = hallI18n.categoryName(category.categoryId, category.categoryName),
                     selected = activeIndex == index,
                     onClick = { onSectionClick(index) },
                 )
@@ -512,12 +544,14 @@ private fun HallCategoryHeader(name: String) {
 @Composable
 private fun FlatAppsList(
     items: List<HallItem>,
+    hallI18n: HallI18n,
     onItemClick: (HallItem) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = items, key = { it.appId }) { item ->
             HallListItem(
                 item = item,
+                displayName = hallI18n.appName(item.appId, item.appName),
                 isLoggedIn = false,
                 isTogglingFavorite = false,
                 onClick = { onItemClick(item) },
@@ -541,6 +575,7 @@ private fun FavoriteAppsContent(
     isLoading: Boolean,
     requiresReLogin: Boolean,
     errorMessage: String?,
+    hallI18n: HallI18n,
     onItemClick: (HallItem) -> Unit,
     onReLogin: () -> Unit,
     onRetry: () -> Unit,
@@ -589,6 +624,7 @@ private fun FavoriteAppsContent(
         else -> {
             FlatAppsList(
                 items = items,
+                hallI18n = hallI18n,
                 onItemClick = onItemClick,
             )
         }
@@ -602,6 +638,7 @@ private fun FavoriteAppsContent(
 @Composable
 private fun HallListItem(
     item: HallItem,
+    displayName: String,
     isLoggedIn: Boolean,
     isTogglingFavorite: Boolean = false,
     onClick: () -> Unit,
@@ -631,7 +668,7 @@ private fun HallListItem(
         ) {
             AsyncImage(
                 model = imageRequest,
-                contentDescription = item.appName,
+                contentDescription = displayName,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(8.dp)
@@ -643,7 +680,7 @@ private fun HallListItem(
         Spacer(modifier = Modifier.width(12.dp))
 
         Text(
-            text = item.appName,
+            text = displayName,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface,

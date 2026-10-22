@@ -41,6 +41,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    /** 当前 [HomeUiState.categories] 是按哪个语言键合并出来的；null 表示简体中文 */
+    private var loadedLanguageKey: String? = null
+
     init {
         // 先从持久化存储加载已收藏的服务 ID 和自定义服务列表
         val savedIds = settingsPreferences.get(SettingsKeys.MY_SERVICES)
@@ -58,6 +61,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 jsonLoader.loadCategories()
             }
             result.onSuccess { categories ->
+                loadedLanguageKey = jsonLoader.currentLanguageKey()
                 _uiState.update {
                     it.copy(categories = categories, isLoading = false, error = null)
                 }
@@ -88,6 +92,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             result
                 .onSuccess { categories ->
+                    loadedLanguageKey = jsonLoader.currentLanguageKey()
                     _uiState.update {
                         it.copy(categories = categories, isRefreshing = false, error = null)
                     }
@@ -99,6 +104,28 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         it.copy(isRefreshing = false, error = e.message ?: getApplication<Application>().getString(R.string.common_refresh_failed))
                     }
                 }
+        }
+    }
+
+    /**
+     * 语言切换后同步首页文案。
+     *
+     * 切语言走的是 Activity.recreate()，属于配置变更：ViewModel 会被保留、init 不会再执行，
+     * 而 categories 里存的已经是上一种语言的译文。所以这里主动比对语言键，不一致才重载。
+     * 不设置 isRefreshing —— 避免首页顶部冒出下拉刷新指示器。
+     */
+    fun reloadForLanguageChange() {
+        val currentLanguage = jsonLoader.currentLanguageKey()
+        if (currentLanguage == loadedLanguageKey) return
+
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                jsonLoader.loadCategories()
+            }
+            result.onSuccess { categories ->
+                loadedLanguageKey = currentLanguage
+                _uiState.update { it.copy(categories = categories) }
+            }
         }
     }
 

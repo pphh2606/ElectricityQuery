@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.speakup.ui
 
 import android.content.ClipData
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -221,19 +223,28 @@ private fun MessageDetailContent(message: ConsultationMessage) {
         Spacer(modifier = Modifier.height(8.dp))
 
         // 信息行（灰色淡化）
+        // 关键在左侧的 weight：Row 先测量没有 weight 的右侧时间，时间拿到完整宽度后，
+        // 左侧再去分剩余空间并可以换行，长单位名能完整显示，也不会把时间挤成竖排
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            // 左侧可能多行，时间贴第一行顶部对齐
+            verticalAlignment = Alignment.Top
         ) {
             Text(
                 text = "${message.zxrdwdmDisplay} ${message.zxrxm} ${stringResource(R.string.speakup_message_label)}",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp)
             )
             Text(
                 text = message.zxsj,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -285,19 +296,26 @@ private fun MessageDetailContent(message: ConsultationMessage) {
             Spacer(modifier = Modifier.height(12.dp))
 
             // 回复信息行（灰色淡化）：咨询区名 + 回复人 + 时间
+            // 与留言信息行同一写法：左侧带 weight 且不限行数，右侧时间单行贴顶
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
             ) {
                 Text(
                     text = "${message.zxqdmDisplay} ${message.hfrxm} ${stringResource(R.string.speakup_reply_label)}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
                 )
                 Text(
                     text = message.hfsj,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 

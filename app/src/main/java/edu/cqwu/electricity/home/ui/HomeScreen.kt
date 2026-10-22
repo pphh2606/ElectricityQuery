@@ -72,6 +72,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -224,6 +225,14 @@ fun HomePageContent(
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    // 切换语言只重建 Activity，ViewModel 会被保留、init 不再执行；
+    // 这里用配置变化当信号，让 ViewModel 按新语言静默重载首页数据（不显示下拉刷新指示器）
+    val configuration = LocalConfiguration.current
+    LaunchedEffect(configuration) {
+        homeViewModel.reloadForLanguageChange()
+    }
+
     val snackbar = LocalSnackbarController.current
     val nav = LocalNavController.current
     val listState = rememberLazyListState()
@@ -255,7 +264,9 @@ fun HomePageContent(
                 uiState.categories
                     .flatMap { it.apps }
                     .filter { app ->
+                        // 同时匹配译文、JSON 中文原文与服务端别名：英文界面下搜中文关键词同样能命中
                         app.name.contains(query, ignoreCase = true) ||
+                                (app.originalName?.contains(query, ignoreCase = true) == true) ||
                                 (app.aliasName?.contains(query, ignoreCase = true) == true)
                     }
             }

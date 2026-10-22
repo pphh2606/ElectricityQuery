@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 
@@ -19,11 +20,14 @@ import edu.cqwu.electricity.R
  * 账单、人员搜索、缴费订单、登录日志、全校课表、通知公告共用。
  * 是否显示、显示在哪个位置由调用方决定（各页条件不同），本组件只负责这一行的排版：
  * fillMaxWidth + padding(8dp, 16dp) + SpaceBetween，bodySmall / onSurfaceVariant。
+ * 左侧文案可能较长（如「共 8565 条通知」、搜索结果），故左侧可收缩、超长省略，
+ * 保证右侧页码始终完整可见。
  *
  * @param loadedCount 已加载条数
  * @param currentPage 当前页码（显示用，从 1 开始，由调用方保证）
  * @param totalPages 总页数
- * @param loadedText 左侧文案，null 时用通用的「已加载 x 条」（人员搜索传「共搜索到 x 人」）
+ * @param loadedText 左侧文案，null 时用通用的「已加载 x 条」（人员搜索传「共搜索到 x 人」，
+ *                   通知公告传「共 x 条通知」）
  */
 @Composable
 fun ListStatsRow(
@@ -43,11 +47,16 @@ fun ListStatsRow(
             text = loadedText ?: pluralStringResource(R.plurals.common_loaded_count, loadedCount, loadedCount),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false),
         )
         Text(
             text = stringResource(R.string.common_page_info, currentPage, totalPages),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            modifier = Modifier.padding(start = 16.dp),
         )
     }
 }

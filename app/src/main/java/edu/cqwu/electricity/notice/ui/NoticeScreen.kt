@@ -229,28 +229,16 @@ fun NoticeScreen(
                     colors = topBarColors
                 )
             } else {
-                // ── 普通态：标题（含总数）+ 右侧搜索按钮 ──
+                // ── 普通态：标题 + 右侧搜索按钮（字号与其他页面统一，总数移到列表统计行） ──
                 TopAppBar(
                     title = {
-                        Column {
-                            Text(
-                                text = stringResource(R.string.notice_title),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            if (viewModel.totalItem > 0) {
-                                Text(
-            text = pluralStringResource(R.plurals.notice_total_count, viewModel.totalItem, viewModel.totalItem),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                )
-                            }
-                        }
+                        Text(
+                            text = stringResource(R.string.notice_title),
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
@@ -316,12 +304,26 @@ fun NoticeScreen(
                         .fillMaxSize()
                         .padding(paddingValues)
                 ) {
-                    // 顶部统计行：已加载条数 + 页码（与账单页同一排版，不随列表滚动）
+                    // 顶部统计行：左侧总数（搜索态为结果数）、右侧页码，不随列表滚动
                     if (viewModel.items.isNotEmpty()) {
                         ListStatsRow(
                             loadedCount = viewModel.items.size,
                             currentPage = viewModel.currentPage + 1,
                             totalPages = viewModel.totalPage,
+                            loadedText = if (viewModel.searchKeyword.isNotBlank()) {
+                                pluralStringResource(
+                                    R.plurals.notice_search_result,
+                                    viewModel.totalItem,
+                                    viewModel.searchKeyword,
+                                    viewModel.totalItem
+                                )
+                            } else {
+                                pluralStringResource(
+                                    R.plurals.notice_total_count,
+                                    viewModel.totalItem,
+                                    viewModel.totalItem
+                                )
+                            },
                         )
                     }
 
@@ -343,18 +345,7 @@ fun NoticeScreen(
                             contentPadding = PaddingValues(vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // 搜索模式：显示搜索结果标题
-                            if (viewModel.searchKeyword.isNotBlank() && viewModel.items.isNotEmpty()) {
-                                item(key = "search_header") {
-                                    Text(
-                                        text = pluralStringResource(R.plurals.notice_search_result, viewModel.totalItem, viewModel.searchKeyword, viewModel.totalItem),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                                    )
-                                }
-                            }
-
+                            // 搜索关键词与结果数已由上方统计行展示，列表内不再重复一行标题
                             items(viewModel.items, key = { it.wid }) { notice ->
                                 NoticeCard(
                                     notice = notice,

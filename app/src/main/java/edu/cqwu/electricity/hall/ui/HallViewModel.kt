@@ -10,7 +10,9 @@ import edu.cqwu.electricity.hall.data.HallItem
 import edu.cqwu.electricity.hall.data.HallSearchApi
 import edu.cqwu.electricity.hall.data.HallServiceLabel
 import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.common.settings.AppLanguage
 import edu.cqwu.electricity.hall.data.HallFavoriteApi
+import edu.cqwu.electricity.hall.data.HallI18n
 import edu.cqwu.electricity.hall.data.HallJsonLoader
 import edu.cqwu.electricity.hall.data.HallServiceCenterApi
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -79,6 +81,12 @@ class HallViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
+            // 预热大厅多语言映射：映射整份缓存且内容与语言无关，
+            // 提前解析可避免首次进入大厅时在组合期同步读 assets
+            withContext(Dispatchers.IO) {
+                HallI18n.load(application, AppLanguage.currentI18nKey(application))
+            }
+
             // 1. 先加载本地 JSON 作为兜底（立即显示）
             val localResult = withContext(Dispatchers.IO) {
                 jsonLoader.loadItems()
