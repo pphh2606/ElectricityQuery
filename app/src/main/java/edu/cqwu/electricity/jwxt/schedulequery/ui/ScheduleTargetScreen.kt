@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -30,12 +32,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -57,11 +59,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.LoadingDialog
@@ -69,11 +74,11 @@ import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.schedulequery.data.JwxtDictItem
 import edu.cqwu.electricity.jwxt.core.model.JwxtScheduleTarget
 import edu.cqwu.electricity.jwxt.core.model.ScheduleTargetType
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import kotlinx.coroutines.launch
 
 /** 一个筛选胶囊：显示文本 + 点开后弹出的选项 */
@@ -143,7 +148,7 @@ fun JwxtScheduleTargetScreen(
         viewModel.setKeyword(searchInput.trim())
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             if (isSearching) {
                 // ── 搜索态：标题栏整体变成搜索条 ──
@@ -211,7 +216,7 @@ fun JwxtScheduleTargetScreen(
                             )
                         }
                     },
-                    colors = currentTopBarColors(),
+                    colors = transparentTopBarColors(),
                 )
             } else {
                 // ── 普通态 ──
@@ -244,31 +249,30 @@ fun JwxtScheduleTargetScreen(
                             )
                         }
                     },
-                    colors = currentTopBarColors(),
-                )
-            }
-        },
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
-            TargetFilterBar(type = type, state = state, viewModel = viewModel, onPick = { picker = it })
-            // 列表统计行（已加载条数 + 页码）：有了它就不再需要标题栏下那条分隔线
-            if (state.pageTotal > 0) {
-                ListStatsRow(
-                    loadedCount = state.rows.size,
-                    currentPage = state.pageNumber,
-                    totalPages = state.pageTotal,
+                    colors = transparentTopBarColors(),
                 )
             }
 
-            PullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                onRefresh = viewModel::refresh,
-                modifier = Modifier.fillMaxSize(),
-            ) {
+            // 筛选胶囊行：挂进标题栏浮层，和标题栏一起模糊、固定不滚动
+            TargetFilterBar(type = type, state = state, viewModel = viewModel, onPick = { picker = it })
+
+            // 列表统计行（已加载条数 + 页码）：出现/消失动画由 ListStatsRow 内部负责
+            ListStatsRow(
+                loadedCount = state.rows.size,
+                currentPage = state.pageNumber,
+                totalPages = state.pageTotal,
+                visible = state.pageTotal > 0,
+            )
+        },
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = viewModel::refresh,
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
+        ) {
                 when {
                     state.requiresReLogin -> ReLoginContent(
                         requiresReLogin = true,
@@ -302,6 +306,7 @@ fun JwxtScheduleTargetScreen(
 
                     else -> ScheduleRowList(
                         state = state,
+                        topInset = topInset,
                         onLoadMore = viewModel::loadMore,
                         onRowClick = { row ->
                             if (!opening) {
@@ -315,7 +320,6 @@ fun JwxtScheduleTargetScreen(
                     )
                 }
             }
-        }
     }
 
     // 查校区期间挡住交互：这一步要联网（校区与对象不匹配时课表接口返回空列表），
@@ -515,6 +519,7 @@ private fun filterEntries(
 @Composable
 private fun ScheduleRowList(
     state: ScheduleQueryUiState,
+    topInset: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onRowClick: (ScheduleRow) -> Unit,
 ) {
@@ -538,6 +543,7 @@ private fun ScheduleRowList(
         state = listState,
         modifier = Modifier.fillMaxSize(),
     ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
         itemsIndexed(state.rows) { index, row ->
             ScheduleRowItem(row = row, onClick = { onRowClick(row) })
             if (index < state.rows.lastIndex) {

@@ -2,6 +2,12 @@
 
 package edu.cqwu.electricity.hall.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,10 +17,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -22,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -47,24 +56,31 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -78,8 +94,11 @@ import edu.cqwu.electricity.hall.data.HallServiceLabel
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
+import edu.cqwu.electricity.common.ui.rememberHazeSourceModifier
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -131,17 +150,149 @@ fun HallPageContent(
         hallViewModel.selectTab(hallPagerState.currentPage)
     }
 
-    PullToRefreshBox(
-        isRefreshing = uiState.isRefreshing,
-        onRefresh = { hallViewModel.refresh() },
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+    // Haze 状态与顶栏高度：标题栏、索引栏共用；hallTopInset 还要用于胶囊跳转的对齐补偿
+    val hallBlurState = remember { HazeState() }
+    var hallHeaderHeight by remember { mutableIntStateOf(0) }
+    val hallTopInset = with(LocalDensity.current) { hallHeaderHeight.toDp() }
+    // 分类索引点击后要对齐到标题栏下沿（同首页）：列表从屏幕顶端铺满，直接对齐顶端会被浮层盖住
+    val hallTopInsetPx = with(LocalDensity.current) { hallTopInset.roundToPx() }
 
-            // ═══ 顶部 Tab 栏：全部 / 收藏（同步 PagerState）═══
+    // 「全部」Tab 的分类索引状态提升到这里：索引栏要进标题栏浮层，才能和 Tab 行一起模糊
+    val allListState = rememberLazyListState()
+    val allSectionStartIndices = remember(uiState.categories) {
+        var index = 0
+        uiState.categories.map { category ->
+            val start = index
+            index += 1 + category.appList.size
+            start
+        }
+    }
+    val allActiveSectionIndex by remember(uiState.categories, allSectionStartIndices) {
+        derivedStateOf {
+            // 取「标题栏下沿以下第一个可见项」：胶囊跳转会刻意让上一项尾部留在标题栏背后，
+            // 用 firstVisibleItemIndex 会高亮错一格
+            val firstVisible = (
+                allListState.layoutInfo.visibleItemsInfo
+                    .firstOrNull { it.offset + it.size > hallTopInsetPx }?.index ?: 0
+                ).let { if (it > 0) it - 1 else 0 }
+            var active = 0
+            allSectionStartIndices.forEachIndexed { sectionIndex, start ->
+                if (start <= firstVisible) active = sectionIndex
+            }
+            active
+        }
+    }
+    // 索引条下方细线：只要列表已经滚下去就显示。
+    // firstVisibleItemIndex 里含一个顶栏留白占位项，按 index 判断会被推迟整整一个浮层高度
+    val allShowIndexDivider by remember {
+        derivedStateOf { allListState.canScrollBackward }
+    }
+
+    // 标题栏底色跟随「个性化 → 标题栏样式」，模糊开/关都由公共函数处理
+    val headerModifier = rememberHazeBlurModifier(hallBlurState)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(rememberHazeSourceModifier(hallBlurState))
+        ) {
+            val pullState = rememberPullToRefreshState()
+            PullToRefreshBox(
+                isRefreshing = uiState.isRefreshing,
+                onRefresh = { hallViewModel.refresh() },
+                state = pullState,
+                indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, hallTopInset) },
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                HorizontalPager(
+                    state = hallPagerState,
+                    modifier = Modifier.fillMaxSize(),
+                ) { page ->
+                    when (page) {
+                        0 -> {
+                            // 「全部」Tab
+                            AllAppsList(
+                                categories = uiState.categories,
+                                isLoggedIn = uiState.isLoggedIn,
+                                togglingAppId = uiState.togglingFavoriteAppId,
+                                hallI18n = hallI18n,
+                                onItemClick = { item ->
+                                    val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
+                                    nav.navigate(
+                                        Routes.unifiedWebViewRoute(
+                                            url,
+                                            hallI18n.appName(item.appId, item.appName),
+                                        )
+                                    )
+                                },
+                                onFavoriteClick = handleFavoriteClick,
+                                topInset = hallTopInset,
+                                listState = allListState,
+                            )
+                        }
+                        1 -> {
+                            // 「收藏」Tab
+                            FavoriteAppsContent(
+                                items = uiState.favoriteItems,
+                                isLoading = uiState.isFavoriteLoading,
+                                requiresReLogin = uiState.requiresReLogin,
+                                errorMessage = uiState.errorMessage,
+                                hallI18n = hallI18n,
+                                onItemClick = { item ->
+                                    val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
+                                    nav.navigate(
+                                        Routes.unifiedWebViewRoute(
+                                            url,
+                                            hallI18n.appName(item.appId, item.appName),
+                                        )
+                                    )
+                                },
+                                onReLogin = { nav.navigate(Routes.loginRoute()) },
+                                onRetry = { hallViewModel.loadFavorites() },
+                                topInset = hallTopInset,
+                            )
+                        }
+                        2 -> {
+                            // 「搜索」Tab：搜索框与胶囊已上移到标题栏浮层，这里只留结果列表
+                            HallSearchTab(
+                                uiState = uiState,
+                                hallI18n = hallI18n,
+                                onReLogin = { nav.navigate(Routes.loginRoute()) },
+                                onRetry = { hallViewModel.loadSearchData() },
+                                onItemClick = { item ->
+                                    val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
+                                    nav.navigate(
+                                        Routes.unifiedWebViewRoute(
+                                            url,
+                                            hallI18n.appName(item.appId, item.appName),
+                                        )
+                                    )
+                                },
+                                topInset = hallTopInset,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                // 模糊/底色要连同状态栏一起铺满：放在 statusBarsPadding 外层，
+                // 否则状态栏区域没有浮层覆盖，只能看到底下未模糊的内容
+                .then(headerModifier)
+                // 浮层实测总高（含状态栏），供列表首项留白
+                .onSizeChanged { hallHeaderHeight = it.height }
+                // 内容本身让开状态栏，不被状态栏图标压住
+                .statusBarsPadding()
+        ) {
+            // ═══ 顶部 Tab 栏：全部 / 收藏 / 搜索（与标题栏一起模糊）═══
             PrimaryTabRow(
                 selectedTabIndex = hallPagerState.currentPage,
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.primary,
                 divider = {},
             ) {
@@ -167,74 +318,53 @@ fun HallPageContent(
                 }
             }
 
-            // ═══ 内层 HorizontalPager：全部 / 收藏 滑动切换 ═══
-            HorizontalPager(
-                state = hallPagerState,
-                modifier = Modifier.weight(1f),
-            ) { page ->
-                when (page) {
-                    0 -> {
-                        // 「全部」Tab
-                        AllAppsList(
-                            categories = uiState.categories,
-                            isLoggedIn = uiState.isLoggedIn,
-                            togglingAppId = uiState.togglingFavoriteAppId,
-                            hallI18n = hallI18n,
-                            onItemClick = { item ->
-                                val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                nav.navigate(
-                                    Routes.unifiedWebViewRoute(
-                                        url,
-                                        hallI18n.appName(item.appId, item.appName),
-                                    )
-                                )
-                            },
-                            onFavoriteClick = handleFavoriteClick,
-                        )
-                    }
-                    1 -> {
-                        // 「收藏」Tab
-                        FavoriteAppsContent(
-                            items = uiState.favoriteItems,
-                            isLoading = uiState.isFavoriteLoading,
-                            requiresReLogin = uiState.requiresReLogin,
-                            errorMessage = uiState.errorMessage,
-                            hallI18n = hallI18n,
-                            onItemClick = { item ->
-                                val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                nav.navigate(
-                                    Routes.unifiedWebViewRoute(
-                                        url,
-                                        hallI18n.appName(item.appId, item.appName),
-                                    )
-                                )
-                            },
-                            onReLogin = { nav.navigate(Routes.loginRoute()) },
-                            onRetry = { hallViewModel.loadFavorites() },
-                        )
-                    }
-                    2 -> {
-                        // 「搜索」Tab
-                        HallSearchTab(
-                            uiState = uiState,
-                            hallI18n = hallI18n,
-                            onQueryChange = { hallViewModel.setSearchQuery(it) },
-                            onSearch = { hallViewModel.performSearch() },
-                            onReLogin = { nav.navigate(Routes.loginRoute()) },
-                            onRetry = { hallViewModel.loadSearchData() },
-                            onRoleSelect = { hallViewModel.selectRoleLabel(it) },
-                            onCategorySelect = { hallViewModel.selectCategoryLabel(it) },
-                            onItemClick = { item ->
-                                val url = "https://ehall.cqwu.edu.cn/appShow?appId=${item.appId}"
-                                nav.navigate(
-                                    Routes.unifiedWebViewRoute(
-                                        url,
-                                        hallI18n.appName(item.appId, item.appName),
-                                    )
-                                )
-                            },
-                        )
-                    }
+            // ═══ 分类索引栏（仅「全部」页）═══
+            // 用 AnimatedVisibility 淡出 + 收起：左右滑动切换 Tab 时不会「一半就瞬间消失」，
+            // 且浮层高度有动画，hallTopInset 平滑变化，列表留白不会跟着跳
+            AnimatedVisibility(
+                visible = hallPagerState.currentPage == 0 && uiState.categories.isNotEmpty(),
+                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
+            ) {
+                HallSectionIndex(
+                    categories = uiState.categories,
+                    hallI18n = hallI18n,
+                    activeIndex = allActiveSectionIndex,
+                    showDivider = allShowIndexDivider,
+                    onSectionClick = { index ->
+                        scope.launch {
+                            // 负偏移 = 让目标分组停在标题栏下沿，正好露出分组标题
+                            allListState.animateScrollToItem(
+                                allSectionStartIndices[index] + 1,
+                                -hallTopInsetPx,
+                            )
+                        }
+                    },
+                )
+            }
+
+            // ═══ 搜索页头部（搜索框 + 角色/分类筛选胶囊）═══
+            AnimatedVisibility(
+                visible = hallPagerState.currentPage == 2,
+                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
+            ) {
+                Column {
+                    HallSearchInputRow(
+                        query = uiState.searchQuery,
+                        onQueryChange = { hallViewModel.setSearchQuery(it) },
+                        onSearch = { hallViewModel.performSearch() },
+                    )
+                    HallSearchLabelRow(
+                        labels = uiState.roleLabels,
+                        selectedLabelId = uiState.selectedRoleLabelId,
+                        onSelect = { hallViewModel.selectRoleLabel(it) },
+                    )
+                    HallSearchLabelRow(
+                        labels = uiState.categoryLabels,
+                        selectedLabelId = uiState.selectedCategoryLabelId,
+                        onSelect = { hallViewModel.selectCategoryLabel(it) },
+                    )
                 }
             }
         }
@@ -249,38 +379,12 @@ fun HallPageContent(
 private fun HallSearchTab(
     uiState: HallUiState,
     hallI18n: HallI18n,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
     onReLogin: () -> Unit,
     onRetry: () -> Unit,
-    onRoleSelect: (String?) -> Unit,
-    onCategorySelect: (String?) -> Unit,
     onItemClick: (HallItem) -> Unit,
+    topInset: Dp = 0.dp,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        HallSearchInputRow(
-            query = uiState.searchQuery,
-            onQueryChange = onQueryChange,
-            onSearch = onSearch,
-        )
-
-        HallSearchLabelRow(
-            labels = uiState.roleLabels,
-            selectedLabelId = uiState.selectedRoleLabelId,
-            onSelect = onRoleSelect,
-        )
-
-        HallSearchLabelRow(
-            labels = uiState.categoryLabels,
-            selectedLabelId = uiState.selectedCategoryLabelId,
-            onSelect = onCategorySelect,
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-        ) {
+    Box(modifier = Modifier.fillMaxSize()) {
             when {
                 uiState.requiresReLogin -> {
                     ReLoginContent(
@@ -317,11 +421,11 @@ private fun HallSearchTab(
                             items = uiState.searchResults,
                             hallI18n = hallI18n,
                             onItemClick = onItemClick,
+                            topInset = topInset,
                         )
                     }
                 }
             }
-        }
     }
 }
 
@@ -418,74 +522,37 @@ private fun AllAppsList(
     hallI18n: HallI18n,
     onItemClick: (HallItem) -> Unit,
     onFavoriteClick: ((HallItem) -> Unit)? = null,
+    topInset: Dp = 0.dp,
+    listState: LazyListState,
 ) {
-    val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-
-    val sectionStartIndices = remember(categories) {
-        var index = 0
-        categories.map { category ->
-            val start = index
-            index += 1 + category.appList.size
-            start
-        }
-    }
-    val activeSectionIndex by remember(categories, sectionStartIndices) {
-        derivedStateOf {
-            val firstVisible = listState.firstVisibleItemIndex
-            var active = 0
-            sectionStartIndices.forEachIndexed { sectionIndex, start ->
-                if (start <= firstVisible) active = sectionIndex
+    LazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = 4.dp),
+    ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+        categories.forEach { category ->
+            item(key = "header_${category.categoryId}") {
+                HallCategoryHeader(hallI18n.categoryName(category.categoryId, category.categoryName))
             }
-            active
-        }
-    }
-    val showIndexDivider by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
-        }
-    }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        if (categories.isNotEmpty()) {
-            HallSectionIndex(
-                categories = categories,
-                hallI18n = hallI18n,
-                activeIndex = activeSectionIndex,
-                showDivider = showIndexDivider,
-                onSectionClick = { index ->
-                    scope.launch {
-                        listState.animateScrollToItem(sectionStartIndices[index])
-                    }
-                },
-            )
-        }
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),
-            contentPadding = PaddingValues(vertical = 4.dp),
-        ) {
-            categories.forEach { category ->
-                item(key = "header_${category.categoryId}") {
-                    HallCategoryHeader(hallI18n.categoryName(category.categoryId, category.categoryName))
-                }
-                items(category.appList, key = { it.appId }) { item ->
-                    HallListItem(
-                        item = item,
-                        displayName = hallI18n.appName(item.appId, item.appName),
-                        isLoggedIn = isLoggedIn,
-                        isTogglingFavorite = togglingAppId == item.appId,
-                        onClick = { onItemClick(item) },
-                        onFavoriteClick = onFavoriteClick,
-                    )
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        thickness = 0.5.dp,
-                    )
-                }
+            items(
+                category.appList,
+                // 各分类展开在同一个 LazyColumn 里，key 只用 appId 时，
+                // 服务端若把同一应用挂到多个分类就会重复 key 并崩溃；带分类前缀可避免
+                key = { "${category.categoryId}_${it.appId}" },
+            ) { item ->
+                HallListItem(
+                    item = item,
+                    displayName = hallI18n.appName(item.appId, item.appName),
+                    isLoggedIn = isLoggedIn,
+                    isTogglingFavorite = togglingAppId == item.appId,
+                    onClick = { onItemClick(item) },
+                    onFavoriteClick = onFavoriteClick,
+                )
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    thickness = 0.5.dp,
+                )
             }
         }
     }
@@ -546,9 +613,12 @@ private fun FlatAppsList(
     items: List<HallItem>,
     hallI18n: HallI18n,
     onItemClick: (HallItem) -> Unit,
+    topInset: Dp = 0.dp,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(items = items, key = { it.appId }) { item ->
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+        // 收藏/搜索结果由服务端下发，同一 appId 重复出现会让 key 冲突而崩溃，这里按 appId 去重
+        items(items = items.distinctBy { it.appId }, key = { it.appId }) { item ->
             HallListItem(
                 item = item,
                 displayName = hallI18n.appName(item.appId, item.appName),
@@ -579,6 +649,7 @@ private fun FavoriteAppsContent(
     onItemClick: (HallItem) -> Unit,
     onReLogin: () -> Unit,
     onRetry: () -> Unit,
+    topInset: Dp = 0.dp,
 ) {
     when {
         isLoading -> {
@@ -626,6 +697,7 @@ private fun FavoriteAppsContent(
                 items = items,
                 hallI18n = hallI18n,
                 onItemClick = onItemClick,
+                topInset = topInset,
             )
         }
     }

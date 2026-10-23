@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,14 +53,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.profile.data.MenuCategory
 import edu.cqwu.electricity.profile.data.StudentInfo
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,13 +75,13 @@ fun MyInfoScreen(
     viewModel: MyInfoViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     LaunchedEffect(Unit) {
         viewModel.loadIfNeeded()
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.my_info_title), fontWeight = FontWeight.Bold) },
@@ -89,13 +93,14 @@ fun MyInfoScreen(
                 colors = topBarColors,
             )
         },
-    ) { innerPadding ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = { viewModel.loadStudentInfo() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
         ) {
             when {
                 uiState.needsLogin -> {
@@ -119,6 +124,7 @@ fun MyInfoScreen(
                         studentInfo = uiState.studentInfo!!,
                         menuCategories = uiState.menuCategories,
                         onNavigateToWebView = onNavigateToWebView,
+                        topInset = topInset,
                     )
                 }
                 else -> {
@@ -140,12 +146,14 @@ private fun MyInfoContent(
     menuCategories: List<MenuCategory>,
     onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
+    topInset: Dp = 0.dp,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
+        Spacer(modifier = Modifier.height(topInset))
         // ── 顶部头像 ──
         Box(
             modifier = Modifier.fillMaxWidth()

@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -49,24 +47,17 @@ data class TableColumn(
 )
 
 /**
- * 通用记录数据表格：表头 + 数据行 + 可选底部总计。
+ * 记录表格表头行（表头文案 + 底部分割线）。
  *
- * 与数据模型解耦：调用方把每条记录映射为各列显示文本（含格式化），
- * 表格组件只负责按 [columns] 渲染排版。
- *
- * @param columns 列定义
- * @param rows 每行 → 各列显示文本
- * @param footer 底部总计行文本；null 时不显示总计
+ * 单独抽出来给「表头要并入标题栏浮层、和标题栏一起吸顶模糊」的页面（记录列表外壳）复用，
+ * 保证浮层里的表头与滚动区里的单元格列宽、对齐完全一致。
  */
 @Composable
-fun RecordDataTable(
+fun RecordTableHeader(
     columns: List<TableColumn>,
-    rows: List<List<String>>,
-    footer: List<String>? = null,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        // 表头
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,46 +75,59 @@ fun RecordDataTable(
             }
         }
         HorizontalDivider()
+    }
+}
 
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(rows) { row ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    columns.forEachIndexed { index, column ->
-                        Text(
-                            text = row.getOrElse(index) { "" },
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = if (column.alignEnd) TextAlign.End else TextAlign.Start,
-                            modifier = Modifier.weight(column.weight)
-                        )
-                    }
-                }
-                HorizontalDivider()
+/** 记录表格数据行。 */
+@Composable
+fun RecordTableRow(
+    columns: List<TableColumn>,
+    row: List<String>,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            columns.forEachIndexed { index, column ->
+                Text(
+                    text = row.getOrElse(index) { "" },
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = if (column.alignEnd) TextAlign.End else TextAlign.Start,
+                    modifier = Modifier.weight(column.weight)
+                )
             }
         }
+        HorizontalDivider()
+    }
+}
 
-        // 底部总计
-        if (footer != null) {
-            HorizontalDivider()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                columns.forEachIndexed { index, column ->
-                    Text(
-                        text = footer.getOrElse(index) { "" },
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = if (column.alignEnd) TextAlign.End else TextAlign.Start,
-                        modifier = Modifier.weight(column.weight)
-                    )
-                }
+/** 记录表格底部总计行。 */
+@Composable
+fun RecordTableFooter(
+    columns: List<TableColumn>,
+    footer: List<String>,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        HorizontalDivider()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            columns.forEachIndexed { index, column ->
+                Text(
+                    text = footer.getOrElse(index) { "" },
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = if (column.alignEnd) TextAlign.End else TextAlign.Start,
+                    modifier = Modifier.weight(column.weight)
+                )
             }
         }
     }
@@ -145,50 +149,6 @@ data class RecordTablePageV2(
     val emptyText: String = "",
     val isLoading: Boolean = false,
 )
-
-/**
- * 通用记录结果区：错误态 / 加载留白 / 数据表格（含底部总计）/ 空态 切换。
- *
- * 供记录页外壳在"无 Tab（补助记录）或有 Tab 分页（用量报表）"两种布局中复用：
- * - 出错时显示统一错误态（[ReLoginContent]：居中文案 + 重试按钮）
- * - 查询中（[RecordTablePageV2.isLoading]）且无数据时**留白**
- * - 有数据时显示表格，查询完成但无数据显示空态
- *
- * @param columns 表格列定义
- * @param page 该页内容（行/总计/错误/空态/加载留白）
- * @param onRetry 错误态的重试回调（通常是页面的下拉刷新入口）
- */
-@Composable
-fun RecordTableArea(
-    columns: List<TableColumn>,
-    page: RecordTablePageV2,
-    onRetry: () -> Unit,
-) {
-    val error = page.error
-    when {
-        error != null -> {
-            ReLoginContent(
-                errorMessage = error,
-                requiresReLogin = false,
-                onReLogin = {},
-                onRetry = onRetry,
-            )
-        }
-
-        page.isLoading -> {
-            // 查询中且无数据：留白，避免闪"暂无数据"；进度由顶部下拉刷新指示提示
-            Box(modifier = Modifier.fillMaxSize())
-        }
-
-        page.rows.isNotEmpty() -> {
-            RecordDataTable(columns = columns, rows = page.rows, footer = page.footer)
-        }
-
-        else -> {
-            RecordCenteredText(page.emptyText, MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
 
 /**
  * 通用记录结果区共享：居中的错误/空态文本。

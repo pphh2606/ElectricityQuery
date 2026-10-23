@@ -32,12 +32,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,6 +62,7 @@ import edu.cqwu.electricity.campusnetwork.portal.data.PortalClient
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalOnlineInfo
 import edu.cqwu.electricity.campusnetwork.ui.KeyValueRows
 import edu.cqwu.electricity.campusnetwork.ui.field
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.BottomSheetItem
@@ -69,7 +70,8 @@ import edu.cqwu.electricity.common.ui.InfoSectionTitle
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.util.ToastUtils
 
@@ -113,7 +115,7 @@ fun PortalServiceScreen(
     val resources = LocalResources.current
     val nav = LocalNavController.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     var showServiceSheet by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -154,7 +156,7 @@ fun PortalServiceScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -175,14 +177,15 @@ fun PortalServiceScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         // 与其他页面一致：下拉刷新（不再在标题栏放刷新按钮）
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = { viewModel.load() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
         ) {
             // 说明：可滚动内容各自包一层 verticalScroll——错误态用的 ReLoginContent
             // 依赖 fillMaxSize 做整页居中，放进可滚动列会导致高度约束无限、居中失效。
@@ -194,6 +197,8 @@ fun PortalServiceScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState()),
                 ) {
+                    Spacer(modifier = Modifier.height(topInset))
+
                     OnlineContent(
                         state = state,
                         info = info,
@@ -211,6 +216,8 @@ fun PortalServiceScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState()),
                 ) {
+                    Spacer(modifier = Modifier.height(topInset))
+
                     NoSessionContent(onOpenAuthPage = openAuthPage)
                 }
 
@@ -223,6 +230,7 @@ fun PortalServiceScreen(
                     requiresReLogin = false,
                     onReLogin = {},
                     onRetry = { viewModel.load() },
+                    modifier = Modifier.padding(top = topInset),
                 )
             }
         }

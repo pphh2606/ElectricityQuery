@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.shortcut.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,11 +37,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -91,7 +93,7 @@ fun AddShortcutScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val scope = rememberCoroutineScope()
 
     var categories by remember { mutableStateOf<List<HomeCategory>>(emptyList()) }
@@ -123,7 +125,7 @@ fun AddShortcutScreen(
         selectedApp?.let { shortcutName = it.name }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -143,13 +145,13 @@ fun AddShortcutScreen(
                 colors = topBarColors
             )
         }
-    ) { innerPadding ->
+    ) { topInset ->
         when {
             isLoading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(top = topInset),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -157,22 +159,26 @@ fun AddShortcutScreen(
             }
             else -> {
                 // 加载失败时不再在内容区显示错误文案（toast 已提示），页面保留下拉重试入口
+                val pullState = rememberPullToRefreshState()
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
                     onRefresh = {
                         isRefreshing = true
                         scope.launch { loadCategories() }
                     },
+                    state = pullState,
+                    indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
                     modifier = Modifier.fillMaxSize(),
                 ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Spacer(modifier = Modifier.height(topInset))
+
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // ── 预览区（常驻顶部） ──
@@ -347,7 +353,9 @@ fun AddShortcutScreen(
 
                     items(
                         items = category.apps,
-                        key = { it.appId }
+                        // 同一个应用可能挂在多个分类下（首页资源里「活动报名」等 3 个就是这样），
+                        // 这些分类展开在同一个 LazyColumn 里，key 只用 appId 会重复并崩溃
+                        key = { "${category.categoryId}_${it.appId}" }
                     ) { app ->
                         BottomSheetItem(
                             icon = null,

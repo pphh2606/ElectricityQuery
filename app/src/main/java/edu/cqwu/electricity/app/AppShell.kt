@@ -33,8 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.HazeInput
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.hazeBlur
 import edu.cqwu.electricity.theme.ui.CustomSnackbarVisuals
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.navigation.LocalNavController
@@ -65,12 +66,15 @@ fun AppShell(
 ) {
     val appSettings = LocalAppSettingsState.current
     val blurRadiusDp = appSettings.sheetBlurRadius.dp
-    val backdropBlurStyle = remember(blurRadiusDp) {
-        HazeStyle(
-            blurRadius = blurRadiusDp,
-            noiseFactor = 0f,
-            tints = emptyList(),
-        )
+    val sheetBlurNoise = appSettings.sheetBlurNoise
+    val sheetBlurAlpha = appSettings.sheetBlurAlpha
+    // 弹窗模糊的观感参数由「弹窗背景模糊」左侧的底部面板调整，默认值即原来的效果
+    val backdropBlurStyle = remember(blurRadiusDp, sheetBlurNoise, sheetBlurAlpha) {
+        HazeBlurStyle {
+            blurRadius(blurRadiusDp)
+            noiseFactor(sheetBlurNoise)
+            alpha(sheetBlurAlpha)
+        }
     }
     val snackbarController = remember { SnackbarController() }
     val sheetVisibilityState = remember { SheetVisibilityState() }
@@ -105,9 +109,13 @@ fun AppShell(
                     .fillMaxSize()
                     .then(
                         if (useForegroundBlur) {
-                            Modifier.hazeEffect(style = backdropBlurStyle) {
-                                blurRadius = blurRadiusDp * blurProgress
-                            }
+                            Modifier.hazeBlur(
+                                input = HazeInput.Content,
+                                style = backdropBlurStyle.then {
+                                    blurRadius(blurRadiusDp * blurProgress)
+                                },
+                                performanceMode = appSettings.sheetBlurPerformance.toHaze(),
+                            )
                         } else {
                             Modifier
                         }

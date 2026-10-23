@@ -2,11 +2,9 @@ package edu.cqwu.electricity.app
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -24,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.ui.AppNavigationBarItem
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
 import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
@@ -92,27 +91,19 @@ fun MainTabScreen(
                 }
                 1 -> {
                     val hallViewModel: HallViewModel = viewModel()
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .statusBarsPadding(),
-                    ) {
-                        HallPageContent(
-                            hallViewModel = hallViewModel,
-                        )
-                    }
+                    HallPageContent(
+                        hallViewModel = hallViewModel,
+                    )
                 }
                 2 -> {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        ProfileTopBar()
-                        Box(modifier = Modifier.weight(1f)) {
-                            ProfilePageContent(
-                                onOpenHalfScreen = { url, title ->
-                                    halfScreenUrl = url
-                                    halfScreenTitle = title
-                                },
-                            )
-                        }
+                    BlurScaffold(topBar = { ProfileTopBar() }) { topInset ->
+                        ProfilePageContent(
+                            onOpenHalfScreen = { url, title ->
+                                halfScreenUrl = url
+                                halfScreenTitle = title
+                            },
+                            topInset = topInset,
+                        )
                     }
                 }
             }

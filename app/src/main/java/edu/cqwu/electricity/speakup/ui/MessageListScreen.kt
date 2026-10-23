@@ -33,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,9 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 /**
  * 留言列表页面。
@@ -70,7 +73,7 @@ fun MessageListScreen(
         factory = MessageListViewModel.Factory(areaCode, areaName)
     ),
 ) {
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val uiState by viewModel.uiState.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val listState = rememberLazyListState()
@@ -88,7 +91,7 @@ fun MessageListScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -105,13 +108,14 @@ fun MessageListScreen(
                 colors = topBarColors,
             )
         }
-    ) { innerPadding ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState is MessageListViewModel.UiState.Loading,
             onRefresh = { viewModel.refresh() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, uiState is MessageListViewModel.UiState.Loading, topInset) },
+            modifier = Modifier.fillMaxSize()
         ) {
             when (val state = uiState) {
                 is MessageListViewModel.UiState.Loading -> {
@@ -148,6 +152,7 @@ fun MessageListScreen(
                             contentPadding = PaddingValues(vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                             items(
                                 items = state.messages,
                                 key = { it.wid }

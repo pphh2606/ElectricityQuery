@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,11 +55,13 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -94,13 +97,17 @@ fun DashboardScreen(
     isLoading: Boolean,
     error: UiMessage?,
     onRefresh: () -> Unit,
+    topInset: Dp = 0.dp,
 ) {
     val nav = LocalNavController.current
     val resources = LocalResources.current
 
+    val pullState = rememberPullToRefreshState()
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
+        state = pullState,
+        indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
@@ -110,6 +117,7 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
+            item(key = "top_inset") { Spacer(modifier = Modifier.height(topInset)) }
             // ── 房间概要卡片（始终可见） ──
             item(key = "room_info") {
                 RoomInfoCard(room = room)

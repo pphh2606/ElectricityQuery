@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,6 +39,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -90,7 +93,7 @@ fun StorageClearScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val scope = rememberCoroutineScope()
 
@@ -222,7 +225,7 @@ fun StorageClearScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -242,7 +245,8 @@ fun StorageClearScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
@@ -255,16 +259,17 @@ fun StorageClearScreen(
                     }
                 }
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
         ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
         ) {
+            Spacer(modifier = Modifier.height(topInset + 8.dp))
             if (isLoading) {
                 LoadingDialog(message = stringResource(R.string.common_loading))
             } else {

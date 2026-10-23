@@ -1,10 +1,14 @@
 package edu.cqwu.electricity.cardcenter.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -23,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,9 +70,9 @@ fun CardCenterScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val nav = LocalNavController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -88,7 +93,8 @@ fun CardCenterScreen(
                 colors = topBarColors
             )
         }
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
@@ -99,15 +105,16 @@ fun CardCenterScreen(
                     isRefreshing = false
                 }
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize()
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                 // 功能网格：3 列 × 2 行（骨架与网格项统一由 common/ui 提供）
                 item(key = "grid") {
                     val resources = LocalResources.current

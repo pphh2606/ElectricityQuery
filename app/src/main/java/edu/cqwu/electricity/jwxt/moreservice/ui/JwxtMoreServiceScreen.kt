@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,13 +45,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppIconBox
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.core.ui.JwxtChipLabel
 import edu.cqwu.electricity.jwxt.core.ui.JwxtLabelChips
 import edu.cqwu.electricity.common.navigation.LocalNavController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 /**
  * 「更多服务」二级页（教务首页九宫格里「更多服务」格子的落地页）。
@@ -73,7 +77,7 @@ fun JwxtMoreServiceScreen(
         nav.navigate(Routes.unifiedWebViewRoute(url, name))
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -101,15 +105,24 @@ fun JwxtMoreServiceScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
+            )
+            // 分组 chip 并入标题栏浮层：和标题栏一起模糊、固定不滚动
+            val chipLabels = remember(uiState.groups) {
+                uiState.groups.map { JwxtChipLabel(it.name, it.count) }
+            }
+            JwxtLabelChips(
+                labels = chipLabels,
+                selectedIndex = uiState.selectedGroupIndex,
+                onSelect = { viewModel.selectGroup(it) },
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         when {
             uiState.requiresReLogin -> ReLoginContent(
                 requiresReLogin = true,
                 onReLogin = { nav.navigate(Routes.loginRoute()) },
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(top = topInset),
             )
 
             uiState.errorMessage != null -> ReLoginContent(
@@ -117,32 +130,18 @@ fun JwxtMoreServiceScreen(
                 requiresReLogin = false,
                 onReLogin = {},
                 onRetry = { viewModel.load() },
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(top = topInset),
             )
 
-            else -> Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
-                // 分组 chip 固定在顶栏下方：它只切换下面的列表内容，不随列表滚动
-                // 分组只在数据变化时重算：写在组合里会让每次重组（如图标加载完成）都新建一个 List
-                val chipLabels = remember(uiState.groups) {
-                    uiState.groups.map { JwxtChipLabel(it.name, it.count) }
-                }
-                JwxtLabelChips(
-                    labels = chipLabels,
-                    selectedIndex = uiState.selectedGroupIndex,
-                    onSelect = { viewModel.selectGroup(it) },
-                )
-
+            else -> {
+                val pullState = rememberPullToRefreshState()
                 PullToRefreshBox(
                     // 首屏也算「正在刷新」，让顶部指示器一进页面就转（页面不再有居中转圈）
                     isRefreshing = uiState.isLoading || uiState.isRefreshing,
                     onRefresh = { viewModel.load(isRefresh = true) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                    state = pullState,
+                    indicator = { BlurPullRefreshIndicator(pullState, uiState.isLoading || uiState.isRefreshing, topInset) },
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     when {
                         // 数据还没到：留白，否则会先闪一下「暂无可用的教务服务」
@@ -170,6 +169,7 @@ fun JwxtMoreServiceScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                         ) {
+                            item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                             uiState.currentCategories.forEach { category ->
                                 item(key = "header_${category.name}") {
                                     CategoryHeader(category.name)

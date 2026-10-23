@@ -5,11 +5,9 @@ package edu.cqwu.electricity.feeservicehall.ui
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -54,11 +53,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
-import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 
@@ -70,111 +69,80 @@ import edu.cqwu.electricity.common.ui.ReLoginContent
 @Composable
 internal fun FeeServiceHallOrderTab(
     uiState: FeeServiceHallUiState,
+    topInset: Dp,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
     onNavigateToOrderDetail: (OrderRecord) -> Unit,
-    filterProjectName: String,
-    filterStartDate: String,
-    filterEndDate: String,
-    showFilter: Boolean,
-    onProjectNameChange: (String) -> Unit,
-    onStartDateChange: (String) -> Unit,
-    onEndDateChange: (String) -> Unit,
-    onApplyFilter: () -> Unit,
-    onResetFilter: () -> Unit,
     onReLogin: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        // ── 筛选面板 ──
-        AnimatedVisibility(
-            visible = showFilter,
-            enter = expandVertically(),
-            exit = shrinkVertically(),
-        ) {
-            OrderFilterPanel(
-                projectName = filterProjectName,
-                onProjectNameChange = onProjectNameChange,
-                startDate = filterStartDate,
-                onStartDateChange = onStartDateChange,
-                endDate = filterEndDate,
-                onEndDateChange = onEndDateChange,
-                onApply = onApplyFilter,
-                onReset = onResetFilter,
-            )
-        }
+    val pullState = rememberPullToRefreshState()
+    PullToRefreshBox(
+        isRefreshing = uiState.isOrdersRefreshing,
+        onRefresh = onRefresh,
+        state = pullState,
+        indicator = { BlurPullRefreshIndicator(pullState, uiState.isOrdersRefreshing, topInset) },
+        modifier = modifier.fillMaxSize(),
+    ) {
+        when {
+            uiState.isOrdersLoading -> {
+                Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            uiState.orderErrorMessage != null && uiState.orders.isEmpty() -> {
+                ReLoginContent(
+                    errorMessage = stringResource(R.string.fee_hall_load_failed, uiState.orderErrorMessage ?: ""),
+                    requiresReLogin = uiState.orderRequiresReLogin,
+                    onReLogin = onReLogin,
+                    onRetry = onRefresh,
+                )
+            }
+            uiState.orders.isEmpty() -> {
+                Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
+                    Text(stringResource(R.string.fee_hall_no_orders), style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            else -> {
+                val listState = rememberLazyListState()
+                val shouldLoadMore by remember {
+                    derivedStateOf {
+                        val layoutInfo = listState.layoutInfo
+                        val totalItems = layoutInfo.totalItemsCount
+                        val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        totalItems > 0 && lastVisibleIndex >= totalItems - 3
+                            && uiState.orderHasMore && !uiState.isLoadingMoreOrders
+                    }
+                }
+                LaunchedEffect(shouldLoadMore) {
+                    if (shouldLoadMore) onLoadMore()
+                }
 
-        PullToRefreshBox(
-            isRefreshing = uiState.isOrdersRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            when {
-                uiState.isOrdersLoading -> {
-                    Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                uiState.orderErrorMessage != null && uiState.orders.isEmpty() -> {
-                    ReLoginContent(
-                        errorMessage = stringResource(R.string.fee_hall_load_failed, uiState.orderErrorMessage ?: ""),
-                        requiresReLogin = uiState.orderRequiresReLogin,
-                        onReLogin = onReLogin,
-                        onRetry = onRefresh,
-                    )
-                }
-                uiState.orders.isEmpty() -> {
-                    Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.fee_hall_no_orders), style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                else -> {
-                    val listState = rememberLazyListState()
-                    val shouldLoadMore by remember {
-                        derivedStateOf {
-                            val layoutInfo = listState.layoutInfo
-                            val totalItems = layoutInfo.totalItemsCount
-                            val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                            totalItems > 0 && lastVisibleIndex >= totalItems - 3
-                                && uiState.orderHasMore && !uiState.isLoadingMoreOrders
-                        }
-                    }
-                    LaunchedEffect(shouldLoadMore) {
-                        if (shouldLoadMore) onLoadMore()
-                    }
-
-                    Column(Modifier.fillMaxSize()) {
-                        ListStatsRow(
-                            loadedCount = uiState.orders.size,
-                            currentPage = uiState.orderPageCurrent,
-                            totalPages = uiState.orderTotalPages,
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                ) {
+                    item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+                    items(uiState.orders, key = { it.orderNo }) { order ->
+                        OrderListItem(
+                            order = order,
+                            onClick = { onNavigateToOrderDetail(order) },
                         )
-                        LazyColumn(
-                            state = listState,
-                            modifier = Modifier.fillMaxSize().weight(1f),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                        ) {
-                            items(uiState.orders, key = { it.orderNo }) { order ->
-                                OrderListItem(
-                                    order = order,
-                                    onClick = { onNavigateToOrderDetail(order) },
-                                )
-                                HorizontalDivider(
-                                    color = MaterialTheme.colorScheme.outlineVariant,
-                                    thickness = 0.5.dp,
-                                )
-                            }
-                            item(key = "footer") {
-                                // 列表为空时不显示（加载中除外），与改造前一致
-                                if (uiState.isLoadingMoreOrders || uiState.orders.isNotEmpty()) {
-                                    PagingFooter(
-                                        isLoadingMore = uiState.isLoadingMoreOrders,
-                                        hasMore = uiState.orderHasMore,
-                                        onLoadMore = onLoadMore,
-                                    )
-                                }
-                            }
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            thickness = 0.5.dp,
+                        )
+                    }
+                    item(key = "footer") {
+                        // 列表为空时不显示（加载中除外），与改造前一致
+                        if (uiState.isLoadingMoreOrders || uiState.orders.isNotEmpty()) {
+                            PagingFooter(
+                                isLoadingMore = uiState.isLoadingMoreOrders,
+                                hasMore = uiState.orderHasMore,
+                                onLoadMore = onLoadMore,
+                            )
                         }
                     }
                 }
@@ -184,7 +152,7 @@ internal fun FeeServiceHallOrderTab(
 }
 
 @Composable
-private fun OrderFilterPanel(
+internal fun OrderFilterPanel(
     projectName: String,
     onProjectNameChange: (String) -> Unit,
     startDate: String,

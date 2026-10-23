@@ -3,7 +3,9 @@
 package edu.cqwu.electricity.jwxt.timetable.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -33,12 +34,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +53,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.chrisbanes.haze.HazeState
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
@@ -55,10 +61,11 @@ import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.core.model.JwxtScheduleTarget
 import edu.cqwu.electricity.jwxt.core.model.JwxtTimetableCourse
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 /**
  * 周课表（本地化 jwfw `/jmobile` 的 index 应用 `home/timetable/newTimetable` 页）。
@@ -109,8 +116,118 @@ fun JwxtTimetableScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    Scaffold(
-        topBar = {
+    // 顶栏高度实测值：网格首项按它留白，课程卡片才能滚到标题栏背后被模糊。
+    // 初值用估算值（状态栏 + 64dp），用 0 会让第一帧网格从屏幕顶端开始画、测完再跳一下
+    val density = LocalDensity.current
+    var topBarHeightPx by remember { mutableIntStateOf(with(density) { 88.dp.roundToPx() }) }
+    val topBarInset = with(density) { topBarHeightPx.toDp() }
+    val hazeState = remember { HazeState() }
+    val headerBlurModifier = rememberHazeBlurModifier(hazeState)
+
+    // 周次 / 学期切换行：网格正常时由 TimetableGrid 的顶部浮层渲染（与表头一起模糊），
+    // 空态 / 错误态时由页面直接渲染（此时没有可模糊的源）
+    val navigatorRow: @Composable () -> Unit = {
+        NavigatorRow(
+            state = uiState,
+            onSelectWeek = viewModel::selectWeek,
+            onSelectTerm = viewModel::selectTerm,
+            onPick = { picker = uiState.mode },
+            onModeChange = viewModel::selectMode,
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // ── 内容区：铺满整屏（一直画到屏幕顶端，含标题栏背后）──
+        // 这样网格滚动时，课程卡片会进入标题栏背后被模糊；标题栏由后面的浮层绘制在它上面
+        Box(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when {
+                // 没有网格可画（会话过期 / 加载失败 / 没课 / 没节次）：切换行保留，但不再叠浮层
+                uiState.requiresReLogin || uiState.errorMessage != null ||
+                    uiState.courses.isEmpty() || uiState.sections.isEmpty() -> {
+                    // 这里没有可模糊的源，所以照旧把整块让到标题栏下方
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = topBarInset),
+                    ) {
+                        navigatorRow()
+                        PullToRefreshBox(
+                            // 首次加载也算「正在刷新」，让顶部下拉指示器一进页面就出现（与教务首页、成绩页一致）
+                            isRefreshing = uiState.isLoading || uiState.isRefreshing,
+                            onRefresh = { viewModel.refresh() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                        ) {
+                            when {
+                                // 会话过期：内容区显示「重新登录」，顶部的学期 / 周次切换保留
+                                uiState.requiresReLogin -> ReLoginContent(
+                                    requiresReLogin = true,
+                                    onReLogin = { nav.navigate(Routes.loginRoute()) },
+                                )
+
+                                // 某个学期加载失败（如教务回「该校历未维护」）：只在**内容区**提示，
+                                // 上面的学期 / 周次切换必须留着——否则用户被全屏错误页挡住，切不回别的学期
+                                uiState.errorMessage != null -> ReLoginContent(
+                                    errorMessage = uiState.errorMessage,
+                                    requiresReLogin = false,
+                                    onReLogin = {},
+                                    // 重试「当前选中的学期」；load() 会重新落到默认学期，等于把用户的选择丢掉
+                                    onRetry = { viewModel.refresh() },
+                                )
+
+                                // 数据还没到：留白（顶部指示器在转），此时不能说「本周暂无课程」
+                                uiState.courses.isEmpty() && uiState.isLoading ->
+                                    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {}
+
+                                // 没课；或接口没给节次（没有节次就无法定位行，画出格子必然错位）
+                                else -> Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState()),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.jwxt_timetable_empty),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                else -> TimetableGrid(
+                    sections = uiState.sections,
+                    courses = uiState.courses,
+                    weekStartDate = uiState.weekStartDate,
+                    hazeState = hazeState,
+                    isRefreshing = uiState.isLoading || uiState.isRefreshing,
+                    onRefresh = { viewModel.refresh() },
+                    navigationRow = navigatorRow,
+                    onCourseClick = {
+                        detailCourse = it
+                        detailVisible = true
+                    },
+                    topBarInset = topBarInset,
+                )
+            }
+        }
+
+        // ── 标题栏浮层：最后绘制，压在内容之上；模糊其背后滚过的课程卡片 ──
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .onSizeChanged { topBarHeightPx = it.height }
+                .then(headerBlurModifier)
+                // 标题栏空白区域的点击不要穿透到底下的网格
+                .pointerInput(Unit) { detectTapGestures { } },
+        ) {
             TopAppBar(
                 title = {
                     Text(
@@ -148,80 +265,8 @@ fun JwxtTimetableScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
             )
-        },
-    ) { paddingValues ->
-        // 顶部是「学期 / 周次」切换，下面是内容区——两者分离，任何内容态都不会把切换行一起挡住：
-        // 会话过期、或某个学期加载失败（教务「该校历未维护」）时，用户都还能切回别的学期
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
-            NavigatorRow(
-                state = uiState,
-                onSelectWeek = viewModel::selectWeek,
-                onSelectTerm = viewModel::selectTerm,
-                onPick = { picker = uiState.mode },
-                onModeChange = viewModel::selectMode,
-            )
-
-            PullToRefreshBox(
-                // 首次加载也算「正在刷新」，让顶部下拉指示器一进页面就出现（与教务首页、成绩页一致）
-                isRefreshing = uiState.isLoading || uiState.isRefreshing,
-                onRefresh = { viewModel.refresh() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-            ) {
-                when {
-                    // 会话过期：内容区显示「重新登录」，顶部的学期 / 周次切换保留
-                    uiState.requiresReLogin -> ReLoginContent(
-                        requiresReLogin = true,
-                        onReLogin = { nav.navigate(Routes.loginRoute()) },
-                    )
-
-                    // 某个学期加载失败（如教务回「该校历未维护」）：只在**内容区**提示，
-                    // 上面的学期 / 周次切换必须留着——否则用户被全屏错误页挡住，切不回别的学期
-                    uiState.errorMessage != null -> ReLoginContent(
-                        errorMessage = uiState.errorMessage,
-                        requiresReLogin = false,
-                        onReLogin = {},
-                        // 重试「当前选中的学期」；load() 会重新落到默认学期，等于把用户的选择丢掉
-                        onRetry = { viewModel.refresh() },
-                    )
-
-                    // 数据还没到：留白（顶部指示器在转），此时不能说「本周暂无课程」
-                    uiState.courses.isEmpty() && uiState.isLoading ->
-                        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {}
-
-                    // 没课；或接口没给节次（没有节次就无法定位行，画出格子必然错位）
-                    uiState.courses.isEmpty() || uiState.sections.isEmpty() -> Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.jwxt_timetable_empty),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-
-                    else -> TimetableGrid(
-                        sections = uiState.sections,
-                        courses = uiState.courses,
-                        weekStartDate = uiState.weekStartDate,
-                        onCourseClick = {
-                            detailCourse = it
-                            detailVisible = true
-                        },
-                    )
-                }
-            }
         }
     }
 

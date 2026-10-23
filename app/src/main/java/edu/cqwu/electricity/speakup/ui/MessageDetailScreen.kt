@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -51,9 +53,11 @@ import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SelectableContainer
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -135,7 +139,7 @@ fun MessageDetailScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val uiState by viewModel.uiState.collectAsState()
 
@@ -144,7 +148,7 @@ fun MessageDetailScreen(
         viewModel.loadDetailDirect()
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -175,13 +179,14 @@ fun MessageDetailScreen(
                 colors = topBarColors,
             )
         }
-    ) { innerPadding ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState is MessageDetailViewModel.UiState.Loading,
             onRefresh = { viewModel.loadDetailDirect() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, uiState is MessageDetailViewModel.UiState.Loading, topInset) },
+            modifier = Modifier.fillMaxSize()
         ) {
             when (val state = uiState) {
                 is MessageDetailViewModel.UiState.Loading -> {}
@@ -196,7 +201,7 @@ fun MessageDetailScreen(
                 }
 
                 is MessageDetailViewModel.UiState.Success -> {
-                    MessageDetailContent(message = state.message)
+                    MessageDetailContent(message = state.message, topInset = topInset)
                 }
             }
         }
@@ -204,13 +209,14 @@ fun MessageDetailScreen(
 }
 
 @Composable
-private fun MessageDetailContent(message: ConsultationMessage) {
+private fun MessageDetailContent(message: ConsultationMessage, topInset: Dp = 0.dp) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(topInset))
         // ── 留言区域 ──
 
         // 标题（加粗）

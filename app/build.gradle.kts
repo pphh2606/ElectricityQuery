@@ -42,8 +42,8 @@ val gitCommitHash: String by lazy {
 android {
     namespace = "edu.cqwu.electricity"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+        version = release(37) {
+            minorApiLevel = 0
         }
     }
 
@@ -53,7 +53,7 @@ android {
 
     defaultConfig {
         applicationId = "edu.cqwu.electricity"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = currentVersionCode
         versionName = "1.2"
@@ -125,6 +125,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.haze)
+    implementation(libs.haze.blur)
     implementation(libs.okhttp)
     implementation(libs.gson)
     implementation(libs.coroutines.android)

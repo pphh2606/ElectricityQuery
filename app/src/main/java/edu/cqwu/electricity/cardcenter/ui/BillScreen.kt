@@ -1,7 +1,9 @@
 package edu.cqwu.electricity.cardcenter.ui
 
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -50,6 +52,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -112,7 +115,7 @@ fun BillScreen(
     // ── 提示弹窗状态 ──
     var showHintDialog by remember { mutableStateOf(false) }
 
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     // 网页版账单 URL（在原生实现出问题时作为降级方案）
     val webBillUrl = "http://218.194.176.214:8382/epay/thirdapp/bill"
@@ -179,7 +182,7 @@ fun BillScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -224,15 +227,14 @@ fun BillScreen(
                         )
                     }
                 },
-                colors = topBarColors
+                colors = transparentTopBarColors()
             )
-        }
-    ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            // ── 标签页切换栏（点击 → animateScrollToPage）──
+            // 标签页切换栏、筛选面板、当前页统计行并入标题栏浮层：和标题栏一起模糊、固定不滚动
             PrimaryTabRow(
                 selectedTabIndex = pagerState.currentPage,
                 modifier = Modifier.fillMaxWidth(),
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.primary,
                 divider = {},
             ) {
                 tabLabelKeys.forEachIndexed { index, key ->
@@ -251,8 +253,6 @@ fun BillScreen(
                     )
                 }
             }
-
-            // ── 筛选面板 ──
             AnimatedVisibility(
                 visible = uiState.showFilterPanel,
                 enter = expandVertically(),
@@ -273,8 +273,17 @@ fun BillScreen(
                     onReset = { viewModel.resetFilter() }
                 )
             }
-
-            // ── HorizontalPager 内容区域 ──
+            val currentTabNo = tabTabNo[pagerState.currentPage]
+            val currentPageInfo = uiState.tabCache[currentTabNo]
+            ListStatsRow(
+                loadedCount = currentPageInfo?.records?.size ?: 0,
+                currentPage = currentPageInfo?.currentPage ?: 0,
+                totalPages = currentPageInfo?.totalPages ?: 0,
+                visible = currentPageInfo != null && currentPageInfo.records.isNotEmpty(),
+            )
+        }
+    ) { topInset ->
+        // ── HorizontalPager 内容区域 ──
             // 每个 page 从 tabCache 读取自己的数据，避免预加载时显示其他 tab 的错误数据。
             // 无缓存时 pageInfo 为 null，由该 Tab 自己的加载态（perTabLoading）决定显示加载还是暂无数据。
             HorizontalPager(
@@ -284,9 +293,12 @@ fun BillScreen(
                 val pageTabNo = tabTabNo[pageIndex]
                 // 从 tabCache 取该 page 独立的数据，无缓存时返回 null（显示空数据/加载态）
                 val pageInfo = uiState.tabCache[pageTabNo]
+                val pullState = rememberPullToRefreshState()
                 PullToRefreshBox(
                     isRefreshing = uiState.isRefreshing && pageTabNo == uiState.activeTab,
                     onRefresh = { viewModel.loadBills(isRefresh = true) },
+                    state = pullState,
+                    indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing && pageTabNo == uiState.activeTab, topInset) },
                     modifier = Modifier.fillMaxSize()
                 ) {
                    if (uiState.perTabLoading[pageTabNo] == true) {
@@ -299,20 +311,13 @@ fun BillScreen(
                        }
                    } else {
                        Column(modifier = Modifier.fillMaxSize()) {
-                           // ⭐ 固定统计行（不随 LazyColumn 滚动）
-                           if (pageInfo != null && pageInfo.records.isNotEmpty()) {
-                               ListStatsRow(
-                                    loadedCount = pageInfo.records.size,
-                                    currentPage = pageInfo.currentPage,
-                                    totalPages = pageInfo.totalPages,
-                                )
-                           }
                            LazyColumn(
                                state = listStates[pageIndex],
-                               modifier = Modifier.fillMaxSize().weight(1f),
+                               modifier = Modifier.fillMaxSize(),
                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                                verticalArrangement = Arrangement.spacedBy(0.dp)
                            ) {
+                               item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                                when {
                                     // 逐 Tab 错误状态（后台 Tab 加载失败时的轻量提示）
                                     uiState.perTabError[pageTabNo] != null -> {
@@ -385,7 +390,6 @@ fun BillScreen(
                    }
                 }
             }
-        }
     }
 
     // ── 半屏 WebView 弹窗（账单详情）──

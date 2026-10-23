@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -52,9 +53,9 @@ fun SettingsScreen(
     onBack: () -> Unit,
 ) {
     val nav = LocalNavController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -74,14 +75,14 @@ fun SettingsScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
         ) {
+            Spacer(modifier = Modifier.height(topInset + 8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -124,6 +125,7 @@ fun SettingsScreen(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

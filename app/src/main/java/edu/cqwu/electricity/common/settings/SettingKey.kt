@@ -201,6 +201,68 @@ object SettingsKeys {
         default = 10f,
     )
 
+    // ── 弹窗背景模糊的高级参数（点「弹窗背景模糊」左侧弹出的底部面板里调整）──
+    // 名称与 HazeBlurStyle / hazeBlur 参数对应；默认值就是原来的观感
+
+    val SHEET_BLUR_NOISE = floatSetting(
+        name = "sheet_blur_noise",
+        default = 0f,
+    )
+
+    val SHEET_BLUR_ALPHA = floatSetting(
+        name = "sheet_blur_alpha",
+        default = 1f,
+    )
+
+    /** default / quality / balanced / performance */
+    val SHEET_BLUR_PERFORMANCE = stringSetting(
+        name = "sheet_blur_performance",
+        default = "default",
+    )
+
+    /**
+     * 标题栏毛玻璃开关。
+     *
+     * 默认开；系统不支持模糊（Android 12 以下或系统关闭了模糊）时由
+     * `isHazeBlurSupported()` 兜底，用户开关仍然保留，只是不产生效果。
+     */
+    val HEADER_BLUR_ENABLED = booleanSetting(
+        name = "header_blur_enabled",
+        default = true,
+    )
+
+    /**
+     * 标题栏毛玻璃的高级参数（「个性化 → 标题栏模糊 → 高级模糊设置」里调整）。
+     *
+     * 名称与 Haze 库的 `HazeBlurStyle` / `hazeBlur` 参数一一对应，默认值就是全项目统一采用的观感，
+     * 普通用户只碰开关、不会看到这些键。
+     */
+    val HEADER_BLUR_RADIUS = floatSetting(
+        name = "header_blur_radius",
+        default = 22f,
+    )
+
+    val HEADER_BLUR_NOISE = floatSetting(
+        name = "header_blur_noise",
+        default = 0.2f,
+    )
+
+    val HEADER_BLUR_ALPHA = floatSetting(
+        name = "header_blur_alpha",
+        default = 1f,
+    )
+
+    val HEADER_BLUR_BACKGROUND_ALPHA = floatSetting(
+        name = "header_blur_background_alpha",
+        default = 1f,
+    )
+
+    /** `HazePerformanceMode`：default / quality / balanced / performance */
+    val HEADER_BLUR_PERFORMANCE = stringSetting(
+        name = "header_blur_performance",
+        default = "default",
+    )
+
     val FONT_SCALE = floatSetting(
         name = "font_scale",
         default = 1f,

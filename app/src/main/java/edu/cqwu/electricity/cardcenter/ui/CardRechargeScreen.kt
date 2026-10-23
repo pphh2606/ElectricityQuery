@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.cardcenter.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -33,13 +35,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -85,7 +87,7 @@ fun CardRechargeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val context = LocalContext.current
     val resources = LocalResources.current
     val nav = LocalNavController.current
@@ -117,7 +119,7 @@ fun CardRechargeScreen(
     val hasValidAmount = effectiveAmount != null && effectiveAmount > 0
             && (maxBalance == null || effectiveAmount <= maxBalance)
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -138,15 +140,14 @@ fun CardRechargeScreen(
                 colors = topBarColors
             )
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+    ) { topInset ->
+        Column(modifier = Modifier.fillMaxSize()) {
+            val pullState = rememberPullToRefreshState()
             PullToRefreshBox(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = { viewModel.refreshCardInfo() },
+                state = pullState,
+                indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -158,6 +159,7 @@ fun CardRechargeScreen(
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    Spacer(Modifier.height(topInset))
                     // ============================================================
                     //  学号输入区域
                     // ============================================================

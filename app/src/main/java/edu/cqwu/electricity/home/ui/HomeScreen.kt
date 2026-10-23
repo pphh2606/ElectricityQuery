@@ -2,6 +2,7 @@
 
 package edu.cqwu.electricity.home.ui
 
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
@@ -13,6 +14,11 @@ import edu.cqwu.electricity.R
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -60,6 +66,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -93,16 +100,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.ui.AppIconBox
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.FeatureGrid
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.isHazeBlurSupported
+import edu.cqwu.electricity.common.ui.isHeaderBlurOn
+import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
+import edu.cqwu.electricity.common.ui.rememberHazeSourceModifier
 import edu.cqwu.electricity.common.settings.CustomServiceEntry
 import edu.cqwu.electricity.home.data.ExternalAppOpener
 import edu.cqwu.electricity.home.data.HomeApp
@@ -258,34 +263,25 @@ fun HomePage(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val hazeState = remember { HazeState() }
-    val blurSupported = isHazeBlurSupported()
-    val appSettings = LocalAppSettingsState.current
-    val blurRadius = appSettings.sheetBlurRadius.coerceIn(16f, 32f).dp
+    val headerBlurOn = isHeaderBlurOn()
 
     // 浮层实测高度（状态栏 + 标题栏 + 分类条），随搜索模式、分类条显隐自动修正，
     // 避免把高度写死导致标题栏与内容错位
     var headerHeightPx by remember { mutableIntStateOf(0) }
     val contentTopInset: Dp = with(LocalDensity.current) { headerHeightPx.toDp() }
+    // 分类索引点击后要把目标分组对齐到「标题栏下沿」，而不是屏幕顶端：
+    // 列表从屏幕顶端铺满（模糊改造后），对齐屏幕顶端会让分组标题藏进标题栏浮层背后
+    val contentTopInsetPx = with(LocalDensity.current) { contentTopInset.roundToPx() }
 
-    // Android 12+ 走 Haze 毛玻璃；更老的系统没有 RenderEffect，退回不透明标题栏
-    val headerModifier = if (blurSupported) {
-        Modifier.hazeEffect(
-            state = hazeState,
-            style = HazeStyle(
-                blurRadius = blurRadius,
-                tint = HazeTint(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f)),
-            ),
-        )
-    } else {
-        Modifier.background(MaterialTheme.colorScheme.surface)
-    }
+    // 标题栏模糊层：参数统一走 common/ui 的实现（与其它页共用同一套「高级模糊设置」参数）
+    val headerModifier = rememberHazeBlurModifier(hazeState)
 
     Box(modifier = modifier.fillMaxSize()) {
-        // ① 内容层：整页作为模糊源
+        // ① 内容层：作为模糊源（标题栏是兄弟节点，2250 结构下模糊本身是生效的）
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .hazeSource(hazeState)
+                .then(rememberHazeSourceModifier(hazeState))
         ) {
             HomePageContent(
                 homeViewModel = homeViewModel,
@@ -310,21 +306,36 @@ fun HomePage(
                 onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
                 onToggleSearch = { homeViewModel.enterSearchMode() },
                 onCloseSearch = { homeViewModel.clearSearch() },
-                containerColor = if (blurSupported) Color.Transparent else null,
+                containerColor = if (headerBlurOn) Color.Transparent else null,
             )
 
-            if (!uiState.isLoading && uiState.error == null && !uiState.isSearching) {
-                // LazyColumn 里 item 0 是顶部留白，item 1 才是「我的服务」，分类从 2 开始
-                val activeIndex =
-                    (listState.firstVisibleItemIndex - 1).coerceIn(0, uiState.categories.size)
-                val showDivider = listState.firstVisibleItemIndex > 1 ||
-                    (listState.firstVisibleItemIndex == 1 && listState.firstVisibleItemScrollOffset > 0)
+            // 分类索引条不是启动第一时间就有（要等首页数据回来），
+            // 用 AnimatedVisibility 淡入展开，避免它突然出现把标题栏和列表内容同时顶一下
+            AnimatedVisibility(
+                visible = !uiState.isLoading && uiState.error == null && !uiState.isSearching,
+                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
+            ) {
+                // LazyColumn 里 item 0 是顶部留白，item 1 才是「我的服务」，分类从 2 开始。
+                // 取「标题栏下沿以下第一个可见项」而不是 firstVisibleItemIndex：
+                // 胶囊跳转会让上一项尾部留在标题栏背后，用 firstVisibleItemIndex 会高亮错一格
+                val activeIndex = (
+                    (listState.layoutInfo.visibleItemsInfo
+                        .firstOrNull { it.offset + it.size > contentTopInsetPx }?.index ?: 0) - 1
+                    ).coerceIn(0, uiState.categories.size)
+                // 索引条下方的细线只要列表「已经滚下去」就出现：
+                // 不能用 firstVisibleItemIndex 判断——列表首项是顶栏留白占位，
+                // 那样要滚过整个留白高度（浮层高）才会触发，看起来像"滑一段距离才出来"
+                val showDivider = listState.canScrollBackward
                 HomeSectionIndex(
                     categoryNames = uiState.categories.map { it.categoryName },
                     activeIndex = activeIndex,
                     showDivider = showDivider,
                     onSectionClick = { index ->
-                        scope.launch { listState.animateScrollToItem(index + 1) }
+                        // 负偏移 = 让目标分组停在标题栏下沿，正好露出分组标题
+                        scope.launch {
+                            listState.animateScrollToItem(index + 1, -contentTopInsetPx)
+                        }
                     },
                 )
             }
@@ -407,10 +418,13 @@ fun HomePageContent(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             // 首次加载与手动下拉共用同一刷新指示器（不再显示页面中央转圈）
             isRefreshing = uiState.isRefreshing || uiState.isLoading,
             onRefresh = { homeViewModel.refresh() },
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing || uiState.isLoading, contentTopInset) },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -502,7 +516,6 @@ fun HomePageContent(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
-                        // 顶部留白：让内容初始时从标题栏下方开始，滚动后内容才能进入标题栏背后
                         item(key = "top_inset") { Spacer(Modifier.height(contentTopInset)) }
                         // ── 我的服务区域（始终在分类列表顶部） ──
                         item(key = "my_services") {

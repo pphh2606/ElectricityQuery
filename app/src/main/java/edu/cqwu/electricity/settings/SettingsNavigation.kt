@@ -14,6 +14,7 @@ import edu.cqwu.electricity.settings.ui.BackupRestoreScreen
 import edu.cqwu.electricity.settings.ui.BackupTransferModeV2
 import edu.cqwu.electricity.settings.ui.BackupTransferScreen
 import edu.cqwu.electricity.settings.ui.ConfigScreen
+import edu.cqwu.electricity.settings.ui.HeaderBlurAdvancedScreen
 import edu.cqwu.electricity.settings.ui.PersonalizationScreen
 import edu.cqwu.electricity.settings.ui.QrCodeSettingsScreen
 import edu.cqwu.electricity.settings.ui.SettingsScreen
@@ -139,7 +140,15 @@ internal fun NavGraphBuilder.settingsGraph(
         PersonalizationScreen(
             onBack = { navController.popBackStack() },
             onNavigateToQrCodeSettings = { navController.navigate(Routes.QR_CODE_SETTINGS) },
+            onNavigateToAdvancedBlur = { navController.navigate(Routes.HEADER_BLUR_ADVANCED) },
             isDynamicColorSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+        )
+    }
+
+    // 标题栏毛玻璃高级参数页
+    animatedComposable(settings = settings, route = Routes.HEADER_BLUR_ADVANCED) {
+        HeaderBlurAdvancedScreen(
+            onBack = { navController.popBackStack() },
         )
     }
 

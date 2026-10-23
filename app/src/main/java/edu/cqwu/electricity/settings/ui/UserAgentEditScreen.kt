@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -52,7 +52,7 @@ fun UserAgentEditScreen(
     entryId: String,
     onBack: () -> Unit,
 ) {
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val isNew = entryId == "new"
 
     // 编辑模式下加载已有条目
@@ -66,7 +66,7 @@ fun UserAgentEditScreen(
 
     val canSave = userAgent.isNotBlank()
 
-    Scaffold(
+    BlurScaffold(
         // 键盘弹出时让出 IME 高度，避免遮挡底部操作按钮
         modifier = Modifier
             .fillMaxSize()
@@ -90,12 +90,8 @@ fun UserAgentEditScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
+    ) { topInset ->
+        Box(modifier = Modifier.fillMaxSize()) {
             // 用 Column + weight 让 Button 贴着底部
             Column(
                 modifier = Modifier
@@ -108,6 +104,7 @@ fun UserAgentEditScreen(
                         .weight(1f)
                         .verticalScroll(rememberScrollState()),
                 ) {
+                    Spacer(modifier = Modifier.height(topInset))
                     // ── 备注输入框 ──
                     TextField(
                         value = note,

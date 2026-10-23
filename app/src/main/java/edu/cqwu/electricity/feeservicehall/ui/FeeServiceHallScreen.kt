@@ -2,6 +2,12 @@
 
 package edu.cqwu.electricity.feeservicehall.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,12 +17,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -40,10 +48,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,36 +60,42 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.ReduceMotion
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppNavigationBarItem
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
 import edu.cqwu.electricity.feeservicehall.data.FeeItem
 import edu.cqwu.electricity.feeservicehall.data.FeeServiceHallApi
 import edu.cqwu.electricity.feeservicehall.data.OrderRecord
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.launch
 
@@ -115,7 +129,7 @@ fun FeeServiceHallScreen(
     val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(initialPage = initialTab, pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     var selectedOrder by remember { mutableStateOf<OrderRecord?>(null) }
     val snackbar = LocalSnackbarController.current
 
@@ -170,11 +184,54 @@ fun FeeServiceHallScreen(
     // 切 tab 后底栏必须回到可见，否则用户找不到导航；从子页面返回时的那一次不算
     ShowBottomBarOnChange(barScrollState, pagerState.currentPage)
 
+    // ── 首页 Tab 的分类索引状态提升到页面级 ──
+    // 索引条要挂进标题栏浮层才能和标题栏一起模糊、固定不滚动，状态就必须在这里持有。
+    // 列表首项是顶栏留白占位，所以索引下标、当前分类都要减 1。
+    val homeListState = rememberLazyListState()
+
+    // 顶栏浮层实测高度（由下方 content lambda 回传）：
+    // 分类索引跳转要停在标题栏下沿，否则分组标题会藏进浮层背后
+    var headerInset by remember { mutableStateOf(0.dp) }
+    val headerInsetPx = with(LocalDensity.current) { headerInset.roundToPx() }
+    val sections = remember(uiState.categories) {
+        uiState.categories.mapNotNull { category ->
+            val items = category.children?.filter { it.type == "2" } ?: emptyList()
+            if (items.isEmpty()) null
+            else FeeHallSection(id = category.id, name = category.name, itemCount = items.size)
+        }
+    }
+    val sectionStartIndices = remember(sections) {
+        var index = 0
+        sections.map { section ->
+            val start = index
+            index += 1 + section.itemCount
+            start
+        }
+    }
+    val activeSectionIndex by remember(sections, sectionStartIndices) {
+        derivedStateOf {
+            // 取「标题栏下沿以下第一个可见项」：胶囊跳转会刻意让上一项尾部留在标题栏背后，
+            // 用 firstVisibleItemIndex 会高亮错一格
+            val firstVisible = (
+                homeListState.layoutInfo.visibleItemsInfo
+                    .firstOrNull { it.offset + it.size > headerInsetPx }?.index ?: 0
+                ).let { if (it > 0) it - 1 else 0 }
+            var active = 0
+            sectionStartIndices.forEachIndexed { sectionIndex, start ->
+                if (start <= firstVisible) active = sectionIndex
+            }
+            active
+        }
+    }
+    val showIndexDivider by remember {
+        derivedStateOf { homeListState.canScrollBackward }
+    }
+
     // 外层 Box 只负责给底栏提供覆盖层与滚动判定：底栏不再占用布局，内容区高度恒定
     Box(
         modifier = Modifier.trackBottomBarScroll(barScrollState),
     ) {
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.fee_hall_title), fontWeight = FontWeight.Bold) },
@@ -202,41 +259,87 @@ fun FeeServiceHallScreen(
                 },
                 colors = topBarColors,
             )
+
+            // 首页 Tab 的分类索引条：挂进标题栏浮层，和标题栏一起模糊、固定不滚动
+            AnimatedVisibility(
+                visible = pagerState.currentPage == 0 &&
+                    !uiState.isLoading && uiState.errorMessage == null && sections.isNotEmpty(),
+                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
+            ) {
+                FeeServiceHallSectionIndex(
+                    sections = sections,
+                    activeIndex = activeSectionIndex,
+                    showDivider = showIndexDivider,
+                    onSectionClick = { index ->
+                        scope.launch {
+                            // +1 跳过列表首项（顶栏留白占位）；负偏移让分组停在标题栏下沿
+                            homeListState.animateScrollToItem(
+                                sectionStartIndices[index] + 1,
+                                -headerInsetPx,
+                            )
+                        }
+                    },
+                )
+            }
+
+            // 订单 Tab 筛选面板：同样挂进浮层，展开时浮层变高、模糊区域跟着长
+            AnimatedVisibility(
+                visible = pagerState.currentPage == 1 && uiState.showOrderFilter,
+                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
+            ) {
+                OrderFilterPanel(
+                    projectName = uiState.filterProjectName,
+                    onProjectNameChange = { viewModel.setOrderFilterProjectName(it) },
+                    startDate = uiState.filterStartDate,
+                    onStartDateChange = { viewModel.setOrderFilterStartDate(it) },
+                    endDate = uiState.filterEndDate,
+                    onEndDateChange = { viewModel.setOrderFilterEndDate(it) },
+                    onApply = { viewModel.applyOrderFilter() },
+                    onReset = { viewModel.resetOrderFilter() },
+                )
+            }
+
+            // 订单 Tab 统计行（有数据时）：出现/收起动画由 ListStatsRow 内部负责，
+            // 切到「我的」页时也不会让标题栏和列表跟着跳一下
+            ListStatsRow(
+                loadedCount = uiState.orders.size,
+                currentPage = uiState.orderPageCurrent,
+                totalPages = uiState.orderTotalPages,
+                visible = pagerState.currentPage == 1 && uiState.orders.isNotEmpty(),
+            )
         },
-    ) { innerPadding ->
+    ) { topInset ->
+        // 回传给上方浮层的分类索引跳转：需要知道标题栏（+索引条）实际占了多高
+        SideEffect { headerInset = topInset }
+
         HorizontalPager(
             state = pagerState,
             beyondViewportPageCount = 1,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
         ) { page ->
             LaunchedEffect(page) { viewModel.onTabSelected(page) }
             when (page) {
                 0 -> FeeServiceHallHomeTab(
                     uiState = uiState,
+                    listState = homeListState,
+                    topInset = topInset,
                     onRefresh = { viewModel.refreshAll() },
                     onReLogin = onReLogin,
                     onNavigateToWebView = onNavigateToWebView,
                 )
                 1 -> FeeServiceHallOrderTab(
                     uiState = uiState,
+                    topInset = topInset,
                     onRefresh = { viewModel.refreshOrders() },
                     onLoadMore = { viewModel.loadMoreOrders() },
                     onNavigateToOrderDetail = { order -> selectedOrder = order },
-                    filterProjectName = uiState.filterProjectName,
-                    filterStartDate = uiState.filterStartDate,
-                    filterEndDate = uiState.filterEndDate,
-                    showFilter = uiState.showOrderFilter,
-                    onProjectNameChange = { viewModel.setOrderFilterProjectName(it) },
-                    onStartDateChange = { viewModel.setOrderFilterStartDate(it) },
-                    onEndDateChange = { viewModel.setOrderFilterEndDate(it) },
-                    onApplyFilter = { viewModel.applyOrderFilter() },
-                    onResetFilter = { viewModel.resetOrderFilter() },
                     onReLogin = onReLogin,
                 )
                 2 -> FeeServiceHallProfileTab(
                     uiState = uiState,
+                    topInset = topInset,
                     onNavigateToWebView = onNavigateToWebView,
                     onReLogin = onReLogin,
                     onRetryProfile = { viewModel.retryProfileLoad() },
@@ -277,108 +380,63 @@ fun FeeServiceHallScreen(
 @Composable
 private fun FeeServiceHallHomeTab(
     uiState: FeeServiceHallUiState,
+    listState: LazyListState,
+    topInset: Dp,
     onRefresh: () -> Unit,
     onReLogin: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-
-    val sections = remember(uiState.categories) {
-        uiState.categories.mapNotNull { category ->
-            val items = category.children?.filter { it.type == "2" } ?: emptyList()
-            if (items.isEmpty()) null
-            else FeeHallSection(id = category.id, name = category.name, itemCount = items.size)
-        }
-    }
-    val sectionStartIndices = remember(sections) {
-        var index = 0
-        sections.map { section ->
-            val start = index
-            index += 1 + section.itemCount
-            start
-        }
-    }
-    val activeSectionIndex by remember(sections, sectionStartIndices) {
-        derivedStateOf {
-            val firstVisible = listState.firstVisibleItemIndex
-            var active = 0
-            sectionStartIndices.forEachIndexed { sectionIndex, start ->
-                if (start <= firstVisible) active = sectionIndex
+    val pullState = rememberPullToRefreshState()
+    PullToRefreshBox(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = onRefresh,
+        state = pullState,
+        indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+        modifier = modifier.fillMaxSize(),
+    ) {
+        when {
+            uiState.isLoading -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
-            active
-        }
-    }
-    val showIndexDivider by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
-        }
-    }
-
-    Column(modifier = modifier.fillMaxSize()) {
-        if (!uiState.isLoading && uiState.errorMessage == null && sections.isNotEmpty()) {
-            FeeServiceHallSectionIndex(
-                sections = sections,
-                activeIndex = activeSectionIndex,
-                showDivider = showIndexDivider,
-                onSectionClick = { index ->
-                    scope.launch {
-                        listState.animateScrollToItem(sectionStartIndices[index])
-                    }
-                },
-            )
-        }
-
-        PullToRefreshBox(
-            isRefreshing = uiState.isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-        ) {
-            when {
-                uiState.isLoading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+            uiState.errorMessage != null && uiState.categories.isEmpty() -> {
+                ReLoginContent(
+                    errorMessage = stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""),
+                    requiresReLogin = uiState.requiresReLogin,
+                    onReLogin = onReLogin,
+                    onRetry = onRefresh,
+                )
+            }
+            uiState.categories.isEmpty() -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(stringResource(R.string.fee_hall_no_projects), style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                uiState.errorMessage != null && uiState.categories.isEmpty() -> {
-                    ReLoginContent(
-                        errorMessage = stringResource(R.string.fee_hall_load_failed, uiState.errorMessage ?: ""),
-                        requiresReLogin = uiState.requiresReLogin,
-                        onReLogin = onReLogin,
-                        onRetry = onRefresh,
-                    )
-                }
-                uiState.categories.isEmpty() -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.fee_hall_no_projects), style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                else -> {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                    ) {
-                        uiState.categories.forEach { category ->
-                            val items = category.children?.filter { it.type == "2" } ?: emptyList()
-                            if (items.isNotEmpty()) {
-                                item(key = "header_${category.id}") {
-                                    CategoryHeader(category.name)
-                                }
-                                items(items = items, key = { it.id }) { item ->
-                                    FeeProjectItem(
-                                        item = item,
-                                        onClick = {
-                                            val url = FeeServiceHallApi.buildPaymentUrl(item.proModelUrl, item.id)
-                                            onNavigateToWebView(url, item.name)
-                                        },
-                                    )
-                                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
-                                }
+            }
+            else -> {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                ) {
+                    item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+                    uiState.categories.forEach { category ->
+                        val items = category.children?.filter { it.type == "2" } ?: emptyList()
+                        if (items.isNotEmpty()) {
+                            item(key = "header_${category.id}") {
+                                CategoryHeader(category.name)
+                            }
+                            items(items = items, key = { it.id }) { item ->
+                                FeeProjectItem(
+                                    item = item,
+                                    onClick = {
+                                        val url = FeeServiceHallApi.buildPaymentUrl(item.proModelUrl, item.id)
+                                        onNavigateToWebView(url, item.name)
+                                    },
+                                )
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
                             }
                         }
                     }

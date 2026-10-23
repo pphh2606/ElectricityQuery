@@ -3,7 +3,8 @@ import edu.cqwu.electricity.logging.AppLog
 
 import edu.cqwu.electricity.common.ui.SelectableContainer
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import android.content.Intent
 import android.os.Build
@@ -94,7 +95,7 @@ fun FeedbackScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val scope = rememberCoroutineScope()
 
@@ -272,7 +273,7 @@ fun FeedbackScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -304,14 +305,14 @@ fun FeedbackScreen(
                 colors = topBarColors,
             )
         },
-    ) { innerPadding ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
+            Spacer(modifier = Modifier.height(topInset))
             // ── 日志开关 ──
             Row(
                 modifier = Modifier

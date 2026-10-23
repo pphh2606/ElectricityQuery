@@ -14,10 +14,31 @@ import edu.cqwu.electricity.logging.LogLevel
 
 const val MIN_SHEET_BLUR_RADIUS = 0f
 const val MAX_SHEET_BLUR_RADIUS = 40f
+const val MIN_SHEET_BLUR_NOISE = 0f
+const val MAX_SHEET_BLUR_NOISE = 1f
+const val DEFAULT_SHEET_BLUR_NOISE = 0f
+const val MIN_SHEET_BLUR_ALPHA = 0f
+const val MAX_SHEET_BLUR_ALPHA = 1f
+const val DEFAULT_SHEET_BLUR_ALPHA = 1f
+const val DEFAULT_SHEET_BLUR_RADIUS = 10f
 const val MIN_QR_CORNER_RADIUS = 0f
 const val MAX_QR_CORNER_RADIUS = 50f
 const val MIN_FONT_SCALE = 0.8f
 const val MAX_FONT_SCALE = 1.5f
+
+// 标题栏毛玻璃高级参数的可调范围与默认值（默认值 = 全项目统一采用的观感）
+const val MIN_HEADER_BLUR_RADIUS = 0f
+const val MAX_HEADER_BLUR_RADIUS = 40f
+const val DEFAULT_HEADER_BLUR_RADIUS = 22f
+const val MIN_HEADER_BLUR_NOISE = 0f
+const val MAX_HEADER_BLUR_NOISE = 1f
+const val DEFAULT_HEADER_BLUR_NOISE = 0.2f
+const val MIN_HEADER_BLUR_ALPHA = 0f
+const val MAX_HEADER_BLUR_ALPHA = 1f
+const val DEFAULT_HEADER_BLUR_ALPHA = 1f
+const val MIN_HEADER_BLUR_BACKGROUND_ALPHA = 0f
+const val MAX_HEADER_BLUR_BACKGROUND_ALPHA = 1f
+const val DEFAULT_HEADER_BLUR_BACKGROUND_ALPHA = 1f
 
 @Stable
 class AppSettingsState(
@@ -67,6 +88,68 @@ class AppSettingsState(
         private set
 
     var sheetBlurEnabled by mutableStateOf(prefs.get(SettingsKeys.SHEET_BLUR_ENABLED))
+        private set
+
+    /** 标题栏毛玻璃开关（与弹窗模糊互相独立） */
+    var headerBlurEnabled by mutableStateOf(prefs.get(SettingsKeys.HEADER_BLUR_ENABLED))
+        private set
+
+    // ── 标题栏毛玻璃高级参数：名称与 Haze 的 HazeBlurStyle / hazeBlur 参数对应 ──
+
+    /** `HazeBlurStyleScope.blurRadius`：模糊半径 */
+    var headerBlurRadius by mutableFloatStateOf(
+        prefs.get(SettingsKeys.HEADER_BLUR_RADIUS)
+            .coerceIn(MIN_HEADER_BLUR_RADIUS, MAX_HEADER_BLUR_RADIUS)
+    )
+        private set
+
+    /** `HazeBlurStyleScope.noiseFactor`：磨砂颗粒强度 */
+    var headerBlurNoise by mutableFloatStateOf(
+        prefs.get(SettingsKeys.HEADER_BLUR_NOISE)
+            .coerceIn(MIN_HEADER_BLUR_NOISE, MAX_HEADER_BLUR_NOISE)
+    )
+        private set
+
+    /** `HazeBlurStyleScope.alpha`：整层不透明度（含底色） */
+    var headerBlurAlpha by mutableFloatStateOf(
+        prefs.get(SettingsKeys.HEADER_BLUR_ALPHA)
+            .coerceIn(MIN_HEADER_BLUR_ALPHA, MAX_HEADER_BLUR_ALPHA)
+    )
+        private set
+
+    /** `HazeBlurStyleScope.backgroundColor` 的透明度：越低越能透出内容 */
+    var headerBlurBackgroundAlpha by mutableFloatStateOf(
+        prefs.get(SettingsKeys.HEADER_BLUR_BACKGROUND_ALPHA)
+            .coerceIn(MIN_HEADER_BLUR_BACKGROUND_ALPHA, MAX_HEADER_BLUR_BACKGROUND_ALPHA)
+    )
+        private set
+
+    /** `hazeBlur(performanceMode = ...)`：采样性能档位 */
+    var headerBlurPerformance by mutableStateOf(
+        BlurPerformanceMode.fromValue(prefs.get(SettingsKeys.HEADER_BLUR_PERFORMANCE))
+    )
+        private set
+
+    // ── 弹窗背景模糊的高级参数（名称同样与 Haze 的 API 对应）──
+
+    /** `HazeBlurStyleScope.noiseFactor`：磨砂颗粒强度 */
+    var sheetBlurNoise by mutableFloatStateOf(
+        prefs.get(SettingsKeys.SHEET_BLUR_NOISE)
+            .coerceIn(MIN_SHEET_BLUR_NOISE, MAX_SHEET_BLUR_NOISE)
+    )
+        private set
+
+    /** `HazeBlurStyleScope.alpha`：模糊层整体不透明度 */
+    var sheetBlurAlpha by mutableFloatStateOf(
+        prefs.get(SettingsKeys.SHEET_BLUR_ALPHA)
+            .coerceIn(MIN_SHEET_BLUR_ALPHA, MAX_SHEET_BLUR_ALPHA)
+    )
+        private set
+
+    /** `hazeBlur(performanceMode = ...)`：采样性能档位 */
+    var sheetBlurPerformance by mutableStateOf(
+        BlurPerformanceMode.fromValue(prefs.get(SettingsKeys.SHEET_BLUR_PERFORMANCE))
+    )
         private set
 
     var sheetBlurRadius by mutableFloatStateOf(
@@ -151,6 +234,74 @@ class AppSettingsState(
     fun updateSheetBlurEnabled(enabled: Boolean) {
         sheetBlurEnabled = enabled
         prefs.set(SettingsKeys.SHEET_BLUR_ENABLED, enabled)
+    }
+
+    fun updateHeaderBlurEnabled(enabled: Boolean) {
+        headerBlurEnabled = enabled
+        prefs.set(SettingsKeys.HEADER_BLUR_ENABLED, enabled)
+    }
+
+    fun updateHeaderBlurRadius(value: Float) {
+        val clamped = value.coerceIn(MIN_HEADER_BLUR_RADIUS, MAX_HEADER_BLUR_RADIUS)
+        headerBlurRadius = clamped
+        prefs.set(SettingsKeys.HEADER_BLUR_RADIUS, clamped)
+    }
+
+    fun updateHeaderBlurNoise(value: Float) {
+        val clamped = value.coerceIn(MIN_HEADER_BLUR_NOISE, MAX_HEADER_BLUR_NOISE)
+        headerBlurNoise = clamped
+        prefs.set(SettingsKeys.HEADER_BLUR_NOISE, clamped)
+    }
+
+    fun updateHeaderBlurAlpha(value: Float) {
+        val clamped = value.coerceIn(MIN_HEADER_BLUR_ALPHA, MAX_HEADER_BLUR_ALPHA)
+        headerBlurAlpha = clamped
+        prefs.set(SettingsKeys.HEADER_BLUR_ALPHA, clamped)
+    }
+
+    fun updateHeaderBlurBackgroundAlpha(value: Float) {
+        val clamped = value.coerceIn(MIN_HEADER_BLUR_BACKGROUND_ALPHA, MAX_HEADER_BLUR_BACKGROUND_ALPHA)
+        headerBlurBackgroundAlpha = clamped
+        prefs.set(SettingsKeys.HEADER_BLUR_BACKGROUND_ALPHA, clamped)
+    }
+
+    fun updateHeaderBlurPerformance(value: BlurPerformanceMode) {
+        headerBlurPerformance = value
+        prefs.set(SettingsKeys.HEADER_BLUR_PERFORMANCE, value.value)
+    }
+
+    /** 把所有高级参数恢复成默认值（不改开关） */
+    fun resetHeaderBlurAdvanced() {
+        updateHeaderBlurRadius(DEFAULT_HEADER_BLUR_RADIUS)
+        updateHeaderBlurNoise(DEFAULT_HEADER_BLUR_NOISE)
+        updateHeaderBlurAlpha(DEFAULT_HEADER_BLUR_ALPHA)
+        updateHeaderBlurBackgroundAlpha(DEFAULT_HEADER_BLUR_BACKGROUND_ALPHA)
+        updateHeaderBlurPerformance(BlurPerformanceMode.DEFAULT)
+    }
+
+    fun updateSheetBlurNoise(value: Float) {
+        val clamped = value.coerceIn(MIN_SHEET_BLUR_NOISE, MAX_SHEET_BLUR_NOISE)
+        sheetBlurNoise = clamped
+        prefs.set(SettingsKeys.SHEET_BLUR_NOISE, clamped)
+    }
+
+    fun updateSheetBlurAlpha(value: Float) {
+        val clamped = value.coerceIn(MIN_SHEET_BLUR_ALPHA, MAX_SHEET_BLUR_ALPHA)
+        sheetBlurAlpha = clamped
+        prefs.set(SettingsKeys.SHEET_BLUR_ALPHA, clamped)
+    }
+
+    fun updateSheetBlurPerformance(value: BlurPerformanceMode) {
+        sheetBlurPerformance = value
+        prefs.set(SettingsKeys.SHEET_BLUR_PERFORMANCE, value.value)
+    }
+
+    /** 弹窗模糊的高级参数恢复默认值（不改开关） */
+    fun resetSheetBlurAdvanced() {
+        updateSheetBlurRadius(DEFAULT_SHEET_BLUR_RADIUS)
+        updateSheetBlurNoise(DEFAULT_SHEET_BLUR_NOISE)
+        updateSheetBlurAlpha(DEFAULT_SHEET_BLUR_ALPHA)
+        updateSheetBlurPerformance(BlurPerformanceMode.DEFAULT)
     }
 
     fun updateSheetBlurRadius(value: Float) {

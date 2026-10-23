@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.cardcenter.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalResources
@@ -39,10 +41,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.cardcenter.data.AccountInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
@@ -117,8 +120,8 @@ fun AccountInfoScreen(
         loadAccountInfo()
     }
 
-    val topBarColors = currentTopBarColors()
-    Scaffold(
+    val topBarColors = transparentTopBarColors()
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -139,13 +142,14 @@ fun AccountInfoScreen(
                 colors = topBarColors
             )
         }
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = { loadAccountInfo(isRefresh = true) },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize()
         ) {
             when {
                 isLoading -> {
@@ -173,13 +177,15 @@ fun AccountInfoScreen(
                         requiresReLogin = requiresReLogin,
                         onReLogin = onReLogin,
                         onRetry = { loadAccountInfo() },
+                        modifier = Modifier.padding(top = topInset),
                     )
                 }
 
                 accountInfo != null -> {
                     AccountInfoContent(
                         info = accountInfo!!,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        topInset = topInset
                     )
                 }
             }
@@ -193,13 +199,16 @@ fun AccountInfoScreen(
 @Composable
 private fun AccountInfoContent(
     info: AccountInfo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    topInset: Dp = 0.dp
 ) {
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+
         // ── 基本信息卡片 ──
         item(key = "basic_info") {
             ElevatedCard(

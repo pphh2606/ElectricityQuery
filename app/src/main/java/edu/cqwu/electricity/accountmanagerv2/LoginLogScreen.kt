@@ -30,10 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -50,6 +50,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
@@ -59,7 +61,7 @@ import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
@@ -92,7 +94,7 @@ fun LoginLogScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.login_log_title), fontWeight = FontWeight.Bold) },
@@ -118,15 +120,9 @@ fun LoginLogScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
             )
-        },
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
+
             // ── 筛选面板（向下展开）──
             AnimatedVisibility(
                 visible = state.showFilterPanel,
@@ -209,93 +205,97 @@ fun LoginLogScreen(
                 }
             }
 
-            PullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                onRefresh = viewModel::refresh,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                when {
-                    state.requiresReLogin -> ReLoginContent(
-                        requiresReLogin = true,
-                        onReLogin = onReLogin,
+            // ── 统计行：已加载条数 + 页码（挂标题栏浮层，随标题栏一起毛玻璃）──
+            ListStatsRow(
+                loadedCount = state.records.size,
+                currentPage = state.pageCurrent,
+                totalPages = state.pageTotal,
+                visible = !state.requiresReLogin && state.loadError == null && state.records.isNotEmpty(),
+            )
+        },
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = viewModel::refresh,
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when {
+                state.requiresReLogin -> ReLoginContent(
+                    requiresReLogin = true,
+                    onReLogin = onReLogin,
+                )
+                state.loadError != null && state.records.isEmpty() -> ReLoginContent(
+                    errorMessage = state.loadError,
+                    requiresReLogin = false,
+                    onReLogin = {},
+                    onRetry = viewModel::refresh,
+                )
+                // 首屏加载中：显示加载指示，避免误显"暂无日志记录"
+                state.isRefreshing && state.records.isEmpty() -> Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+                state.records.isEmpty() -> Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = stringResource(R.string.login_log_empty),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(32.dp),
                     )
-                    state.loadError != null && state.records.isEmpty() -> ReLoginContent(
-                        errorMessage = state.loadError,
-                        requiresReLogin = false,
-                        onReLogin = {},
-                        onRetry = viewModel::refresh,
-                    )
-                    // 首屏加载中：显示加载指示，避免误显"暂无日志记录"
-                    state.isRefreshing && state.records.isEmpty() -> Box(
+                }
+                else -> {
+                    // 分页加载：滚动接近底部且还有更多页时自动加载下一页（仿订单页）
+                    val listState = rememberLazyListState()
+                    val shouldLoadMore by remember {
+                        derivedStateOf {
+                            val layoutInfo = listState.layoutInfo
+                            val totalItems = layoutInfo.totalItemsCount
+                            val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            totalItems > 0 && lastVisibleIndex >= totalItems - 3 &&
+                                uiStateState.value.hasMore && !uiStateState.value.isLoadingMore
+                        }
+                    }
+                    LaunchedEffect(shouldLoadMore) {
+                        if (shouldLoadMore) viewModel.loadMore()
+                    }
+                    LazyColumn(
+                        state = listState,
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        contentAlignment = Alignment.Center,
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
                     ) {
-                        CircularProgressIndicator()
-                    }
-                    state.records.isEmpty() -> Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.login_log_empty),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(32.dp),
-                        )
-                    }
-                    else -> {
-                        // 分页加载：滚动接近底部且还有更多页时自动加载下一页（仿订单页）
-                        val listState = rememberLazyListState()
-                        val shouldLoadMore by remember {
-                            derivedStateOf {
-                                val layoutInfo = listState.layoutInfo
-                                val totalItems = layoutInfo.totalItemsCount
-                                val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                                totalItems > 0 && lastVisibleIndex >= totalItems - 3 &&
-                                    uiStateState.value.hasMore && !uiStateState.value.isLoadingMore
-                            }
-                        }
-                        LaunchedEffect(shouldLoadMore) {
-                            if (shouldLoadMore) viewModel.loadMore()
-                        }
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            // 顶部统计行：已加载条数 + 页码（仿缴费服务大厅订单页）
-                            ListStatsRow(
-                                loadedCount = state.records.size,
-                                currentPage = state.pageCurrent,
-                                totalPages = state.pageTotal,
+                        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+                        itemsIndexed(state.records) { index, record ->
+                            LoginRecordCard(
+                                record = record,
+                                onClick = { viewModel.onRecordClick(record) },
                             )
-                            LazyColumn(
-                                state = listState,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                            ) {
-                                itemsIndexed(state.records) { index, record ->
-                                    LoginRecordCard(
-                                        record = record,
-                                        onClick = { viewModel.onRecordClick(record) },
-                                    )
-                                    if (index < state.records.lastIndex) {
-                                        HorizontalDivider(
-                                            color = MaterialTheme.colorScheme.outlineVariant,
-                                            thickness = 0.5.dp,
-                                        )
-                                    }
-                                }
-                                item(key = "footer") {
-                                    PagingFooter(
-                                        hasMore = state.hasMore,
-                                        isLoadingMore = state.isLoadingMore,
-                                        onLoadMore = viewModel::loadMore,
-                                    )
-                                }
+                            if (index < state.records.lastIndex) {
+                                HorizontalDivider(
+                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    thickness = 0.5.dp,
+                                )
                             }
+                        }
+                        item(key = "footer") {
+                            PagingFooter(
+                                hasMore = state.hasMore,
+                                isLoadingMore = state.isLoadingMore,
+                                onLoadMore = viewModel::loadMore,
+                            )
                         }
                     }
                 }

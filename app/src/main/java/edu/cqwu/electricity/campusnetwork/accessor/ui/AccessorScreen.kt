@@ -17,10 +17,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
@@ -40,8 +41,10 @@ import edu.cqwu.electricity.campusnetwork.ui.Field
 import edu.cqwu.electricity.campusnetwork.ui.FieldSection
 import edu.cqwu.electricity.campusnetwork.ui.FieldSectionList
 import edu.cqwu.electricity.campusnetwork.ui.field
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 
 /**
@@ -62,14 +65,14 @@ fun AccessorScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
     val resources = LocalResources.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     // 首次进入自动加载；VM 生命周期随导航栈条目，重新进入会新建并重新拉取
     LaunchedEffect(Unit) {
         viewModel.load(refresh = false)
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -90,13 +93,14 @@ fun AccessorScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = { viewModel.load(refresh = true) },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
         ) {
             val errorText = uiState.error?.resolve(resources)
             when {
@@ -127,15 +131,16 @@ fun AccessorScreen(
                         requiresReLogin = false,
                         onReLogin = {},
                         onRetry = { viewModel.load(refresh = false) },
+                        modifier = Modifier.padding(top = topInset),
                     )
                 }
 
                 uiState.data == null -> {
-                    EmptyContent(stringResource(R.string.campus_network_empty))
+                    EmptyContent(stringResource(R.string.campus_network_empty), topInset = topInset)
                 }
 
                 else -> {
-                    AccessorContent(data = uiState.data!!)
+                    AccessorContent(data = uiState.data!!, topInset = topInset)
                 }
             }
         }
@@ -150,6 +155,7 @@ fun AccessorScreen(
 private fun AccessorContent(
     data: AccessorData,
     modifier: Modifier = Modifier,
+    topInset: Dp = 0.dp,
 ) {
     // 字段表是纯数据，用 remember 避免每次重组重建
     val sections = remember(data) { buildSections(data) }
@@ -158,6 +164,8 @@ private fun AccessorContent(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+
         item(key = "client_context_sections") {
             FieldSectionList(sections = sections)
         }
@@ -165,11 +173,12 @@ private fun AccessorContent(
 }
 
 @Composable
-private fun EmptyContent(message: String) {
+private fun EmptyContent(message: String, topInset: Dp = 0.dp) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .padding(top = topInset),
         contentAlignment = Alignment.Center,
     ) {
         Text(

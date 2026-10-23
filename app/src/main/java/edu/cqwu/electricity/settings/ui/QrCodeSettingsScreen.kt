@@ -47,7 +47,8 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.QrCodeColorMode
 import edu.cqwu.electricity.common.ui.QrCodeView
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 /** Corner radius slider range: 0..50 in 1% steps. */
 private val CORNER_RADIUS_RANGE = 0f..50f
@@ -66,7 +67,7 @@ fun QrCodeSettingsScreen(
     onBack: () -> Unit,
 ) {
     val appSettings = LocalAppSettingsState.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     // 深色模式下背景强制白色（确保扫码可读），前景色遵循用户设置
@@ -88,7 +89,7 @@ fun QrCodeSettingsScreen(
     // 圆角分数（0~50 int → 0.0f~0.5f float），开关关闭时为 0
     val cornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.qrcode_settings_title), fontWeight = FontWeight.Bold) },
@@ -103,14 +104,14 @@ fun QrCodeSettingsScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp),
         ) {
+            Spacer(modifier = Modifier.height(topInset + 8.dp))
             // ── 二维码实时预览 ──
             Surface(
                 modifier = Modifier.fillMaxWidth(),

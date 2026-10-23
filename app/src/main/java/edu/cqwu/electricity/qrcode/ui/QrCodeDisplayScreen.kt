@@ -1,8 +1,10 @@
 package edu.cqwu.electricity.qrcode.ui
 
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.SelectableContainer
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import android.app.Activity
 import android.view.WindowManager
@@ -31,11 +33,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -103,7 +105,7 @@ fun QrCodeDisplayScreen(
     var qrCodeContent by rememberSaveable { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     val nav = LocalNavController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val appSettings = LocalAppSettingsState.current
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
     // 深色模式下背景强制白色（确保扫码可读），前景色遵循用户设置
@@ -290,7 +292,7 @@ fun QrCodeDisplayScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -344,14 +346,14 @@ fun QrCodeDisplayScreen(
                 colors = topBarColors
             )
         }
-    ) { paddingValues ->
+    ) { topInset ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
         ) {
             when {
                 isLoading && qrCodeContent == null -> {
+                    val pullState = rememberPullToRefreshState()
                     PullToRefreshBox(
                         isRefreshing = true,
                         onRefresh = {
@@ -359,12 +361,15 @@ fun QrCodeDisplayScreen(
                             errorMessage = null
                             fetchQrCode()
                         },
+                        state = pullState,
+                        indicator = { BlurPullRefreshIndicator(pullState, true, topInset) },
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
+                                .padding(top = topInset)
                         )
                     }
                 }
@@ -383,6 +388,7 @@ fun QrCodeDisplayScreen(
                             },
                         )
                     } else {
+                        val pullState = rememberPullToRefreshState()
                         PullToRefreshBox(
                             isRefreshing = isRefreshing,
                             onRefresh = {
@@ -391,6 +397,8 @@ fun QrCodeDisplayScreen(
                                 isLoading = true
                                 fetchQrCode()
                             },
+                            state = pullState,
+                            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
                             modifier = Modifier.fillMaxSize()
                         ) {
                             ReLoginContent(
@@ -403,17 +411,21 @@ fun QrCodeDisplayScreen(
                                     isLoading = true
                                     fetchQrCode()
                                 },
+                                modifier = Modifier.padding(top = topInset),
                             )
                         }
                     }
                 }
                 qrCodeContent != null -> {
+                    val pullState = rememberPullToRefreshState()
                     PullToRefreshBox(
                         isRefreshing = isRefreshing,
                         onRefresh = {
                             isRefreshing = true
                             fetchQrCode()
                         },
+                        state = pullState,
+                        indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Column(
@@ -423,6 +435,8 @@ fun QrCodeDisplayScreen(
                                 .padding(horizontal = 32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
+                            Spacer(modifier = Modifier.height(topInset))
+
                             Spacer(modifier = Modifier.height(48.dp))
 
                             // 扫描提示（顶部大字）

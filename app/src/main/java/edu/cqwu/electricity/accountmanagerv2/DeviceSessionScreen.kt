@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,16 +50,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
@@ -91,7 +95,7 @@ fun DeviceSessionScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.device_session_title), fontWeight = FontWeight.Bold) },
@@ -103,16 +107,17 @@ fun DeviceSessionScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = viewModel::refresh,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
         ) {
             when {
                 state.requiresReLogin -> ReLoginContent(
@@ -131,6 +136,7 @@ fun DeviceSessionScreen(
                 else -> SessionList(
                     sessions = state.sessions,
                     onKickClick = { pendingKick = it },
+                    topInset = topInset,
                 )
             }
         }
@@ -165,12 +171,14 @@ fun DeviceSessionScreen(
 private fun SessionList(
     sessions: List<DeviceSession>,
     onKickClick: (DeviceSession) -> Unit,
+    topInset: Dp = 0.dp,
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
         item(key = "tip") {
             Text(
                 text = stringResource(R.string.device_session_tip),

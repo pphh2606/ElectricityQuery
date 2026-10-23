@@ -186,6 +186,9 @@ fun NoticeDetailScreen(
         }
     }
 
+    // 本页正文是 WebView：Haze 的模糊源每帧会把内容录进 GraphicsLayer，
+    // 而 WebView 走独立合成管线，录制结果与显示不同步（闪烁，甚至整块不绘制）。
+    // 因此本页不做标题栏毛玻璃，保持普通 Scaffold。
     Scaffold(
         topBar = {
             TopAppBar(

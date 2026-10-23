@@ -10,8 +10,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -30,10 +32,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -49,15 +51,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.copyToClipboard
@@ -116,9 +121,7 @@ fun DetailScreen(
         }
     }
 
-    val topBarColors = currentTopBarColors()
-    // 2.8: 移除冗余的 Box 包裹
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(title, fontWeight = FontWeight.Bold) },
@@ -169,36 +172,34 @@ fun DetailScreen(
                         }
                     }
                 },
-                colors = topBarColors
+                colors = transparentTopBarColors()
             )
         }
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = detailState.isRefreshing,
             onRefresh = {
                 viewModel.loadCurrentData()
             },
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, detailState.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize()
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                when {
-                    detailState.error != null -> {
-                        ReLoginContent(
-                            errorMessage = detailState.error?.resolve(resources)
-                                ?: stringResource(R.string.common_unknown_error),
-                            requiresReLogin = false,
-                            onReLogin = {},
-                            onRetry = { viewModel.loadCurrentData() },
-                        )
-                    }
-    
-                    else -> {
-                        MeterStatusContent(detailState.currentData)
-                    }
+            when {
+                detailState.error != null -> {
+                    ReLoginContent(
+                        errorMessage = detailState.error?.resolve(resources)
+                            ?: stringResource(R.string.common_unknown_error),
+                        requiresReLogin = false,
+                        onReLogin = {},
+                        onRetry = { viewModel.loadCurrentData() },
+                        modifier = Modifier.padding(top = topInset),
+                    )
+                }
+
+                else -> {
+                    MeterStatusContent(detailState.currentData, topInset = topInset)
                 }
             }
         }
@@ -210,13 +211,13 @@ fun DetailScreen(
 // ============================================================
 
 @Composable
-private fun MeterStatusContent(data: CurrentDataResponse?) {
+private fun MeterStatusContent(data: CurrentDataResponse?, topInset: Dp = 0.dp) {
     // 2.4: 提前判断空状态，避免列表先渲染标题再显示空提示
     val currentItems = data?.exp4 ?: emptyList()
     val voltageItems = data?.exp3 ?: emptyList()
     if (currentItems.isEmpty() && voltageItems.isEmpty()
         && data?.exp2.isNullOrBlank() && data?.exp5.isNullOrBlank()) {
-        EmptyPlaceholder(stringResource(R.string.detail_empty_meter))
+        EmptyPlaceholder(stringResource(R.string.detail_empty_meter), topInset = topInset)
         return
     }
 
@@ -233,8 +234,10 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
     // fillMaxSize：列表要铺满内容区，卡片下方的空白才属于它、才能把下拉手势传给 PullToRefreshBox
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
     ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+
         item {
             ElevatedCard(
                 modifier = Modifier
@@ -265,11 +268,12 @@ private fun MeterStatusContent(data: CurrentDataResponse?) {
 // ============================================================
 
 @Composable
-private fun EmptyPlaceholder(message: String) {
+private fun EmptyPlaceholder(message: String, topInset: Dp = 0.dp) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .padding(top = topInset),
         contentAlignment = Alignment.Center
     ) {
         Text(

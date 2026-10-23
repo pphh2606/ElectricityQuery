@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.cardcenter.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
@@ -38,10 +40,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.cardcenter.data.CardLostInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
@@ -160,8 +163,8 @@ fun CardLostScreen(
         loadCardInfo()
     }
 
-    val topBarColors = currentTopBarColors()
-    Scaffold(
+    val topBarColors = transparentTopBarColors()
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -182,55 +185,55 @@ fun CardLostScreen(
                 colors = topBarColors
             )
         }
-    ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-                onRefresh = { loadCardInfo(isRefresh = true) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                when {
-                    isLoading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                CircularProgressIndicator()
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = stringResource(R.string.card_fetching_info),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { loadCardInfo(isRefresh = true) },
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = stringResource(R.string.card_fetching_info),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
+                }
 
-                    errorMessage != null || requiresReLogin -> {
-                        ReLoginContent(
-                            errorMessage = errorMessage,
-                            requiresReLogin = requiresReLogin,
-                            onReLogin = onReLogin,
-                            onRetry = { loadCardInfo() },
-                        )
-                    }
+                errorMessage != null || requiresReLogin -> {
+                    ReLoginContent(
+                        errorMessage = errorMessage,
+                        requiresReLogin = requiresReLogin,
+                        onReLogin = onReLogin,
+                        onRetry = { loadCardInfo() },
+                        modifier = Modifier.padding(top = topInset),
+                    )
+                }
 
-                    cardInfo != null -> {
-                        CardLostContent(
-                            cardInfo = cardInfo!!,
-                            isSubmitting = isSubmitting,
-                            onConfirmLost = { showConfirmDialog = true },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                cardInfo != null -> {
+                    CardLostContent(
+                        cardInfo = cardInfo!!,
+                        isSubmitting = isSubmitting,
+                        onConfirmLost = { showConfirmDialog = true },
+                        modifier = Modifier.fillMaxSize(),
+                        topInset = topInset
+                    )
                 }
             }
-
         }
     }
 
@@ -271,7 +274,8 @@ private fun CardLostContent(
     cardInfo: CardLostInfo,
     isSubmitting: Boolean,
     onConfirmLost: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    topInset: Dp = 0.dp
 ) {
     val isCardNormal = cardInfo.cardStatus.contains(stringResource(R.string.card_lost_normal_status), ignoreCase = true)
 
@@ -280,6 +284,8 @@ private fun CardLostContent(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+
         // ── 卡信息卡片 ──
         item(key = "card_info") {
             ElevatedCard(

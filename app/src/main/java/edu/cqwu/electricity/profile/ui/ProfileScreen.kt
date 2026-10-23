@@ -1,7 +1,7 @@
 package edu.cqwu.electricity.profile.ui
 
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import edu.cqwu.electricity.logging.AppLog
 import androidx.compose.foundation.background
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -59,6 +60,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -77,7 +79,7 @@ import edu.cqwu.electricity.common.navigation.LocalNavController
 @Composable
 fun ProfileTopBar() {
     val nav = LocalNavController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     TopAppBar(
         title = {
@@ -128,6 +130,7 @@ fun ProfileTopBar() {
 @Composable
 fun ProfilePageContent(
     onOpenHalfScreen: (url: String, title: String) -> Unit = { _, _ -> },
+    topInset: Dp = 0.dp,
 ) {
     val _profilePerfStart = System.currentTimeMillis()
     androidx.compose.runtime.SideEffect {
@@ -171,6 +174,7 @@ fun ProfilePageContent(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
         // ── 用户信息卡片 ──
         item(key = "user_card") {
             ElevatedCard(

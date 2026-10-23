@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
-import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -192,7 +191,8 @@ fun BackupTransferScreen(
                     },
                 ) {
                     Icon(
-                        imageVector = if (isExport) Icons.Outlined.FileDownload else Icons.Outlined.ContentCopy,
+                        // 剪贴板：导出是「复制」、导入也是从剪贴板读，都是复制语义
+                        imageVector = Icons.Outlined.ContentCopy,
                         contentDescription = null,
                         modifier = Modifier.padding(end = 4.dp),
                     )
@@ -213,7 +213,8 @@ fun BackupTransferScreen(
                     },
                 ) {
                     Icon(
-                        imageVector = if (isExport) Icons.Outlined.FileUpload else Icons.Outlined.FolderOpen,
+                        // 本地文件：导出是「下载/保存到本地」，导入是「打开本地文件」
+                        imageVector = if (isExport) Icons.Outlined.FileDownload else Icons.Outlined.FolderOpen,
                         contentDescription = null,
                         modifier = Modifier.padding(end = 4.dp),
                     )

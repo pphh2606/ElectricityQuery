@@ -1,25 +1,29 @@
 ## 新增功能
-1. 首页的应用名和分类名会跟随应用语言切换显示；新增 assets/i18n/home_apps_i18n.json，由 mergeHomeI18n 纯函数按 appId 与 categoryId 查表合并译文，缺译文时回退 JSON 中文原文
-2. 办事大厅的应用名和分类名同样支持多语言；因为登录后服务端数据会整体替换本地快照，HallI18n 改为在显示处按 ID 查表，而不是把译文合并进数据层
-3. 英文界面下用中文关键词也能搜到首页应用；HomeApp 与 HomeCategory 新增 originalName、originalCategoryName 保存本地化前的原文，搜索条件同时匹配译文、原文与服务端别名
-4. 切换语言后首页会静默刷新为新语言；HomeViewModel 新增 reloadForLanguageChange，以 LocalConfiguration 变化为信号比对语言键后重载，不显示下拉刷新指示器
+1. 设置新增标题栏模糊开关，默认开启，控制所有页面标题栏与顶部浮层的毛玻璃；状态存入 header_blur_enabled，系统不支持时自动退化为普通标题栏
+2. 新增高级模糊设置页，可调模糊半径、磨砂颗粒、不透明度、底色与性能档位并恢复默认；参数 1:1 映射 HazeBlurStyle 与 hazeBlur 的 blurRadius、noiseFactor、alpha、backgroundColor、performanceMode
+3. 弹窗背景模糊新增参数面板，同样可调上述参数；由 sheet_blur_radius、sheet_blur_noise、sheet_blur_alpha、sheet_blur_performance 持久化，AppShell 按弹窗进度缩放半径
+4. 首页、办事大厅、缴费大厅的分类索引条、统计行与筛选行移入标题栏浮层并一起模糊；列表状态提升到页面级，高亮按标题栏下沿第一个可见项计算，跳转用负偏移对齐
+5. 课表的周次学期切换行、日期表头与节次列改为浮层，滚动时保持可见；TimetableGrid 改为共享横向与纵向 scrollState 的三层叠构
+6. 设置条目支持整行进二级设置、右侧开关独立操作；SettingsSwitchEntry 新增 enabled、onRowClick、rowClickEnabled 参数与操作区分隔线
 
 ## Bug 修复
-1. 留言详情里较长的科室或姓名不再把右侧时间挤成竖排；信息行改为左侧 weight 1f 不限行、右侧时间单行加省略号，并按 Top 对齐
-2. 通知列表搜索时不再重复显示结果标题；统计行左侧改为显示搜索关键词与结果数，删除列表内重复的 search_header 条目
+1. 弹窗关掉后马上再开不再丢弹出动画，也不易被滑动误关；打开时用 visible 上升沿递增 openGeneration 重建 SheetState，弹出完成前禁用拖拽，关闭时无条件 hide
+2. 首页与快捷方式页在应用横跨多个分类时不再崩溃；前者按 appId 去重，后者把 key 改为 categoryId 与 appId 组合
+3. 备份与恢复页图标与实际动作一致；剪贴板固定用 ContentCopy，本地文件导出与导入分别用 FileDownload、FolderOpen
 
 ## 界面与交互优化
-1. 通知列表标题栏只保留「通知公告」；标题改用 TopAppBar 默认 titleLarge 与其他页面统一，总数从标题下移到列表统计行
-2. 通知列表顶部统计行左侧改为「共 N 条通知」，不再显示「已加载 N 条」；由 ListStatsRow 的 loadedText 参数驱动，右侧页码保持不变
-3. 通知详情标题放大到与其他页面一致；去掉 titleMedium 改用 TopAppBar 默认 titleLarge，并加单行省略避免与右侧操作按钮挤压
-4. 留言列表改为与账单页一致的无阴影描边卡片；用 Card 搭配 1dp outlineVariant 描边与 16dp 圆角，条目间距 8dp，替换原来的分隔条样式
-5. 留言咨询区列表改为图标加名称的整行样式；44dp surfaceVariant 图标底板配 Forum 图标与右箭头，名称不限行完整显示，行间用 0.5dp 分割线
+1. 个性化页的模糊开关改为整行可点进入参数面板，系统不支持时副标题说明原因并禁用入口；入口可用性由 rowClickEnabled 与 enabled 分开控制
+2. 移除了原来的模糊程度滑块，统一下放到弹窗参数面板；标题栏配色在模糊关闭时仍生效，下拉刷新指示器统一下移到浮层下方
 
 ## 架构改进
-1. 语言键解析收敛到一处，首页与大厅共用；AppLanguage.currentI18nKey 优先读取 SettingsPreferences 的选择，只在跟随系统时回退 Locale.getDefault，简体中文返回 null
-2. 首页数据缓存改为按语言键失效；HomeJsonLoader 同时缓存 categories 与 languageKey，语言不一致时重新解析并合并，避免切语言后拿到旧译文
-3. 列表统计行左侧文案可收缩，长文案不再挤掉页码；ListStatsRow 左侧加 weight 1f 与 fill false 以及单行省略，右侧固定单行并加 16dp 起始间距
+1. 全项目 40 余个页面改用 BlurScaffold，内容铺满整屏、标题栏作浮层叠在其上；内容层用 hazeSource、浮层用 hazeBlur，按浮层实测高度给首项留白而不是用 contentPadding
+2. 毛玻璃开关与参数收敛到公共 API，关闭时不挂 hazeSource 以免每帧录制；记录表格拆出表头、数据行、总计三个组件，表头可单独入浮层并共享列定义
+3. 性能档位做成可枚举的 BlurPerformanceMode，参数行抽成共用控件；弹窗模糊的 noiseFactor 与 alpha 改由设置驱动，不再固定为 0
 
-## 新增文件
-1. app/src/main/assets/i18n/home_apps_i18n.json：首页应用与分类的多语言映射表
-2. app/src/main/assets/i18n/hall_apps_i18n.json：办事大厅应用与分类的多语言映射表
+## 依赖变更
+1. Haze 由 1.6.10 升级到 2.0.1 并新增 haze-blur 模块；改用 hazeBlur、HazeBlurStyle、HazeInput 与 HazeBlurDefaults，替换已移除的 hazeEffect、HazeStyle 与 HazeDefaults
+2. Compose BOM 由 2025.11.01 升级到 2026.06.00
+
+## 构建变更
+1. 最低支持系统提升到 Android 6.0，即 minSdk 由 21 提升到 23
+2. 编译目标提升到 API 37，compileSdk 改为 release 37 且 minorApiLevel 为 0

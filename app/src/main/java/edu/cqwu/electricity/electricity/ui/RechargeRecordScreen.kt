@@ -14,6 +14,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,10 +37,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -63,13 +64,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.copyToClipboard
 import java.util.Locale
@@ -93,7 +96,6 @@ fun RechargeRecordScreen(
     onBack: () -> Unit
 ) {
     val recordState by viewModel.recordState.collectAsState()
-    val topBarColors = currentTopBarColors()
 
     // 三点菜单状态
     var showMenu by remember { mutableStateOf(false) }
@@ -145,8 +147,7 @@ fun RechargeRecordScreen(
         stringResource(R.string.recharge_time_4years),
     )
 
-    Box(Modifier.fillMaxSize()) {
-        Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.recharge_record_title), fontWeight = FontWeight.Bold) },
@@ -205,50 +206,42 @@ fun RechargeRecordScreen(
                         }
                     }
                 },
-                colors = topBarColors
+                colors = transparentTopBarColors()
             )
-        }
-    ) { paddingValues ->
-        PullToRefreshBox(
-            isRefreshing = recordState.isRefreshing,
-            onRefresh = { viewModel.queryRechargeRecords(roomId) },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-
-                // ========== 时间范围按钮选择（切换即刷新） ==========
-                // ========== 时间范围按钮选择（切换即刷新） ==========
-                Column {
-                    Text(
-                        text = stringResource(R.string.recharge_record_time_range),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        timeRangeOptions.forEachIndexed { index, option ->
-                            SectionFilterChip(
-                                text = option,
-                                selected = recordState.timeRange == index,
-                                onClick = { viewModel.setRechargeRecordTimeRange(index) },
-                                enabled = !recordState.isQuerying,
-                            )
-                        }
-                    }
-                }
+            // 时间范围选择并入标题栏浮层：和标题栏一起模糊、固定不滚动
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Text(
+                    text = stringResource(R.string.recharge_record_time_range),
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    timeRangeOptions.forEachIndexed { index, option ->
+                        SectionFilterChip(
+                            text = option,
+                            selected = recordState.timeRange == index,
+                            onClick = { viewModel.setRechargeRecordTimeRange(index) },
+                            enabled = !recordState.isQuerying,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = recordState.isRefreshing,
+            onRefresh = { viewModel.queryRechargeRecords(roomId) },
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, recordState.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize()
+        ) {
                 // ========== 查询结果区域 ==========
                 when {
                     recordState.error != null -> {
@@ -266,10 +259,14 @@ fun RechargeRecordScreen(
                         val total = reversedList.sumOf { it.buyTotal }
                         // 有数据，显示充值记录列表
                         LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
+                            item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+
                             // 合计（移到最上方）
-                            item {
+                            item(key = "total") {
                                 Text(
             text = pluralStringResource(R.plurals.recharge_record_total, reversedList.size, String.format(Locale.US, "%.2f", total), reversedList.size),
                                     style = MaterialTheme.typography.titleSmall,
@@ -292,7 +289,8 @@ fun RechargeRecordScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
+                                .verticalScroll(rememberScrollState())
+                                .padding(top = topInset),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -305,9 +303,6 @@ fun RechargeRecordScreen(
                 }
             }
         }
-    }
-
-}
     // ========== 提示弹窗 - Bottom Sheet ==========
     BottomSheetDialogV2(
         visible = showInfoDialog,

@@ -38,7 +38,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -66,11 +65,12 @@ import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestRecord
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestPhase
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestStats
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestTick
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.InfoRow
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.navigation.LocalNavController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -107,10 +107,9 @@ fun SpeedTestScreen(
     val tick by viewModel.tick.collectAsState()
     val recent by viewModel.recent.collectAsState()
     val palette = speedTestPalette()
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -131,16 +130,17 @@ fun SpeedTestScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
                 // 底部留白 = 屏体 12dp + 尾间 24dp
                 .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 36.dp),
             verticalArrangement = Arrangement.spacedBy(SectionSpacing),
         ) {
+            Spacer(modifier = Modifier.height(topInset))
+
             // ── 状态行紧贴胶囊大按钮（无间距），其下 12dp 接指标区 ──
             Column {
                 StatusLine(state = uiState, tick = tick, palette = palette)

@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -34,10 +35,12 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.common.navigation.LocalNavController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 /**
  * 教务首页（本地化仿写 jwfw `/jwmobile` 首页）。
@@ -86,7 +89,7 @@ fun JwxtHomeScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    Scaffold(
+    BlurScaffold(
         // 不传 bottomBar：本页是独立路由，因此不会有底部三 tab
         topBar = {
             TopAppBar(
@@ -116,15 +119,15 @@ fun JwxtHomeScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         when {
             uiState.requiresReLogin -> ReLoginContent(
                 requiresReLogin = true,
                 onReLogin = { nav.navigate(Routes.loginRoute()) },
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(top = topInset),
             )
 
             uiState.errorMessage != null -> ReLoginContent(
@@ -132,23 +135,26 @@ fun JwxtHomeScreen(
                 requiresReLogin = false,
                 onReLogin = {},
                 onRetry = { viewModel.load() },
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(top = topInset),
             )
 
-            else -> PullToRefreshBox(
-                // 首屏也算"正在刷新"：让顶部的下拉指示器一进页面就显示（与项目其它列表页下拉时同一个动画）
-                isRefreshing = uiState.isLoading || uiState.isRefreshing,
-                onRefresh = { viewModel.load(isRefresh = true) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
+            else -> {
+                val pullState = rememberPullToRefreshState()
+                PullToRefreshBox(
+                    // 首屏也算"正在刷新"：让顶部的下拉指示器一进页面就显示（与项目其它列表页下拉时同一个动画）
+                    isRefreshing = uiState.isLoading || uiState.isRefreshing,
+                    onRefresh = { viewModel.load(isRefresh = true) },
+                    state = pullState,
+                    indicator = { BlurPullRefreshIndicator(pullState, uiState.isLoading || uiState.isRefreshing, topInset) },
+                    modifier = Modifier.fillMaxSize(),
+                ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     // 顶部不留间距：分类 chip 紧贴顶栏，与首页分区索引栏的规格一致
                     contentPadding = PaddingValues(bottom = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
+                    item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                     // ① 服务区：数据未到时用等高的空白撑开——公告行、Tab 卡这些本地内容照常显示，
                     //    这样数据到达时下方内容不会跳动
                     item(key = "service_section") {
@@ -208,6 +214,7 @@ fun JwxtHomeScreen(
                         )
                     }
                 }
+            }
             }
         }
     }

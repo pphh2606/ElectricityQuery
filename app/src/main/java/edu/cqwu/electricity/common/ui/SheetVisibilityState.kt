@@ -5,7 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
-import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.blur.HazeBlurDefaults
 
 /**
  * 弹窗（底部弹窗 / 加载弹窗）的可见性状态：有多少个弹窗打开、背景模糊进度多少。
@@ -40,4 +40,4 @@ val LocalSheetVisibilityState = staticCompositionLocalOf { SheetVisibilityState(
 
 /** 当前设备是否支持 Haze 背景模糊（Android 12+ 且系统未关闭模糊） */
 fun isHazeBlurSupported(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && HazeDefaults.blurEnabled()
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && HazeBlurDefaults.isBlurEnabledByDefault()

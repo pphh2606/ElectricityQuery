@@ -32,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -70,7 +69,8 @@ import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.PasswordRecoverySheet
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -106,7 +106,7 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val nav = LocalNavController.current
 
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     // 安全说明弹窗
     var showSecurityNotice by remember { mutableStateOf(false) }
@@ -135,7 +135,7 @@ fun LoginScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -170,12 +170,7 @@ fun LoginScreen(
                 colors = topBarColors
             )
         }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+    ) { topInset ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -192,6 +187,8 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
+                Spacer(modifier = Modifier.height(topInset))
+
                 Spacer(modifier = Modifier.height(48.dp))
 
                 // 标题
@@ -392,7 +389,6 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-        }
     }
 
     // ========== 登录加载弹窗 ==========

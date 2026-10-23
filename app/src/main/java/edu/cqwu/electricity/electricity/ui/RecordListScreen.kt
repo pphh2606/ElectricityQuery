@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.electricity.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 // 三点菜单
 // 剪贴板与文件导出
@@ -8,13 +10,18 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -29,11 +36,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -42,14 +49,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
+import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.copyToClipboard
@@ -121,7 +132,6 @@ fun RecordListScreen(
     exportFileName: String,
     onDispose: () -> Unit = {},
 ) {
-    val topBarColors = currentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -166,9 +176,8 @@ fun RecordListScreen(
         if (tabs != null) onTabSelected?.invoke(pagerState.currentPage)
     }
 
-    Box(Modifier.fillMaxSize()) {
-        Scaffold(
-            topBar = {
+    BlurScaffold(
+        topBar = {
                 TopAppBar(
                     title = { Text(title, fontWeight = FontWeight.Bold) },
                     navigationIcon = {
@@ -229,119 +238,175 @@ fun RecordListScreen(
                             }
                         }
                     },
-                    colors = topBarColors
+                    colors = transparentTopBarColors()
                 )
-            }
-        ) { paddingValues ->
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-                onRefresh = onRefresh,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // ========== 顶部 Tab（可选） ==========
-                    if (tabs != null) {
-                        PrimaryTabRow(
-                            selectedTabIndex = pagerState.currentPage,
-                            modifier = Modifier.fillMaxWidth(),
-                            // 与 HallScreen/BillScreen 的 Tab 对齐：去掉 Tab 栏底部分割线
-                            divider = {},
-                        ) {
-                            tabs.forEachIndexed { index, tabText ->
-                                Tab(
-                                    selected = pagerState.currentPage == index,
-                                    onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                                    text = {
-                                        Text(
-                                            text = tabText,
-                                            fontWeight = if (pagerState.currentPage == index)
-                                                FontWeight.Bold else FontWeight.Normal,
-                                        )
-                                    },
-                                )
-                            }
-                        }
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
+                // 标签页切换栏、日期筛选行、表格表头并入标题栏浮层：
+                // 和标题栏一起模糊、固定不滚动，行列表从它们背后滚过
+                if (tabs != null) {
+                    PrimaryTabRow(
+                        selectedTabIndex = pagerState.currentPage,
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        // 与 HallScreen/BillScreen 的 Tab 对齐：去掉 Tab 栏底部分割线
+                        divider = {},
                     ) {
-                        // ========== 日期筛选行（整体的一部分） ==========
-                        DateRangeFilterRow(
-                            beginLabel = beginLabel,
-                            endLabel = endLabel,
-                            beginValue = beginValue,
-                            endValue = endValue,
-                            onBeginChange = onBeginChange,
-                            onEndChange = onEndChange,
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // ========== 结果区：表格或折线图（整体的一部分，占剩余高度） ==========
-                        // 有 Tab 时分页器始终在场，每页内部按 chartMode 决定渲染该页的表格还是折线图。
-                        // 折线图模式下禁左右滑动切 Tab（userScrollEnabled=false 只禁用户手势，
-                        // 点击顶部 Tab 的程序化滚动仍有效），把横滑手势让给图表的"按压查看详情"。
-                        if (tabs == null) {
-                            // 普通记录页（补助）：单页，表格/折线二选一
-                            Box(modifier = Modifier.weight(1f)) {
-                                RecordPageContentV2(
-                                    chartMode = chartMode,
-                                    chartContent = chartPages.getOrNull(0),
-                                    tablePage = pages.getOrNull(0),
-                                    columns = columns,
-                                    onRetry = onRefresh,
-                                )
-                            }
-                        } else {
-                            HorizontalPager(
-                                state = pagerState,
-                                userScrollEnabled = !chartMode,
-                                modifier = Modifier.weight(1f),
-                            ) { pageIndex ->
-                                RecordPageContentV2(
-                                    chartMode = chartMode,
-                                    chartContent = chartPages.getOrNull(pageIndex),
-                                    tablePage = pages.getOrNull(pageIndex),
-                                    columns = columns,
-                                    onRetry = onRefresh,
-                                )
-                            }
+                        tabs.forEachIndexed { index, tabText ->
+                            Tab(
+                                selected = pagerState.currentPage == index,
+                                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                                text = {
+                                    Text(
+                                        text = tabText,
+                                        fontWeight = if (pagerState.currentPage == index)
+                                            FontWeight.Bold else FontWeight.Normal,
+                                    )
+                                },
+                            )
                         }
                     }
                 }
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    // ========== 日期筛选行（整体的一部分） ==========
+                    DateRangeFilterRow(
+                        beginLabel = beginLabel,
+                        endLabel = endLabel,
+                        beginValue = beginValue,
+                        endValue = endValue,
+                        onBeginChange = onBeginChange,
+                        onEndChange = onEndChange,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // ========== 表格表头：与滚动区的行共享同一份列定义，保证列宽对齐 ==========
+                    val headerPage = pages.getOrNull(if (tabs == null) 0 else pagerState.currentPage)
+                    if (!chartMode && headerPage != null && headerPage.rows.isNotEmpty()) {
+                        RecordTableHeader(columns = columns)
+                    }
+                }
             }
-        }
+        ) { topInset ->
+            val pullState = rememberPullToRefreshState()
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                state = pullState,
+                indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // 有 Tab 时分页器始终在场，每页内部按 chartMode 决定渲染该页的表格还是折线图。
+                // 折线图模式下禁左右滑动切 Tab（userScrollEnabled=false 只禁用户手势，
+                // 点击顶部 Tab 的程序化滚动仍有效），把横滑手势让给图表的"按压查看详情"。
+                if (tabs == null) {
+                    // 普通记录页（补助）：单页，表格/折线二选一
+                    RecordPageScroll(
+                        page = pages.getOrNull(0),
+                        chartMode = chartMode,
+                        chartContent = chartPages.getOrNull(0),
+                        columns = columns,
+                        topInset = topInset,
+                        onRetry = onRefresh,
+                    )
+                } else {
+                    HorizontalPager(
+                        state = pagerState,
+                        userScrollEnabled = !chartMode,
+                        modifier = Modifier.fillMaxSize(),
+                    ) { pageIndex ->
+                        RecordPageScroll(
+                            page = pages.getOrNull(pageIndex),
+                            chartMode = chartMode,
+                            chartContent = chartPages.getOrNull(pageIndex),
+                            columns = columns,
+                            topInset = topInset,
+                            onRetry = onRefresh,
+                        )
+                    }
+                }
+            }
     }
 }
 
 /**
  * 结果区某页内容：折线图模式优先渲染该页图表，否则渲染该页表格。
- * 页数据缺失时不渲染（调用方保证 pages/chartPages 与页数一致）。
+ *
+ * 表格行放进**单一 LazyColumn** 并为标题栏浮层留出首项空白，这样行能滚到
+ * 标题栏/表头背后被模糊；表头由浮层绘制，这里只画行与底部总计。
  */
 @Composable
-private fun RecordPageContentV2(
+private fun RecordPageScroll(
+    page: RecordTablePageV2?,
     chartMode: Boolean,
     chartContent: RecordChartContentV2?,
-    tablePage: RecordTablePageV2?,
     columns: List<TableColumn>,
+    topInset: Dp,
     onRetry: () -> Unit,
 ) {
+    val error = page?.error
     when {
-        chartMode && chartContent != null -> {
-            RecordChartArea(
-                content = chartContent,
-                modifier = Modifier.fillMaxSize(),
+        error != null -> {
+            ReLoginContent(
+                errorMessage = error,
+                requiresReLogin = false,
+                onReLogin = {},
                 onRetry = onRetry,
+                modifier = Modifier.padding(top = topInset),
             )
         }
 
-        tablePage != null -> {
-            RecordTableArea(columns = columns, page = tablePage, onRetry = onRetry)
+        chartMode -> {
+            Box(modifier = Modifier.fillMaxSize().padding(top = topInset)) {
+                RecordChartArea(
+                    content = chartContent ?: RecordChartContentV2(),
+                    modifier = Modifier.fillMaxSize(),
+                    onRetry = onRetry,
+                )
+            }
+        }
+
+        page == null -> Box(modifier = Modifier.fillMaxSize())
+
+        page.isLoading && page.rows.isEmpty() -> {
+            // 查询中且无数据：留白，避免闪"暂无数据"；进度由顶部下拉刷新指示提示
+            Box(modifier = Modifier.fillMaxSize())
+        }
+
+        page.rows.isEmpty() -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = topInset),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = page.emptyText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        else -> {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                // 左右留白给内容而不是给容器：滚动区仍铺满整屏，标题栏背后不会露出空白
+                contentPadding = PaddingValues(horizontal = 16.dp),
+            ) {
+                item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+
+                items(page.rows) { row ->
+                    RecordTableRow(columns = columns, row = row)
+                }
+
+                val footer = page.footer
+                if (footer != null) {
+                    item(key = "footer") {
+                        RecordTableFooter(columns = columns, footer = footer)
+                    }
+                }
+            }
         }
     }
 }

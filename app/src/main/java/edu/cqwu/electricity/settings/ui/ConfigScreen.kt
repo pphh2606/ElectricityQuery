@@ -50,7 +50,8 @@ import edu.cqwu.electricity.common.settings.AppLanguage
 import edu.cqwu.electricity.common.settings.SettingsKeys
 import edu.cqwu.electricity.common.settings.SettingsPreferences
 import edu.cqwu.electricity.common.ui.LanguageSwitchSheet
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import kotlin.math.roundToInt
 
 private const val MIN_UPDATE_TIMEOUT_MS = 1000
@@ -67,7 +68,7 @@ fun ConfigScreen(
     onNavigateToStorageClear: () -> Unit = {},
     onNavigateToWebVpn: () -> Unit,
 ) {
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val context = LocalContext.current
     val settingsPrefs = remember { SettingsPreferences(context) }
 
@@ -78,7 +79,7 @@ fun ConfigScreen(
     var checkCiUpdates by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.CHECK_CI_UPDATES)) }
     var updateTimeoutMs by remember { mutableIntStateOf(settingsPrefs.get(SettingsKeys.UPDATE_TIMEOUT_MS)) }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.config_title), fontWeight = FontWeight.Bold) },
@@ -93,14 +94,14 @@ fun ConfigScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp),
         ) {
+            Spacer(modifier = Modifier.height(topInset + 8.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),

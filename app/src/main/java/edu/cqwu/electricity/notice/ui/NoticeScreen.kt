@@ -2,6 +2,8 @@ package edu.cqwu.electricity.notice.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +44,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -67,10 +70,12 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.notice.data.NoticeItem
 import edu.cqwu.electricity.notice.data.formatNoticeTime
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -80,7 +85,7 @@ import kotlinx.coroutines.launch
  * 状态由 [NoticeViewModel] 管理。该 ViewModel 挂在本页目的地的作用域上，出栈即销毁，
  * 所以从首页重新进入时列表必然重新加载；从详情返回时实例仍在，列表与滚动位置保留。
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun NoticeScreen(
     viewModel: NoticeViewModel,
@@ -94,7 +99,7 @@ fun NoticeScreen(
     var isSearching by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     // 只在「本实例首次进入」时加载：本 ViewModel 挂在列表目的地的作用域上，
     // 从首页进入是新实例（needsInitialLoad 为初始值 true），因此必然重新加载；
@@ -161,7 +166,7 @@ fun NoticeScreen(
         doSearch(keyword)
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             if (isSearching) {
                 // ── 搜索态：标题栏整体变成搜索条 ──
@@ -261,14 +266,35 @@ fun NoticeScreen(
                     colors = topBarColors
                 )
             }
+            // 统计行属于标题栏浮层：固定在标题栏下方，和标题栏一起模糊
+            ListStatsRow(
+                loadedCount = viewModel.items.size,
+                currentPage = viewModel.currentPage + 1,
+                totalPages = viewModel.totalPage,
+                loadedText = if (viewModel.searchKeyword.isNotBlank()) {
+                    pluralStringResource(
+                        R.plurals.notice_search_result,
+                        viewModel.totalItem,
+                        viewModel.searchKeyword,
+                        viewModel.totalItem
+                    )
+                } else {
+                    pluralStringResource(
+                        R.plurals.notice_total_count,
+                        viewModel.totalItem,
+                        viewModel.totalItem
+                    )
+                },
+                visible = !isSearching && viewModel.errorMessage == null &&
+                    !viewModel.requiresReLogin && viewModel.items.isNotEmpty(),
+            )
         }
-    ) { paddingValues ->
+    ) { topInset ->
         when {
             viewModel.isLoading && viewModel.items.isEmpty() -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -294,73 +320,46 @@ fun NoticeScreen(
                             viewModel.loadPage(0, keyword = keyword)
                         }
                     },
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier.padding(top = topInset),
                 )
             }
 
             else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
+                val pullState = rememberPullToRefreshState()
+                PullToRefreshBox(
+                    isRefreshing = viewModel.isLoading,
+                    onRefresh = {
+                        scope.launch {
+                            val keyword = viewModel.searchKeyword.ifBlank { null }
+                            viewModel.loadPage(0, isRefresh = true, keyword = keyword)
+                        }
+                    },
+                    state = pullState,
+                    indicator = { BlurPullRefreshIndicator(pullState, viewModel.isLoading, topInset) },
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    // 顶部统计行：左侧总数（搜索态为结果数）、右侧页码，不随列表滚动
-                    if (viewModel.items.isNotEmpty()) {
-                        ListStatsRow(
-                            loadedCount = viewModel.items.size,
-                            currentPage = viewModel.currentPage + 1,
-                            totalPages = viewModel.totalPage,
-                            loadedText = if (viewModel.searchKeyword.isNotBlank()) {
-                                pluralStringResource(
-                                    R.plurals.notice_search_result,
-                                    viewModel.totalItem,
-                                    viewModel.searchKeyword,
-                                    viewModel.totalItem
-                                )
-                            } else {
-                                pluralStringResource(
-                                    R.plurals.notice_total_count,
-                                    viewModel.totalItem,
-                                    viewModel.totalItem
-                                )
-                            },
-                        )
-                    }
-
-                    PullToRefreshBox(
-                        isRefreshing = viewModel.isLoading,
-                        onRefresh = {
-                            scope.launch {
-                                val keyword = viewModel.searchKeyword.ifBlank { null }
-                                viewModel.loadPage(0, isRefresh = true, keyword = keyword)
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        LazyColumn(
-                            state = listState,
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // 搜索关键词与结果数已由上方统计行展示，列表内不再重复一行标题
-                            items(viewModel.items, key = { it.wid }) { notice ->
-                                NoticeCard(
-                                    notice = notice,
-                                    // 整条交给导航层：它会写入 NoticePreviewHolder，详情页据此预渲染头部
-                                    onClick = { onNavigateToNoticeDetail(notice) }
-                                )
-                            }
+                        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
 
-                            item(key = "footer") {
-                                // 本页只有自动分页加载（NoticeViewModel 没有公开的手动加载入口），故不传 onLoadMore
-                                val showFooter = viewModel.isLoadingMore ||
-                                    (viewModel.items.isNotEmpty() && !viewModel.hasMore)
-                                if (showFooter) {
-                                    PagingFooter(isLoadingMore = viewModel.isLoadingMore, hasMore = false)
-                                }
+                        items(viewModel.items, key = { it.wid }) { notice ->
+                            NoticeCard(
+                                notice = notice,
+                                // 整条交给导航层：它会写入 NoticePreviewHolder，详情页据此预渲染头部
+                                onClick = { onNavigateToNoticeDetail(notice) }
+                            )
+                        }
+
+                        item(key = "footer") {
+                            // 本页只有自动分页加载（NoticeViewModel 没有公开的手动加载入口），故不传 onLoadMore
+                            val showFooter = viewModel.isLoadingMore ||
+                                (viewModel.items.isNotEmpty() && !viewModel.hasMore)
+                            if (showFooter) {
+                                PagingFooter(isLoadingMore = viewModel.isLoadingMore, hasMore = false)
                             }
                         }
                     }

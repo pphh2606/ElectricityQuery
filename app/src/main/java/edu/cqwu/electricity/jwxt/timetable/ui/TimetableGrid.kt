@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,13 +21,19 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -37,9 +44,13 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeState
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.isDark
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
+import edu.cqwu.electricity.common.ui.rememberHazeSourceModifier
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.core.model.JwxtSection
 import edu.cqwu.electricity.jwxt.core.model.JwxtTimetableCourse
@@ -114,18 +125,32 @@ private fun rememberRowHeights(
 }
 
 /**
- * 课表网格：上方是星期表头（固定），下方是「节次列 + 7 个星期列」的整体纵向滚动区。
+ * 课表网格 + 两块毛玻璃浮层。
  *
- * 调用方已保证 [sections] 与 [courses] 都非空（为空的情况在页面里显示空状态）。
- * [weekStartDate] 是当前周的周一（只有周视图有），表头据此显示「09-28(一)」。
+ * 层次（自下而上）：
+ * 1. **模糊源**：网格本体。内容首部留白 = 顶部浮层高度、每行左侧留白 = 节次列宽；
+ *    这两个留白是**滚动内容的一部分**，滚动时会一起移出屏幕，课程才会进入浮层背后被模糊。
+ *    用容器 padding 不行——那样内容永远到不了浮层背后。
+ * 2. **顶部浮层**：周次/学期切换行 + 日期表头，与网格共用横向滚动（切列时表头不掉队）。
+ * 3. **节次列浮层**：从表头下沿开始，与网格共用纵向滚动。
+ *
+ * 顶部浮层与节次列都只做模糊，不改变网格的行/列几何，所以 domain 层的定位算法与单测不受影响。
  */
 @Composable
 internal fun TimetableGrid(
     sections: List<JwxtSection>,
     courses: List<JwxtTimetableCourse>,
     weekStartDate: String,
+    hazeState: HazeState,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    navigationRow: @Composable () -> Unit,
     onCourseClick: (JwxtTimetableCourse) -> Unit,
+    // 页面上方标题栏的实测高度：网格从屏幕顶端铺满，首项留白把它让出来，
+    // 这样滚动时课程卡片能进入标题栏背后被模糊
+    topBarInset: Dp,
 ) {
+    val density = LocalDensity.current
     // 横向滚动位置由表头与网格共享，滑动时两行始终对齐；纵向同理（节次列与网格）
     val horizontalScroll = rememberScrollState()
     val verticalScroll = rememberScrollState()
@@ -141,40 +166,86 @@ internal fun TimetableGrid(
     // 各节的纵向起点（前缀和）：第 i 节从 rowOffsets[i] 开始，整列高度是 rowOffsets.last()；7 列共用一份
     val rowOffsets = remember(rowHeights) { rowHeights.runningFold(0.dp) { acc, h -> acc + h } }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 表头：不参与纵向滚动；左侧给节次列让出同样的宽度
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.width(SECTION_COLUMN_WIDTH))
-            Row(modifier = Modifier.horizontalScroll(horizontalScroll)) {
-                DayHeaders(dayLanes, weekStartDate)
+    // 顶部浮层的实测高度（切换行 + 表头）。初值用估算值，测量完成后立即覆盖：
+    // 用 0 会让第一帧的网格从屏幕顶端开始画，肉眼能看到跳一下
+    var topChromeHeightPx by remember { mutableIntStateOf(with(density) { 88.dp.roundToPx() }) }
+    val topChromeHeight = with(density) { topChromeHeightPx.toDp() }
+
+    val blurModifier = rememberHazeBlurModifier(hazeState)
+    val pullState = rememberPullToRefreshState()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // ── ① 模糊源：网格本体 ──
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(rememberHazeSourceModifier(hazeState))
+        ) {
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                state = pullState,
+                indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topBarInset + topChromeHeight) },
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(verticalScroll)
+                        .horizontalScroll(horizontalScroll),
+                ) {
+                    Column {
+                        // 顶部留白（标题栏 + 浮层），随滚动移出：
+                        // 滚出去之后课程卡片就进入浮层和标题栏背后被模糊
+                        Spacer(Modifier.height(topBarInset + topChromeHeight))
+                        Row {
+                            // 节次列留白（随横向滚动移出）
+                            Spacer(Modifier.width(SECTION_COLUMN_WIDTH))
+                            for (day in 1..JwxtConstants.DAYS_IN_WEEK) {
+                                DayColumn(
+                                    layout = dayLanes.getValue(day),
+                                    rowHeights = rowHeights,
+                                    rowOffsets = rowOffsets,
+                                    onCourseClick = onCourseClick,
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        Row(modifier = Modifier.fillMaxSize()) {
-            // 节次列固定在左侧，不随横向滚动移动
-            Column(
-                modifier = Modifier
-                    .width(SECTION_COLUMN_WIDTH)
-                    .verticalScroll(verticalScroll),
-            ) {
-                SectionColumn(sections, rowHeights)
-            }
-
-            // 课程网格：横向按天滑动（照网页一屏约 5 天），纵向与节次列同步
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(verticalScroll)
-                    .horizontalScroll(horizontalScroll),
-            ) {
-                for (day in 1..JwxtConstants.DAYS_IN_WEEK) {
-                    DayColumn(
-                        layout = dayLanes.getValue(day),
-                        rowHeights = rowHeights,
-                        rowOffsets = rowOffsets,
-                        onCourseClick = onCourseClick,
-                    )
+        // ── ② 顶部浮层：周次/学期切换 + 日期表头 ──
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                // 让出标题栏：浮层本身仍在标题栏下方，只有网格会滑到标题栏背后
+                .padding(top = topBarInset)
+                .onSizeChanged { topChromeHeightPx = it.height }
+                .then(blurModifier)
+        ) {
+            navigationRow()
+            // 表头：左侧给节次列让出同样的宽度，日期行随网格横向滚动
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Spacer(Modifier.width(SECTION_COLUMN_WIDTH))
+                Row(modifier = Modifier.horizontalScroll(horizontalScroll)) {
+                    DayHeaders(dayLanes, weekStartDate)
                 }
+            }
+        }
+
+        // ── ③ 节次列浮层：从表头下沿开始，随网格纵向滚动 ──
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = topBarInset + topChromeHeight)
+                .width(SECTION_COLUMN_WIDTH)
+                .fillMaxHeight()
+                .then(blurModifier),
+        ) {
+            Column(modifier = Modifier.verticalScroll(verticalScroll)) {
+                SectionColumn(sections, rowHeights)
             }
         }
     }

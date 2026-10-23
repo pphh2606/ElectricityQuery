@@ -21,6 +21,8 @@ object Routes {
     /** 日志记录页（登录/维护日志查看与筛选） */
     const val LOGIN_LOG = "login_log"
     const val PERSONALIZATION = "personalization"
+    /** 标题栏毛玻璃的高级参数页（从「个性化 → 标题栏模糊」左侧进入） */
+    const val HEADER_BLUR_ADVANCED = "header_blur_advanced"
     const val QR_CODE_SETTINGS = "qr_code_settings"
     const val QR_LOGIN = "qr_login"
     const val WEBVPN_SETTINGS = "webvpn_settings"

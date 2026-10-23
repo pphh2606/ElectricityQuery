@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,9 +51,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationArea
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import kotlinx.coroutines.launch
 
 /**
@@ -81,7 +84,7 @@ fun SpeakUpScreen(
     onReLogin: () -> Unit = {},
     viewModel: SpeakUpViewModel = viewModel(),
 ) {
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -89,7 +92,7 @@ fun SpeakUpScreen(
     var showActionDialog by remember { mutableStateOf(false) }
     var selectedArea by remember { mutableStateOf<ConsultationArea?>(null) }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -106,13 +109,14 @@ fun SpeakUpScreen(
                 colors = topBarColors,
             )
         }
-    ) { innerPadding ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState is SpeakUpViewModel.UiState.Loading,
             onRefresh = { viewModel.refresh() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, uiState is SpeakUpViewModel.UiState.Loading, topInset) },
+            modifier = Modifier.fillMaxSize()
         ) {
             when (val state = uiState) {
                 is SpeakUpViewModel.UiState.Loading -> {
@@ -133,6 +137,7 @@ fun SpeakUpScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
+                        item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                         items(
                             items = state.areas,
                             key = { it.wid }

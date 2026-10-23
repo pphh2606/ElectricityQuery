@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.login.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import edu.cqwu.electricity.common.ui.SelectableContainer
 import edu.cqwu.electricity.logging.AppLog
@@ -37,11 +39,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -92,7 +94,7 @@ fun QrLoginScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val snackbar = LocalSnackbarController.current
 
     // 状态与流程统一由 ViewModel 驱动（取码/轮询/提交会话在其内部完成）
@@ -148,7 +150,7 @@ fun QrLoginScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -178,20 +180,22 @@ fun QrLoginScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
-        // PullToRefreshBox 覆盖整个 Scaffold 内容区（标题栏以下全部区域）
+    ) { topInset ->
+        // PullToRefreshBox 覆盖整个内容区（标题栏以下全部区域）
         // 确保在 Initializing / Error 状态下下拉也生效
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = viewModel::startQrLogin,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = topInset),
                 contentAlignment = Alignment.Center,
             ) {
                 when (val state = uiState) {

@@ -32,12 +32,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,10 +62,12 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.person.data.PersonRow
 import edu.cqwu.electricity.person.data.PersonSearchApi
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 /**
  * 查找人员页面。
@@ -81,7 +83,6 @@ fun PersonSearchScreen(
     onReLogin: () -> Unit = {},
     viewModel: PersonSearchViewModel = viewModel(),
 ) {
-    val topBarColors = currentTopBarColors()
     val uiState by viewModel.uiState.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val keyword by viewModel.keyword.collectAsState()
@@ -100,7 +101,7 @@ fun PersonSearchScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -117,15 +118,9 @@ fun PersonSearchScreen(
                         )
                     }
                 },
-                colors = topBarColors,
+                colors = transparentTopBarColors(),
             )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
+
             // ── 搜索条（下划线样式）+ 行尾搜索图标（点击图标搜索） ──
             Row(
                 modifier = Modifier
@@ -170,87 +165,91 @@ fun PersonSearchScreen(
             }
 
             // ── 统计信息行：左「共搜索到 x 人」右「第 n/总页数 页」（排版参照账单页 BillStatsRow） ──
-            val currentState = uiState
-            if (currentState is PersonSearchViewModel.UiState.Success && currentState.rows.isNotEmpty()) {
-                ListStatsRow(
-                    loadedCount = currentState.totalSize,
-                    currentPage = currentState.currentPage,
-                    totalPages = currentState.totalPages,
-                    loadedText = pluralStringResource(
+            val currentState = uiState as? PersonSearchViewModel.UiState.Success
+            ListStatsRow(
+                loadedCount = currentState?.totalSize ?: 0,
+                currentPage = currentState?.currentPage ?: 0,
+                totalPages = currentState?.totalPages ?: 0,
+                loadedText = currentState?.let {
+                    pluralStringResource(
                         R.plurals.person_search_total_count,
-                        currentState.totalSize,
-                        currentState.totalSize,
-                    ),
-                )
-            }
+                        it.totalSize,
+                        it.totalSize,
+                    )
+                },
+                visible = currentState != null && currentState.rows.isNotEmpty(),
+            )
+        },
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
+        val isRefreshing = uiState is PersonSearchViewModel.UiState.Loading
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.refresh() },
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when (val state = uiState) {
+                is PersonSearchViewModel.UiState.Idle -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.person_search_hint),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
 
-            PullToRefreshBox(
-                isRefreshing = uiState is PersonSearchViewModel.UiState.Loading,
-                onRefresh = { viewModel.refresh() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-            ) {
-                when (val state = uiState) {
-                    is PersonSearchViewModel.UiState.Idle -> {
+                is PersonSearchViewModel.UiState.Loading -> {
+                    // 加载中不显示中心转圈，保持空白（下拉刷新指示器仍可用）
+                    Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()))
+                }
+
+                is PersonSearchViewModel.UiState.Error -> {
+                    ReLoginContent(
+                        errorMessage = state.message,
+                        requiresReLogin = state.requiresReLogin,
+                        onReLogin = onReLogin,
+                        onRetry = { viewModel.refresh() },
+                    )
+                }
+
+                is PersonSearchViewModel.UiState.Success -> {
+                    if (state.rows.isEmpty()) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
+                            modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = stringResource(R.string.person_search_hint),
+                                text = stringResource(R.string.person_no_result),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                    }
-
-                    is PersonSearchViewModel.UiState.Loading -> {
-                        // 加载中不显示中心转圈，保持空白（下拉刷新指示器仍可用）
-                        Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()))
-                    }
-
-                    is PersonSearchViewModel.UiState.Error -> {
-                        ReLoginContent(
-                            errorMessage = state.message,
-                            requiresReLogin = state.requiresReLogin,
-                            onReLogin = onReLogin,
-                            onRetry = { viewModel.refresh() },
-                        )
-                    }
-
-                    is PersonSearchViewModel.UiState.Success -> {
-                        if (state.rows.isEmpty()) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.person_no_result),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
+                    } else {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(bottom = 16.dp),
+                        ) {
+                            item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
+                            items(
+                                items = state.rows,
+                                key = { it.id ?: it.hashCode().toString() },
+                            ) { person ->
+                                PersonCard(person = person)
                             }
-                        } else {
-                            LazyColumn(
-                                state = listState,
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(bottom = 16.dp),
-                            ) {
-                                items(
-                                    items = state.rows,
-                                    key = { it.id ?: it.hashCode().toString() },
-                                ) { person ->
-                                    PersonCard(person = person)
-                                }
 
-                                // 分页提示：加载中 / 没有更多（统一组件）
-                                if (isLoadingMore || !state.hasMore) {
-                                    item {
-                                        PagingFooter(isLoadingMore = isLoadingMore, hasMore = false)
-                                    }
+                            // 分页提示：加载中 / 没有更多（统一组件）
+                            if (isLoadingMore || !state.hasMore) {
+                                item {
+                                    PagingFooter(isLoadingMore = isLoadingMore, hasMore = false)
                                 }
                             }
                         }

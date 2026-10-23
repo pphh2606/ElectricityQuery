@@ -36,6 +36,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -135,23 +137,37 @@ fun BottomSheetDialog(
     // 兼容 Android 7+ 的 sheet 状态行为；默认跳过半展开，直接显示内容高度。
     val computedSkip = skipPartiallyExpanded ?: true
     val appDensity = LocalDensity.current
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = computedSkip
-    )
-    val isHiding = rememberBottomSheetHidingState(
-        visible = visible,
-        sheetState = sheetState,
-        onHideStarted = onHideStarted,
-    )
 
-    // visible 或 isHiding 任一为 true 时渲染 ModalBottomSheet。
-    if (visible || isHiding) {
+    // 打开时重建一轮状态：上次关闭若被手势打断，SheetState 会残留 Expanded/Settling，
+    // 复用会让 ModalBottomSheet 认为已展开、跳过弹出动画。
+    // 用 visible 的上升沿在同一帧内递增（放进 LaunchedEffect 会晚一帧，
+    // 第一帧先用旧 key 挂载、下一帧再重建，点按到弹出会多出一段间隔）。
+    var lastVisible by remember { mutableStateOf(visible) }
+    var openGeneration by remember { mutableIntStateOf(0) }
+    if (lastVisible != visible) {
+        lastVisible = visible
+        if (visible) openGeneration++
+    }
+
+    key(openGeneration) {
+        val sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = computedSkip
+        )
+        val isHiding = rememberBottomSheetHidingState(
+            visible = visible,
+            sheetState = sheetState,
+            onHideStarted = onHideStarted,
+        )
+
+        // visible 或 isHiding 任一为 true 时渲染 ModalBottomSheet。
+        if (visible || isHiding) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
             // 顶部让出状态栏高度：撑满时顶边停在状态栏下沿。
             modifier = Modifier.statusBarsPadding(),
             sheetState = sheetState,
-            sheetGesturesEnabled = true,
+            // 弹出动画完成前不响应拖拽：否则拖动会打断 show()，松手时可能被判定为关闭
+            sheetGesturesEnabled = sheetState.currentValue != SheetValue.Hidden,
             dragHandle = {
                 ProvideAppScaledDensity(appDensity) {
                     Row(
@@ -203,6 +219,7 @@ fun BottomSheetDialog(
                 }
             }
         }
+    }
     }
 }
 
@@ -284,18 +301,13 @@ private fun rememberBottomSheetHidingState(
     }
     previousVisible = visible
 
-    // 驱动 ModalBottomSheet 执行退出动画。
-    // 使用 try-finally 确保即使 sheetState.hide() 被取消（如重新打开），
-    // isHiding 也会被正确重置，避免 ModalBottomSheet 的 scrim 永久阻挡屏幕。
+    // 无条件 hide()：弹出动画尚未结束时 isVisible 也是 false，
+    // 用它当守卫会跳过 hide、把状态留在 Settling，下一次打开就丢了弹出动画
     LaunchedEffect(isHiding) {
         if (isHiding) {
             onHideStarted()
-            // 只有 sheet 当前确实可见时才执行 hide 动画。
-            // scrim/返回键路径下 ModalBottomSheet 已自行动画完毕，此时 sheetState 已 Hidden。
             try {
-                if (sheetState.isVisible) {
-                    sheetState.hide()
-                }
+                sheetState.hide()
             } finally {
                 isHiding = false
             }

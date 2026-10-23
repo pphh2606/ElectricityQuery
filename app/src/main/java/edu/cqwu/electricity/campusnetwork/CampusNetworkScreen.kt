@@ -3,6 +3,8 @@ package edu.cqwu.electricity.campusnetwork
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,7 +32,8 @@ import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.ui.FeatureGrid
 import edu.cqwu.electricity.common.ui.FeatureGridItem
 import edu.cqwu.electricity.common.navigation.LocalNavController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 /**
  * 校园网络首页（入口页）。
@@ -47,9 +50,9 @@ fun CampusNetworkScreen(
     onBack: () -> Unit,
 ) {
     val nav = LocalNavController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -70,14 +73,13 @@ fun CampusNetworkScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
             item(key = "grid") {
                 // 网格骨架与网格项统一由 common/ui 提供（与一卡通首页同款）
                 FeatureGrid(items = campusFeatureItems) { feature, itemModifier ->

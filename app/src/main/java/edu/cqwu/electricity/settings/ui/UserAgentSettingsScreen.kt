@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -59,13 +60,13 @@ fun UserAgentSettingsScreen(
     onBack: () -> Unit,
     onNavigateToEdit: (entryId: String) -> Unit,
 ) {
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     var entries by remember { mutableStateOf(UserAgentProvider.getAllEntries()) }
     var selectedId by remember { mutableStateOf(UserAgentProvider.getSelectedId()) }
     var deleteTarget by remember { mutableStateOf<UserAgentEntry?>(null) }
     var isEditMode by remember { mutableStateOf(false) }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.ua_settings_title), fontWeight = FontWeight.Bold) },
@@ -89,14 +90,14 @@ fun UserAgentSettingsScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp),
         ) {
+            Spacer(modifier = Modifier.height(topInset + 8.dp))
             // 当前选中提示
             val selectedName = UserAgentProvider.getSelectedName()
             Text(

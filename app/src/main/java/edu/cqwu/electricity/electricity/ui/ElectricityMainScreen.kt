@@ -1,7 +1,5 @@
 package edu.cqwu.electricity.electricity.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
-
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -36,7 +34,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -60,6 +57,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
@@ -67,6 +65,7 @@ import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.ui.AppNavigationBarItem
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
@@ -75,6 +74,7 @@ import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
 import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -136,7 +136,7 @@ fun ElectricityMainScreen(
     // ── 外部触发其他充值方式弹窗 ──
     var triggerOtherRecharge by remember { mutableStateOf(false) }
 
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     // 当前 Tab 标题：查询 Tab 进入余额结果页后显示"电费查询结果"
     val currentTitle = when {
@@ -202,7 +202,7 @@ fun ElectricityMainScreen(
     Box(
         modifier = Modifier.trackBottomBarScroll(barScrollState),
     ) {
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(currentTitle, fontWeight = FontWeight.Bold) },
@@ -287,12 +287,10 @@ fun ElectricityMainScreen(
                 colors = topBarColors
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize(),
         ) { page ->
             when (page) {
                 0 -> {
@@ -305,10 +303,12 @@ fun ElectricityMainScreen(
                             isLoading = uiState.isLoading,
                             error = uiState.error,
                             onRefresh = { viewModel.refreshBalance() },
+                            topInset = topInset,
                         )
                     } else {
                         BuildingSelectionScreen(
                             viewModel = viewModel,
+                            topInset = topInset,
                         )
                     }
                 }
@@ -318,6 +318,7 @@ fun ElectricityMainScreen(
                         viewModel = rechargeViewModel,
                         triggerOtherRecharge = triggerOtherRecharge,
                         onOtherRechargeTriggered = { triggerOtherRecharge = false },
+                        topInset = topInset,
                     )
                 }
                 2 -> {
@@ -325,6 +326,7 @@ fun ElectricityMainScreen(
                     MyRoomDashboardTab(
                         viewModel = myRoomViewModel,
                         onReLogin = { nav.navigate(Routes.loginRoute()) },
+                        topInset = topInset,
                     )
                 }
             }
@@ -492,6 +494,7 @@ fun ElectricityMainScreen(
 private fun MyRoomDashboardTab(
     viewModel: MyRoomViewModel,
     onReLogin: () -> Unit,
+    topInset: Dp = 0.dp,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -552,6 +555,7 @@ private fun MyRoomDashboardTab(
             isLoading = false,
             error = uiState.error,
             onRefresh = { viewModel.refreshBalance() },
+            topInset = topInset,
         )
     }
 }

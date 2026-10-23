@@ -2,6 +2,12 @@
 
 package edu.cqwu.electricity.jwxt.score.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +16,10 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -29,11 +37,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -44,9 +52,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -55,12 +65,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.score.data.JwxtScore
 import edu.cqwu.electricity.jwxt.score.data.JwxtScoreTerm
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import kotlinx.coroutines.launch
 
 /**
@@ -106,7 +118,7 @@ fun JwxtScoreScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -134,15 +146,42 @@ fun JwxtScoreScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
             )
+            // 学期胶囊与 Tab 行并入标题栏浮层：和标题栏一起模糊、固定不滚动。
+            // 学期列表要等首次请求返回才有，直接 if 会「啪」地弹出来——包一层出现动画，
+            // 高度也随之渐变，浮层下方的内容不会被猛地顶下去
+            AnimatedVisibility(
+                visible = uiState.terms.isNotEmpty(),
+                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                exit = fadeOut(tween(120)) + shrinkVertically(tween(120)),
+            ) {
+                TermChips(
+                    terms = uiState.terms,
+                    selectedTermCode = uiState.selectedTermCode,
+                    onSelect = { viewModel.selectTerm(it) },
+                )
+            }
+            PrimaryTabRow(
+                selectedTabIndex = pagerState.currentPage,
+                containerColor = Color.Transparent,
+                divider = {},
+            ) {
+                filters.forEachIndexed { index, filter ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                        text = { Text(text = filterLabel(filter)) },
+                    )
+                }
+            }
         },
-    ) { paddingValues ->
+    ) { topInset ->
         when {
             uiState.requiresReLogin -> ReLoginContent(
                 requiresReLogin = true,
                 onReLogin = { nav.navigate(Routes.loginRoute()) },
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(top = topInset),
             )
 
             uiState.errorMessage != null -> ReLoginContent(
@@ -150,61 +189,32 @@ fun JwxtScoreScreen(
                 requiresReLogin = false,
                 onReLogin = {},
                 onRetry = { viewModel.load() },
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(top = topInset),
             )
 
-            else -> Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
-                // 学期胶囊：选定后固定在上方，只切换下面的成绩内容（加载中先不显示，避免空行跳一下）
-                if (uiState.terms.isNotEmpty()) {
-                    TermChips(
-                        terms = uiState.terms,
-                        selectedTermCode = uiState.selectedTermCode,
-                        onSelect = { viewModel.selectTerm(it) },
-                    )
-                }
-
-                PrimaryTabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    divider = {},
-                ) {
-                    filters.forEachIndexed { index, filter ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                            text = { Text(text = filterLabel(filter)) },
-                        )
-                    }
-                }
-
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                ) { page ->
-                    ScorePage(
-                        scores = uiState.scoresFor(filters[page]),
-                        listState = listStates[page],
-                        isLoading = uiState.isLoading,
-                        // 首次加载也算「正在刷新」，让顶部下拉指示器一进页面就出现
-                        // （与教务首页同一套处理）；三个 Tab 共用一份数据，指示器只画在当前页
-                        isRefreshing = (uiState.isLoading || uiState.isRefreshing) &&
-                            page == pagerState.currentPage,
-                        onRefresh = { viewModel.refresh() },
-                        onScoreClick = { score ->
-                            nav.navigate(
-                                Routes.unifiedWebViewRoute(
-                                    JwxtConstants.scoreDetailUrl(score.id),
-                                    score.courseName,
-                                )
+            else -> HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+            ) { page ->
+                ScorePage(
+                    scores = uiState.scoresFor(filters[page]),
+                    listState = listStates[page],
+                    isLoading = uiState.isLoading,
+                    // 首次加载也算「正在刷新」，让顶部下拉指示器一进页面就出现
+                    // （与教务首页同一套处理）；三个 Tab 共用一份数据，指示器只画在当前页
+                    isRefreshing = (uiState.isLoading || uiState.isRefreshing) &&
+                        page == pagerState.currentPage,
+                    onRefresh = { viewModel.refresh() },
+                    onScoreClick = { score ->
+                        nav.navigate(
+                            Routes.unifiedWebViewRoute(
+                                JwxtConstants.scoreDetailUrl(score.id),
+                                score.courseName,
                             )
-                        },
-                    )
-                }
+                        )
+                    },
+                    topInset = topInset,
+                )
             }
         }
     }
@@ -225,10 +235,14 @@ private fun ScorePage(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     onScoreClick: (JwxtScore) -> Unit,
+    topInset: Dp,
 ) {
+    val pullState = rememberPullToRefreshState()
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
+        state = pullState,
+        indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
         modifier = Modifier.fillMaxSize(),
     ) {
         when {
@@ -237,6 +251,7 @@ private fun ScorePage(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(vertical = 4.dp),
             ) {
+                item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                 items(scores) { score ->
                     ScoreItem(score = score, onClick = { onScoreClick(score) })
                     HorizontalDivider(

@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,17 +48,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.PasswordRecoverySheet
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.restartApp
 
@@ -87,7 +93,7 @@ fun PasswordChangeScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         // 键盘弹出时让出 IME 高度，避免遮挡右下角"保存"按钮
         modifier = Modifier
             .fillMaxSize()
@@ -103,16 +109,17 @@ fun PasswordChangeScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = viewModel::refresh,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize(),
         ) {
             when {
                 state.requiresReLogin -> ReLoginContent(
@@ -129,6 +136,7 @@ fun PasswordChangeScreen(
                     state = state,
                     viewModel = viewModel,
                     onForgotPassword = { showRecoverySheet = true },
+                    topInset = topInset,
                 )
             }
         }
@@ -170,6 +178,7 @@ private fun PasswordChangeContent(
     state: PasswordChangeUiState,
     viewModel: PasswordChangeViewModel,
     onForgotPassword: () -> Unit,
+    topInset: Dp = 0.dp,
 ) {
     Column(
         modifier = Modifier
@@ -183,6 +192,7 @@ private fun PasswordChangeContent(
                 .padding(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            Spacer(modifier = Modifier.height(topInset))
             // 对应网页 form-tip + 密码强度规则（pwdStrengthPromot）
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(

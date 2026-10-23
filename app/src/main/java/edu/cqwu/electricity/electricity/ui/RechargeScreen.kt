@@ -41,6 +41,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,12 +59,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.payment.ui.AmountGrid
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.navigation.LocalNavController
@@ -86,6 +89,7 @@ fun RechargeScreen(
     viewModel: RechargeViewModel,
     triggerOtherRecharge: Boolean = false,
     onOtherRechargeTriggered: () -> Unit = {},
+    topInset: Dp = 0.dp,
 ) {
     val recharge by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -171,9 +175,12 @@ fun RechargeScreen(
             .padding(horizontal = 16.dp)
     ) {
         Box(modifier = Modifier.weight(1f)) {
+            val pullState = rememberPullToRefreshState()
             PullToRefreshBox(
                 isRefreshing = recharge.isRefreshing,
                 onRefresh = { viewModel.refreshRechargeData() },
+                state = pullState,
+                indicator = { BlurPullRefreshIndicator(pullState, recharge.isRefreshing, topInset) },
                 modifier = Modifier.fillMaxSize()
             ) {
                 LazyColumn(
@@ -181,6 +188,7 @@ fun RechargeScreen(
                     contentPadding = PaddingValues(vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    item(key = "top_inset") { Spacer(Modifier.height(topInset)) }
                     // ============================================================
                     //  学号输入区域（始终可见）
                     // ============================================================

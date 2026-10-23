@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.common.ui.ReLoginContent
 
@@ -78,6 +79,7 @@ internal fun FeeServiceHallProfileTab(
     onNavigateToWebView: (url: String, title: String) -> Unit,
     onReLogin: () -> Unit,
     onRetryProfile: () -> Unit,
+    topInset: Dp = 0.dp,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -86,6 +88,7 @@ internal fun FeeServiceHallProfileTab(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
+        Spacer(Modifier.height(topInset))
         ProfileInfoCard(uiState, onReLogin, onRetryProfile)
 
         Spacer(Modifier.height(16.dp))

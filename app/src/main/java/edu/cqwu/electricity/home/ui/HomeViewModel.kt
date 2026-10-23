@@ -190,9 +190,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         get() {
             val ids = _uiState.value.myServiceIds
             if (ids.isEmpty()) return emptyList()
+            // 首页资源里同一个应用可能挂在多个分类下（例如「活动报名」同时属于学工服务和辅导猫），
+            // flatMap 后会出现两条相同 appId；下游 LazyRow 用 appId 作 key，重复 key 会直接崩溃
             return _uiState.value.categories
                 .flatMap { it.apps }
                 .filter { it.appId in ids }
+                .distinctBy { it.appId }
         }
 
     /**
@@ -218,7 +221,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun addToMyServices(appId: String) {
         _uiState.update {
-            it.copy(myServiceIds = it.myServiceIds + appId)
+            // Set 本身不会存重复值；这里跳过相同值，避免无变化时也触发一次重组
+            if (appId in it.myServiceIds) it
+            else it.copy(myServiceIds = it.myServiceIds + appId)
         }
     }
 

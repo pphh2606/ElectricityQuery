@@ -1,6 +1,8 @@
 package edu.cqwu.electricity.cardcenter.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,12 +32,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -55,6 +57,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
@@ -76,7 +79,7 @@ fun BankCardBindScreen(
     val uiState by viewModel.uiState.collectAsState()
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     var showUnbindConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.loadError) {
@@ -101,7 +104,7 @@ fun BankCardBindScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         // 键盘弹出时让出 IME 高度，避免遮挡右下角"绑定"按钮
         modifier = Modifier
             .fillMaxSize()
@@ -126,13 +129,14 @@ fun BankCardBindScreen(
                 colors = topBarColors
             )
         }
-    ) { paddingValues ->
+    ) { topInset ->
+        val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = { viewModel.refresh() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            state = pullState,
+            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+            modifier = Modifier.fillMaxSize()
         ) {
             when {
                 uiState.requiresReLogin -> {
@@ -141,6 +145,7 @@ fun BankCardBindScreen(
                         requiresReLogin = true,
                         onReLogin = onReLogin,
                         onRetry = { viewModel.refresh() },
+                        modifier = Modifier.padding(top = topInset),
                     )
                 }
 
@@ -151,6 +156,7 @@ fun BankCardBindScreen(
                         requiresReLogin = false,
                         onReLogin = {},
                         onRetry = { viewModel.refresh() },
+                        modifier = Modifier.padding(top = topInset),
                     )
                 }
 
@@ -169,6 +175,7 @@ fun BankCardBindScreen(
                         onCardNoChange = viewModel::setCardNo,
                         onBind = viewModel::bind,
                         onUnbindClick = { showUnbindConfirm = true },
+                        topInset = topInset,
                     )
                 }
             }
@@ -200,6 +207,7 @@ private fun BankCardBindContent(
     onCardNoChange: (String) -> Unit,
     onBind: () -> Unit,
     onUnbindClick: () -> Unit,
+    topInset: Dp = 0.dp,
 ) {
     val status = uiState.status
     val showUnbind = status?.isBound == true
@@ -216,6 +224,7 @@ private fun BankCardBindContent(
                 .padding(top = 16.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Spacer(Modifier.height(topInset))
             Text(
                 text = stringResource(R.string.bank_card_select_bank),
                 style = MaterialTheme.typography.titleMedium

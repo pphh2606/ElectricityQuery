@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import android.content.ActivityNotFoundException
 import android.content.ClipData
@@ -82,7 +83,7 @@ fun AboutScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val appName = stringResource(id = R.string.app_name)
     var showContactSheet by remember { mutableStateOf(false) }
     var updateState by remember { mutableStateOf<UpdateCheckState>(UpdateCheckState.Idle) }
@@ -108,7 +109,7 @@ fun AboutScreen(
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -128,14 +129,14 @@ fun AboutScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Spacer(modifier = Modifier.height(topInset))
             // ─── 上方空白间距 ───
             Spacer(modifier = Modifier.height(64.dp))
 

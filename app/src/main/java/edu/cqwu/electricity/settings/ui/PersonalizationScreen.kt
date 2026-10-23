@@ -2,6 +2,7 @@ package edu.cqwu.electricity.settings.ui
 
 import android.os.Build
 import kotlin.math.roundToInt
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -46,10 +47,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -79,20 +78,20 @@ import edu.cqwu.electricity.common.settings.ThemeColorSource
 import edu.cqwu.electricity.common.settings.TopBarStyle
 import edu.cqwu.electricity.common.settings.labelRes
 import edu.cqwu.electricity.common.settings.MAX_FONT_SCALE
-import edu.cqwu.electricity.common.settings.MAX_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.common.settings.MIN_FONT_SCALE
-import edu.cqwu.electricity.common.settings.MIN_SHEET_BLUR_RADIUS
 import edu.cqwu.electricity.common.ui.isHazeBlurSupported
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalizationScreen(
     onBack: () -> Unit,
     onNavigateToQrCodeSettings: () -> Unit = {},
+    onNavigateToAdvancedBlur: () -> Unit = {},
     isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
 ) {
     val appSettings = LocalAppSettingsState.current
@@ -101,13 +100,14 @@ fun PersonalizationScreen(
     var showTopBarStyleDialog by remember { mutableStateOf(false) }
     var showPageTransitionDialog by remember { mutableStateOf(false) }
     var showReduceMotionDialog by remember { mutableStateOf(false) }
+    var showSheetBlurAdvanced by remember { mutableStateOf(false) }
     var showFontSizeSlider by remember { mutableStateOf(false) }
     var draftFontScale by remember(appSettings.fontScale) { mutableFloatStateOf(appSettings.fontScale) }
     val displayedFontScale = if (showFontSizeSlider) draftFontScale else appSettings.fontScale
     val customSeedColor = (appSettings.colorSource as? ThemeColorSource.Custom)?.seedColor ?: Color(0xFF6750A4)
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.personalization_title), fontWeight = FontWeight.Bold) },
@@ -119,14 +119,14 @@ fun PersonalizationScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp),
         ) {
+            Spacer(modifier = Modifier.height(topInset + 8.dp))
             // 显示设置
             SectionTitle(title = stringResource(R.string.personalization_display))
             Spacer(modifier = Modifier.height(8.dp))
@@ -230,84 +230,33 @@ fun PersonalizationScreen(
                             }
                         }
                     }
-                    // 系统不支持模糊时（Android 12 以下，或系统关掉了模糊）把这一项整体冻结：
-                    // 与「动态取色不支持」的处理一致——只置灰、不可点，不隐藏，让用户知道有这项能力。
+                    // 系统不支持模糊时（Android 12 以下，或系统关掉了模糊）：开关与文字置灰不可拨，
+                    // 二级入口也一并禁用（点了没有反应）
                     val blurSupported = isHazeBlurSupported()
-                    val blurContentAlpha = if (blurSupported) 1f else 0.38f
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(enabled = blurSupported) {
-                                appSettings.updateSheetBlurEnabled(!appSettings.sheetBlurEnabled)
-                            }
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Outlined.BlurOn,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = blurContentAlpha),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.personalization_sheet_blur),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = blurContentAlpha)
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = stringResource(R.string.personalization_sheet_blur_desc),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = blurContentAlpha)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Switch(
-                            // 不支持时显示为「关」，避免出现"开着却点不动"的困惑
-                            checked = appSettings.sheetBlurEnabled && blurSupported,
-                            onCheckedChange = appSettings::updateSheetBlurEnabled,
-                            enabled = blurSupported,
-                        )
-                    }
-                    AnimatedVisibility(visible = blurSupported && appSettings.sheetBlurEnabled) {
-                        Column {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.personalization_sheet_blur_strength),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.weight(1f),
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.personalization_sheet_blur_radius_value,
-                                        appSettings.sheetBlurRadius
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
-                            }
-                            Slider(
-                                value = appSettings.sheetBlurRadius,
-                                onValueChange = appSettings::updateSheetBlurRadius,
-                                valueRange = MIN_SHEET_BLUR_RADIUS..MAX_SHEET_BLUR_RADIUS,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                            )
-                        }
-                    }
+                    // 标题栏毛玻璃：开关本身独立于「弹窗背景模糊」，控制各页面标题栏/浮层的模糊。
+                    // 整行可点，进入「高级模糊设置」直接调 Haze 的原始参数
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.BlurOn,
+                        title = stringResource(R.string.personalization_header_blur),
+                        subtitle = blurSubtitle(R.string.personalization_header_blur_desc, blurSupported),
+                        checked = appSettings.headerBlurEnabled && blurSupported,
+                        onCheckedChange = appSettings::updateHeaderBlurEnabled,
+                        enabled = blurSupported,
+                        onRowClick = onNavigateToAdvancedBlur,
+                        rowClickEnabled = blurSupported && appSettings.headerBlurEnabled,
+                    )
+                    // 弹窗背景模糊：整行可点，弹出底部面板调 Haze 的原始参数
+                    SettingsSwitchEntry(
+                        icon = Icons.Outlined.BlurOn,
+                        title = stringResource(R.string.personalization_sheet_blur),
+                        subtitle = blurSubtitle(R.string.personalization_sheet_blur_desc, blurSupported),
+                        // 不支持时显示为「关」，避免出现"开着却点不动"的困惑
+                        checked = appSettings.sheetBlurEnabled && blurSupported,
+                        onCheckedChange = appSettings::updateSheetBlurEnabled,
+                        enabled = blurSupported,
+                        onRowClick = { showSheetBlurAdvanced = true },
+                        rowClickEnabled = blurSupported && appSettings.sheetBlurEnabled,
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -426,7 +375,17 @@ fun PersonalizationScreen(
         onSelect = { appSettings.updateReduceMotion(it); showReduceMotionDialog = false },
         onDismiss = { showReduceMotionDialog = false },
     )
+    // 弹窗背景模糊的高级参数：从「弹窗背景模糊」左侧点进来的底部面板
+    SheetBlurAdvancedSheet(
+        visible = showSheetBlurAdvanced,
+        onDismissRequest = { showSheetBlurAdvanced = false },
+    )
 }
+
+/** 支持时用功能说明；不支持时直说原因（不再提 Android 版本号） */
+@Composable
+private fun blurSubtitle(@StringRes descRes: Int, supported: Boolean): String =
+    stringResource(if (supported) descRes else R.string.personalization_blur_unsupported)
 
 @Composable
 private fun SectionTitle(title: String) {
