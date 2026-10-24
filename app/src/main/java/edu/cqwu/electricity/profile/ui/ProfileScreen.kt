@@ -174,6 +174,10 @@ fun ProfilePageContent(
                     .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
+                // 与下方 SettingsGroup 用同一档底色，两张卡视觉上连成一套
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                ),
             ) {
                 Row(
                     modifier = Modifier
