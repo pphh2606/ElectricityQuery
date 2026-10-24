@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Badge
@@ -180,6 +181,8 @@ fun UserNameEditScreen(
                             )
                         },
                         onClick = { if (!state.isSaving) viewModel.save() },
+                        // 默认是 16dp 圆角矩形，这里显式给全圆胶囊（与 M3E 参考图的药丸按钮一致）
+                        shape = CircleShape,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 16.dp),
