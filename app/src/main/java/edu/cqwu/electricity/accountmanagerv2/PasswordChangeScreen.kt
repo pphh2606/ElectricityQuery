@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonShapes
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -303,6 +305,8 @@ private fun PasswordChangeContent(
                     // 标准尺寸：M3 split button 只有 small(56dp)/large(96dp) 两档，直接锁高度。
                     modifier = Modifier.height(56.dp),
                     contentPadding = PaddingValues(horizontal = 24.dp),
+                    // 全圆胶囊：两段都强制 CircleShape（并让按下/选中态保持胶囊）。
+                    shapes = SplitButtonShapes(CircleShape, CircleShape, CircleShape),
                 ) {
                     Icon(
                         Icons.Outlined.Save,
@@ -324,6 +328,7 @@ private fun PasswordChangeContent(
                         enabled = !state.isSaving,
                         modifier = Modifier.size(56.dp),
                         contentPadding = PaddingValues(0.dp),
+                        shapes = SplitButtonShapes(CircleShape, CircleShape, CircleShape),
                     ) {
                         Icon(
                             Icons.Filled.ExpandMore,
