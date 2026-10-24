@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemGestures
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -135,7 +138,15 @@ fun BlurScaffold(
                     .fillMaxSize()
                     .then(
                         if (applyNavigationBarsPadding) {
-                            Modifier.windowInsetsPadding(WindowInsets.navigationBars)
+                            // 手势导航下有些 ROM（例如 ColorOS）的 navigationBars 底部 inset 是 0——
+                            // 系统只画一条透明手势条，于是内容直接贴到屏幕底边。这里并上
+                            // systemGestures 兜底（手势模式下它有值、三键模式下通常为 0），
+                            // 再补 12dp 呼吸间距，让最后一项不贴着屏幕边缘。
+                            Modifier
+                                .windowInsetsPadding(
+                                    WindowInsets.navigationBars.union(WindowInsets.systemGestures),
+                                )
+                                .padding(bottom = 12.dp)
                         } else {
                             Modifier
                         },
