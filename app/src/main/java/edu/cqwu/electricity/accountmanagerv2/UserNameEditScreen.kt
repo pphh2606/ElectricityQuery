@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.accountmanagerv2
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -13,11 +14,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -43,9 +46,9 @@ import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
  * 修改用户名页（登录别名 + 昵称）— 布局对应 CAS 网页 mobileUserAttrEdit.do：
- * 顶部提示文字 → 登录别名 / 昵称（12dp 圆角轮廓输入框）→ 右下角保存按钮。
+ * 顶部提示文字 → 登录别名 / 昵称（12dp 圆角轮廓输入框）→ 右下角浮动保存按钮。
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun UserNameEditScreen(
     onBack: () -> Unit,
@@ -88,17 +91,20 @@ fun UserNameEditScreen(
                     onReLogin = {},
                     onRetry = viewModel::refresh,
                 )
-                else -> Column(
+                // 保存按钮不再占一整行：改成 Box 覆盖层里的浮动按钮（同 InstallerX 的做法），
+                // 内容铺满整屏、可滚到按钮下方，背后不会留出一条遮挡横带。
+                else -> Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp),
                 ) {
                     Column(
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxSize()
                             .then(scrollModifier)
                             .verticalScroll(rememberScrollState())
-                            .padding(vertical = 8.dp),
+                            // 底部预留浮动按钮的高度，滚到底时最后一项不会被按钮压住
+                            .padding(top = 8.dp, bottom = 96.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Spacer(modifier = Modifier.height(topInset))
@@ -159,19 +165,25 @@ fun UserNameEditScreen(
                         )
                     }
 
-                    // 对应网页 form-footer：保存（右下角固定，参考学生绑定银行卡）
-                    Button(
-                        onClick = viewModel::save,
+                    // 对应网页 form-footer：保存（右下角浮动，同 InstallerX 的 SmallExtendedFloatingActionButton）
+                    SmallExtendedFloatingActionButton(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Save,
+                                contentDescription = null,
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.user_name_edit_save),
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        onClick = { if (!state.isSaving) viewModel.save() },
                         modifier = Modifier
-                            .align(Alignment.End)
+                            .align(Alignment.BottomEnd)
                             .padding(bottom = 16.dp),
-                        enabled = !state.isSaving,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.user_name_edit_save),
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
+                    )
                 }
             }
         }
