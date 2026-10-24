@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -81,10 +82,14 @@ class MainActivity : AppCompatActivity() {
                 电费查询Theme(
                     nightMode = appSettingsState.nightMode,
                     colorSource = appSettingsState.colorSource,
+                    uiStyle = appSettingsState.uiStyle,
                     pureBlack = appSettingsState.pureBlack,
                     fontScale = appSettingsState.fontScale,
                 ) {
-                    Surface(modifier = Modifier.fillMaxSize()) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                    ) {
                         val navController = rememberNavController()
                         AppShell(
                             navController = navController,

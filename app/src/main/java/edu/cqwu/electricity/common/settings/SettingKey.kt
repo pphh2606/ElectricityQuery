@@ -162,6 +162,14 @@ object SettingsKeys {
         encode = { it.value },
     )
 
+    /** 界面风格：Material 3 / MIUI（当前只切换主题配色） */
+    val UI_STYLE = enumSetting(
+        name = "ui_style",
+        default = UiStyle.MATERIAL3,
+        fromValue = UiStyle::fromValue,
+        encode = { it.value },
+    )
+
     val LOG_LEVEL = enumSetting(
         name = "log_level",
         default = defaultLogLevel(),

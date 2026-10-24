@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Button
@@ -19,9 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -41,8 +38,7 @@ import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
@@ -67,26 +63,12 @@ fun UserNameEditScreen(
         }
     }
 
-    BlurScaffold(
+    CollapsibleScaffold(
+        title = stringResource(R.string.user_name_edit_title),
+        onBack = onBack,
         // 键盘弹出时让出 IME 高度，避免遮挡右下角"保存"按钮
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.user_name_edit_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = transparentTopBarColors(),
-            )
-        },
-    ) { topInset ->
+        modifier = Modifier.fillMaxSize().imePadding(),
+    ) { topInset, scrollModifier ->
         val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
@@ -114,6 +96,7 @@ fun UserNameEditScreen(
                     Column(
                         modifier = Modifier
                             .weight(1f)
+                            .then(scrollModifier)
                             .verticalScroll(rememberScrollState())
                             .padding(vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),

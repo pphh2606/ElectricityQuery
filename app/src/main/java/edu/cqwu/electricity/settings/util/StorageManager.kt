@@ -3,6 +3,7 @@ import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.logging.FileLogWriter
 
 import android.content.Context
+import androidx.core.content.edit
 import android.webkit.CookieManager
 import edu.cqwu.electricity.login.data.SessionCleaner
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
@@ -148,7 +149,7 @@ class StorageManager(private val context: Context) {
     /** 清除应用设置（恢复默认） */
     fun clearSettings() {
         val prefs = context.getSharedPreferences("settings_preferences", Context.MODE_PRIVATE)
-        prefs.edit().clear().apply()
+        prefs.edit { clear() }
     }
 
     /** 清除账号数据（所有账号的学号/密码/登录状态 + 当前登录态） */

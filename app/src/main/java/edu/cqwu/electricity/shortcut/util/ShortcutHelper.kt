@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.shortcut.util
 
 import android.content.Context
+import androidx.core.graphics.createBitmap
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -146,7 +147,7 @@ object ShortcutHelper {
                 sourceBitmap.copy(Bitmap.Config.ARGB_8888, true)
             } else {
                 // 非 BitmapDrawable，手动绘制为 Bitmap
-                val bmp = Bitmap.createBitmap(
+                val bmp = createBitmap(
                     drawable.intrinsicWidth.coerceAtLeast(1),
                     drawable.intrinsicHeight.coerceAtLeast(1),
                     Bitmap.Config.ARGB_8888

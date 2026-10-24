@@ -1,9 +1,10 @@
 package edu.cqwu.electricity.webview.util
 
 import android.content.ActivityNotFoundException
+import androidx.core.net.toUri
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+
 import edu.cqwu.electricity.logging.AppLog
 
 /**
@@ -84,7 +85,7 @@ object WebViewUrlUtil {
      *         false 表示这是 http/https 链接，调用方应在 WebView 内加载
      */
     fun openCustomSchemeUrl(context: Context, url: String, tag: String = "WebViewUrlUtil"): Boolean {
-        val uri = Uri.parse(url)
+        val uri = url.toUri()
         val scheme = uri.scheme
         if (!isCustomScheme(scheme)) return false
 
@@ -114,7 +115,7 @@ object WebViewUrlUtil {
                     AppLog.d(tag, ">>> 降级方案: 提取到实际 scheme=$actualScheme")
                     val fallbackIntent = Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("$actualScheme://${uri.authority}${uri.path}?${uri.query}")
+                        "$actualScheme://${uri.authority}${uri.path}?${uri.query}".toUri()
                     )
                     try {
                         context.startActivity(fallbackIntent)

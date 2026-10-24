@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.login.data
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 /**
  * 账号会话持久化介质（窄接口）。
@@ -25,14 +26,14 @@ internal class SharedPrefsStoreV2(
     override fun getString(key: String): String? = prefs.getString(key, null)
 
     override fun putString(key: String, value: String) {
-        prefs.edit().putString(key, value).apply()
+        prefs.edit { putString(key, value) }
     }
 
     override fun remove(key: String) {
-        prefs.edit().remove(key).apply()
+        prefs.edit { remove(key) }
     }
 
     override fun clear() {
-        prefs.edit().clear().apply()
+        prefs.edit { clear() }
     }
 }

@@ -1,8 +1,9 @@
 package edu.cqwu.electricity.common.net
 
 import edu.cqwu.electricity.logging.AppLog
-import android.net.Uri
+
 import android.os.Handler
+import androidx.core.net.toUri
 import android.os.Looper
 import android.webkit.CookieManager
 import java.util.concurrent.CountDownLatch
@@ -137,7 +138,7 @@ class UserCookieStore {
 
     private fun normalizeUrl(url: String): String {
         return try {
-            val uri = Uri.parse(url)
+            val uri = url.toUri()
             "${uri.scheme}://${uri.host}"
         } catch (e: Exception) {
             AppLog.w("UserCookieStore", "URL 解析失败，原样返回: $url")

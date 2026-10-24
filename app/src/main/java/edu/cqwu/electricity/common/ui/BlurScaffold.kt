@@ -118,7 +118,7 @@ fun BlurScaffold(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
                 .then(rememberHazeSourceModifier(hazeState))
         ) {
             content(topInset)

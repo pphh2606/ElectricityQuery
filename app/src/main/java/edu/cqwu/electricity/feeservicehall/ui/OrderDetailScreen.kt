@@ -51,9 +51,9 @@ import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 @Composable
 fun OrderDetailContent(
     order: OrderRecord,
+    modifier: Modifier = Modifier,
     onContinuePayment: (() -> Unit)? = null,
     onCloseOrder: (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         // ── 金额概览卡片 ──
@@ -93,7 +93,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
             .fillMaxWidth()
             .padding(vertical = 16.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(
@@ -107,7 +107,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
                 modifier = Modifier
                     .size(56.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                 contentAlignment = Alignment.Center,
             ) {
                 if (order.imgUrl != null) {
@@ -172,7 +172,7 @@ private fun OrderInfoSection(order: OrderRecord) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

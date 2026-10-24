@@ -34,7 +34,6 @@
     <string name="user_name_edit_tip">如果您设定了登录别名，您就可以使用登录别名登录系统，多个别名用逗号隔开\n注意：添加登录别名后不可再修改</string>
     <string name="user_name_edit_alias_label">登录别名</string>
     <string name="user_name_edit_nickname_label">昵称</string>
-    <string name="user_name_edit_nickname_placeholder">请输入昵称</string>
     <string name="user_name_edit_save">保存</string>
     <string name="user_name_edit_success">修改成功</string>
     <string name="user_name_edit_alias_available">登录别名可使用</string>
@@ -49,13 +48,9 @@
     <string name="password_change_title">修改密码</string>
     <string name="password_change_tip">为保障账号安全，请设置符合要求的新密码</string>
     <string name="password_change_old_label">旧密码</string>
-    <string name="password_change_old_placeholder">请输入旧密码</string>
     <string name="password_change_new_label">新密码</string>
-    <string name="password_change_new_placeholder">请输入新密码</string>
     <string name="password_change_confirm_label">确认新密码</string>
-    <string name="password_change_confirm_placeholder">请再次输入新密码</string>
     <string name="password_change_captcha_label">验证码</string>
-    <string name="password_change_captcha_placeholder">请输入验证码</string>
     <string name="password_change_captcha_click_hint">点击图片刷新验证码</string>
     <string name="password_change_strength">密码长度至少8位；字符种类至少3种（数字，大写字母，小写字母，标点符号）</string>
     <string name="password_change_save">保存</string>
@@ -349,4 +344,10 @@
     <string name="settings_credential_import_done">已导入 %1$d 个账号，可在账号管理切换登录</string>
     <string name="settings_cookie_export_title">导出cookie</string>
     <string name="settings_cookie_import_title">导入cookie</string>
-    <string name="settings_cookie_import_ok">cookie 已导入，可在账号/登录设置页切换使用</string></resources>
+    <string name="settings_cookie_import_ok">cookie 已导入，可在账号/登录设置页切换使用</string>
+    <string name="settings_ui_style">界面风格</string>
+    <string name="ui_style_material3">Material 3</string>
+    <string name="ui_style_miui">MIUI 风格</string>
+    <string name="miui_showcase_title">MIUI 组件预览</string>
+    <string name="miui_showcase_desc">miuix 基础组件在电费查询中的实际观感</string>
+</resources>

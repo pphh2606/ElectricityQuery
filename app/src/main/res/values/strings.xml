@@ -23,7 +23,7 @@
     <string name="common_add">添加</string>
     <string name="common_edit">编辑</string>
     <string name="common_retry">重试</string>
-    <string name="common_loading">加载中...</string>
+    <string name="common_loading">加载中…</string>
     <string name="common_more_options">更多选项</string>
     <string name="common_toggle_chart">切换为图表视图</string>
     <string name="common_toggle_table">切换为表格视图</string>

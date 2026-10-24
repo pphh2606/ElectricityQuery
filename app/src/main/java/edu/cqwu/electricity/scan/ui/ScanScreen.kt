@@ -68,6 +68,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -333,7 +334,7 @@ private fun handleScanResult(
         }
         text.matches(Regex("^[a-zA-Z][a-zA-Z0-9+.-]*://.*")) -> {
             try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(text))
+                val intent = Intent(Intent.ACTION_VIEW, text.toUri())
                 context.startActivity(intent)
                 onBack()
             } catch (e: ActivityNotFoundException) {

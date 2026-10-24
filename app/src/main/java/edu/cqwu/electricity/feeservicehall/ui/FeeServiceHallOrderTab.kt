@@ -3,7 +3,6 @@
 package edu.cqwu.electricity.feeservicehall.ui
 
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
@@ -204,7 +203,7 @@ private fun OrderListItem(order: OrderRecord, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
             contentAlignment = Alignment.Center,
         ) {
             if (order.imgUrl != null) {

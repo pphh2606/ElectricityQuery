@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,7 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -42,7 +40,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
@@ -61,7 +58,6 @@ import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
@@ -94,19 +90,10 @@ fun LoginLogScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.login_log_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.login_log_title),
+        onBack = onBack,
+        actions = {
                     // 筛选按钮：展开面板时高亮为 primary 色（仿 BillScreen）
                     IconButton(onClick = viewModel::toggleFilterPanel) {
                         Icon(
@@ -119,10 +106,8 @@ fun LoginLogScreen(
                             },
                         )
                     }
-                },
-                colors = transparentTopBarColors(),
-            )
-
+        },
+        expandedTopContent = {
             // ── 筛选面板（向下展开）──
             AnimatedVisibility(
                 visible = state.showFilterPanel,
@@ -213,7 +198,7 @@ fun LoginLogScreen(
                 visible = !state.requiresReLogin && state.loadError == null && state.records.isNotEmpty(),
             )
         },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
@@ -275,6 +260,7 @@ fun LoginLogScreen(
                         state = listState,
                         modifier = Modifier
                             .fillMaxSize()
+                            .then(scrollModifier)
                             .padding(horizontal = 16.dp, vertical = 4.dp),
                     ) {
                         item(key = "top_inset") { Spacer(Modifier.height(topInset)) }

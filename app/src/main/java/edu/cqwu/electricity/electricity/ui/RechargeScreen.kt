@@ -2,7 +2,8 @@ package edu.cqwu.electricity.electricity.ui
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
+
+import androidx.core.net.toUri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,6 +69,7 @@ import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -249,7 +251,7 @@ fun RechargeScreen(
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surface
+                                    containerColor = MaterialTheme.colorScheme.surfaceBright
                                 ),
                                 shape = RoundedCornerShape(16.dp),
                                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -435,48 +437,54 @@ fun RechargeScreen(
         onDismissRequest = { showOtherRechargeDialog = false },
             title = stringResource(R.string.recharge_other_method_title)
         ) {
-            // 今日校园充值
-            BottomSheetItem(
-                icon = Icons.Outlined.Store,
-                title = stringResource(R.string.recharge_method_campus),
-                onClick = {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
-                        context.startActivity(intent)
-                    } catch (_: ActivityNotFoundException) {
-                        snackbar.show(resources.getString(R.string.recharge_install_campus_app))
-                    }
-                    showOtherRechargeDialog = false
+            SheetItemGroup {
+                // 今日校园充值
+                item {
+                    BottomSheetItem(
+                        icon = Icons.Outlined.Store,
+                        title = stringResource(R.string.recharge_method_campus),
+                        onClick = {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, "campusnextins://".toUri())
+                                context.startActivity(intent)
+                            } catch (_: ActivityNotFoundException) {
+                                snackbar.show(resources.getString(R.string.recharge_install_campus_app))
+                            }
+                            showOtherRechargeDialog = false
+                        }
+                    )
                 }
-            )
-
-            // 应用内 H5 充值
-            BottomSheetItem(
-                icon = Icons.Outlined.Public,
-                title = stringResource(R.string.recharge_method_inapp_h5),
-                onClick = {
-                    showOtherRechargeDialog = false
-                    nav.navigate(Routes.RECHARGE_H5_WEBVIEW)
+                // 应用内 H5 充值
+                item {
+                    BottomSheetItem(
+                        icon = Icons.Outlined.Public,
+                        title = stringResource(R.string.recharge_method_inapp_h5),
+                        onClick = {
+                            showOtherRechargeDialog = false
+                            nav.navigate(Routes.RECHARGE_H5_WEBVIEW)
+                        }
+                    )
                 }
-            )
-
-            // 浏览器 H5 充值
-            BottomSheetItem(
-                icon = Icons.Outlined.OpenInBrowser,
-                title = stringResource(R.string.recharge_method_browser_h5),
-                onClick = {
-                    try {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(Routes.H5_RECHARGE_URL)
-                        )
-                        context.startActivity(intent)
-                    } catch (_: ActivityNotFoundException) {
-                        snackbar.show(resources.getString(R.string.common_no_browser))
-                    }
-                    showOtherRechargeDialog = false
+                // 浏览器 H5 充值
+                item {
+                    BottomSheetItem(
+                        icon = Icons.Outlined.OpenInBrowser,
+                        title = stringResource(R.string.recharge_method_browser_h5),
+                        onClick = {
+                            try {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Routes.H5_RECHARGE_URL.toUri()
+                                )
+                                context.startActivity(intent)
+                            } catch (_: ActivityNotFoundException) {
+                                snackbar.show(resources.getString(R.string.common_no_browser))
+                            }
+                            showOtherRechargeDialog = false
+                        }
+                    )
                 }
-            )
+            }
         }
 }
 
@@ -578,15 +586,19 @@ private fun RoomSelectionDialog(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        rooms.forEach { room ->
-            BottomSheetItem(
-                icon = Icons.Outlined.Home,
-                title = room.fullName.ifBlank { room.roomName },
-                onClick = {
-                    onRoomSelected(room)
-                    onDismiss()
+        SheetItemGroup {
+            rooms.forEach { room ->
+                item {
+                    BottomSheetItem(
+                        icon = Icons.Outlined.Home,
+                        title = room.fullName.ifBlank { room.roomName },
+                        onClick = {
+                            onRoomSelected(room)
+                            onDismiss()
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }

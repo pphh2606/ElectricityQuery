@@ -107,7 +107,7 @@ fun FeatureGridItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceBright,
         ),
     ) {
         Column(
@@ -222,7 +222,7 @@ fun AppIconBox(
         modifier = modifier
             .size(size)
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
         if (fallbackIcon != null && iconUrl.isBlank()) {

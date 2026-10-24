@@ -1,9 +1,7 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,24 +16,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -60,25 +55,15 @@ fun UserAgentSettingsScreen(
     onBack: () -> Unit,
     onNavigateToEdit: (entryId: String) -> Unit,
 ) {
-    val topBarColors = transparentTopBarColors()
     var entries by remember { mutableStateOf(UserAgentProvider.getAllEntries()) }
     var selectedId by remember { mutableStateOf(UserAgentProvider.getSelectedId()) }
     var deleteTarget by remember { mutableStateOf<UserAgentEntry?>(null) }
     var isEditMode by remember { mutableStateOf(false) }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.ua_settings_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.ua_settings_title),
+        onBack = onBack,
+        actions = {
                     // 编辑模式：行尾箭头切换为删除图标（与账号管理页一致）
                     IconButton(onClick = { isEditMode = !isEditMode }) {
                         Icon(
@@ -86,14 +71,12 @@ fun UserAgentSettingsScreen(
                             contentDescription = stringResource(R.string.common_edit),
                         )
                     }
-                },
-                colors = topBarColors,
-            )
         },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
@@ -108,13 +91,9 @@ fun UserAgentSettingsScreen(
             )
 
             // ── 预设 & 自定义条目列表 ──
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    entries.forEachIndexed { index, entry ->
+            SettingsGroup {
+                entries.forEach { entry ->
+                    item {
                         UaEntryRow(
                             entry = entry,
                             isSelected = entry.id == selectedId,
@@ -131,12 +110,6 @@ fun UserAgentSettingsScreen(
                             },
                             onDelete = { deleteTarget = entry },
                         )
-                        if (index < entries.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                            )
-                        }
                     }
                 }
             }
@@ -162,39 +135,15 @@ fun UserAgentSettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // ── 首页浏览器标识设置（占位，disabled） ──
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    // 使用 TextButton 风格的图标代替 Checkbox（disabled 状态）
-                    Icon(
-                        imageVector = Icons.Outlined.Add, // 占位，实际应替换为 Checkbox
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
-                        modifier = Modifier.size(24.dp),
+            SettingsGroup {
+                item {
+                    SettingsListItem(
+                        icon = Icons.Outlined.Add,
+                        title = stringResource(R.string.ua_settings_home_ua),
+                        subtitle = stringResource(R.string.ua_settings_coming_soon),
+                        onClick = null,
+                        alpha = 0.38f,
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(
-                            text = stringResource(R.string.ua_settings_home_ua),
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = stringResource(R.string.ua_settings_coming_soon),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
-                        )
-                    }
                 }
             }
         }
@@ -232,79 +181,63 @@ private fun UaEntryRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        RadioButton(
-            selected = isSelected,
-            onClick = onClick,
-        )
-
-        Spacer(modifier = Modifier.width(4.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = entry.name,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (entry.note.isNotBlank()) {
+    SettingsListItem(
+        title = entry.name,
+        onClick = onClick,
+        leading = { RadioButton(selected = isSelected, onClick = onClick) },
+        supporting = {
+            Column {
+                if (entry.note.isNotBlank()) {
+                    Text(
+                        text = entry.note,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Text(
-                    text = entry.note,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = entry.userAgent,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            Text(
-                text = entry.userAgent,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-
-        // trailing 三态统一占 48dp —— 与 [IconButton] 的实际布局尺寸一致（它内部带
-        // minimumInteractiveComponentSize，至少保留 48dp），编辑模式前后图标中心与行高都不变；
-        // 删除同样用 IconButton，与账号管理页保持同一范式（圆形涟漪 + 48dp 触控）。
-        if (isEditMode) {
-            if (entry.isBuiltin) {
-                // 内置预设不可删除：同宽占位 + 置灰图标，保证行高与图标位置不跳动
-                Box(
-                    modifier = Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
-                        modifier = Modifier.size(24.dp),
-                    )
+        },
+        trailing = {
+            // 三态统一占 48dp —— 与 IconButton 的实际布局尺寸一致，编辑模式前后图标中心与行高都不变
+            if (isEditMode) {
+                if (entry.isBuiltin) {
+                    Box(
+                        modifier = Modifier.size(48.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                } else {
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.common_delete),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    }
                 }
             } else {
-                IconButton(onClick = onDelete) {
+                IconButton(onClick = onEdit) {
                     Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = stringResource(R.string.common_delete),
-                        tint = MaterialTheme.colorScheme.error,
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = stringResource(R.string.common_edit),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                     )
                 }
             }
-        } else {
-            IconButton(onClick = onEdit) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                    contentDescription = stringResource(R.string.common_edit),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                )
-            }
-        }
-    }
+        },
+    )
 }

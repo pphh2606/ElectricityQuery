@@ -13,6 +13,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.net.toUri
 import androidx.compose.runtime.State
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -93,7 +94,7 @@ internal fun createUnifiedWebViewClient(
 
         // campusphere.net 域名检测（仅一次）
         if (url != null && !state.campusphereToastShown) {
-            val host = Uri.parse(url).host
+            val host = url.toUri().host
             if (host != null && host.endsWith(".campusphere.net")) {
                 state.campusphereToastShown = true
                 val currentUrl = url
@@ -104,13 +105,13 @@ internal fun createUnifiedWebViewClient(
                         try {
                             // 优先尝试打开今日校园 App
                             deps.context.startActivity(
-                                Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
+                                Intent(Intent.ACTION_VIEW, "campusnextins://".toUri())
                             )
                         } catch (_: ActivityNotFoundException) {
                             // 降级：用浏览器打开当前链接
                             try {
                                 deps.context.startActivity(
-                                    Intent(Intent.ACTION_VIEW, Uri.parse(currentUrl))
+                                    Intent(Intent.ACTION_VIEW, currentUrl.toUri())
                                 )
                             } catch (_: ActivityNotFoundException) {
                                 deps.snackbar.show(deps.context.getString(R.string.common_no_browser))
@@ -187,17 +188,16 @@ internal fun createUnifiedWebViewClient(
     ) {
         super.onReceivedError(view, request, error)
         if (request?.isForMainFrame != true) return
-        // WebResourceError 与 isForMainFrame 都是 API 23+，Android 5.x 由下面的废弃签名兜底
-        val m = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        // WebResourceError 与 isForMainFrame 都是 API 23+，minSdk 23 后不再需要版本兜底
         applyMainFrameError(
-            code = if (m) error?.errorCode ?: -1 else -1,
-            description = if (m) error?.description?.toString() else null,
+            code = error?.errorCode ?: -1,
+            description = error?.description?.toString(),
             url = request.url.toString(),
         )
     }
 
-    // API 23 以下内核只回调这个已废弃的签名（Android 5.x）。不补它的话，-10 静默与
-    // 错误浮层在 Android 5 上都不生效
+    // API 24 以下的旧内核才会回调这条废弃签名，minSdk 23 后仅剩 23 一档，
+    // 新签名已经覆盖，保留空实现只为满足父类重载
     @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onReceivedError(
@@ -206,8 +206,6 @@ internal fun createUnifiedWebViewClient(
         description: String?,
         failingUrl: String?
     ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return
-        applyMainFrameError(errorCode, description, failingUrl)
     }
 
     override fun onReceivedHttpError(
@@ -287,7 +285,7 @@ internal fun createUnifiedWebChromeClient(
             state.pageTitle = title
         }
         view?.url?.let { url ->
-            val host = Uri.parse(url).host
+            val host = url.toUri().host
             if (!host.isNullOrBlank()) {
                 state.pageDomain = host
             }
@@ -317,7 +315,7 @@ internal fun WebView.applyUnifiedDownloadListener(onNoTool: () -> Unit) {
     setDownloadListener { downloadUrl, _, _, mimeType, _ ->
         AppLog.d("WebView_DIAG", "下载请求: $downloadUrl, mime=$mimeType")
         try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)))
+            context.startActivity(Intent(Intent.ACTION_VIEW, downloadUrl.toUri()))
         } catch (_: ActivityNotFoundException) {
             onNoTool()
         }

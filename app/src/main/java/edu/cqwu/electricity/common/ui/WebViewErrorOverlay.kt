@@ -56,18 +56,18 @@ import edu.cqwu.electricity.R
 fun WebViewErrorOverlay(
     errorCode: Int,
     description: String,
-    isHttpError: Boolean = false,
     onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+    isHttpError: Boolean = false,
     onToggleVpn: (() -> Unit)? = null,
     onNetworkSettings: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
 ) {
     val errorInfo = resolveErrorInfo(errorCode, description, isHttpError)
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }

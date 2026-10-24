@@ -64,6 +64,7 @@ import edu.cqwu.electricity.campusnetwork.ui.KeyValueRows
 import edu.cqwu.electricity.campusnetwork.ui.field
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.InfoSectionTitle
@@ -645,13 +646,17 @@ private fun ServiceSheet(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.portal_service_pick),
     ) {
-        services.forEach { service ->
-            BottomSheetItem(
-                icon = Icons.Outlined.Wifi,
-                title = service,
-                selected = service == current,
-                onClick = { onPick(service) },
-            )
+        SheetItemGroup {
+            services.forEach { service ->
+                item {
+                    BottomSheetItem(
+                        icon = Icons.Outlined.Wifi,
+                        title = service,
+                        selected = service == current,
+                        onClick = { onPick(service) },
+                    )
+                }
+            }
         }
     }
 }

@@ -124,18 +124,9 @@ internal fun WebViewHost(
                     ) {
                         super.onReceivedError(view, request, error)
                         if (request?.isForMainFrame == true) {
-                            val errorCode =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    error?.errorCode ?: -1
-                                } else {
-                                    -1
-                                }
-                            val description =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    error?.description?.toString()
-                                } else {
-                                    null
-                                }
+                            // minSdk 23 起 WebResourceError 一定可用
+                            val errorCode = error?.errorCode ?: -1
+                            val description = error?.description?.toString()
                             onMainFrameError(
                                 view,
                                 WebViewLoadError(

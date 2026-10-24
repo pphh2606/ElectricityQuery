@@ -249,7 +249,7 @@ class SpeedTestViewModel(
     }
 
     override fun onCleared() {
-        super.onCleared()
+        // ViewModel.onCleared 是空实现，无需调用 super（EmptySuperCall）
         engine.abort()
         val sid = sessionId
         if (!completed && sid != null) {

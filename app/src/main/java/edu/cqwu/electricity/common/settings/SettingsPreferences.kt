@@ -1,6 +1,7 @@
 package edu.cqwu.electricity.common.settings
 
 import android.app.LocaleManager
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -24,9 +25,9 @@ class SettingsPreferences(
     fun <T> get(key: SettingKey<T>): T = key.read(prefs)
 
     fun <T> set(key: SettingKey<T>, value: T) {
-        val editor = prefs.edit()
-        key.write(editor, value)
-        editor.apply()
+        prefs.edit {
+            key.write(this, value)
+        }
     }
 
     // ── 应用语言 ──
@@ -45,7 +46,7 @@ class SettingsPreferences(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             setPlatformAppLanguage(language)
         } else {
-            prefs.edit().putString(KEY_APP_LANGUAGE, language.value).apply()
+            prefs.edit { putString(KEY_APP_LANGUAGE, language.value) }
         }
     }
 

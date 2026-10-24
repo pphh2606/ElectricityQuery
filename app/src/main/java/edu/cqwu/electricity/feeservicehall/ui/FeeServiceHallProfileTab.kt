@@ -79,8 +79,8 @@ internal fun FeeServiceHallProfileTab(
     onNavigateToWebView: (url: String, title: String) -> Unit,
     onReLogin: () -> Unit,
     onRetryProfile: () -> Unit,
-    topInset: Dp = 0.dp,
     modifier: Modifier = Modifier,
+    topInset: Dp = 0.dp,
 ) {
     Column(
         modifier = modifier

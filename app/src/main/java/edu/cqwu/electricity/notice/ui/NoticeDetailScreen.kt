@@ -4,13 +4,14 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
+
 import android.os.Build
 import android.text.Html
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.net.toUri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -110,7 +111,7 @@ fun NoticeDetailScreen(
     // 文件/下载链接 → 系统浏览器打开（浏览器负责下载）
     fun openExternalBrowser(url: String) {
         try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
         } catch (_: ActivityNotFoundException) {
             AppLog.d("NoticeDetailScreen", "无浏览器可打开链接，已忽略")
             // 无可用浏览器，忽略
@@ -434,7 +435,7 @@ fun NoticeDetailScreen(
                                             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                                                 if (url == null) return false
                                                 // 锚点与页面内部行为（JS、内嵌数据）放行给 WebView 自己处理
-                                                val scheme = Uri.parse(url).scheme?.lowercase()
+                                                val scheme = url.toUri().scheme?.lowercase()
                                                 if (scheme == null || scheme == "about" ||
                                                     scheme == "javascript" || scheme == "data"
                                                 ) return false

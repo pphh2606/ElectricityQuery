@@ -11,6 +11,7 @@ import android.webkit.WebView
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,8 +46,8 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Velocity
@@ -229,7 +230,6 @@ fun WebViewBottomSheet(
     visible: Boolean,
     onDismissRequest: () -> Unit,
     url: String,
-    @Suppress("UNUSED_PARAMETER")
     title: String = "",
 ) {
     val context = LocalContext.current
@@ -319,7 +319,7 @@ fun WebViewBottomSheet(
                         showMenu = false
                         try {
                             context.startActivity(
-                                Intent(Intent.ACTION_VIEW, Uri.parse(webViewState.webView?.url ?: url))
+                                Intent(Intent.ACTION_VIEW, (webViewState.webView?.url ?: url).toUri())
                             )
                         } catch (_: ActivityNotFoundException) {
                             snackbar.show(
@@ -351,7 +351,7 @@ fun WebViewBottomSheet(
                 onBeforeLoad = { webView ->
                     val headers = HashMap<String, String>()
                     headers["Referer"] =
-                        "https://${try { Uri.parse(url).host } catch (_: Exception) { "" }}/"
+                        "https://${try { url.toUri().host } catch (_: Exception) { "" }}/"
                     webView.loadUrl(url, headers)
                 },
                 onPageStarted = { _, _ ->
@@ -365,7 +365,7 @@ fun WebViewBottomSheet(
                     loginRequiredOverlayVisible = false
                     webErrorState = WebViewErrorState(
                         errorCode = error.errorCode,
-                        description = error.description ?: context.getString(R.string.common_unknown_error),
+                        description = error.description ?: resources.getString(R.string.common_unknown_error),
                     )
                 },
                 onFileChooser = { callback ->
@@ -375,16 +375,18 @@ fun WebViewBottomSheet(
                 },
                 onDownload = { downloadUrl ->
                     try {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)))
+                        context.startActivity(Intent(Intent.ACTION_VIEW, downloadUrl.toUri()))
                     } catch (_: ActivityNotFoundException) {
                         snackbar.show(
-                            context.getString(R.string.webview_no_download_tool),
+                            resources.getString(R.string.webview_no_download_tool),
                             ToastUtils.Type.ERROR,
                         )
                     }
                 },
                 update = { webView ->
-                    webView.setOnTouchListener { _, event ->
+                    webView.setOnTouchListener { view, event ->
+                        // 无障碍：抬起时补一次 performClick，读屏才能识别这次点击
+                        if (event.action == MotionEvent.ACTION_UP) view.performClick()
                         touchHandler.onTouch(webView, event)
                     }
                 },

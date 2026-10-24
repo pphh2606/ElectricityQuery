@@ -3,7 +3,6 @@ package edu.cqwu.electricity.settings.ui
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -16,18 +15,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,11 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
@@ -65,7 +58,6 @@ fun BackupRestoreScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = transparentTopBarColors()
     var showSettingsSheet by remember { mutableStateOf(false) }
     var showCookieSheet by remember { mutableStateOf(false) }
     var showCredentialSheet by remember { mutableStateOf(false) }
@@ -103,51 +95,35 @@ fun BackupRestoreScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.settings_backup_restore),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.settings_backup_restore),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
             Spacer(modifier = Modifier.height(topInset + 8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    SettingsEntry(
+            SettingsGroup {
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Backup,
                         title = stringResource(R.string.settings_backup_settings_item),
                         onClick = { showSettingsSheet = true },
                     )
-                    SettingsEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Lock,
                         title = stringResource(R.string.settings_cookie_item),
                         onClick = { showCookieSheet = true },
                     )
-                    SettingsEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Person,
                         title = stringResource(R.string.settings_credential_item),
                         onClick = { showCredentialSheet = true },
@@ -190,12 +166,8 @@ fun BackupRestoreScreen(
         onExport = {
             showCredentialSheet = false
             val km = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            @Suppress("DEPRECATION")
-            val deviceSecure = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                km.isDeviceSecure
-            } else {
-                km.isKeyguardSecure
-            }
+            // minSdk 23 起 isDeviceSecure 一定可用
+            val deviceSecure = km.isDeviceSecure
             if (deviceSecure) {
                 @Suppress("DEPRECATION")
                 val intent = km.createConfirmDeviceCredentialIntent(authTitle, authDesc)

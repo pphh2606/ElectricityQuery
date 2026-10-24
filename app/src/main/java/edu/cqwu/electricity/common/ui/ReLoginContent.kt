@@ -36,16 +36,16 @@ import edu.cqwu.electricity.R
  */
 @Composable
 fun ReLoginContent(
-    errorMessage: String? = null,
     requiresReLogin: Boolean,
     onReLogin: () -> Unit,
-    onRetry: () -> Unit = {},
     modifier: Modifier = Modifier,
+    errorMessage: String? = null,
+    onRetry: () -> Unit = {},
     consumeTouches: Boolean = false,
 ) {
     val overlayModifier = if (consumeTouches) {
         Modifier
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },

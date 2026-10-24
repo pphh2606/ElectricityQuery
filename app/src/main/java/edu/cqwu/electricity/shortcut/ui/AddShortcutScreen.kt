@@ -52,7 +52,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -217,7 +216,7 @@ fun AddShortcutScreen(
                                     modifier = Modifier
                                         .size(32.dp)
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
@@ -362,11 +361,6 @@ fun AddShortcutScreen(
                             title = app.name,
                             selected = selectedApp?.appId == app.appId,
                             iconUrl = app.iconUrl.ifBlank { null },
-                            containerColor = if (selectedApp?.appId == app.appId) {
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
-                            } else {
-                                Color.Transparent
-                            },
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             onClick = {
                                 selectedApp = app
@@ -404,7 +398,7 @@ private fun ShortcutPreview(
                     modifier = Modifier
                         .size(72.dp)
                         .clip(RoundedCornerShape(18.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -451,7 +445,7 @@ private fun AppIcon(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center
     ) {
         if (iconUrl.isNotBlank()) {

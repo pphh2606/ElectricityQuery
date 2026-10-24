@@ -17,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -29,10 +28,11 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.InfoRowDivider
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.core.model.ScheduleTargetType
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 /** 课表类型的标题文案；入口页与选择页共用（data 层的枚举不带资源，映射放在这里） */
 @get:StringRes
@@ -58,7 +58,7 @@ fun JwxtScheduleQueryScreen(
     val nav = LocalNavController.current
     val title = stringResource(R.string.jwxt_schedule_query_title)
 
-    Scaffold(
+    BlurScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = title, fontWeight = FontWeight.Bold) },
@@ -81,14 +81,14 @@ fun JwxtScheduleQueryScreen(
                         )
                     }
                 },
-                colors = currentTopBarColors(),
+                colors = transparentTopBarColors(),
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(top = topInset),
         ) {
             ScheduleTargetType.entries.forEachIndexed { index, type ->
                 if (index > 0) InfoRowDivider()

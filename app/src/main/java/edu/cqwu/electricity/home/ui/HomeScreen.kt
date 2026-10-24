@@ -7,11 +7,12 @@ import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
+import androidx.core.net.toUri
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import edu.cqwu.electricity.R
 
-import android.net.Uri
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -56,8 +57,10 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,8 +68,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -83,6 +88,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -100,7 +106,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import dev.chrisbanes.haze.HazeState
-import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.ui.AppIconBox
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.FeatureGrid
@@ -122,7 +127,7 @@ import kotlinx.coroutines.launch
  * 首页 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
  * 支持搜索模式和编辑模式。
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeTopBar(
     searchQuery: String,
@@ -131,6 +136,7 @@ fun HomeTopBar(
     onToggleSearch: () -> Unit,
     onCloseSearch: () -> Unit,
     containerColor: Color? = null,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     val nav = LocalNavController.current
     val baseColors = currentTopBarColors()
@@ -218,8 +224,8 @@ fun HomeTopBar(
             colors = topBarColors
         )
     } else {
-        // ── 普通模式 ──
-        TopAppBar(
+        // ── 普通模式：大标题，随列表滚动折叠 ──
+        LargeFlexibleTopAppBar(
             title = {
                 Text(
                     text = stringResource(R.string.home_title),
@@ -242,7 +248,8 @@ fun HomeTopBar(
                     )
                 }
             },
-            colors = topBarColors
+            colors = topBarColors,
+            scrollBehavior = scrollBehavior,
         )
     }
 }
@@ -256,13 +263,17 @@ fun HomeTopBar(
  */
 @Composable
 fun HomePage(
-    homeViewModel: HomeViewModel = viewModel(),
     modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel = viewModel(),
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val hazeState = remember { HazeState() }
+    // 首页大标题折叠：仅普通模式生效，搜索模式仍是定高 TopAppBar
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
+    val scrollModifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     val headerBlurOn = isHeaderBlurOn()
 
     // 浮层实测高度（状态栏 + 标题栏 + 分类条），随搜索模式、分类条显隐自动修正，
@@ -287,6 +298,7 @@ fun HomePage(
                 homeViewModel = homeViewModel,
                 listState = listState,
                 contentTopInset = contentTopInset,
+                modifier = scrollModifier,
             )
         }
 
@@ -307,6 +319,7 @@ fun HomePage(
                 onToggleSearch = { homeViewModel.enterSearchMode() },
                 onCloseSearch = { homeViewModel.clearSearch() },
                 containerColor = if (headerBlurOn) Color.Transparent else null,
+                scrollBehavior = scrollBehavior,
             )
 
             // 分类索引条不是启动第一时间就有（要等首页数据回来），
@@ -354,6 +367,7 @@ fun HomePage(
  */
 @Composable
 fun HomePageContent(
+    modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = viewModel(),
     listState: LazyListState = rememberLazyListState(),
     contentTopInset: Dp = 0.dp,
@@ -453,6 +467,7 @@ fun HomePageContent(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
+                                .then(modifier)
                                 .verticalScroll(rememberScrollState()),
                             contentAlignment = Alignment.Center
                         ) {
@@ -464,7 +479,7 @@ fun HomePageContent(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().then(modifier),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             item(key = "top_inset") { Spacer(Modifier.height(contentTopInset)) }
@@ -513,7 +528,7 @@ fun HomePageContent(
                     // ── 普通模式：按分类展示，顶部插入「我的服务」区域 ──
                     LazyColumn(
                         state = listState,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().then(modifier),
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
                         item(key = "top_inset") { Spacer(Modifier.height(contentTopInset)) }
@@ -848,7 +863,7 @@ private fun CustomServiceIconItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -872,7 +887,7 @@ private fun CustomServiceIconItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -1071,7 +1086,7 @@ private fun AppIconItem(
  */
 private fun getFaviconUrl(url: String): String? {
     return try {
-        val uri = Uri.parse(url)
+        val uri = url.toUri()
         val host = uri.host ?: return null
         val port = uri.port
         val scheme = uri.scheme ?: "https"

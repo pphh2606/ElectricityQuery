@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.jwxt.timetable.data.TimetableWeekLesson
 import edu.cqwu.electricity.jwxt.timetable.data.TimetableWidgetPayload
 import edu.cqwu.electricity.jwxt.timetable.data.TimetableWidgetRepositoryV2
 import edu.cqwu.electricity.jwxt.timetable.domain.TimetableToday

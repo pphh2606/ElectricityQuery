@@ -18,7 +18,6 @@
     <string name="home_install_campus_app">Installez Campusphere pour utiliser « %1$s »</string>
     <string name="home_edit_my_services">Modifier mes services</string>
     <string name="home_confirm_exit_edit">Confirmer et quitter</string>
-    <string name="home_load_failed">Échec du chargement</string>
 
     <!-- ═══════════════════════════════════════════ -->
     <!--  Hall                                       -->

@@ -1,8 +1,9 @@
 package edu.cqwu.electricity.settings.ui
 
 import android.content.Intent
-import android.net.Uri
+
 import android.text.format.Formatter
+import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -208,7 +209,7 @@ fun UpdateFoundSheet(
                             .clickable {
                                 showDownloadSourceSheet = false
                                 try {
-                                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link.url)))
+                                    context.startActivity(Intent(Intent.ACTION_VIEW, link.url.toUri()))
                                     onDismiss()
                                 } catch (e: Exception) {
                                     snackbar.show(resources.getString(R.string.common_no_browser))

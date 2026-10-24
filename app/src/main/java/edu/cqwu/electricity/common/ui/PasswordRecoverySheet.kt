@@ -42,24 +42,30 @@ fun PasswordRecoverySheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.login_password_recovery),
     ) {
-        BottomSheetItem(
-            icon = Icons.Outlined.Phone,
-            title = phoneRecoveryTitle,
-            onClick = {
-                onDismissRequest()
-                webViewTitle = phoneRecoveryTitle
-                webViewUrl = PHONE_RECOVERY_URL
+        SheetItemGroup {
+            item {
+                BottomSheetItem(
+                    icon = Icons.Outlined.Phone,
+                    title = phoneRecoveryTitle,
+                    onClick = {
+                        onDismissRequest()
+                        webViewTitle = phoneRecoveryTitle
+                        webViewUrl = PHONE_RECOVERY_URL
+                    }
+                )
             }
-        )
-        BottomSheetItem(
-            icon = Icons.Outlined.Email,
-            title = emailRecoveryTitle,
-            onClick = {
-                onDismissRequest()
-                webViewTitle = emailRecoveryTitle
-                webViewUrl = EMAIL_RECOVERY_URL
+            item {
+                BottomSheetItem(
+                    icon = Icons.Outlined.Email,
+                    title = emailRecoveryTitle,
+                    onClick = {
+                        onDismissRequest()
+                        webViewTitle = emailRecoveryTitle
+                        webViewUrl = EMAIL_RECOVERY_URL
+                    }
+                )
             }
-        )
+        }
     }
 
     WebViewBottomSheet(

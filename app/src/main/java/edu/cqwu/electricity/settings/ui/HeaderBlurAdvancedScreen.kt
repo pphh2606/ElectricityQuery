@@ -7,19 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -35,8 +28,7 @@ import edu.cqwu.electricity.common.settings.MIN_HEADER_BLUR_ALPHA
 import edu.cqwu.electricity.common.settings.MIN_HEADER_BLUR_BACKGROUND_ALPHA
 import edu.cqwu.electricity.common.settings.MIN_HEADER_BLUR_NOISE
 import edu.cqwu.electricity.common.settings.MIN_HEADER_BLUR_RADIUS
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 /**
  * 标题栏毛玻璃的「高级模糊设置」。
@@ -49,32 +41,14 @@ import edu.cqwu.electricity.common.ui.transparentTopBarColors
 @Composable
 fun HeaderBlurAdvancedScreen(onBack: () -> Unit) {
     val appSettings = LocalAppSettingsState.current
-    val topBarColors = transparentTopBarColors()
-
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.advanced_blur_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.advanced_blur_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
@@ -89,12 +63,8 @@ fun HeaderBlurAdvancedScreen(onBack: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             // ── HazeBlurStyle 的数值参数 ──
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
+            SettingsGroup {
+                item {
                     BlurParamRow(
                         name = "blurRadius",
                         description = stringResource(R.string.advanced_blur_desc_blur_radius),
@@ -104,7 +74,8 @@ fun HeaderBlurAdvancedScreen(onBack: () -> Unit) {
                         decimals = 0,
                         onValueChange = appSettings::updateHeaderBlurRadius,
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+                item {
                     BlurParamRow(
                         name = "noiseFactor",
                         description = stringResource(R.string.advanced_blur_desc_noise_factor),
@@ -114,7 +85,8 @@ fun HeaderBlurAdvancedScreen(onBack: () -> Unit) {
                         decimals = 2,
                         onValueChange = appSettings::updateHeaderBlurNoise,
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+                item {
                     BlurParamRow(
                         name = "alpha",
                         description = stringResource(R.string.advanced_blur_desc_alpha),
@@ -124,7 +96,8 @@ fun HeaderBlurAdvancedScreen(onBack: () -> Unit) {
                         decimals = 2,
                         onValueChange = appSettings::updateHeaderBlurAlpha,
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+                item {
                     BlurParamRow(
                         name = "backgroundColor.alpha",
                         description = stringResource(R.string.advanced_blur_desc_background_alpha),
@@ -140,15 +113,13 @@ fun HeaderBlurAdvancedScreen(onBack: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // ── hazeBlur 的 performanceMode ──
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                BlurPerformanceOptions(
-                    current = appSettings.headerBlurPerformance,
-                    onSelect = appSettings::updateHeaderBlurPerformance,
-                )
+            SettingsGroup {
+                item {
+                    BlurPerformanceOptions(
+                        current = appSettings.headerBlurPerformance,
+                        onSelect = appSettings::updateHeaderBlurPerformance,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))

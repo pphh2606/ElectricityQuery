@@ -34,7 +34,6 @@
     <string name="user_name_edit_tip">If you set a login alias, you can use it to log in. Separate multiple aliases with commas.\nNote: Aliases cannot be modified once added.</string>
     <string name="user_name_edit_alias_label">Login Alias</string>
     <string name="user_name_edit_nickname_label">Nickname</string>
-    <string name="user_name_edit_nickname_placeholder">Enter a nickname</string>
     <string name="user_name_edit_save">Save</string>
     <string name="user_name_edit_success">Changed successfully</string>
     <string name="user_name_edit_alias_available">Alias available</string>
@@ -49,13 +48,9 @@
     <string name="password_change_title">Change Password</string>
     <string name="password_change_tip">For account security, please set a new password that meets the requirements</string>
     <string name="password_change_old_label">Old Password</string>
-    <string name="password_change_old_placeholder">Enter your old password</string>
     <string name="password_change_new_label">New Password</string>
-    <string name="password_change_new_placeholder">Enter a new password</string>
     <string name="password_change_confirm_label">Confirm New Password</string>
-    <string name="password_change_confirm_placeholder">Enter the new password again</string>
     <string name="password_change_captcha_label">Captcha</string>
-    <string name="password_change_captcha_placeholder">Enter the captcha</string>
     <string name="password_change_captcha_click_hint">Tap the image to refresh the captcha</string>
     <string name="password_change_strength">Password must be at least 8 characters and contain at least 3 character types (digits, uppercase, lowercase, punctuation)</string>
     <string name="password_change_save">Save</string>
@@ -379,4 +374,10 @@
     <string name="settings_credential_import_done">Imported %1$d account(s). Switch under Account Manager</string>
     <string name="settings_cookie_export_title">Export cookies</string>
     <string name="settings_cookie_import_title">Import cookies</string>
-    <string name="settings_cookie_import_ok">Cookies imported. Switch to the account in account/login settings to use them.</string></resources>
+    <string name="settings_cookie_import_ok">Cookies imported. Switch to the account in account/login settings to use them.</string>
+    <string name="settings_ui_style">UI Style</string>
+    <string name="ui_style_material3">Material 3</string>
+    <string name="ui_style_miui">MIUI style</string>
+    <string name="miui_showcase_title">MIUI Component Preview</string>
+    <string name="miui_showcase_desc">How miuix base components look inside this app</string>
+</resources>

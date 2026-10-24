@@ -7,8 +7,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,18 +37,22 @@ import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.TextFields
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -60,9 +61,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -76,22 +79,25 @@ import edu.cqwu.electricity.common.settings.PageTransition
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.settings.ThemeColorSource
 import edu.cqwu.electricity.common.settings.TopBarStyle
+import edu.cqwu.electricity.common.settings.UiStyle
 import edu.cqwu.electricity.common.settings.labelRes
 import edu.cqwu.electricity.common.settings.MAX_FONT_SCALE
 import edu.cqwu.electricity.common.settings.MIN_FONT_SCALE
 import edu.cqwu.electricity.common.ui.isHazeBlurSupported
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PersonalizationScreen(
     onBack: () -> Unit,
     onNavigateToQrCodeSettings: () -> Unit = {},
     onNavigateToAdvancedBlur: () -> Unit = {},
+    onNavigateToMiuiShowcase: () -> Unit = {},
     isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
 ) {
     val appSettings = LocalAppSettingsState.current
@@ -106,10 +112,12 @@ fun PersonalizationScreen(
     val displayedFontScale = if (showFontSizeSlider) draftFontScale else appSettings.fontScale
     val customSeedColor = (appSettings.colorSource as? ThemeColorSource.Custom)?.seedColor ?: Color(0xFF6750A4)
     val topBarColors = transparentTopBarColors()
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
 
     BlurScaffold(
         topBar = {
-            TopAppBar(
+            LargeFlexibleTopAppBar(
                 title = { Text(text = stringResource(R.string.personalization_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -117,12 +125,14 @@ fun PersonalizationScreen(
                     }
                 },
                 colors = topBarColors,
+                scrollBehavior = scrollBehavior,
             )
         },
     ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
@@ -130,17 +140,15 @@ fun PersonalizationScreen(
             // 显示设置
             SectionTitle(title = stringResource(R.string.personalization_display))
             Spacer(modifier = Modifier.height(8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    SettingRow(
+            SettingsGroup {
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Contrast, title = stringResource(R.string.personalization_night_mode),
                         subtitle = stringResource(appSettings.nightMode.labelRes),
                         onClick = { showNightModeDialog = true },
                     )
+                }
+                item {
                     SettingsSwitchEntry(
                         icon = Icons.Outlined.DarkMode,
                         title = stringResource(R.string.personalization_pure_black),
@@ -148,6 +156,8 @@ fun PersonalizationScreen(
                         checked = appSettings.pureBlack,
                         onCheckedChange = appSettings::updatePureBlack,
                     )
+                }
+                item {
                     SettingsSwitchEntry(
                         icon = Icons.Outlined.Label,
                         title = stringResource(R.string.personalization_tab_label_selected_only),
@@ -155,6 +165,8 @@ fun PersonalizationScreen(
                         checked = appSettings.tabLabelSelectedOnly,
                         onCheckedChange = appSettings::updateTabLabelSelectedOnly,
                     )
+                }
+                item {
                     FontScaleRow(
                         title = stringResource(R.string.personalization_font_scale),
                         subtitle = stringResource(
@@ -169,10 +181,14 @@ fun PersonalizationScreen(
                             }
                         },
                     )
+                }
+                item {
                     AnimatedVisibility(visible = showFontSizeSlider) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .clip(LocalSettingsItemShape.current)
+                                .background(MaterialTheme.colorScheme.surfaceBright)
                                 .padding(horizontal = 16.dp)
                                 .padding(bottom = 8.dp),
                         ) {
@@ -230,9 +246,11 @@ fun PersonalizationScreen(
                             }
                         }
                     }
-                    // 系统不支持模糊时（Android 12 以下，或系统关掉了模糊）：开关与文字置灰不可拨，
-                    // 二级入口也一并禁用（点了没有反应）
-                    val blurSupported = isHazeBlurSupported()
+                }
+                // 系统不支持模糊时（Android 12 以下，或系统关掉了模糊）：开关与文字置灰不可拨，
+                // 二级入口也一并禁用（点了没有反应）
+                val blurSupported = isHazeBlurSupported()
+                item {
                     // 标题栏毛玻璃：开关本身独立于「弹窗背景模糊」，控制各页面标题栏/浮层的模糊。
                     // 整行可点，进入「高级模糊设置」直接调 Haze 的原始参数
                     SettingsSwitchEntry(
@@ -245,6 +263,8 @@ fun PersonalizationScreen(
                         onRowClick = onNavigateToAdvancedBlur,
                         rowClickEnabled = blurSupported && appSettings.headerBlurEnabled,
                     )
+                }
+                item {
                     // 弹窗背景模糊：整行可点，弹出底部面板调 Haze 的原始参数
                     SettingsSwitchEntry(
                         icon = Icons.Outlined.BlurOn,
@@ -264,12 +284,8 @@ fun PersonalizationScreen(
             // 主题颜色
             SectionTitle(title = stringResource(R.string.personalization_theme_color))
             Spacer(modifier = Modifier.height(8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
+            SettingsGroup {
+                item {
                     ThemeColorRow(
                         icon = Icons.Outlined.AutoAwesome, title = stringResource(R.string.personalization_dynamic_color),
                         subtitle = if (isDynamicColorSupported) stringResource(R.string.personalization_dynamic_color_supported) else stringResource(R.string.personalization_dynamic_color_unsupported),
@@ -277,6 +293,8 @@ fun PersonalizationScreen(
                         enabled = isDynamicColorSupported,
                         onClick = { appSettings.updateColorSource(ThemeColorSource.SystemDynamic) },
                     )
+                }
+                item {
                     ThemeColorRow(
                         icon = Icons.Outlined.Colorize, title = stringResource(R.string.personalization_custom_color),
                         subtitle = stringResource(R.string.personalization_custom_color_desc, customSeedColor.toHex()),
@@ -285,7 +303,9 @@ fun PersonalizationScreen(
                             showColorPicker = true
                         },
                     )
-                    SettingRow(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.FormatPaint, title = stringResource(R.string.personalization_topbar_color),
                         subtitle = stringResource(appSettings.topBarStyle.labelRes),
                         onClick = { showTopBarStyleDialog = true },
@@ -294,33 +314,71 @@ fun PersonalizationScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
 
+            // 界面风格
+            SectionTitle(title = stringResource(R.string.settings_ui_style))
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsGroup {
+                // Expressive 的分段按钮组：两段 connected，取代两行单选项
+                val material3Label = stringResource(R.string.ui_style_material3)
+                val miuiLabel = stringResource(R.string.ui_style_miui)
+                item {
+                    ButtonGroup(
+                        overflowIndicator = {},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                    ) {
+                        toggleableItem(
+                            checked = appSettings.uiStyle == UiStyle.MATERIAL3,
+                            label = material3Label,
+                            onCheckedChange = {
+                                // 再次点击已选中项不取消选中（界面风格必须二选一）
+                                if (it) appSettings.updateUiStyle(UiStyle.MATERIAL3)
+                            },
+                            weight = 1f,
+                        )
+                        toggleableItem(
+                            checked = appSettings.uiStyle == UiStyle.MIUI,
+                            label = miuiLabel,
+                            onCheckedChange = {
+                                if (it) appSettings.updateUiStyle(UiStyle.MIUI)
+                            },
+                            weight = 1f,
+                        )
+                    }
+                }
+                item {
+                    SettingsNavigationRow(
+                        icon = Icons.Outlined.Visibility,
+                        title = stringResource(R.string.miui_showcase_title),
+                        subtitle = stringResource(R.string.miui_showcase_desc),
+                        onClick = onNavigateToMiuiShowcase,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+
             // 二维码设置
             SectionTitle(title = stringResource(R.string.personalization_qrcode_settings))
             Spacer(modifier = Modifier.height(8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                SettingRow(
-                    icon = Icons.Outlined.QrCode,
-                    title = stringResource(R.string.personalization_qrcode_settings),
-                    subtitle = stringResource(R.string.personalization_qrcode_desc),
-                    onClick = onNavigateToQrCodeSettings,
-                )
+            SettingsGroup {
+                item {
+                    SettingsNavigationRow(
+                        icon = Icons.Outlined.QrCode,
+                        title = stringResource(R.string.personalization_qrcode_settings),
+                        subtitle = stringResource(R.string.personalization_qrcode_desc),
+                        onClick = onNavigateToQrCodeSettings,
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(24.dp))
 
             // 动画设置
             SectionTitle(title = stringResource(R.string.personalization_animation))
             Spacer(modifier = Modifier.height(8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    SettingRow(
+            SettingsGroup {
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Animation, title = stringResource(R.string.personalization_page_transition),
                         subtitle = if (appSettings.reduceMotion == ReduceMotion.ON) {
                             "${stringResource(appSettings.pageTransition.labelRes)}${stringResource(R.string.personalization_reduce_motion_override)}"
@@ -329,7 +387,9 @@ fun PersonalizationScreen(
                         },
                         onClick = { showPageTransitionDialog = true },
                     )
-                    SettingRow(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.MotionPhotosAuto, title = stringResource(R.string.personalization_reduce_motion),
                         subtitle = stringResource(appSettings.reduceMotion.labelRes),
                         onClick = { showReduceMotionDialog = true },
@@ -395,67 +455,18 @@ private fun SectionTitle(title: String) {
 }
 
 @Composable
-private fun SettingRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-            Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-            Icon(imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(24.dp))
-        }
-    }
-}
-
-@Composable
 private fun FontScaleRow(
     title: String,
     subtitle: String,
     expanded: Boolean,
     onClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = Icons.Outlined.TextFields,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+    SettingsListItem(
+        icon = Icons.Outlined.TextFields,
+        title = title,
+        subtitle = subtitle,
+        onClick = onClick,
+        trailing = {
             val arrowRotation by animateFloatAsState(
                 targetValue = if (expanded) 90f else 0f,
                 animationSpec = tween(300),
@@ -465,54 +476,29 @@ private fun FontScaleRow(
                 imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(24.dp).rotate(arrowRotation),
+                modifier = Modifier.rotate(arrowRotation),
             )
-        }
-    }
+        },
+    )
 }
 
 @Composable
-private fun ThemeColorRow(icon: ImageVector, title: String, subtitle: String, selected: Boolean, enabled: Boolean = true, onClick: () -> Unit, trailing: @Composable (() -> Unit)? = null) {
-    val contentAlpha = if (enabled) 1f else 0.38f
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(
-                if (enabled) Modifier.clickable(onClick = onClick)
-                else Modifier
-            )
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = icon, contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = contentAlpha),
-                modifier = Modifier.size(24.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha)
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = contentAlpha)
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            trailing?.invoke()
-            Spacer(modifier = Modifier.width(8.dp))
-            RadioButton(selected = selected, onClick = null, enabled = enabled)
-        }
-    }
+private fun ThemeColorRow(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    selected: Boolean,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+) {
+    SettingsListItem(
+        icon = icon,
+        title = title,
+        subtitle = subtitle,
+        onClick = if (enabled) onClick else null,
+        alpha = if (enabled) 1f else 0.38f,
+        trailing = { RadioButton(selected = selected, onClick = null, enabled = enabled) },
+    )
 }
 
 @Composable
@@ -527,20 +513,24 @@ private fun NightModeSelectionDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.personalization_night_mode)
     ) {
-        NightMode.entries.forEach { mode ->
-            BottomSheetItem(
-                icon = when (mode) {
-                    NightMode.SYSTEM -> Icons.Outlined.AutoAwesome
-                    NightMode.LIGHT -> Icons.Outlined.Contrast
-                    NightMode.DARK -> Icons.Outlined.DarkMode
-                },
-                title = stringResource(mode.labelRes),
-                selected = mode == current,
-                onClick = {
-                    onSelect(mode)
-                    onDismiss()
+        SheetItemGroup {
+            NightMode.entries.forEach { mode ->
+                item {
+                    BottomSheetItem(
+                        icon = when (mode) {
+                            NightMode.SYSTEM -> Icons.Outlined.AutoAwesome
+                            NightMode.LIGHT -> Icons.Outlined.Contrast
+                            NightMode.DARK -> Icons.Outlined.DarkMode
+                        },
+                        title = stringResource(mode.labelRes),
+                        selected = mode == current,
+                        onClick = {
+                            onSelect(mode)
+                            onDismiss()
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }
@@ -712,16 +702,20 @@ private fun <T> SelectionDialog(
         onDismissRequest = onDismiss,
         title = title,
     ) {
-        entries.forEach { entry ->
-            BottomSheetItem(
-                icon = if (entry == current) Icons.Outlined.CheckCircle else null,
-                title = displayText(entry),
-                selected = entry == current,
-                onClick = {
-                    onSelect(entry)
-                    onDismiss()
+        SheetItemGroup {
+            entries.forEach { entry ->
+                item {
+                    BottomSheetItem(
+                        icon = if (entry == current) Icons.Outlined.CheckCircle else null,
+                        title = displayText(entry),
+                        selected = entry == current,
+                        onClick = {
+                            onSelect(entry)
+                            onDismiss()
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }

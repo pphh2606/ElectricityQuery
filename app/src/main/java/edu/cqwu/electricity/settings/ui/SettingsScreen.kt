@@ -1,46 +1,32 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.ManageAccounts
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.navigation.LocalNavController
-import androidx.compose.ui.Alignment
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -53,71 +39,53 @@ fun SettingsScreen(
     onBack: () -> Unit,
 ) {
     val nav = LocalNavController.current
-    val topBarColors = transparentTopBarColors()
-
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.settings_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.settings_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
             Spacer(modifier = Modifier.height(topInset + 8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    SettingsEntry(
+            SettingsGroup {
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.ManageAccounts,
                         title = stringResource(R.string.settings_account_manager),
                         subtitle = stringResource(R.string.settings_account_manager_desc),
                         onClick = { nav.navigate(Routes.ACCOUNT_MANAGER) },
                     )
-
-                    SettingsEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Palette,
                         title = stringResource(R.string.settings_personalization),
                         subtitle = stringResource(R.string.settings_personalization_desc),
                         onClick = { nav.navigate(Routes.PERSONALIZATION) },
                     )
-
-                    SettingsEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Tune,
                         title = stringResource(R.string.settings_config),
                         subtitle = stringResource(R.string.settings_config_desc),
                         onClick = { nav.navigate(Routes.CONFIG) },
                     )
-
-                    SettingsEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Backup,
                         title = stringResource(R.string.settings_backup_restore),
                         subtitle = stringResource(R.string.settings_backup_restore_desc),
                         onClick = { nav.navigate(Routes.SETTINGS_BACKUP_RESTORE) },
                     )
-
-                    SettingsEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.settings_about),
                         subtitle = stringResource(R.string.settings_about_desc),
@@ -125,72 +93,6 @@ fun SettingsScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-    }
-}
-
-/**
- * 设置条目 — 自定义 Row 布局确保图标始终垂直居中。
- * 同包子页（如备份与恢复）可复用该行样式以保持观感一致。
- */
-@Composable
-internal fun SettingsEntry(
-    icon: ImageVector,
-    title: String,
-    subtitle: String? = null,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (subtitle != null) {
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(24.dp),
-            )
         }
     }
 }

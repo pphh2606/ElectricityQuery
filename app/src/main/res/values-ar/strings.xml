@@ -28,7 +28,7 @@
     <string name="common_add">إضافة</string>
     <string name="common_edit">تعديل</string>
     <string name="common_retry">إعادة المحاولة</string>
-    <string name="common_loading">جارٍ التحميل...</string>
+    <string name="common_loading">جارٍ التحميل…</string>
     <string name="common_more_options">المزيد من الخيارات</string>
     <string name="common_toggle_chart">التبديل إلى عرض الرسم البياني</string>
     <string name="common_toggle_table">التبديل إلى عرض الجدول</string>

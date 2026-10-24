@@ -6,7 +6,8 @@ import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
+
+import androidx.core.net.toUri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -63,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -306,48 +308,54 @@ fun CardRechargeScreen(
         onDismissRequest = { showOtherRechargeDialog = false },
         title = stringResource(R.string.recharge_other_method_title)
     ) {
-        // 今日校园充值
-        BottomSheetItem(
-            icon = Icons.Outlined.Store,
-            title = stringResource(R.string.recharge_method_campus),
-            onClick = {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://"))
-                    context.startActivity(intent)
-                } catch (_: ActivityNotFoundException) {
-                    snackbar.show(resources.getString(R.string.recharge_install_campus_app))
-                }
-                showOtherRechargeDialog = false
+        SheetItemGroup {
+            // 今日校园充值
+            item {
+                BottomSheetItem(
+                    icon = Icons.Outlined.Store,
+                    title = stringResource(R.string.recharge_method_campus),
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, "campusnextins://".toUri())
+                            context.startActivity(intent)
+                        } catch (_: ActivityNotFoundException) {
+                            snackbar.show(resources.getString(R.string.recharge_install_campus_app))
+                        }
+                        showOtherRechargeDialog = false
+                    }
+                )
             }
-        )
-
-        // 应用内 H5 充值
-        BottomSheetItem(
-            icon = Icons.Outlined.Public,
-            title = stringResource(R.string.recharge_method_inapp_h5),
-            onClick = {
-                showOtherRechargeDialog = false
-                nav.navigate(Routes.unifiedWebViewRoute(cardRechargeH5Url, resources.getString(R.string.card_center_recharge)))
+            // 应用内 H5 充值
+            item {
+                BottomSheetItem(
+                    icon = Icons.Outlined.Public,
+                    title = stringResource(R.string.recharge_method_inapp_h5),
+                    onClick = {
+                        showOtherRechargeDialog = false
+                        nav.navigate(Routes.unifiedWebViewRoute(cardRechargeH5Url, resources.getString(R.string.card_center_recharge)))
+                    }
+                )
             }
-        )
-
-        // 浏览器 H5 充值
-        BottomSheetItem(
-            icon = Icons.Outlined.OpenInBrowser,
-            title = stringResource(R.string.recharge_method_browser_h5),
-            onClick = {
-                try {
-                    val intent = Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(cardRechargeH5Url)
-                    )
-                    context.startActivity(intent)
-                } catch (_: ActivityNotFoundException) {
-                    snackbar.show(resources.getString(R.string.common_no_browser))
-                }
-                showOtherRechargeDialog = false
+            // 浏览器 H5 充值
+            item {
+                BottomSheetItem(
+                    icon = Icons.Outlined.OpenInBrowser,
+                    title = stringResource(R.string.recharge_method_browser_h5),
+                    onClick = {
+                        try {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                cardRechargeH5Url.toUri()
+                            )
+                            context.startActivity(intent)
+                        } catch (_: ActivityNotFoundException) {
+                            snackbar.show(resources.getString(R.string.common_no_browser))
+                        }
+                        showOtherRechargeDialog = false
+                    }
+                )
             }
-        )
+        }
     }
 }
 
@@ -360,7 +368,7 @@ private fun CardInfoCard(uiState: CardRechargeUiState) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceBright
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {

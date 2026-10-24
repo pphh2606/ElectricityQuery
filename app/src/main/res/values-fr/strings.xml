@@ -25,7 +25,7 @@
     <string name="common_add">Ajouter</string>
     <string name="common_edit">Modifier</string>
     <string name="common_retry">Réessayer</string>
-    <string name="common_loading">Chargement...</string>
+    <string name="common_loading">Chargement…</string>
     <string name="common_more_options">Plus d\'options</string>
     <string name="common_toggle_chart">Passer à la vue graphique</string>
     <string name="common_toggle_table">Passer à la vue tableau</string>

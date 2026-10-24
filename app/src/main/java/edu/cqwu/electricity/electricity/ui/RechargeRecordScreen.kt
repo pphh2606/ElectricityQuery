@@ -7,9 +7,10 @@ package edu.cqwu.electricity.electricity.ui
 // 提示弹窗
 import android.content.Intent
 import android.content.res.Resources
-import android.net.Uri
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -331,7 +332,7 @@ fun RechargeRecordScreen(
                         ) {
                             val intent = Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("https://electricitypay.cqwu.edu.cn/wxms/pages/buy/buy-list")
+                                "https://electricitypay.cqwu.edu.cn/wxms/pages/buy/buy-list".toUri()
                             )
                             context.startActivity(intent)
                         }

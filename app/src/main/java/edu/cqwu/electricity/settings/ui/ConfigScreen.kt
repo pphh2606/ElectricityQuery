@@ -1,7 +1,5 @@
 package edu.cqwu.electricity.settings.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,14 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
@@ -25,14 +19,10 @@ import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,9 +39,8 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.AppLanguage
 import edu.cqwu.electricity.common.settings.SettingsKeys
 import edu.cqwu.electricity.common.settings.SettingsPreferences
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.LanguageSwitchSheet
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import kotlin.math.roundToInt
 
 private const val MIN_UPDATE_TIMEOUT_MS = 1000
@@ -68,7 +57,6 @@ fun ConfigScreen(
     onNavigateToStorageClear: () -> Unit = {},
     onNavigateToWebVpn: () -> Unit,
 ) {
-    val topBarColors = transparentTopBarColors()
     val context = LocalContext.current
     val settingsPrefs = remember { SettingsPreferences(context) }
 
@@ -79,73 +67,62 @@ fun ConfigScreen(
     var checkCiUpdates by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.CHECK_CI_UPDATES)) }
     var updateTimeoutMs by remember { mutableIntStateOf(settingsPrefs.get(SettingsKeys.UPDATE_TIMEOUT_MS)) }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.config_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.config_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
             Spacer(modifier = Modifier.height(topInset + 8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    // ── WebVPN 设置 ──
-                    ConfigEntry(
+            SettingsGroup {
+                // ── WebVPN 设置 ──
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.VpnKey,
                         title = stringResource(R.string.webvpn_settings_title),
                         subtitle = stringResource(R.string.webvpn_settings_desc),
                         onClick = onNavigateToWebVpn,
                     )
-
-                    // ── 浏览器标识 ──
-                    ConfigEntry(
+                }
+                // ── 浏览器标识 ──
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Smartphone,
                         title = stringResource(R.string.config_user_agent),
                         subtitle = stringResource(R.string.config_user_agent_desc),
                         onClick = onNavigateToUserAgent,
                     )
-
-                    // ── 语言 ──
-                    ConfigEntry(
+                }
+                // ── 语言 ──
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Language,
                         title = stringResource(R.string.language_title),
                         subtitle = if (currentLanguage == AppLanguage.SYSTEM) {
                             stringResource(R.string.language_system)
-                } else {
-                    stringResource(currentLanguage.labelRes)
-                },
+                        } else {
+                            stringResource(currentLanguage.labelRes)
+                        },
                         onClick = { showLanguageSheet = true },
                     )
-
-                    // ── 日志等级 ──
-                    ConfigEntry(
+                }
+                // ── 日志等级 ──
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Info,
                         title = stringResource(R.string.config_log_level),
                         subtitle = stringResource(R.string.config_log_level_desc),
                         onClick = { showLogLevelSheet = true },
                     )
-
-                    // ── 清除存储空间 ──
-                    ConfigEntry(
+                }
+                // ── 清除存储空间 ──
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.CleaningServices,
                         title = stringResource(R.string.storage_clear_title),
                         subtitle = stringResource(R.string.storage_clear_desc),
@@ -164,12 +141,8 @@ fun ConfigScreen(
                 modifier = Modifier.padding(start = 4.dp),
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
+            SettingsGroup {
+                item {
                     SettingsSwitchEntry(
                         icon = Icons.Outlined.SystemUpdate,
                         title = stringResource(R.string.update_settings_auto_update),
@@ -180,6 +153,8 @@ fun ConfigScreen(
                             settingsPrefs.set(SettingsKeys.AUTO_UPDATE_ENABLED, enabled)
                         },
                     )
+                }
+                item {
                     SettingsSwitchEntry(
                         icon = Icons.Outlined.RocketLaunch,
                         title = stringResource(R.string.update_settings_check_ci),
@@ -190,42 +165,47 @@ fun ConfigScreen(
                             settingsPrefs.set(SettingsKeys.CHECK_CI_UPDATES, enabled)
                         },
                     )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
+                }
+                item {
+                    SettingsGroupBlock {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
                         ) {
-                            Text(
-                                text = stringResource(R.string.update_settings_timeout),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Text(
-                                text = stringResource(
-                                    R.string.update_settings_timeout_value,
-                                    updateTimeoutMs / 1000f,
-                                ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.update_settings_timeout),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.update_settings_timeout_value,
+                                        updateTimeoutMs / 1000f,
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                            Slider(
+                                value = updateTimeoutMs / 1000f,
+                                onValueChange = { seconds ->
+                                    val newMs = (seconds * 1000)
+                                        .roundToInt()
+                                        .coerceIn(MIN_UPDATE_TIMEOUT_MS, MAX_UPDATE_TIMEOUT_MS)
+                                    updateTimeoutMs = newMs
+                                    settingsPrefs.set(SettingsKeys.UPDATE_TIMEOUT_MS, newMs)
+                                },
+                                valueRange =
+                                    MIN_UPDATE_TIMEOUT_MS / 1000f..MAX_UPDATE_TIMEOUT_MS / 1000f,
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
-                        Slider(
-                            value = updateTimeoutMs / 1000f,
-                            onValueChange = { seconds ->
-                                val newMs = (seconds * 1000)
-                                    .roundToInt()
-                                    .coerceIn(MIN_UPDATE_TIMEOUT_MS, MAX_UPDATE_TIMEOUT_MS)
-                                updateTimeoutMs = newMs
-                                settingsPrefs.set(SettingsKeys.UPDATE_TIMEOUT_MS, newMs)
-                            },
-                            valueRange = MIN_UPDATE_TIMEOUT_MS / 1000f..MAX_UPDATE_TIMEOUT_MS / 1000f,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
                     }
                 }
             }
@@ -235,66 +215,4 @@ fun ConfigScreen(
     // ── 语言选择 BottomSheet（复用 LanguageSwitchSheet）──
     LanguageSwitchSheet(showSheet = showLanguageSheet, onDismiss = { showLanguageSheet = false })
     LogLevelSheet(showSheet = showLogLevelSheet, onDismiss = { showLogLevelSheet = false })
-}
-
-/**
- * 配置页面条目，与 SettingsScreen 的 SettingsEntry 样式一致。
- */
-@Composable
-private fun ConfigEntry(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
-    subtitle: String,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(24.dp),
-            )
-        }
-    }
 }

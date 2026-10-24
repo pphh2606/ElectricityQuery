@@ -59,6 +59,7 @@ import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.net.HtmlFormParser
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
@@ -299,28 +300,36 @@ fun JwxtTimetableScreen(
             ),
         ) {
             if (mode == TimetableMode.WEEK) {
-                uiState.weeks.forEach { week ->
-                    BottomSheetItem(
-                        icon = null,
-                        title = stringResource(R.string.jwxt_timetable_week, week.serialNumber),
-                        selected = week.serialNumber == uiState.selectedWeek,
-                        onClick = {
-                            viewModel.selectWeek(week.serialNumber)
-                            picker = null
-                        },
-                    )
+                SheetItemGroup {
+                    uiState.weeks.forEach { week ->
+                        item {
+                            BottomSheetItem(
+                                icon = null,
+                                title = stringResource(R.string.jwxt_timetable_week, week.serialNumber),
+                                selected = week.serialNumber == uiState.selectedWeek,
+                                onClick = {
+                                    viewModel.selectWeek(week.serialNumber)
+                                    picker = null
+                                },
+                            )
+                        }
+                    }
                 }
             } else {
-                uiState.terms.forEach { term ->
-                    BottomSheetItem(
-                        icon = null,
-                        title = term.termName,
-                        selected = term.termCode == uiState.selectedTermCode,
-                        onClick = {
-                            viewModel.selectTerm(term.termCode)
-                            picker = null
-                        },
-                    )
+                SheetItemGroup {
+                    uiState.terms.forEach { term ->
+                        item {
+                            BottomSheetItem(
+                                icon = null,
+                                title = term.termName,
+                                selected = term.termCode == uiState.selectedTermCode,
+                                onClick = {
+                                    viewModel.selectTerm(term.termCode)
+                                    picker = null
+                                },
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -1,9 +1,10 @@
 package edu.cqwu.electricity.webview.util
 
 import android.content.ActivityNotFoundException
+import androidx.core.net.toUri
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+
 import edu.cqwu.electricity.logging.AppLog
 import java.net.URISyntaxException
 
@@ -27,7 +28,7 @@ object WebViewExternalApp {
     )
 
     /** 取小写 scheme；无 scheme 返回 null */
-    fun schemeOf(url: String): String? = Uri.parse(url).scheme?.lowercase()
+    fun schemeOf(url: String): String? = url.toUri().scheme?.lowercase()
 
     /**
      * http/https 留在内置浏览器；放行黑名单与无 scheme 交回 WebView；

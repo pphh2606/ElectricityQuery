@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -36,14 +35,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.settings.data.BackupPayloadV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.copyToClipboard
 import edu.cqwu.electricity.common.util.restartApp
@@ -66,8 +67,9 @@ fun BackupTransferScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
     val isExport = mode == BackupTransferModeV2.EXPORT
 
     val exportText = remember(context) { payload.exportText(context) }
@@ -82,7 +84,7 @@ fun BackupTransferScreen(
             context.contentResolver.openOutputStream(uri)?.use { out ->
                 out.write((if (isExport) exportText else importText).toByteArray(Charsets.UTF_8))
             }
-            snackbar.show(context.getString(R.string.settings_backup_saved), ToastUtils.Type.SUCCESS)
+            snackbar.show(resources.getString(R.string.settings_backup_saved), ToastUtils.Type.SUCCESS)
         }
     }
     val openLauncher = rememberLauncherForActivityResult(
@@ -100,7 +102,7 @@ fun BackupTransferScreen(
         val text = manager.primaryClip
             ?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString()
         if (text.isNullOrBlank()) {
-            snackbar.show(context.getString(R.string.common_no_data), ToastUtils.Type.ERROR)
+            snackbar.show(resources.getString(R.string.common_no_data), ToastUtils.Type.ERROR)
         } else {
             importText = text
         }
@@ -111,14 +113,14 @@ fun BackupTransferScreen(
             if (payload.restartOnImport) {
                 showRestartDialog = true
             } else {
-                snackbar.show(context.getString(R.string.settings_cookie_import_ok), ToastUtils.Type.SUCCESS)
+                snackbar.show(resources.getString(R.string.settings_cookie_import_ok), ToastUtils.Type.SUCCESS)
             }
         } else {
-            snackbar.show(context.getString(R.string.settings_backup_invalid), ToastUtils.Type.ERROR)
+            snackbar.show(resources.getString(R.string.settings_backup_invalid), ToastUtils.Type.ERROR)
         }
     }
 
-    Scaffold(
+    BlurScaffold(
         // 键盘弹出时让出 IME 高度，避免遮挡底部操作区与"确定"按钮（仅本页生效）
         modifier = Modifier
             .fillMaxSize()
@@ -145,11 +147,11 @@ fun BackupTransferScreen(
                 colors = topBarColors,
             )
         },
-    ) { paddingValues ->
+    ) { topInset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = topInset)
                 .padding(16.dp),
         ) {
             // ── 上部：内容区（导出=只读预览；导入=可编辑），大圆角输入框 ──
@@ -183,7 +185,7 @@ fun BackupTransferScreen(
                         if (isExport) {
                             copyToClipboard(
                                 context, exportText,
-                                context.getString(payload.exportTitleRes), snackbar,
+                                resources.getString(payload.exportTitleRes), snackbar,
                             )
                         } else {
                             readFromClipboard()

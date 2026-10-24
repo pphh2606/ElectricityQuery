@@ -2,6 +2,7 @@ package edu.cqwu.electricity.settings.data
 import edu.cqwu.electricity.logging.AppLog
 
 import android.content.Context
+import androidx.core.content.edit
 import android.content.SharedPreferences
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -147,18 +148,18 @@ object SettingsBackup {
      */
     fun importJson(context: Context, json: String): Boolean {
         val entries = decode(json) ?: return false
-        val editor = prefs(context).edit()
-        entries.forEach { (key, value) ->
-            when (value) {
-                is Boolean -> editor.putBoolean(key, value)
-                is Int -> editor.putInt(key, value)
-                is Long -> editor.putLong(key, value)
-                is Float -> editor.putFloat(key, value)
-                is String -> editor.putString(key, value)
-                is Set<*> -> editor.putStringSet(key, value.map { it.toString() }.toSet())
+        prefs(context).edit {
+            entries.forEach { (key, value) ->
+                when (value) {
+                    is Boolean -> putBoolean(key, value)
+                    is Int -> putInt(key, value)
+                    is Long -> putLong(key, value)
+                    is Float -> putFloat(key, value)
+                    is String -> putString(key, value)
+                    is Set<*> -> putStringSet(key, value.map { it.toString() }.toSet())
+                }
             }
         }
-        editor.apply()
         return true
     }
 }

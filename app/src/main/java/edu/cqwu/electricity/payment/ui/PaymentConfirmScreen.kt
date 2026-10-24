@@ -1,6 +1,5 @@
 package edu.cqwu.electricity.payment.ui
 
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +22,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -39,6 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.payment.data.PaymentMethod
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -100,7 +100,7 @@ fun PaymentConfirmScreen(
     onPaymentComplete: () -> Unit,
     startPolling: (String) -> Unit,
 ) {
-    val topBarColors = currentTopBarColors()
+    val topBarColors = transparentTopBarColors()
 
     // 当前阶段：选择 → 等待 → 成功
     var phase by remember { mutableStateOf(PaymentPhase.SELECT_METHOD) }
@@ -125,7 +125,7 @@ fun PaymentConfirmScreen(
     }
 
     Box(Modifier.fillMaxSize()) {
-        Scaffold(
+        BlurScaffold(
             topBar = {
                 TopAppBar(
                     title = { Text(title, fontWeight = FontWeight.Bold) },
@@ -141,11 +141,11 @@ fun PaymentConfirmScreen(
                     colors = topBarColors
                 )
             }
-        ) { paddingValues ->
+        ) { topInset ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(top = topInset)
             ) {
                 Column(
                     modifier = Modifier

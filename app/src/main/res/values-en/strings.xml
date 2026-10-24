@@ -24,7 +24,7 @@
     <string name="common_add">Add</string>
     <string name="common_edit">Edit</string>
     <string name="common_retry">Retry</string>
-    <string name="common_loading">Loading...</string>
+    <string name="common_loading">Loading…</string>
     <string name="common_more_options">More options</string>
     <string name="common_toggle_chart">Switch to chart view</string>
     <string name="common_toggle_table">Switch to table view</string>

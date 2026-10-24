@@ -1,10 +1,8 @@
 package edu.cqwu.electricity.settings.ui
 
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Cookie
@@ -31,13 +28,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -50,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -57,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.settings.util.StorageManager
@@ -93,7 +87,6 @@ fun StorageClearScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = transparentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val scope = rememberCoroutineScope()
 
@@ -225,27 +218,10 @@ fun StorageClearScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.storage_clear_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.storage_clear_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = isRefreshing,
@@ -266,6 +242,7 @@ fun StorageClearScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
@@ -276,19 +253,15 @@ fun StorageClearScreen(
                 // ── 安全清除 ──
                 SectionHeader(title = stringResource(R.string.storage_clear_safe_group))
                 Spacer(modifier = Modifier.height(8.dp))
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                ) {
-                    Column {
-                        safeItems.forEach { item ->
+                SettingsGroup {
+                    safeItems.forEach { entry ->
+                        item {
                             StorageItemRow(
-                                icon = item.icon,
-                                title = stringResource(item.titleRes),
-                                size = sizes[item.key] ?: stringResource(R.string.storage_clear_zero_size),
-                                checked = checked[item.key] == true,
-                                onCheckedChange = { checked[item.key] = it },
+                                icon = entry.icon,
+                                title = stringResource(entry.titleRes),
+                                size = sizes[entry.key] ?: stringResource(R.string.storage_clear_zero_size),
+                                checked = checked[entry.key] == true,
+                                onCheckedChange = { checked[entry.key] = it },
                                 isClearing = isClearing,
                             )
                         }
@@ -300,37 +273,33 @@ fun StorageClearScreen(
                 // ── 需谨慎清除 ──
                 SectionHeader(title = stringResource(R.string.storage_clear_caution_group))
                 Spacer(modifier = Modifier.height(8.dp))
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                ) {
-                    Column {
-                        // 构建反向依赖映射：key -> 依赖它的项列表
-                        val reverseDeps = remember(cautionItems) {
-                            cautionItems
-                                .filter { it.requiresLinkedKey != null }
-                                .groupBy { it.requiresLinkedKey!! }
-                                .mapValues { (_, v) -> v.map { it.key } }
-                        }
+                SettingsGroup {
+                    // 构建反向依赖映射：key -> 依赖它的项列表
+                    val reverseDeps = remember(cautionItems) {
+                        cautionItems
+                            .filter { it.requiresLinkedKey != null }
+                            .groupBy { it.requiresLinkedKey!! }
+                            .mapValues { (_, v) -> v.map { it.key } }
+                    }
 
-                        cautionItems.forEach { item ->
+                    cautionItems.forEach { entry ->
+                        item {
                             StorageItemRow(
-                                icon = item.icon,
-                                title = stringResource(item.titleRes),
-                                hint = item.hintRes?.let { stringResource(it) },
-                                size = sizes[item.key] ?: stringResource(R.string.storage_clear_zero_size),
-                                checked = checked[item.key] == true,
+                                icon = entry.icon,
+                                title = stringResource(entry.titleRes),
+                                hint = entry.hintRes?.let { stringResource(it) },
+                                size = sizes[entry.key] ?: stringResource(R.string.storage_clear_zero_size),
+                                checked = checked[entry.key] == true,
                                 onCheckedChange = { newValue ->
-                                    checked[item.key] = newValue
+                                    checked[entry.key] = newValue
                                     if (newValue) {
                                         // 正向联动：勾选时强制勾选依赖项
-                                        if (item.requiresLinkedKey != null) {
-                                            checked[item.requiresLinkedKey] = true
+                                        if (entry.requiresLinkedKey != null) {
+                                            checked[entry.requiresLinkedKey] = true
                                         }
                                     } else {
                                         // 反向联动：取消勾选时，取消所有依赖此项的项
-                                        reverseDeps[item.key]?.forEach { depKey ->
+                                        reverseDeps[entry.key]?.forEach { depKey ->
                                             checked[depKey] = false
                                         }
                                     }
@@ -443,54 +412,34 @@ private fun StorageItemRow(
     onCheckedChange: (Boolean) -> Unit,
     isClearing: Boolean,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = !isClearing) { onCheckedChange(!checked) }
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
-            )
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (hint != null) {
+    SettingsListItem(
+        title = title,
+        onClick = { onCheckedChange(!checked) },
+        icon = icon,
+        enabled = !isClearing,
+        supporting = hint?.let {
+            {
                 Text(
-                    text = hint,
+                    text = it,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
                 )
             }
-        }
-
-        Text(
-            text = size,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        Spacer(modifier = Modifier.width(4.dp))
-
-        Checkbox(
-            checked = checked,
-            onCheckedChange = { onCheckedChange(it) },
-            enabled = !isClearing,
-        )
-    }
+        },
+        trailing = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = size,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Checkbox(
+                    checked = checked,
+                    onCheckedChange = { onCheckedChange(it) },
+                    enabled = !isClearing,
+                )
+            }
+        },
+    )
 }

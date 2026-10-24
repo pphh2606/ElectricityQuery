@@ -104,7 +104,7 @@ internal fun JwxtServiceSection(
  * 公告入口行：设置页选项的样式（图标 + 标题 + 箭头，无副标题）。点击进教务通知中心。
  *
  * 只用「公告信息」这样的入口名，不对"有没有公告"表态——本轮不调公告接口，写死状态文案会误导。
- * 样式对齐设置模块的 `PersonalizationScreen.SettingRow`（去掉副标题），卡片底色同为 `surfaceContainerLow`。
+ * 样式对齐设置模块的 `SettingsNavigationRow`（去掉副标题），卡片底色同为 `surfaceContainerLow`。
  */
 @Composable
 internal fun JwxtNoticeRow(title: String, onClick: () -> Unit) {
@@ -116,7 +116,7 @@ internal fun JwxtNoticeRow(title: String, onClick: () -> Unit) {
         // 显式关掉阴影：MD3 Card 默认带 1dp，本页是扁平风格（与 Tab 卡一致）
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = MaterialTheme.colorScheme.surfaceBright,
         ),
     ) {
         Row(

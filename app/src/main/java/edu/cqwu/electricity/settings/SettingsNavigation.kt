@@ -21,6 +21,7 @@ import edu.cqwu.electricity.settings.ui.SettingsScreen
 import edu.cqwu.electricity.settings.ui.StorageClearScreen
 import edu.cqwu.electricity.settings.ui.UserAgentEditScreen
 import edu.cqwu.electricity.settings.ui.UserAgentSettingsScreen
+import edu.cqwu.electricity.ui.MiuiShowcaseScreen
 import edu.cqwu.electricity.settings.ui.WebVpnSettingsScreen
 import edu.cqwu.electricity.common.settings.AppSettingsState
 
@@ -141,6 +142,7 @@ internal fun NavGraphBuilder.settingsGraph(
             onBack = { navController.popBackStack() },
             onNavigateToQrCodeSettings = { navController.navigate(Routes.QR_CODE_SETTINGS) },
             onNavigateToAdvancedBlur = { navController.navigate(Routes.HEADER_BLUR_ADVANCED) },
+            onNavigateToMiuiShowcase = { navController.navigate(Routes.MIUI_SHOWCASE) },
             isDynamicColorSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
         )
     }
@@ -148,6 +150,13 @@ internal fun NavGraphBuilder.settingsGraph(
     // 标题栏毛玻璃高级参数页
     animatedComposable(settings = settings, route = Routes.HEADER_BLUR_ADVANCED) {
         HeaderBlurAdvancedScreen(
+            onBack = { navController.popBackStack() },
+        )
+    }
+
+    // miuix 基础组件预览页
+    animatedComposable(settings = settings, route = Routes.MIUI_SHOWCASE) {
+        MiuiShowcaseScreen(
             onBack = { navController.popBackStack() },
         )
     }

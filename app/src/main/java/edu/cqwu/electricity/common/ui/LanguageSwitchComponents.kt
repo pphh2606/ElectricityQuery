@@ -63,30 +63,34 @@ fun LanguageSwitchSheet(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.language_select),
     ) {
-        AppLanguage.entries.forEach { language ->
-            val title = if (language == AppLanguage.SYSTEM) {
-                stringResource(R.string.language_system)
-            } else {
-                val currentName = stringResource(language.labelRes)
-                if (currentName == language.nativeName) {
-                    currentName
+        SheetItemGroup {
+            AppLanguage.entries.forEach { language ->
+                val title = if (language == AppLanguage.SYSTEM) {
+                    stringResource(R.string.language_system)
                 } else {
-                    "$currentName(${language.nativeName})"
+                    val currentName = stringResource(language.labelRes)
+                    if (currentName == language.nativeName) {
+                        currentName
+                    } else {
+                        "$currentName(${language.nativeName})"
+                    }
+                }
+                item {
+                    BottomSheetItem(
+                        icon = null,
+                        title = title,
+                        selected = language == currentLanguage,
+                        onClick = {
+                            val activity = context as? Activity ?: return@BottomSheetItem
+                            onDismiss()
+                            settingsPrefs.setAppLanguage(language)
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                                activity.recreate()
+                            }
+                        },
+                    )
                 }
             }
-            BottomSheetItem(
-                icon = null,
-                title = title,
-                selected = language == currentLanguage,
-                onClick = {
-                    val activity = context as? Activity ?: return@BottomSheetItem
-                    onDismiss()
-                    settingsPrefs.setAppLanguage(language)
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                        activity.recreate()
-                    }
-                },
-            )
         }
     }
 }

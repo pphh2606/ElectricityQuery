@@ -47,7 +47,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -68,7 +67,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -115,7 +113,6 @@ fun BillScreen(
     // ── 提示弹窗状态 ──
     var showHintDialog by remember { mutableStateOf(false) }
 
-    val topBarColors = transparentTopBarColors()
 
     // 网页版账单 URL（在原生实现出问题时作为降级方案）
     val webBillUrl = "http://218.194.176.214:8382/epay/thirdapp/bill"
@@ -511,7 +508,7 @@ private fun BillRecordCard(
         // 无阴影：containerColor 与背景同为 surface，轮廓由 1dp 描边提供（低版本阴影会退化成方块）
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
             // 第一行：商户（加粗，大号） + 金额（红/绿色，大号，加粗）

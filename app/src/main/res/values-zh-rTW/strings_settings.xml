@@ -34,7 +34,6 @@
     <string name="user_name_edit_tip">如果您設定了登入別名，您就可以使用登入別名登入系統，多個別名用逗號隔開\n注意：新增登入別名後不可再修改</string>
     <string name="user_name_edit_alias_label">登入別名</string>
     <string name="user_name_edit_nickname_label">暱稱</string>
-    <string name="user_name_edit_nickname_placeholder">請輸入暱稱</string>
     <string name="user_name_edit_save">儲存</string>
     <string name="user_name_edit_success">修改成功</string>
     <string name="user_name_edit_alias_available">登入別名可使用</string>
@@ -49,13 +48,9 @@
     <string name="password_change_title">修改密碼</string>
     <string name="password_change_tip">為保障帳號安全，請設定符合要求的新密碼</string>
     <string name="password_change_old_label">舊密碼</string>
-    <string name="password_change_old_placeholder">請輸入舊密碼</string>
     <string name="password_change_new_label">新密碼</string>
-    <string name="password_change_new_placeholder">請輸入新密碼</string>
     <string name="password_change_confirm_label">確認新密碼</string>
-    <string name="password_change_confirm_placeholder">請再次輸入新密碼</string>
     <string name="password_change_captcha_label">驗證碼</string>
-    <string name="password_change_captcha_placeholder">請輸入驗證碼</string>
     <string name="password_change_captcha_click_hint">點擊圖片刷新驗證碼</string>
     <string name="password_change_strength">密碼長度至少8位；字元種類至少3種（數字，大寫字母，小寫字母，標點符號）</string>
     <string name="password_change_save">儲存</string>
@@ -379,4 +374,10 @@
     <string name="settings_credential_import_done">已匯入 %1$d 個帳號，可至帳號管理切換登入</string>
     <string name="settings_cookie_export_title">匯出cookie</string>
     <string name="settings_cookie_import_title">匯入cookie</string>
-    <string name="settings_cookie_import_ok">cookie 已匯入，可在帳號/登入設定頁切換使用</string></resources>
+    <string name="settings_cookie_import_ok">cookie 已匯入，可在帳號/登入設定頁切換使用</string>
+    <string name="settings_ui_style">介面風格</string>
+    <string name="ui_style_material3">Material 3</string>
+    <string name="ui_style_miui">MIUI 風格</string>
+    <string name="miui_showcase_title">MIUI 元件預覽</string>
+    <string name="miui_showcase_desc">miuix 基礎元件在電費查詢中的實際觀感</string>
+</resources>

@@ -23,6 +23,8 @@ object Routes {
     const val PERSONALIZATION = "personalization"
     /** 标题栏毛玻璃的高级参数页（从「个性化 → 标题栏模糊」左侧进入） */
     const val HEADER_BLUR_ADVANCED = "header_blur_advanced"
+    /** miuix 基础组件预览页（从「个性化 → 界面风格」进入） */
+    const val MIUI_SHOWCASE = "miui_showcase"
     const val QR_CODE_SETTINGS = "qr_code_settings"
     const val QR_LOGIN = "qr_login"
     const val WEBVPN_SETTINGS = "webvpn_settings"

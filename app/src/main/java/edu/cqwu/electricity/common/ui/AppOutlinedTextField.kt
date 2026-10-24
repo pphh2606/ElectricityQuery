@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.collect
 
 /**
  * 项目统一的轮廓输入框：12dp 圆角，且 label 浮起后停在 leadingIcon 右侧（与输入文字左对齐）。

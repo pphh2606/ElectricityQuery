@@ -34,7 +34,6 @@
     <string name="user_name_edit_tip">ログイン別名を設定すると、その別名でログインできます。複数の別名はカンマで区切ってください。\n注意：追加した別名は後から変更できません。</string>
     <string name="user_name_edit_alias_label">ログイン別名</string>
     <string name="user_name_edit_nickname_label">ニックネーム</string>
-    <string name="user_name_edit_nickname_placeholder">ニックネームを入力してください</string>
     <string name="user_name_edit_save">保存</string>
     <string name="user_name_edit_success">変更が完了しました</string>
     <string name="user_name_edit_alias_available">別名は使用可能です</string>
@@ -49,13 +48,9 @@
     <string name="password_change_title">パスワードを変更</string>
     <string name="password_change_tip">アカウントの安全のため、要件を満たす新しいパスワードを設定してください</string>
     <string name="password_change_old_label">現在のパスワード</string>
-    <string name="password_change_old_placeholder">現在のパスワードを入力してください</string>
     <string name="password_change_new_label">新しいパスワード</string>
-    <string name="password_change_new_placeholder">新しいパスワードを入力してください</string>
     <string name="password_change_confirm_label">新しいパスワードの確認</string>
-    <string name="password_change_confirm_placeholder">新しいパスワードをもう一度入力してください</string>
     <string name="password_change_captcha_label">認証コード</string>
-    <string name="password_change_captcha_placeholder">認証コードを入力してください</string>
     <string name="password_change_captcha_click_hint">画像をタップして認証コードを更新</string>
     <string name="password_change_strength">パスワードは8文字以上、かつ3種類以上の文字種（数字、大文字、小文字、記号）を含む必要があります</string>
     <string name="password_change_save">保存</string>
@@ -379,4 +374,10 @@
     <string name="settings_credential_import_done">%1$d件のアカウントをインポートしました。アカウント管理で切り替えられます</string>
     <string name="settings_cookie_export_title">Cookieをエクスポート</string>
     <string name="settings_cookie_import_title">Cookieをインポート</string>
-    <string name="settings_cookie_import_ok">Cookieをインポートしました。アカウント/ログイン設定で切り替えて使用できます</string></resources>
+    <string name="settings_cookie_import_ok">Cookieをインポートしました。アカウント/ログイン設定で切り替えて使用できます</string>
+    <string name="settings_ui_style">UI スタイル</string>
+    <string name="ui_style_material3">Material 3</string>
+    <string name="ui_style_miui">MIUI スタイル</string>
+    <string name="miui_showcase_title">MIUI コンポーネントのプレビュー</string>
+    <string name="miui_showcase_desc">このアプリでの miuix 基本コンポーネントの見た目</string>
+</resources>

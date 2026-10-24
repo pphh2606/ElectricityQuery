@@ -12,6 +12,7 @@ import android.webkit.WebView
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -259,7 +260,7 @@ fun UnifiedWebViewScreen(
                                     onClick = {
                                         state.showMenu = false
                                         val currentUrl = state.webViewRef?.url ?: return@DropdownMenuItem
-                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentUrl))
+                                        val intent = Intent(Intent.ACTION_VIEW, currentUrl.toUri())
                                         context.startActivity(intent)
                                     }
                                 )
@@ -320,7 +321,7 @@ fun UnifiedWebViewScreen(
 
                                     // ═══ 文件下载支持 ═══
                                     applyUnifiedDownloadListener {
-                                        snackbar.show(context.getString(R.string.webview_no_download_tool), ToastUtils.Type.ERROR)
+                                        snackbar.show(resources.getString(R.string.webview_no_download_tool), ToastUtils.Type.ERROR)
                                     }
 
                                     webChromeClient = createUnifiedWebChromeClient(state, deps)

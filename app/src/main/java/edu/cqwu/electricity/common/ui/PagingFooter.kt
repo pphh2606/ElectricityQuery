@@ -34,8 +34,8 @@ import edu.cqwu.electricity.R
 fun PagingFooter(
     isLoadingMore: Boolean,
     hasMore: Boolean,
-    onLoadMore: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    onLoadMore: (() -> Unit)? = null,
 ) {
     Box(
         modifier = modifier

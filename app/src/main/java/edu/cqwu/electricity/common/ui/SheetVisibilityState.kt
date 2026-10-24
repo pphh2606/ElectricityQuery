@@ -19,20 +19,20 @@ class SheetVisibilityState {
     private val openCount = mutableIntStateOf(0)
     private val blurProgressState = mutableFloatStateOf(0f)
 
-    val active: Boolean get() = openCount.value > 0
+    val active: Boolean get() = openCount.intValue > 0
 
     var blurProgress: Float
-        get() = blurProgressState.value
+        get() = blurProgressState.floatValue
         set(value) {
-            blurProgressState.value = value.coerceIn(0f, 1f)
+            blurProgressState.floatValue = value.coerceIn(0f, 1f)
         }
 
     fun open() {
-        openCount.value++
+        openCount.intValue++
     }
 
     fun close() {
-        openCount.value = (openCount.value - 1).coerceAtLeast(0)
+        openCount.intValue = (openCount.intValue - 1).coerceAtLeast(0)
     }
 }
 

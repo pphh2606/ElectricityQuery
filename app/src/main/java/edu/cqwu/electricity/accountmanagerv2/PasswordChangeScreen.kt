@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.VerifiedUser
@@ -27,10 +26,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -60,8 +57,7 @@ import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.PasswordRecoverySheet
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.restartApp
 
@@ -93,26 +89,12 @@ fun PasswordChangeScreen(
         }
     }
 
-    BlurScaffold(
+    CollapsibleScaffold(
+        title = stringResource(R.string.password_change_title),
+        onBack = onBack,
         // 键盘弹出时让出 IME 高度，避免遮挡右下角"保存"按钮
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.password_change_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = transparentTopBarColors(),
-            )
-        },
-    ) { topInset ->
+        modifier = Modifier.fillMaxSize().imePadding(),
+    ) { topInset, scrollModifier ->
         val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
@@ -137,6 +119,7 @@ fun PasswordChangeScreen(
                     viewModel = viewModel,
                     onForgotPassword = { showRecoverySheet = true },
                     topInset = topInset,
+                    modifier = scrollModifier,
                 )
             }
         }
@@ -178,6 +161,7 @@ private fun PasswordChangeContent(
     state: PasswordChangeUiState,
     viewModel: PasswordChangeViewModel,
     onForgotPassword: () -> Unit,
+    modifier: Modifier = Modifier,
     topInset: Dp = 0.dp,
 ) {
     Column(
@@ -188,6 +172,7 @@ private fun PasswordChangeContent(
         Column(
             modifier = Modifier
                 .weight(1f)
+                .then(modifier)
                 .verticalScroll(rememberScrollState())
                 .padding(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),

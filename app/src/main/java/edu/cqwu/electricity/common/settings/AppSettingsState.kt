@@ -56,6 +56,9 @@ class AppSettingsState(
     var colorSource by mutableStateOf(loadColorSource())
         private set
 
+    var uiStyle by mutableStateOf(prefs.get(SettingsKeys.UI_STYLE))
+        private set
+
     var pageTransition by mutableStateOf(prefs.get(SettingsKeys.PAGE_TRANSITION))
         private set
 
@@ -187,6 +190,11 @@ class AppSettingsState(
                 prefs.set(SettingsKeys.SEED_COLOR, source.seedColor.toArgb())
             }
         }
+    }
+
+    fun updateUiStyle(value: UiStyle) {
+        uiStyle = value
+        prefs.set(SettingsKeys.UI_STYLE, value)
     }
 
     fun updatePageTransition(value: PageTransition) {

@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.login.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -63,6 +62,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.LanguageSwitchButton
 import edu.cqwu.electricity.common.ui.LoadingDialog
@@ -408,22 +408,28 @@ fun LoginScreen(
         onDismissRequest = { showOtherLoginSheet = false },
         title = stringResource(R.string.login_other_login),
     ) {
-        BottomSheetItem(
-            icon = Icons.Outlined.QrCodeScanner,
-            title = stringResource(R.string.login_method_qr_scan),
-            onClick = {
-                showOtherLoginSheet = false
-                nav.navigate(Routes.QR_LOGIN)
+        SheetItemGroup {
+            item {
+                BottomSheetItem(
+                    icon = Icons.Outlined.QrCodeScanner,
+                    title = stringResource(R.string.login_method_qr_scan),
+                    onClick = {
+                        showOtherLoginSheet = false
+                        nav.navigate(Routes.QR_LOGIN)
+                    }
+                )
             }
-        )
-        BottomSheetItem(
-            icon = Icons.Outlined.FileUpload,
-            title = stringResource(R.string.login_other_import),
-            onClick = {
-                showOtherLoginSheet = false
-                nav.navigate(Routes.SETTINGS_BACKUP_RESTORE)
+            item {
+                BottomSheetItem(
+                    icon = Icons.Outlined.FileUpload,
+                    title = stringResource(R.string.login_other_import),
+                    onClick = {
+                        showOtherLoginSheet = false
+                        nav.navigate(Routes.SETTINGS_BACKUP_RESTORE)
+                    }
+                )
             }
-        )
+        }
     }
 
     // ========== 找回密码弹窗（含半屏 WebView） ==========

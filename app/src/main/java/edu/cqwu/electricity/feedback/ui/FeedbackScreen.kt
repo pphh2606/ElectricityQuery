@@ -3,8 +3,7 @@ import edu.cqwu.electricity.logging.AppLog
 
 import edu.cqwu.electricity.common.ui.SelectableContainer
 
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 import android.content.Intent
 import android.os.Build
@@ -20,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Share
@@ -30,11 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,10 +42,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.core.content.FileProvider
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
@@ -95,7 +93,7 @@ fun FeedbackScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val topBarColors = transparentTopBarColors()
+    val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
     val scope = rememberCoroutineScope()
 
@@ -142,7 +140,7 @@ fun FeedbackScreen(
         val logs = withContext(Dispatchers.IO) {
             LogCapture.getRecentLogs(context, lineCount = EMAIL_LOG_LINES)
         }
-        return logs.ifBlank { context.getString(R.string.feedback_log_no_logs) }
+        return logs.ifBlank { resources.getString(R.string.feedback_log_no_logs) }
     }
 
     fun sendByEmail() {
@@ -153,35 +151,35 @@ fun FeedbackScreen(
             val logs = getLogsToAttach()
 
             val emailBody = buildString {
-                appendLine(context.getString(R.string.feedback_email_content_title))
+                appendLine(resources.getString(R.string.feedback_email_content_title))
                 if (title.isNotBlank()) appendLine(title)
                 appendLine(content)
                 appendLine()
-                appendLine(context.getString(R.string.feedback_email_device_title))
-                appendLine(context.getString(R.string.feedback_email_device, Build.MODEL))
-                appendLine(context.getString(R.string.feedback_email_system, Build.VERSION.RELEASE, Build.VERSION.SDK_INT))
-                val versionName = pkgInfo?.versionName ?: context.getString(R.string.common_unknown)
+                appendLine(resources.getString(R.string.feedback_email_device_title))
+                appendLine(resources.getString(R.string.feedback_email_device, Build.MODEL))
+                appendLine(resources.getString(R.string.feedback_email_system, Build.VERSION.RELEASE, Build.VERSION.SDK_INT))
+                val versionName = pkgInfo?.versionName ?: resources.getString(R.string.common_unknown)
                 val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     pkgInfo?.longVersionCode ?: 0L
                 } else {
                     @Suppress("DEPRECATION")
                     pkgInfo?.versionCode?.toLong() ?: 0L
                 }
-                appendLine(context.getString(R.string.feedback_email_app_version, versionName, versionCode.toString()))
+                appendLine(resources.getString(R.string.feedback_email_app_version, versionName, versionCode.toString()))
                 appendLine()
                 if (logs.isNotBlank()) {
-                    appendLine(context.getString(R.string.feedback_email_log_title))
+                    appendLine(resources.getString(R.string.feedback_email_log_title))
                     append(logs)
                 }
             }
 
             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = android.net.Uri.parse("mailto:")
+                data = "mailto:".toUri()
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(FEEDBACK_EMAIL))
                 putExtra(
                     Intent.EXTRA_SUBJECT,
-                    context.getString(R.string.feedback_email_subject) +
-                        if (title.isNotBlank()) context.getString(R.string.feedback_email_title_suffix, title) else ""
+                    resources.getString(R.string.feedback_email_subject) +
+                        if (title.isNotBlank()) resources.getString(R.string.feedback_email_title_suffix, title) else ""
                 )
                 putExtra(Intent.EXTRA_TEXT, emailBody)
             }
@@ -189,7 +187,7 @@ fun FeedbackScreen(
             try {
                 context.startActivity(intent)
             } catch (e: Exception) {
-                snackbar.show(context.getString(R.string.common_no_mail_app), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_no_mail_app), ToastUtils.Type.ERROR)
             } finally {
                 isSending = false
             }
@@ -224,9 +222,9 @@ fun FeedbackScreen(
             }
 
             try {
-                context.startActivity(Intent.createChooser(intent, context.getString(R.string.common_share_log)))
+                context.startActivity(Intent.createChooser(intent, resources.getString(R.string.common_share_log)))
             } catch (e: Exception) {
-                snackbar.show(context.getString(R.string.common_share_failed), ToastUtils.Type.ERROR)
+                snackbar.show(resources.getString(R.string.common_share_failed), ToastUtils.Type.ERROR)
             } finally {
                 isSending = false
             }
@@ -242,7 +240,7 @@ fun FeedbackScreen(
                 val logs = withContext(Dispatchers.IO) {
                     LogCapture.getRecentLogs(context, lineCount = PREVIEW_LOG_LINES)
                 }
-                previewLogText = logs.ifBlank { context.getString(R.string.feedback_log_empty) }
+                previewLogText = logs.ifBlank { resources.getString(R.string.feedback_log_empty) }
                 showLogPreview = true
             } finally {
                 isPreparingLogs = false
@@ -273,25 +271,10 @@ fun FeedbackScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.feedback_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.feedback_title),
+        onBack = onBack,
+        actions = {
                     IconButton(
                         onClick = { sendByEmail() },
                         enabled = canSend && !isSending,
@@ -301,15 +284,13 @@ fun FeedbackScreen(
                             contentDescription = stringResource(R.string.common_send_email),
                         )
                     }
-                },
-                colors = topBarColors,
-            )
         },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState()),
         ) {
             Spacer(modifier = Modifier.height(topInset))

@@ -1,9 +1,10 @@
 package edu.cqwu.electricity.home.data
 
 import android.content.ActivityNotFoundException
+import androidx.core.net.toUri
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.logging.AppLog
@@ -96,7 +97,7 @@ object ExternalAppOpener {
         // mamp:// 降级：尝试 campusnextins:// 打开今日校园 App
         if (url.startsWith("mamp://")) {
             try {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("campusnextins://")))
+                context.startActivity(Intent(Intent.ACTION_VIEW, "campusnextins://".toUri()))
                 return
             } catch (e: ActivityNotFoundException) {
                 AppLog.w(TAG, "降级 campusnextins:// 也失败: ${e.message}")

@@ -73,54 +73,33 @@ import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.navigation.LocalNavController
 
 /**
- * 「我的」页面 TopAppBar，由 [MainTabScreen] 在 Scaffold.topBar 中按页面切换调用。
+ * 「我的」页面标题栏右侧的两个按钮（夜间模式切换、设置），
+ * 由 [edu.cqwu.electricity.app.MainTabScreen] 放进 [edu.cqwu.electricity.common.ui.CollapsibleScaffold] 的 actions。
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileTopBar() {
+fun ProfileTopBarActions() {
     val nav = LocalNavController.current
-    val topBarColors = transparentTopBarColors()
+    val appSettings = LocalAppSettingsState.current
+    val modes = NightMode.entries
+    val nextMode = modes[(appSettings.nightMode.ordinal + 1) % modes.size]
 
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(R.string.profile_title),
-                fontWeight = FontWeight.Bold,
-            )
-        },
-        actions = {
-            val appSettings = LocalAppSettingsState.current
-
-            IconButton(onClick = {
-                val modes = NightMode.entries
-                val nextIndex = (appSettings.nightMode.ordinal + 1) % modes.size
-                appSettings.updateNightMode(modes[nextIndex])
-            }) {
-                val modes = NightMode.entries
-                val nextIndex = (appSettings.nightMode.ordinal + 1) % modes.size
-                val nextMode = modes[nextIndex]
-                val icon = when (nextMode) {
-                    NightMode.SYSTEM -> Icons.Outlined.BrightnessAuto
-                    NightMode.LIGHT -> Icons.Outlined.LightMode
-                    NightMode.DARK -> Icons.Outlined.DarkMode
-                }
-                Icon(
-                    imageVector = icon,
-                    contentDescription = stringResource(R.string.profile_toggle_night_mode),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            IconButton(
-                onClick = { nav.navigate(Routes.SETTINGS) },
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = stringResource(R.string.common_settings),
-                )
-            }
-        },
-        colors = topBarColors,
-    )
+    IconButton(onClick = { appSettings.updateNightMode(nextMode) }) {
+        Icon(
+            imageVector = when (nextMode) {
+                NightMode.SYSTEM -> Icons.Outlined.BrightnessAuto
+                NightMode.LIGHT -> Icons.Outlined.LightMode
+                NightMode.DARK -> Icons.Outlined.DarkMode
+            },
+            contentDescription = stringResource(R.string.profile_toggle_night_mode),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    IconButton(onClick = { nav.navigate(Routes.SETTINGS) }) {
+        Icon(
+            imageVector = Icons.Outlined.Settings,
+            contentDescription = stringResource(R.string.common_settings),
+        )
+    }
 }
 
 /**
@@ -129,6 +108,7 @@ fun ProfileTopBar() {
  */
 @Composable
 fun ProfilePageContent(
+    modifier: Modifier = Modifier,
     onOpenHalfScreen: (url: String, title: String) -> Unit = { _, _ -> },
     topInset: Dp = 0.dp,
 ) {
@@ -170,7 +150,7 @@ fun ProfilePageContent(
     val displayUsername = username ?: stringResource(R.string.profile_not_logged_in)
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {

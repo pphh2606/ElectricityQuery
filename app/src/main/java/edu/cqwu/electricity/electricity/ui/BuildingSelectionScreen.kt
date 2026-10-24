@@ -201,7 +201,7 @@ private fun GridItem(
         onClick = onClick,
         modifier = modifier,
         // 底色由 surfaceVariant 调浅（那档偏深），轮廓改由 1dp 描边提供
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),

@@ -60,9 +60,9 @@ import edu.cqwu.electricity.common.util.ToastUtils
 @Composable
 fun AppShell(
     navController: NavHostController,
+    modifier: Modifier = Modifier,
     shortcutAppInfo: edu.cqwu.electricity.shortcut.util.ShortcutHelper.ShortcutAppInfo? = null,
     shortcutLaunchId: Int = 0,
-    modifier: Modifier = Modifier,
 ) {
     val appSettings = LocalAppSettingsState.current
     val blurRadiusDp = appSettings.sheetBlurRadius.dp

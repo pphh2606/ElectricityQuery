@@ -2,10 +2,11 @@ package edu.cqwu.electricity.electricity.ui
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
+
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,6 +69,7 @@ import edu.cqwu.electricity.common.ui.AppNavigationBarItem
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -390,7 +392,7 @@ fun ElectricityMainScreen(
                         try {
                             val intent = Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login")
+                                "https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login".toUri()
                             )
                             context.startActivity(intent)
                         } catch (_: ActivityNotFoundException) {
@@ -471,15 +473,19 @@ fun ElectricityMainScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            myRoomState.myRoomList.forEach { room ->
-                BottomSheetItem(
-                    icon = Icons.Outlined.Home,
-                    title = room.fullName.ifBlank { room.roomName },
-                    onClick = {
-                        myRoomViewModel.switchToMyRoom(room)
-                        showRoomSwitchSheet = false
+            SheetItemGroup {
+                myRoomState.myRoomList.forEach { room ->
+                    item {
+                        BottomSheetItem(
+                            icon = Icons.Outlined.Home,
+                            title = room.fullName.ifBlank { room.roomName },
+                            onClick = {
+                                myRoomViewModel.switchToMyRoom(room)
+                                showRoomSwitchSheet = false
+                            }
+                        )
                     }
-                )
+                }
             }
         }
     }

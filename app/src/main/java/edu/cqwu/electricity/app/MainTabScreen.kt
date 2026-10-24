@@ -19,10 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.ui.AppNavigationBarItem
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
 import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
@@ -31,7 +32,7 @@ import edu.cqwu.electricity.hall.ui.HallViewModel
 import edu.cqwu.electricity.home.ui.HomePage
 import edu.cqwu.electricity.home.ui.HomeViewModel
 import edu.cqwu.electricity.profile.ui.ProfilePageContent
-import edu.cqwu.electricity.profile.ui.ProfileTopBar
+import edu.cqwu.electricity.profile.ui.ProfileTopBarActions
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
@@ -96,12 +97,16 @@ fun MainTabScreen(
                     )
                 }
                 2 -> {
-                    BlurScaffold(topBar = { ProfileTopBar() }) { topInset ->
+                    CollapsibleScaffold(
+                        title = stringResource(R.string.profile_title),
+                        actions = { ProfileTopBarActions() },
+                    ) { topInset, scrollModifier ->
                         ProfilePageContent(
                             onOpenHalfScreen = { url, title ->
                                 halfScreenUrl = url
                                 halfScreenTitle = title
                             },
+                            modifier = scrollModifier,
                             topInset = topInset,
                         )
                     }

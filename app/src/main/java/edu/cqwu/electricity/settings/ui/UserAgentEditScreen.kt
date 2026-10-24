@@ -1,7 +1,5 @@
 package edu.cqwu.electricity.settings.ui
 
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,15 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.UserAgentEntry
 import edu.cqwu.electricity.common.settings.UserAgentProvider
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import java.util.UUID
 
 /**
@@ -52,7 +47,6 @@ fun UserAgentEditScreen(
     entryId: String,
     onBack: () -> Unit,
 ) {
-    val topBarColors = transparentTopBarColors()
     val isNew = entryId == "new"
 
     // 编辑模式下加载已有条目
@@ -66,31 +60,12 @@ fun UserAgentEditScreen(
 
     val canSave = userAgent.isNotBlank()
 
-    BlurScaffold(
+    CollapsibleScaffold(
+        title = if (isNew) stringResource(R.string.ua_edit_add_title) else stringResource(R.string.ua_edit_edit_title),
+        onBack = onBack,
         // 键盘弹出时让出 IME 高度，避免遮挡底部操作按钮
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = if (isNew) stringResource(R.string.ua_edit_add_title) else stringResource(R.string.ua_edit_edit_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+        modifier = Modifier.fillMaxSize().imePadding(),
+    ) { topInset, scrollModifier ->
         Box(modifier = Modifier.fillMaxSize()) {
             // 用 Column + weight 让 Button 贴着底部
             Column(
@@ -102,6 +77,7 @@ fun UserAgentEditScreen(
                 Column(
                     modifier = Modifier
                         .weight(1f)
+                        .then(scrollModifier)
                         .verticalScroll(rememberScrollState()),
                 ) {
                     Spacer(modifier = Modifier.height(topInset))

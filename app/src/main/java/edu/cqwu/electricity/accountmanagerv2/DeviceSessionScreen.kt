@@ -22,17 +22,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -61,8 +58,7 @@ import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.util.ToastUtils
 
 /**
@@ -95,22 +91,10 @@ fun DeviceSessionScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.device_session_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = transparentTopBarColors(),
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.device_session_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
@@ -137,6 +121,7 @@ fun DeviceSessionScreen(
                     sessions = state.sessions,
                     onKickClick = { pendingKick = it },
                     topInset = topInset,
+                    modifier = scrollModifier,
                 )
             }
         }
@@ -171,11 +156,13 @@ fun DeviceSessionScreen(
 private fun SessionList(
     sessions: List<DeviceSession>,
     onKickClick: (DeviceSession) -> Unit,
+    modifier: Modifier = Modifier,
     topInset: Dp = 0.dp,
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .then(modifier)
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         item(key = "top_inset") { Spacer(Modifier.height(topInset)) }

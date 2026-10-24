@@ -54,7 +54,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -74,6 +73,7 @@ import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.schedulequery.data.JwxtDictItem
@@ -335,27 +335,33 @@ fun JwxtScheduleTargetScreen(
             onDismissRequest = { picker = null },
             title = entry.title,
         ) {
-            if (entry.allowAll) {
-                BottomSheetItem(
-                    icon = null,
-                    title = stringResource(R.string.jwxt_schedule_filter_all),
-                    selected = entry.selectedId.isBlank(),
-                    onClick = {
-                        entry.onSelect("")
-                        picker = null
-                    },
-                )
-            }
-            entry.options.forEach { item ->
-                BottomSheetItem(
-                    icon = null,
-                    title = item.name,
-                    selected = item.id == entry.selectedId,
-                    onClick = {
-                        entry.onSelect(item.id)
-                        picker = null
-                    },
-                )
+            SheetItemGroup {
+                if (entry.allowAll) {
+                    item {
+                        BottomSheetItem(
+                            icon = null,
+                            title = stringResource(R.string.jwxt_schedule_filter_all),
+                            selected = entry.selectedId.isBlank(),
+                            onClick = {
+                                entry.onSelect("")
+                                picker = null
+                            },
+                        )
+                    }
+                }
+                entry.options.forEach { option ->
+                    item {
+                        BottomSheetItem(
+                            icon = null,
+                            title = option.name,
+                            selected = option.id == entry.selectedId,
+                            onClick = {
+                                entry.onSelect(option.id)
+                                picker = null
+                            },
+                        )
+                    }
+                }
             }
         }
     }

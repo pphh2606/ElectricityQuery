@@ -1,7 +1,6 @@
 package edu.cqwu.electricity.accountmanagerv2
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,11 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -33,14 +30,10 @@ import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,10 +42,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.core.os.ConfigurationCompat
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,12 +55,14 @@ import edu.cqwu.electricity.login.data.LogoutApi
 import edu.cqwu.electricity.login.data.SessionManager
 import edu.cqwu.electricity.common.net.SessionValidationResult
 import edu.cqwu.electricity.logging.AppLog
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
+import edu.cqwu.electricity.settings.ui.SettingsGroup
+import edu.cqwu.electricity.settings.ui.SettingsListItem
+import edu.cqwu.electricity.settings.ui.SettingsNavigationRow
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -106,7 +102,10 @@ fun AccountManagerScreen(
     onNavigateToDeviceSession: () -> Unit,
     onNavigateToLoginLog: () -> Unit,
 ) {
-    val context = LocalContext.current
+    val resources = LocalResources.current
+    val currentLocale = ConfigurationCompat.getLocales(LocalConfiguration.current).let {
+        if (it.isEmpty) Locale.ROOT else it[0]!!
+    }
     val scope = rememberCoroutineScope()
     val snackbar = LocalSnackbarController.current
     val phoneBindTitle = stringResource(R.string.account_manager_v2_phone_bind)
@@ -154,12 +153,12 @@ fun AccountManagerScreen(
                     if (activated) {
                         refresh()
                         snackbar.show(
-                            context.getString(R.string.account_manager_switch_success, account.username),
+                            resources.getString(R.string.account_manager_switch_success, account.username),
                             ToastUtils.Type.SUCCESS,
                         )
                     } else {
                         snackbar.show(
-                            context.getString(R.string.account_manager_switch_failed),
+                            resources.getString(R.string.account_manager_switch_failed),
                             ToastUtils.Type.ERROR,
                         )
                     }
@@ -172,7 +171,7 @@ fun AccountManagerScreen(
                 is SessionValidationResult.NetworkError -> {
                     isSwitching = false
                     snackbar.show(
-                        context.getString(R.string.account_manager_switch_network_error),
+                        resources.getString(R.string.account_manager_switch_network_error),
                         ToastUtils.Type.ERROR,
                     )
                 }
@@ -180,47 +179,32 @@ fun AccountManagerScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.settings_account_manager), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.settings_account_manager),
+        onBack = onBack,
+        actions = {
                     IconButton(onClick = { isEditMode = !isEditMode }) {
                         Icon(
                             imageVector = if (isEditMode) Icons.Default.Close else Icons.Outlined.Edit,
                             contentDescription = stringResource(R.string.common_edit),
                         )
                     }
-                },
-                colors = transparentTopBarColors(),
-            )
         },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
             Spacer(modifier = Modifier.height(topInset + 8.dp))
             // ── 账号切换卡片 ──
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    // 所有条目均以副标题「登录时间」显示（区分同一登录用户名的多个登录条目）
-                    val timeFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
-                    accounts.forEachIndexed { index, account ->
+            SettingsGroup {
+                // 所有条目均以副标题「登录时间」显示（区分同一登录用户名的多个登录条目）
+                val timeFormat = SimpleDateFormat("MM-dd HH:mm", currentLocale)
+                accounts.forEach { account ->
+                    item {
                         AccountRow(
                             username = account.username,
                             subtitle = stringResource(
@@ -236,15 +220,9 @@ fun AccountManagerScreen(
                             },
                             onDelete = { accountToDelete = account.id },
                         )
-                        if (index < accounts.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                            )
-                        }
                     }
-
-                    // 添加账号
+                }
+                item {
                     AddAccountRow(
                         enabled = !isEditMode,
                         onClick = onNavigateToAddAccount,
@@ -255,27 +233,29 @@ fun AccountManagerScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // ── 修改用户名 / 修改密码 / 手机绑定 / 邮箱绑定 ──
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
+            SettingsGroup {
+                item {
                     PlaceholderRow(
                         icon = Icons.Outlined.Person,
                         title = stringResource(R.string.account_manager_v2_username),
                         onClick = onNavigateToUserNameEdit,
                     )
+                }
+                item {
                     PlaceholderRow(
                         icon = Icons.Outlined.Lock,
                         title = stringResource(R.string.account_manager_v2_password),
                         onClick = onNavigateToPasswordEdit,
                     )
+                }
+                item {
                     PlaceholderRow(
                         icon = Icons.Outlined.PhoneAndroid,
                         title = phoneBindTitle,
                         onClick = { onNavigateToWebView(PHONE_BIND_URL, phoneBindTitle) },
                     )
+                }
+                item {
                     PlaceholderRow(
                         icon = Icons.Outlined.Email,
                         title = emailBindTitle,
@@ -287,22 +267,22 @@ fun AccountManagerScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // ── 登录设备管理 / 日志记录 / 高级设置 ──
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
+            SettingsGroup {
+                item {
                     PlaceholderRow(
                         icon = Icons.Outlined.Devices,
                         title = stringResource(R.string.device_session_title),
                         onClick = onNavigateToDeviceSession,
                     )
+                }
+                item {
                     PlaceholderRow(
                         icon = Icons.Outlined.History,
                         title = stringResource(R.string.login_log_title),
                         onClick = onNavigateToLoginLog,
                     )
+                }
+                item {
                     PlaceholderRow(
                         icon = Icons.Outlined.Settings,
                         title = advancedSettingTitle,
@@ -374,16 +354,7 @@ fun AccountManagerScreen(
     )
 }
 
-/**
- * 账号行：圆形头像 + 登录用户名 + trailing 区域。
- *
- * trailing 三态都占 48dp（[IconButton] 因 minimumInteractiveComponentSize 实际占 48dp），
- * 内部图标 24dp 居中：当前账号显示 ✓、编辑模式显示删除图标（圆形涟漪 + 48dp 触控）、
- * 其余状态留同宽占位——三态等宽等高，切换编辑模式时行高与用户名可用宽度都不变。
- * 行尾内边距特意取 4dp（而非 16dp）：48dp 容器内图标中心距卡片右边界 4 + 24 = 28dp，
- * 与下方功能行「>」图标（16dp 内边距 + 裸 24dp 图标，中心 16 + 12 = 28dp）对齐；
- * 改回 16dp 会让图标左移 12dp、与功能行错位。
- */
+/** 账号行：头像 + 用户名 + 登录时间；编辑模式行尾换成删除按钮 */
 @Composable
 private fun AccountRow(
     username: String,
@@ -393,90 +364,71 @@ private fun AccountRow(
     onClick: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            // 行尾 4dp：trailing 容器 48dp，图标中心 4 + 24 = 28dp，与功能行「>」对齐
-            .padding(start = 16.dp, end = 4.dp, top = 12.dp, bottom = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(
-                    if (isActive) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
-                    } else {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
-                    }
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Person,
-                contentDescription = null,
-                tint = if (isActive) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                },
-                modifier = Modifier.size(24.dp),
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
+    val supportingBlock: (@Composable () -> Unit)? = subtitle?.let { text ->
+        {
             Text(
-                text = username,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = if (isActive) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
+                text = text,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            if (subtitle != null) {
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
         }
-
-        // trailing 三态统一占 48dp —— 即 IconButton 的实际布局尺寸（它内部带
-        // minimumInteractiveComponentSize，至少要 48dp 用于触控），三态等宽等高，
-        // 切换编辑模式时行高不变。删除用 IconButton：与「浏览器标识」页同一范式。
-        if (showDelete) {
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(R.string.common_delete),
-                    tint = MaterialTheme.colorScheme.error,
-                )
-            }
-        } else if (isActive) {
-            // 与 IconButton 同宽占位，保证 ✓、删除图标、功能行「>」三者中心重合
+    }
+    SettingsListItem(
+        title = username,
+        onClick = onClick,
+        titleColor = if (isActive) MaterialTheme.colorScheme.primary else null,
+        leading = {
             Box(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isActive) {
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+                        } else {
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                        }
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.CheckCircle,
+                    imageVector = Icons.Outlined.Person,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (isActive) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    },
                     modifier = Modifier.size(24.dp),
                 )
             }
-        } else {
-            Spacer(modifier = Modifier.size(48.dp))
-        }
-    }
+        },
+        supporting = supportingBlock,
+        // trailing 三态统一占 48dp —— 即 IconButton 的实际布局尺寸，三态等宽等高，
+        // 切换编辑模式时行高不变。
+        trailing = {
+            if (showDelete) {
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = stringResource(R.string.common_delete),
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                }
+            } else if (isActive) {
+                Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Outlined.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.size(48.dp))
+            }
+        },
+    )
 }
 
 /** 添加账号行 */
@@ -485,27 +437,12 @@ private fun AddAccountRow(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.Add,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp),
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = stringResource(R.string.account_manager_add),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
+    SettingsListItem(
+        title = stringResource(R.string.account_manager_add),
+        onClick = onClick,
+        enabled = enabled,
+        icon = Icons.Outlined.Add,
+    )
 }
 
 /** 功能行（修改用户名 / 修改密码）：onClick 为空时占位禁用样式 */
@@ -515,32 +452,9 @@ private fun PlaceholderRow(
     title: String,
     onClick: (() -> Unit)? = null,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier.alpha(0.38f))
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp),
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp),
-        )
+    if (onClick != null) {
+        SettingsNavigationRow(icon = icon, title = title, onClick = onClick)
+    } else {
+        SettingsListItem(icon = icon, title = title, onClick = null, alpha = 0.38f)
     }
 }

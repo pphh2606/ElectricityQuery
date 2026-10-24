@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
@@ -34,9 +33,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -62,8 +59,7 @@ import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.profile.data.MenuCategory
 import edu.cqwu.electricity.profile.data.StudentInfo
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.InfoRow as CommonInfoRow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,25 +71,15 @@ fun MyInfoScreen(
     viewModel: MyInfoViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val topBarColors = transparentTopBarColors()
 
     LaunchedEffect(Unit) {
         viewModel.loadIfNeeded()
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.my_info_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.my_info_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         val pullState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
@@ -125,6 +111,7 @@ fun MyInfoScreen(
                         menuCategories = uiState.menuCategories,
                         onNavigateToWebView = onNavigateToWebView,
                         topInset = topInset,
+                        modifier = scrollModifier,
                     )
                 }
                 else -> {
@@ -144,13 +131,14 @@ fun MyInfoScreen(
 private fun MyInfoContent(
     studentInfo: StudentInfo,
     menuCategories: List<MenuCategory>,
-    onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
+    onNavigateToWebView: (url: String, title: String) -> Unit = { _, _ -> },
     topInset: Dp = 0.dp,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
+            .then(modifier)
             .verticalScroll(rememberScrollState()),
     ) {
         Spacer(modifier = Modifier.height(topInset))

@@ -7,6 +7,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.logging.LogLevel
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 
 @Composable
@@ -21,16 +22,20 @@ fun LogLevelSheet(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.log_level_select),
     ) {
-        LogLevel.entries.forEach { level ->
-            BottomSheetItem(
-                icon = null,
-                title = stringResource(level.labelRes),
-                selected = level == appSettings.logLevel,
-                onClick = {
-                    appSettings.updateLogLevel(level)
-                    onDismiss()
-                },
-            )
+        SheetItemGroup {
+            LogLevel.entries.forEach { level ->
+                item {
+                    BottomSheetItem(
+                        icon = null,
+                        title = stringResource(level.labelRes),
+                        selected = level == appSettings.logLevel,
+                        onClick = {
+                            appSettings.updateLogLevel(level)
+                            onDismiss()
+                        },
+                    )
+                }
+            }
         }
     }
 }
