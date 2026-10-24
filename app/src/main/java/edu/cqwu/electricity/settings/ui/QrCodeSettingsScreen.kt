@@ -150,22 +150,13 @@ fun QrCodeSettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             SettingsGroup {
                 item {
-                    SettingsListItem(
+                    // 用统一的 SettingsSwitchEntry，与「屏幕高亮」等新版开关行保持一致的 ✓/✕ 图标样式
+                    SettingsSwitchEntry(
                         icon = Icons.Outlined.FormatPaint,
                         title = stringResource(R.string.qrcode_settings_corner_radius_switch),
                         subtitle = stringResource(R.string.qrcode_settings_corner_radius_switch_desc),
-                        onClick = {
-                            appSettings.updateQrCodeCornerRadiusEnabled(
-                                !appSettings.qrCodeCornerRadiusEnabled,
-                            )
-                        },
-                        // Switch 不接管点击：整行点击与按压形变统一交给 ListItem，避免双触发
-                        trailing = {
-                            Switch(
-                                checked = appSettings.qrCodeCornerRadiusEnabled,
-                                onCheckedChange = null,
-                            )
-                        },
+                        checked = appSettings.qrCodeCornerRadiusEnabled,
+                        onCheckedChange = { appSettings.updateQrCodeCornerRadiusEnabled(it) },
                     )
                 }
                 item {

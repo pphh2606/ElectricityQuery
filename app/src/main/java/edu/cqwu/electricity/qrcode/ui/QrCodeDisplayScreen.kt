@@ -123,7 +123,8 @@ fun QrCodeDisplayScreen(
     } else {
         qrPrimaryColor
     }
-    val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
+    // 浅色模式跟随页面底色（surfaceContainer），避免和页面背景出现色差；深色模式仍用纯白保证扫码识别
+    val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surfaceContainer
     val qrCornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var requiresReLogin by rememberSaveable { mutableStateOf(false) }
