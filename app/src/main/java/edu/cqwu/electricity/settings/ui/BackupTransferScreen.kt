@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -148,12 +151,16 @@ fun BackupTransferScreen(
             )
         },
     ) { topInset ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = topInset)
-                .padding(16.dp),
-        ) {
+        // 保存按钮改为右下角浮动：不再单独占一行，背后不会留出一条遮挡横带
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = topInset)
+                    .padding(16.dp)
+                    // 底部给浮动按钮留出位置，避免遮住下方的复制/本地文件按钮
+                    .padding(bottom = 64.dp),
+            ) {
             // ── 上部：内容区（导出=只读预览；导入=可编辑），大圆角输入框 ──
             OutlinedTextField(
                 value = if (isExport) exportText else importText,
@@ -230,17 +237,21 @@ fun BackupTransferScreen(
             }
 
             // ── 右下角"确定"（同修改密码页保存） ──
-            Button(
+            }
+
+            SmallExtendedFloatingActionButton(
+                icon = { Icon(Icons.Outlined.Check, contentDescription = null) },
+                text = {
+                    Text(
+                        text = stringResource(R.string.settings_backup_confirm),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
                 onClick = { if (isExport) onBack() else doImport() },
                 modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(top = 4.dp, bottom = 16.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.settings_backup_confirm),
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+            )
         }
     }
 

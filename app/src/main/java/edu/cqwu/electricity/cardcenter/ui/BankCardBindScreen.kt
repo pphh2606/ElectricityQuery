@@ -23,13 +23,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -200,6 +203,7 @@ fun BankCardBindScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun BankCardBindContent(
     uiState: BankCardBindUiState,
@@ -212,16 +216,18 @@ private fun BankCardBindContent(
     val status = uiState.status
     val showUnbind = status?.isBound == true
 
-    Column(
+    // 保存按钮改为右下角浮动：不再参与 Column 布局，背后不会留出一条遮挡横带
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
         Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(top = 16.dp, bottom = 8.dp),
+                // 底部预留浮动按钮的高度，滚到底时最后一项不会被压住
+                .padding(top = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(Modifier.height(topInset))
@@ -284,23 +290,34 @@ private fun BankCardBindContent(
 
         }
 
-        Button(
-            onClick = if (showUnbind) onUnbindClick else onBind,
+        SmallExtendedFloatingActionButton(
+            icon = {
+                Icon(
+                    imageVector = if (showUnbind) Icons.Outlined.LinkOff else Icons.Outlined.Link,
+                    contentDescription = null,
+                )
+            },
+            text = {
+                Text(
+                    text = if (showUnbind) {
+                        stringResource(R.string.bank_card_unbind)
+                    } else {
+                        stringResource(R.string.bank_card_bind)
+                    },
+                    fontWeight = FontWeight.Bold,
+                )
+            },
+            onClick = {
+                val canSubmit = !uiState.isSubmitting &&
+                    (showUnbind || uiState.cardNo.isNotBlank())
+                if (canSubmit) {
+                    if (showUnbind) onUnbindClick() else onBind()
+                }
+            },
             modifier = Modifier
-                .align(Alignment.End)
+                .align(Alignment.BottomEnd)
                 .padding(bottom = 16.dp),
-            enabled = !uiState.isSubmitting &&
-                (showUnbind || uiState.cardNo.isNotBlank())
-        ) {
-            Text(
-                text = if (showUnbind) {
-                    stringResource(R.string.bank_card_unbind)
-                } else {
-                    stringResource(R.string.bank_card_bind)
-                },
-                fontWeight = FontWeight.Bold
-            )
-        }
+        )
     }
 }
 

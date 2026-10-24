@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Text
@@ -41,7 +44,7 @@ import java.util.UUID
  * - 添加模式：entryId = "new"，所有字段为空
  * - 编辑模式：entryId 为已有条目的 ID，填充已有数据
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun UserAgentEditScreen(
     entryId: String,
@@ -76,9 +79,11 @@ fun UserAgentEditScreen(
                 // 可滚动的输入区域
                 Column(
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxSize()
                         .then(scrollModifier)
-                        .verticalScroll(rememberScrollState()),
+                        .verticalScroll(rememberScrollState())
+                        // 底部预留浮动按钮的高度，滚到底时最后一个输入框不会被压住
+                        .padding(bottom = 88.dp),
                 ) {
                     Spacer(modifier = Modifier.height(topInset))
                     // ── 备注输入框 ──
@@ -112,11 +117,18 @@ fun UserAgentEditScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+            }
 
-                // ── 保存按钮（右下角） ──
-                Button(
-                    onClick = {
-                        if (!canSave) return@Button
+            SmallExtendedFloatingActionButton(
+                icon = { Icon(Icons.Outlined.Save, contentDescription = null) },
+                text = {
+                    Text(
+                        text = stringResource(R.string.common_save),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                onClick = {
+                        if (!canSave) return@SmallExtendedFloatingActionButton
                         if (isNew) {
                             // 添加模式
                             val newEntry = UserAgentEntry(
@@ -139,15 +151,11 @@ fun UserAgentEditScreen(
                             UserAgentProvider.updateCustomEntry(updated)
                         }
                         onBack()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 16.dp),
-                    enabled = canSave,
-                ) {
-                    Text(stringResource(R.string.common_save))
-                }
-            }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 16.dp),
+            )
         }
     }
 }
