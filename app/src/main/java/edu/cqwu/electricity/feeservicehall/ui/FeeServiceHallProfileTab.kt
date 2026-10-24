@@ -4,8 +4,6 @@ import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Lock
@@ -31,7 +28,6 @@ import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,6 +41,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.settings.ui.SettingsGroup
+import edu.cqwu.electricity.settings.ui.SettingsNavigationRow
+import edu.cqwu.electricity.settings.ui.SettingsGroup
+import edu.cqwu.electricity.settings.ui.SettingsNavigationRow
 
 /** 功能菜单项数据 */
 private data class ProfileMenuItem(
@@ -93,37 +93,25 @@ internal fun FeeServiceHallProfileTab(
 
         Spacer(Modifier.height(16.dp))
 
-        ProfileMenuCard(accountServiceItems, onNavigateToWebView)
+        ProfileMenuGroup(accountServiceItems, onNavigateToWebView)
         Spacer(Modifier.height(16.dp))
-        ProfileMenuCard(queryServiceItems, onNavigateToWebView)
+        ProfileMenuGroup(queryServiceItems, onNavigateToWebView)
     }
 }
 
-/**
- * 功能菜单卡片（循环渲染）
- */
 @Composable
-private fun ProfileMenuCard(
+private fun ProfileMenuGroup(
     items: List<ProfileMenuItem>,
     onNavigateToWebView: (url: String, title: String) -> Unit,
 ) {
-    ElevatedCard(
-        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
-    ) {
-        items.forEachIndexed { index, item ->
-            val itemTitle = stringResource(item.titleRes)
-            ProfileOptionItem(
-                icon = item.icon,
-                title = itemTitle,
-                onClick = { onNavigateToWebView(item.url, itemTitle) },
-            )
-            if (index < items.lastIndex) {
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    thickness = 0.5.dp,
-                    modifier = Modifier.padding(horizontal = 16.dp),
+    SettingsGroup {
+        items.forEach { item ->
+            item {
+                val itemTitle = stringResource(item.titleRes)
+                SettingsNavigationRow(
+                    icon = item.icon,
+                    title = itemTitle,
+                    onClick = { onNavigateToWebView(item.url, itemTitle) },
                 )
             }
         }
@@ -139,9 +127,10 @@ private fun ProfileInfoCard(
     ElevatedCard(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         when {
             uiState.isProfileLoading -> {
@@ -200,41 +189,6 @@ private fun InfoRow(label: String, value: String) {
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-@Composable
-private fun ProfileOptionItem(
-    icon: ImageVector,
-    title: String,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp),
-        )
-        Spacer(Modifier.width(16.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
