@@ -4,8 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarColors
@@ -99,12 +102,16 @@ fun rememberHazeSourceModifier(hazeState: HazeState): Modifier =
  * 低版本没有 RenderEffect 时退回不透明标题栏。
  *
  * @param topBar 标题栏，内部请用 [transparentTopBarColors] 让底色透明
+ * @param applyNavigationBarsPadding 是否为内容让出系统导航栏/手势条的高度。
+ *        默认 true：`enableEdgeToEdge` 后内容会画到导航栏后面，必须由页面自己避让。
+ *        若外层已经统一避让过（比如底部 Tab 的 Pager），传 false 避免叠加。
  * @param content 页面内容，参数为顶部浮层高度
  */
 @Composable
 fun BlurScaffold(
     topBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    applyNavigationBarsPadding: Boolean = true,
     content: @Composable (topInset: Dp) -> Unit,
 ) {
     val hazeState = remember { HazeState() }
@@ -121,7 +128,21 @@ fun BlurScaffold(
                 .background(MaterialTheme.colorScheme.surfaceContainer)
                 .then(rememberHazeSourceModifier(hazeState))
         ) {
-            content(topInset)
+            // 系统导航栏避让：底色层仍然铺满整屏（不会在导航栏处露缝），
+            // 只把内容区抬到导航栏/手势条之上，避免最后一项被系统操作栏压住。
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (applyNavigationBarsPadding) {
+                            Modifier.windowInsetsPadding(WindowInsets.navigationBars)
+                        } else {
+                            Modifier
+                        },
+                    ),
+            ) {
+                content(topInset)
+            }
         }
 
         // 标题栏浮层：压在内容之上，模糊其背后的内容
