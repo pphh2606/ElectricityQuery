@@ -71,6 +71,8 @@ import edu.cqwu.electricity.common.net.WebVpnEncoder
 import edu.cqwu.electricity.common.settings.NightMode
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.navigation.LocalNavController
+import edu.cqwu.electricity.settings.ui.SettingsGroup
+import edu.cqwu.electricity.settings.ui.SettingsNavigationRow
 
 /**
  * 「我的」页面标题栏右侧的两个按钮（夜间模式切换、设置），
@@ -256,33 +258,39 @@ fun ProfilePageContent(
 
         // ── 功能入口 ──
         item(key = "menu") {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                Column {
-                    ProfileEntry(
+            // 用设置页同一套分组卡片：行间 2dp 缝隙、组首尾 16dp 外角，
+            // 按下整行变成 16dp 圆角矩形，和「设置」页的按压反馈一致。
+            SettingsGroup {
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.OpenInBrowser,
                         title = stringResource(R.string.profile_open_url),
                         onClick = { showOpenUrlDialog = true },
                     )
-                    ProfileEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Feedback,
                         title = stringResource(R.string.profile_feedback),
                         onClick = { nav.navigate(Routes.FEEDBACK) },
                     )
-                    ProfileEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.AutoMirrored.Outlined.AddToHomeScreen,
                         title = stringResource(R.string.profile_add_shortcut),
                         onClick = { nav.navigate(Routes.ADD_SHORTCUT) },
                     )
-                    ProfileEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.PersonSearch,
                         title = stringResource(R.string.person_search_title),
                         onClick = { nav.navigate(Routes.PERSON_SEARCH) },
                     )
-                    ProfileEntry(
+                }
+                item {
+                    SettingsNavigationRow(
                         icon = Icons.Outlined.Wifi,
                         title = stringResource(R.string.campus_network_title),
                         onClick = { nav.navigate(Routes.CAMPUS_NETWORK) },
@@ -318,54 +326,4 @@ fun ProfilePageContent(
     )
 }
 
-/**
- * 个人页面功能入口条目，与 SettingsScreen 的 SettingsEntry 风格一致。
- */
-@Composable
-private fun ProfileEntry(
-    icon: ImageVector,
-    title: String,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
-            )
-        }
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
-
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(24.dp),
-            )
-        }
-    }
-}
