@@ -7,20 +7,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -33,13 +28,11 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Animation
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.BlurOn
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FormatPaint
-import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.MotionPhotosAuto
 import androidx.compose.material.icons.outlined.Palette
@@ -76,7 +69,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -117,7 +109,6 @@ fun PersonalizationScreen(
     val appSettings = LocalAppSettingsState.current
     var showNightModeDialog by remember { mutableStateOf(false) }
     var showColorPicker by remember { mutableStateOf(false) }
-    var showPresetColorSheet by remember { mutableStateOf(false) }
     var showPaletteStyleDialog by remember { mutableStateOf(false) }
     var showColorSpecDialog by remember { mutableStateOf(false) }
     var showTopBarStyleDialog by remember { mutableStateOf(false) }
@@ -312,13 +303,6 @@ fun PersonalizationScreen(
                     )
                 }
                 item {
-                    SettingsNavigationRow(
-                        icon = Icons.Outlined.GridView, title = stringResource(R.string.personalization_preset_color),
-                        subtitle = stringResource(R.string.personalization_preset_color_desc),
-                        onClick = { showPresetColorSheet = true },
-                    )
-                }
-                item {
                     ThemeColorRow(
                         icon = Icons.Outlined.Colorize, title = stringResource(R.string.personalization_custom_color),
                         subtitle = stringResource(R.string.personalization_custom_color_desc, customSeedColor.toHex()),
@@ -442,12 +426,6 @@ fun PersonalizationScreen(
         current = appSettings.nightMode,
         onSelect = { mode -> appSettings.updateNightMode(mode); showNightModeDialog = false },
         onDismiss = { showNightModeDialog = false },
-    )
-    PresetColorSheet(
-        visible = showPresetColorSheet,
-        currentColor = customSeedColor,
-        onSelect = { appSettings.updateColorSource(ThemeColorSource.Custom(it)) },
-        onDismiss = { showPresetColorSheet = false },
     )
     SelectionDialog(
         visible = showPaletteStyleDialog,
@@ -702,65 +680,6 @@ private fun ColorPickerDialog(
  * 轨道用该通道的水平渐变自绘（[Slider] 的 track 槽位），thumb 仍取 M3 默认样式；
  * 自绘轨道只影响绘制，不影响滑块的点击与拖动手势。
  */
-/**
- * 预设种子色面板：横向自适应的圆点网格，点选即应用为自定义种子色。
- *
- * 这里不用 LazyVerticalGrid，是因为 BottomSheetDialogV2 的内容列本身带
- * verticalScroll，嵌套同向滚动容器会在测量阶段拿到无限高度约束而崩溃。
- */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
-@Composable
-private fun PresetColorSheet(
-    visible: Boolean,
-    currentColor: Color,
-    onSelect: (Color) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogV2(
-        visible = visible,
-        onDismissRequest = onDismiss,
-        title = stringResource(R.string.personalization_preset_color),
-    ) {
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            maxItemsInEachRow = 6,
-        ) {
-            PresetColors.forEach { preset ->
-                val selected = preset.color.toArgb() == currentColor.toArgb()
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(preset.color)
-                        .border(
-                            width = if (selected) 2.dp else 1.dp,
-                            color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant,
-                            shape = CircleShape,
-                        )
-                        .clickable {
-                            onSelect(preset.color)
-                            onDismiss()
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (selected) {
-                        Icon(
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.surface,
-                            modifier = Modifier.size(22.dp),
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Composable
 private fun RgbSliderRow(
     label: String,

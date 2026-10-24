@@ -352,8 +352,6 @@
     <string name="miui_showcase_desc">miuix 基础组件在电费查询中的实际观感</string>
     <string name="personalization_palette_style">主题风格</string>
     <string name="personalization_color_spec">取色规范</string>
-    <string name="personalization_preset_color">预设颜色</string>
-    <string name="personalization_preset_color_desc">从 18 种精选种子色中挑选</string>
     <string name="palette_style_tonal_spot">调性柔和</string>
     <string name="palette_style_neutral">中性</string>
     <string name="palette_style_vibrant">鲜艳</string>

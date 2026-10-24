@@ -382,8 +382,6 @@
     <string name="miui_showcase_desc">شكل مكونات miuix الأساسية داخل هذا التطبيق</string>
     <string name="personalization_palette_style">نمط لوحة الألوان</string>
     <string name="personalization_color_spec">مواصفة الألوان</string>
-    <string name="personalization_preset_color">ألوان جاهزة</string>
-    <string name="personalization_preset_color_desc">اختر من بين 18 لون بذرة منتقاة</string>
     <string name="palette_style_tonal_spot">Tonal spot</string>
     <string name="palette_style_neutral">Neutral</string>
     <string name="palette_style_vibrant">Vibrant</string>

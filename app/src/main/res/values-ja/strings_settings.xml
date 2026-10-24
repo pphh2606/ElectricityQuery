@@ -382,8 +382,6 @@
     <string name="miui_showcase_desc">このアプリでの miuix 基本コンポーネントの見た目</string>
     <string name="personalization_palette_style">パレットスタイル</string>
     <string name="personalization_color_spec">カラースペック</string>
-    <string name="personalization_preset_color">プリセットカラー</string>
-    <string name="personalization_preset_color_desc">18 色の厳選されたシードカラーから選択</string>
     <string name="palette_style_tonal_spot">Tonal spot</string>
     <string name="palette_style_neutral">Neutral</string>
     <string name="palette_style_vibrant">Vibrant</string>

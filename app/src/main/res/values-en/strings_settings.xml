@@ -382,8 +382,6 @@
     <string name="miui_showcase_desc">How miuix base components look inside this app</string>
     <string name="personalization_palette_style">Palette style</string>
     <string name="personalization_color_spec">Color spec</string>
-    <string name="personalization_preset_color">Preset colors</string>
-    <string name="personalization_preset_color_desc">Pick from 18 curated seed colors</string>
     <string name="palette_style_tonal_spot">Tonal spot</string>
     <string name="palette_style_neutral">Neutral</string>
     <string name="palette_style_vibrant">Vibrant</string>
