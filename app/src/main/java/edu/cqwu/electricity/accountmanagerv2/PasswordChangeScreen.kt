@@ -300,12 +300,14 @@ private fun PasswordChangeContent(
                 SplitButtonDefaults.LeadingButton(
                     onClick = { if (!state.isSaving) viewModel.save() },
                     enabled = !state.isSaving,
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
+                    // 标准尺寸：M3 split button 只有 small(56dp)/large(96dp) 两档，直接锁高度。
+                    modifier = Modifier.height(56.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp),
                 ) {
                     Icon(
                         Icons.Outlined.Save,
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(18.dp),
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
@@ -320,9 +322,14 @@ private fun PasswordChangeContent(
                         checked = moreMenuExpanded,
                         onCheckedChange = { moreMenuExpanded = it },
                         enabled = !state.isSaving,
-                        contentPadding = PaddingValues(20.dp),
+                        modifier = Modifier.size(56.dp),
+                        contentPadding = PaddingValues(0.dp),
                     ) {
-                        Icon(Icons.Filled.ExpandMore, contentDescription = null)
+                        Icon(
+                            Icons.Filled.ExpandMore,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
                     }
                     DropdownMenu(
                         expanded = moreMenuExpanded,
