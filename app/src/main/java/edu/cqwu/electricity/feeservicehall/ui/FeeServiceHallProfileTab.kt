@@ -4,6 +4,7 @@ import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -130,7 +131,9 @@ private fun ProfileInfoCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
     ) {
         when {
             uiState.isProfileLoading -> {
@@ -151,7 +154,7 @@ private fun ProfileInfoCard(
                 val initial = profile?.name?.firstOrNull()?.toString() ?: "?"
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    verticalAlignment = Alignment.Top,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
                         modifier = Modifier.size(52.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
