@@ -2,7 +2,6 @@ package edu.cqwu.electricity.settings.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,7 +90,7 @@ fun QrCodeSettingsScreen(
                 .fillMaxSize()
                 .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
         ) {
             Spacer(modifier = Modifier.height(topInset + 8.dp))
             // ── 二维码实时预览 ──
@@ -151,80 +150,63 @@ fun QrCodeSettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             SettingsGroup {
                 item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
+                    SettingsListItem(
+                        icon = Icons.Outlined.FormatPaint,
+                        title = stringResource(R.string.qrcode_settings_corner_radius_switch),
+                        subtitle = stringResource(R.string.qrcode_settings_corner_radius_switch_desc),
+                        onClick = {
                             appSettings.updateQrCodeCornerRadiusEnabled(
                                 !appSettings.qrCodeCornerRadiusEnabled,
                             )
-                        }
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.FormatPaint,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(24.dp),
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.qrcode_settings_corner_radius_switch),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurface,
+                        },
+                        // Switch 不接管点击：整行点击与按压形变统一交给 ListItem，避免双触发
+                        trailing = {
+                            Switch(
+                                checked = appSettings.qrCodeCornerRadiusEnabled,
+                                onCheckedChange = null,
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = stringResource(R.string.qrcode_settings_corner_radius_switch_desc),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Switch(
-                            checked = appSettings.qrCodeCornerRadiusEnabled,
-                            onCheckedChange = appSettings::updateQrCodeCornerRadiusEnabled,
-                        )
-                    }
+                        },
+                    )
                 }
                 item {
                     AnimatedVisibility(visible = appSettings.qrCodeCornerRadiusEnabled) {
-                        Column {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.qrcode_settings_corner_radius),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.weight(1f),
+                        // 组内展开面板：沿用所在行的组内形状与行底色，视觉上和上面的行连成一体
+                        SettingsGroupBlock {
+                            Column {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.qrcode_settings_corner_radius),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    Text(
+                                        text = "${"%.1f".format(appSettings.qrCodeCornerRadius)}%",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                }
+                                Slider(
+                                    value = appSettings.qrCodeCornerRadius,
+                                    onValueChange = appSettings::updateQrCodeCornerRadius,
+                                    valueRange = CORNER_RADIUS_RANGE,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = MaterialTheme.colorScheme.primary,
+                                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    ),
                                 )
-                                Text(
-                                    text = "${"%.1f".format(appSettings.qrCodeCornerRadius)}%",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
-                            Slider(
-                                value = appSettings.qrCodeCornerRadius,
-                                onValueChange = appSettings::updateQrCodeCornerRadius,
-                                valueRange = CORNER_RADIUS_RANGE,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                colors = SliderDefaults.colors(
-                                    thumbColor = MaterialTheme.colorScheme.primary,
-                                    activeTrackColor = MaterialTheme.colorScheme.primary,
-                                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                ),
-                            )
                         }
                     }
                 }
