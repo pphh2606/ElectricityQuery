@@ -380,4 +380,19 @@
     <string name="ui_style_miui">Style MIUI</string>
     <string name="miui_showcase_title">Aperçu des composants MIUI</string>
     <string name="miui_showcase_desc">Rendu des composants de base miuix dans cette application</string>
+    <string name="personalization_palette_style">Style de palette</string>
+    <string name="personalization_color_spec">Norme de couleur</string>
+    <string name="personalization_preset_color">Couleurs prédéfinies</string>
+    <string name="personalization_preset_color_desc">Choisissez parmi 18 couleurs de base sélectionnées</string>
+    <string name="palette_style_tonal_spot">Tonal spot</string>
+    <string name="palette_style_neutral">Neutral</string>
+    <string name="palette_style_vibrant">Vibrant</string>
+    <string name="palette_style_expressive">Expressive</string>
+    <string name="palette_style_rainbow">Rainbow</string>
+    <string name="palette_style_fruit_salad">Fruit salad</string>
+    <string name="palette_style_monochrome">Monochrome</string>
+    <string name="palette_style_fidelity">Fidelity</string>
+    <string name="palette_style_content">Content</string>
+    <string name="color_spec_2021">Material 3 (2021)</string>
+    <string name="color_spec_2025">Expressive (2025)</string>
 </resources>

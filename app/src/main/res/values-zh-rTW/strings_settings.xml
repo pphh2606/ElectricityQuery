@@ -380,4 +380,19 @@
     <string name="ui_style_miui">MIUI 風格</string>
     <string name="miui_showcase_title">MIUI 元件預覽</string>
     <string name="miui_showcase_desc">miuix 基礎元件在電費查詢中的實際觀感</string>
+    <string name="personalization_palette_style">主題配色風格</string>
+    <string name="personalization_color_spec">取色規範</string>
+    <string name="personalization_preset_color">預設顏色</string>
+    <string name="personalization_preset_color_desc">從 18 種精選種子色中挑選</string>
+    <string name="palette_style_tonal_spot">調性柔和</string>
+    <string name="palette_style_neutral">中性</string>
+    <string name="palette_style_vibrant">鮮豔</string>
+    <string name="palette_style_expressive">表現力</string>
+    <string name="palette_style_rainbow">彩虹</string>
+    <string name="palette_style_fruit_salad">水果沙拉</string>
+    <string name="palette_style_monochrome">單色</string>
+    <string name="palette_style_fidelity">保真</string>
+    <string name="palette_style_content">跟隨內容</string>
+    <string name="color_spec_2021">Material 3（2021）</string>
+    <string name="color_spec_2025">Expressive（2025）</string>
 </resources>

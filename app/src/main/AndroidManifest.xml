@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- material3 1.5.x 及其 ripple / window-size-class 子模块声明 minSdk 24，
+         本项目按兼容性要求保留 minSdk 23，故覆盖这些库的库级 minSdk 校验。
+         注意：这些库在 Android 6.0 上未获官方支持，极端分支可能存在运行期风险。 -->
+    <uses-sdk tools:overrideLibrary="androidx.compose.material3,androidx.compose.material3.ripple,androidx.compose.material3.windowsizeclass" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />

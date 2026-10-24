@@ -141,6 +141,20 @@ object SettingsKeys {
         default = 0xFF6750A4.toInt(),
     )
 
+    val PALETTE_STYLE = enumSetting(
+        name = "palette_style",
+        default = ThemePaletteStyle.TONAL_SPOT,
+        fromValue = ThemePaletteStyle::fromValue,
+        encode = { it.value },
+    )
+
+    val COLOR_SPEC = enumSetting(
+        name = "color_spec",
+        default = ThemeColorSpec.SPEC_2025,
+        fromValue = ThemeColorSpec::fromValue,
+        encode = { it.value },
+    )
+
     val PAGE_TRANSITION = enumSetting(
         name = "page_transition",
         default = PageTransition.CUPERTINO,

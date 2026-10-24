@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,6 +42,7 @@ import edu.cqwu.electricity.common.settings.QrCodeColorMode
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.QrCodeView
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.theme.ui.LocalAppDarkTheme
 
 /** Corner radius slider range: 0..50 in 1% steps. */
 private val CORNER_RADIUS_RANGE = 0f..50f
@@ -61,7 +61,7 @@ fun QrCodeSettingsScreen(
     onBack: () -> Unit,
 ) {
     val appSettings = LocalAppSettingsState.current
-    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDarkTheme = LocalAppDarkTheme.current
 
     // 深色模式下背景强制白色（确保扫码可读），前景色遵循用户设置
     val primaryColor = when (appSettings.qrCodeColorMode) {

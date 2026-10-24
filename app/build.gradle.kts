@@ -132,7 +132,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.zxing.core)
-    implementation(libs.material.kolor)
+    implementation(libs.material.kolor.material3)
     implementation(libs.miuix.ui)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)

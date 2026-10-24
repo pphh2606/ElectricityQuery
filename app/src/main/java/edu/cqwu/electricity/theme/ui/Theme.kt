@@ -10,25 +10,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowInsetsControllerCompat
-import com.materialkolor.dynamicColorScheme
+import com.materialkolor.material3.dynamicColorScheme
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.NightMode
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.settings.ThemeColorSource
+import edu.cqwu.electricity.common.settings.ThemeColorSpec
+import edu.cqwu.electricity.common.settings.ThemePaletteStyle
 import edu.cqwu.electricity.common.settings.TopBarStyle
 import edu.cqwu.electricity.common.settings.UiStyle
 import edu.cqwu.electricity.common.settings.isDark
@@ -78,11 +78,21 @@ fun TopBarStyle.toTopAppBarColors(colorScheme: ColorScheme): TopAppBarColors {
 fun currentTopBarColors(): TopAppBarColors =
     LocalAppSettingsState.current.topBarStyle.toTopAppBarColors(MaterialTheme.colorScheme)
 
+/**
+ * 当前是否深色主题。
+ *
+ * 由 [电费查询Theme] 提供，供不方便/不需要重新推导明暗的页面直接读取，
+ * 避免再用 `colorScheme.background.luminance() < 0.5f` 之类会在纯黑/高饱和色下误判的写法。
+ */
+val LocalAppDarkTheme = staticCompositionLocalOf { false }
+
 @Composable
 fun 电费查询Theme(
     nightMode: NightMode = NightMode.SYSTEM,
     colorSource: ThemeColorSource = ThemeColorSource.SystemDynamic,
     uiStyle: UiStyle = UiStyle.MATERIAL3,
+    paletteStyle: ThemePaletteStyle = ThemePaletteStyle.TONAL_SPOT,
+    colorSpec: ThemeColorSpec = ThemeColorSpec.SPEC_2025,
     pureBlack: Boolean = false,
     fontScale: Float = 1f,
     dynamicColor: Boolean = true,
@@ -90,6 +100,7 @@ fun 电费查询Theme(
 ) {
     val darkTheme = nightMode.isDark(isSystemInDarkTheme())
 
+    // 取色源与引擎解耦：系统动态色只负责提供种子，风格/规范对两种来源一视同仁
     val seedColor = when {
         colorSource is ThemeColorSource.Custom -> colorSource.seedColor
         colorSource is ThemeColorSource.SystemDynamic && dynamicColor
@@ -98,30 +109,25 @@ fun 电费查询Theme(
         else -> DefaultSeedColor
     }
 
-    val colorScheme = when {
-        colorSource is ThemeColorSource.SystemDynamic && dynamicColor
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        colorSource is ThemeColorSource.Custom -> {
-            dynamicColorScheme(
-                seedColor = colorSource.seedColor,
-                isDark = darkTheme
-            )
-        }
-        // Android 12 以下取不到系统动态色，用固定种子生成整套色板
-        else -> dynamicColorScheme(seedColor = DefaultSeedColor, isDark = darkTheme)
+    val colorScheme = remember(seedColor, darkTheme, paletteStyle, colorSpec) {
+        dynamicColorScheme(
+            seedColor = seedColor,
+            isDark = darkTheme,
+            style = paletteStyle.toMaterialKolor(),
+            specVersion = colorSpec.toMaterialKolor(),
+        )
     }
 
     // 界面风格为 MIUI 时，用 miuix 的 ThemeController 按同一颗种子色生成 miuix 配色，
     // 再映射进 Material3 的 ColorScheme，让现有页面也呈现 MIUI 观感；
     // 同时外层套 MiuixTheme，后续 miuix 组件可直接使用。
-    val miuixController = remember(uiStyle, darkTheme, seedColor) {
+    val miuixController = remember(uiStyle, darkTheme, seedColor, paletteStyle, colorSpec) {
         if (uiStyle == UiStyle.MIUI) {
             ThemeController(
                 colorSchemeMode = if (darkTheme) ColorSchemeMode.Dark else ColorSchemeMode.Light,
                 keyColor = seedColor,
+                colorSpec = colorSpec.toMiuix(),
+                paletteStyle = paletteStyle.toMiuix(),
                 isDark = darkTheme,
             )
         } else {
@@ -190,6 +196,11 @@ fun 电费查询Theme(
         }
     }
 
+    // 换色/换风格/换规范时让整套色板平滑过渡；「减少动画」开启时直接瞬切
+    val animatedColorScheme = themedColorScheme.animateAsState(
+        enabled = LocalAppSettingsState.current.reduceMotion != ReduceMotion.ON,
+    )
+
     // 根据 darkTheme 动态更新系统状态栏和导航栏图标颜色
     val view = LocalView.current
     val window = LocalActivity.current?.window
@@ -208,6 +219,7 @@ fun 电费查询Theme(
 
     val baseDensity = LocalDensity.current
     CompositionLocalProvider(
+        LocalAppDarkTheme provides darkTheme,
         LocalDensity provides Density(
             density = baseDensity.density,
             fontScale = baseDensity.fontScale * fontScale,
@@ -217,7 +229,7 @@ fun 电费查询Theme(
             // Material 3 Expressive：expressive 动效 + 大圆角形状；
             // 用户开启「减少动画」时退回标准动效，避免界面仍在弹跳
             MaterialExpressiveTheme(
-                colorScheme = themedColorScheme,
+                colorScheme = animatedColorScheme,
                 motionScheme = if (LocalAppSettingsState.current.reduceMotion == ReduceMotion.ON) {
                     MotionScheme.standard()
                 } else {

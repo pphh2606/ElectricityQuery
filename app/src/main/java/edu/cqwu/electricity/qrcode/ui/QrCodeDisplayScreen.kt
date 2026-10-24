@@ -52,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -85,6 +84,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import edu.cqwu.electricity.theme.ui.LocalAppDarkTheme
 
 /**
  * 乘车码/支付码原生二维码显示页面
@@ -107,7 +107,7 @@ fun QrCodeDisplayScreen(
     val nav = LocalNavController.current
     val topBarColors = transparentTopBarColors()
     val appSettings = LocalAppSettingsState.current
-    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDarkTheme = LocalAppDarkTheme.current
     // 深色模式下背景强制白色（确保扫码可读），前景色遵循用户设置
     val qrPrimaryColor = when (appSettings.qrCodeColorMode) {
         QrCodeColorMode.THEME_SNAKE -> MaterialTheme.colorScheme.primary

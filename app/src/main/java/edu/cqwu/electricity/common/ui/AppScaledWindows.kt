@@ -163,12 +163,13 @@ internal fun ExposedDropdownMenuBoxScope.AppScaledExposedDropdownMenu(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val appDensity = LocalDensity.current
-    ExposedDropdownMenu(
+    // material3 1.5 起 ExposedDropdownMenu 成员函数被 HIDDEN 废弃，
+    // 官方等价写法是 DropdownMenu + Modifier.exposedDropdownSize。
+    DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        modifier = modifier,
+        modifier = modifier.exposedDropdownSize(matchAnchorWidth),
         scrollState = scrollState,
-        matchAnchorWidth = matchAnchorWidth,
         shape = shape,
         containerColor = containerColor,
         tonalElevation = tonalElevation,

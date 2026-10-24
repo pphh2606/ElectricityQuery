@@ -1,8 +1,8 @@
 package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.material3.MaterialTheme
+import edu.cqwu.electricity.theme.ui.LocalAppDarkTheme
 
 /**
  * 校内网络测速页专用语义色板。
@@ -40,7 +40,7 @@ data class SpeedTestPalette(
 /** 根据当前 MaterialTheme 深浅模式取官方两套色板 */
 @androidx.compose.runtime.Composable
 fun speedTestPalette(): SpeedTestPalette {
-    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val dark = LocalAppDarkTheme.current
     return if (dark) {
         SpeedTestPalette(
             download = Color(0xFF60A5FA),      // blue-400

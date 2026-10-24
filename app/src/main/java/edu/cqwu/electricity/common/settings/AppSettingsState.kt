@@ -56,6 +56,12 @@ class AppSettingsState(
     var colorSource by mutableStateOf(loadColorSource())
         private set
 
+    var paletteStyle by mutableStateOf(prefs.get(SettingsKeys.PALETTE_STYLE))
+        private set
+
+    var colorSpec by mutableStateOf(prefs.get(SettingsKeys.COLOR_SPEC))
+        private set
+
     var uiStyle by mutableStateOf(prefs.get(SettingsKeys.UI_STYLE))
         private set
 
@@ -195,6 +201,16 @@ class AppSettingsState(
     fun updateUiStyle(value: UiStyle) {
         uiStyle = value
         prefs.set(SettingsKeys.UI_STYLE, value)
+    }
+
+    fun updatePaletteStyle(value: ThemePaletteStyle) {
+        paletteStyle = value
+        prefs.set(SettingsKeys.PALETTE_STYLE, value)
+    }
+
+    fun updateColorSpec(value: ThemeColorSpec) {
+        colorSpec = value
+        prefs.set(SettingsKeys.COLOR_SPEC, value)
     }
 
     fun updatePageTransition(value: PageTransition) {

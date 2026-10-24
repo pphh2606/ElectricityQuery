@@ -15,8 +15,8 @@ coroutines = "1.11.0"
 navigationCompose = "2.9.8"
 coil = "2.7.0"
 zxing = "3.5.4"
-materialKolor = "5.0.1"
-material3 = "1.5.0-alpha22"
+materialKolor = "6.0.0"
+material3 = "1.5.0-beta02"
 camerax = "1.6.2"
 securityCrypto = "1.1.0"
 haze = "2.0.1"
@@ -49,7 +49,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
-material-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialKolor" }
+material-kolor-material3 = { group = "com.materialkolor", name = "material-kolor-material3", version.ref = "materialKolor" }
 haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 haze-blur = { group = "dev.chrisbanes.haze", name = "haze-blur", version.ref = "haze" }
 androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax" }

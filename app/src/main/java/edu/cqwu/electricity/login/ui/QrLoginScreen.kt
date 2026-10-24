@@ -53,7 +53,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -73,6 +72,7 @@ import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import edu.cqwu.electricity.theme.ui.LocalAppDarkTheme
 
 /**
  * 扫码登录页面（纯 UI）。
@@ -112,7 +112,7 @@ fun QrLoginScreen(
 
     // ── 二维码主题设置（与支付码页面一致）──
     val appSettings = LocalAppSettingsState.current
-    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDarkTheme = LocalAppDarkTheme.current
     val qrPrimaryColor = when (appSettings.qrCodeColorMode) {
         QrCodeColorMode.THEME_SNAKE -> MaterialTheme.colorScheme.primary
         QrCodeColorMode.MONOCHROME -> Color.Black
