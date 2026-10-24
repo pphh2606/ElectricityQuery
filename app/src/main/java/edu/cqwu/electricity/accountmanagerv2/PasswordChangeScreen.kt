@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Surface
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
@@ -285,33 +287,61 @@ private fun PasswordChangeContent(
         }
 
         // 对应网页 form-footer：保存 + 忘记密码。
-        // 主操作「保存」是右下角浮动按钮；次要操作「忘记密码」收进它右侧的下拉箭头里，
-        // 点箭头才弹出菜单，两者都不再占用底部一整行，也不再留遮挡背景。
+        // 按 M3 Expressive split button 的形状拼：两段等高 56dp、外侧全圆角、相邻内侧 8dp 小圆角、
+        // 中间只隔 2dp，视觉上连成一颗胶囊；忘记密码收在右侧箭头下拉菜单里。
         var moreMenuExpanded by remember { mutableStateOf(false) }
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 16.dp),
         ) {
-            SmallExtendedFloatingActionButton(
-                icon = { Icon(Icons.Outlined.Save, contentDescription = null) },
-                text = {
+            Surface(
+                onClick = { if (!state.isSaving) viewModel.save() },
+                enabled = !state.isSaving,
+                shape = RoundedCornerShape(
+                    topStart = 28.dp,
+                    bottomStart = 28.dp,
+                    topEnd = 8.dp,
+                    bottomEnd = 8.dp,
+                ),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.height(56.dp),
+            ) {
+                Row(
+                    modifier = Modifier.padding(start = 16.dp, end = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Save,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.password_change_save),
                         fontWeight = FontWeight.Bold,
                     )
-                },
-                onClick = { if (!state.isSaving) viewModel.save() },
-            )
+                }
+            }
             Box {
-                SmallFloatingActionButton(
+                Surface(
                     onClick = { moreMenuExpanded = true },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(
+                        topEnd = 28.dp,
+                        bottomEnd = 28.dp,
+                        topStart = 8.dp,
+                        bottomStart = 8.dp,
+                    ),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.size(56.dp),
                 ) {
-                    Icon(Icons.Filled.ExpandMore, contentDescription = null)
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Filled.ExpandMore, contentDescription = null)
+                    }
                 }
                 DropdownMenu(
                     expanded = moreMenuExpanded,
