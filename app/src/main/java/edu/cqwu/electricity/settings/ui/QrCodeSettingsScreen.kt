@@ -26,9 +26,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -76,7 +78,8 @@ fun QrCodeSettingsScreen(
     } else {
         primaryColor
     }
-    val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
+    // 浅色跟随页面底色 surfaceContainer，与页面背景无接缝；深色保持纯白以保证扫码对比度
+    val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surfaceContainer
 
     // 圆角分数（0~50 int → 0.0f~0.5f float），开关关闭时为 0
     val cornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
@@ -183,10 +186,19 @@ fun QrCodeSettingsScreen(
                                         color = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
-                                Slider(
+                                // 用 SliderState 重载（旧的 value 重载已废弃）；外部值变化时同步回状态
+                                val cornerRadiusSliderState = rememberSliderState(
                                     value = appSettings.qrCodeCornerRadius,
+                                    trackRange = CORNER_RADIUS_RANGE,
+                                )
+                                LaunchedEffect(appSettings.qrCodeCornerRadius) {
+                                    if (cornerRadiusSliderState.value != appSettings.qrCodeCornerRadius) {
+                                        cornerRadiusSliderState.value = appSettings.qrCodeCornerRadius
+                                    }
+                                }
+                                Slider(
+                                    state = cornerRadiusSliderState,
                                     onValueChange = appSettings::updateQrCodeCornerRadius,
-                                    valueRange = CORNER_RADIUS_RANGE,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp),

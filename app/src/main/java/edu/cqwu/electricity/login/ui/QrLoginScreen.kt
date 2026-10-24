@@ -124,7 +124,8 @@ fun QrLoginScreen(
     } else {
         qrPrimaryColor
     }
-    val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surface
+    // 浅色跟随页面底色 surfaceContainer，与页面背景无接缝；深色保持纯白以保证扫码对比度
+    val qrBackgroundColor = if (isDarkTheme) Color.White else MaterialTheme.colorScheme.surfaceContainer
     val qrCornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
 
     // 窗口亮度控制：根据设置决定是否调高屏幕亮度（与支付码页面一致）
