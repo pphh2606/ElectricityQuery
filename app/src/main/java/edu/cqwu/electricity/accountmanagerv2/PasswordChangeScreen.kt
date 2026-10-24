@@ -62,8 +62,11 @@ import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.restartApp
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.SmallExtendedFloatingActionButton
-import androidx.compose.material3.SplitButtonLayout
+import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material.icons.filled.ExpandMore
 
 /**
  * 修改密码页 — 布局对应 CAS 网页 mobilePasswordChange.do：
@@ -281,33 +284,50 @@ private fun PasswordChangeContent(
             )
         }
 
-        // 对应网页 form-footer：忘记密码 + 保存。
-        // 用 SplitButtonLayout 把两枚 SmallExtendedFloatingActionButton 拼成一体：
-        // 主按钮（保存）在左、辅助按钮（忘记密码）在右，浮在内容之上，不再占底部一整行。
-        SplitButtonLayout(
-            leadingButton = {
-                SmallExtendedFloatingActionButton(
-                    icon = { Icon(Icons.Outlined.Save, contentDescription = null) },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.password_change_save),
-                            fontWeight = FontWeight.Bold,
-                        )
-                    },
-                    onClick = { if (!state.isSaving) viewModel.save() },
-                )
-            },
-            trailingButton = {
-                SmallExtendedFloatingActionButton(
-                    icon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
-                    text = { Text(stringResource(R.string.password_change_forgot)) },
-                    onClick = { if (!state.isSaving) onForgotPassword() },
-                )
-            },
+        // 对应网页 form-footer：保存 + 忘记密码。
+        // 主操作「保存」是右下角浮动按钮；次要操作「忘记密码」收进它右侧的下拉箭头里，
+        // 点箭头才弹出菜单，两者都不再占用底部一整行，也不再留遮挡背景。
+        var moreMenuExpanded by remember { mutableStateOf(false) }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 16.dp),
-        )
+        ) {
+            SmallExtendedFloatingActionButton(
+                icon = { Icon(Icons.Outlined.Save, contentDescription = null) },
+                text = {
+                    Text(
+                        text = stringResource(R.string.password_change_save),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                onClick = { if (!state.isSaving) viewModel.save() },
+            )
+            Box {
+                SmallFloatingActionButton(
+                    onClick = { moreMenuExpanded = true },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                ) {
+                    Icon(Icons.Filled.ExpandMore, contentDescription = null)
+                }
+                DropdownMenu(
+                    expanded = moreMenuExpanded,
+                    onDismissRequest = { moreMenuExpanded = false },
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.password_change_forgot)) },
+                        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                        onClick = {
+                            moreMenuExpanded = false
+                            if (!state.isSaving) onForgotPassword()
+                        },
+                    )
+                }
+            }
+        }
     }
 }
 
