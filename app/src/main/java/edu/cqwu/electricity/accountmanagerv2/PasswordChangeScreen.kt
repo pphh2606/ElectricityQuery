@@ -60,6 +60,10 @@ import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.restartApp
+import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.SmallExtendedFloatingActionButton
+import androidx.compose.material3.SplitButtonLayout
 
 /**
  * 修改密码页 — 布局对应 CAS 网页 mobilePasswordChange.do：
@@ -156,6 +160,7 @@ fun PasswordChangeScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PasswordChangeContent(
     state: PasswordChangeUiState,
@@ -164,17 +169,18 @@ private fun PasswordChangeContent(
     modifier: Modifier = Modifier,
     topInset: Dp = 0.dp,
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
     ) {
         Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .then(modifier)
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = 8.dp),
+                // 底部预留浮动按钮高度，滚到底时最后一项不会被按钮压住
+                .padding(top = 8.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Spacer(modifier = Modifier.height(topInset))
@@ -275,34 +281,33 @@ private fun PasswordChangeContent(
             )
         }
 
-        // 对应网页 form-footer：忘记密码 + 保存（右下角固定）
-        Row(
+        // 对应网页 form-footer：忘记密码 + 保存。
+        // 用 SplitButtonLayout 把两枚 SmallExtendedFloatingActionButton 拼成一体：
+        // 主按钮（保存）在左、辅助按钮（忘记密码）在右，浮在内容之上，不再占底部一整行。
+        SplitButtonLayout(
+            leadingButton = {
+                SmallExtendedFloatingActionButton(
+                    icon = { Icon(Icons.Outlined.Save, contentDescription = null) },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.password_change_save),
+                            fontWeight = FontWeight.Bold,
+                        )
+                    },
+                    onClick = { if (!state.isSaving) viewModel.save() },
+                )
+            },
+            trailingButton = {
+                SmallExtendedFloatingActionButton(
+                    icon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                    text = { Text(stringResource(R.string.password_change_forgot)) },
+                    onClick = { if (!state.isSaving) onForgotPassword() },
+                )
+            },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TextButton(
-                onClick = onForgotPassword,
-                enabled = !state.isSaving,
-            ) {
-                Text(
-                    text = stringResource(R.string.password_change_forgot),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            Button(
-                onClick = viewModel::save,
-                enabled = !state.isSaving,
-            ) {
-                Text(
-                    text = stringResource(R.string.password_change_save),
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 16.dp),
+        )
     }
 }
 
