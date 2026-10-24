@@ -30,6 +30,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -287,77 +289,50 @@ private fun PasswordChangeContent(
         }
 
         // 对应网页 form-footer：保存 + 忘记密码。
-        // 按 M3 Expressive split button 的形状拼：两段等高 56dp、外侧全圆角、相邻内侧 8dp 小圆角、
-        // 中间只隔 2dp，视觉上连成一颗胶囊；忘记密码收在右侧箭头下拉菜单里。
+        // 用官方 M3 Expressive split button 组合，库负责外角全圆、内侧小角、2dp 间距与按压联动。
         var moreMenuExpanded by remember { mutableStateOf(false) }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        SplitButtonLayout(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 16.dp),
-        ) {
-            Surface(
-                onClick = { if (!state.isSaving) viewModel.save() },
-                enabled = !state.isSaving,
-                shape = RoundedCornerShape(
-                    topStart = 28.dp,
-                    bottomStart = 28.dp,
-                    topEnd = 8.dp,
-                    bottomEnd = 8.dp,
-                ),
-                color = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.height(56.dp),
-            ) {
-                Row(
-                    modifier = Modifier.padding(start = 16.dp, end = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+            leadingButton = {
+                SplitButtonDefaults.TonalLeadingButton(
+                    onClick = { if (!state.isSaving) viewModel.save() },
+                    enabled = !state.isSaving,
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Save,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                    )
+                    Icon(Icons.Outlined.Save, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.password_change_save),
                         fontWeight = FontWeight.Bold,
                     )
                 }
-            }
-            Box {
-                Surface(
-                    onClick = { moreMenuExpanded = true },
-                    shape = RoundedCornerShape(
-                        topEnd = 28.dp,
-                        bottomEnd = 28.dp,
-                        topStart = 8.dp,
-                        bottomStart = 8.dp,
-                    ),
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(56.dp),
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
+            },
+            trailingButton = {
+                Box {
+                    SplitButtonDefaults.TonalTrailingButton(
+                        checked = moreMenuExpanded,
+                        onCheckedChange = { moreMenuExpanded = it },
+                        enabled = !state.isSaving,
+                    ) {
                         Icon(Icons.Filled.ExpandMore, contentDescription = null)
                     }
+                    DropdownMenu(
+                        expanded = moreMenuExpanded,
+                        onDismissRequest = { moreMenuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.password_change_forgot)) },
+                            leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                            onClick = {
+                                moreMenuExpanded = false
+                                if (!state.isSaving) onForgotPassword()
+                            },
+                        )
+                    }
                 }
-                DropdownMenu(
-                    expanded = moreMenuExpanded,
-                    onDismissRequest = { moreMenuExpanded = false },
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.password_change_forgot)) },
-                        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
-                        onClick = {
-                            moreMenuExpanded = false
-                            if (!state.isSaving) onForgotPassword()
-                        },
-                    )
-                }
-            }
-        }
+            },
+        )
     }
 }
 
