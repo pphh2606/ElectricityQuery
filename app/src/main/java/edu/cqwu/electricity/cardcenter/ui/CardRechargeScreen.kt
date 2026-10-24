@@ -1,13 +1,14 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.cardcenter.ui
 
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 
-import androidx.core.net.toUri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,6 +72,7 @@ import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.openUrl
 
 /**
  * 校园卡充值 — 学号输入 + 金额选择页面
@@ -131,7 +133,7 @@ fun CardRechargeScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -190,10 +192,10 @@ fun CardRechargeScreen(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Button(
+                            shapes = ButtonDefaults.shapes(),
                             onClick = { viewModel.queryCardInfo() },
                             modifier = Modifier.height(56.dp),
                             enabled = uiState.studentId.trim().isNotBlank() && !uiState.isQuerying,
-                            shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
                             )
@@ -236,12 +238,12 @@ fun CardRechargeScreen(
 
                         // 下一步按钮
                         Button(
+                            shapes = ButtonDefaults.shapes(),
                             onClick = { onNavigateToPayment() },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(52.dp),
                             enabled = hasValidAmount && uiState.cardInfo?.isNormal == true,
-                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.card_recharge_next_step),
@@ -274,7 +276,7 @@ fun CardRechargeScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TextButton(onClick = { nav.navigate(Routes.FEE_SERVICE_HALL_ORDERS) }) {
+                TextButton(shapes = ButtonDefaults.shapes(), onClick = { nav.navigate(Routes.FEE_SERVICE_HALL_ORDERS) }) {
                     Text(
                         stringResource(R.string.card_recharge_record),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -287,7 +289,7 @@ fun CardRechargeScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                 )
 
-                TextButton(onClick = { nav.navigate(Routes.BILL) }) {
+                TextButton(shapes = ButtonDefaults.shapes(), onClick = { nav.navigate(Routes.BILL) }) {
                     Text(
                         stringResource(R.string.card_recharge_consume_record),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -315,10 +317,7 @@ fun CardRechargeScreen(
                     icon = Icons.Outlined.Store,
                     title = stringResource(R.string.recharge_method_campus),
                     onClick = {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, "campusnextins://".toUri())
-                            context.startActivity(intent)
-                        } catch (_: ActivityNotFoundException) {
+                        if (!openUrl(context, "campusnextins://")) {
                             snackbar.show(resources.getString(R.string.recharge_install_campus_app))
                         }
                         showOtherRechargeDialog = false
@@ -342,13 +341,7 @@ fun CardRechargeScreen(
                     icon = Icons.Outlined.OpenInBrowser,
                     title = stringResource(R.string.recharge_method_browser_h5),
                     onClick = {
-                        try {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                cardRechargeH5Url.toUri()
-                            )
-                            context.startActivity(intent)
-                        } catch (_: ActivityNotFoundException) {
+                        if (!openUrl(context, cardRechargeH5Url)) {
                             snackbar.show(resources.getString(R.string.common_no_browser))
                         }
                         showOtherRechargeDialog = false
@@ -366,7 +359,7 @@ fun CardRechargeScreen(
 private fun CardInfoCard(uiState: CardRechargeUiState) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceBright
         ),

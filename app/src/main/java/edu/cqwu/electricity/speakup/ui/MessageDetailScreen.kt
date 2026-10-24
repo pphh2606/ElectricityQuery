@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.speakup.ui
 
 import android.content.ClipData
@@ -22,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -157,14 +160,14 @@ fun MessageDetailScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = null)
                     }
                 },
                 actions = {
                     // 分享按钮：复制留言链接到剪切板
                     val detailMessage = (uiState as? MessageDetailViewModel.UiState.Success)?.message
-                    IconButton(onClick = {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                         if (detailMessage != null) {
                             val url = "https://ehall.cqwu.edu.cn/qljfwappnew/sys/lwPsZxzxApp/*default/index.do#/zxylxq?WID=${detailMessage.wid}"
                             val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager

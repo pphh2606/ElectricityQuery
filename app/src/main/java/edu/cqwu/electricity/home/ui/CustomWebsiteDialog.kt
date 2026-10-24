@@ -1,4 +1,7 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.home.ui
+import androidx.compose.material3.ButtonDefaults
 import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.ui.res.stringResource
@@ -80,12 +83,13 @@ fun CustomWebsiteDialog(
         title = stringResource(R.string.custom_website_title),
         icon = Icons.Outlined.Language,
         leadingButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(shapes = ButtonDefaults.shapes(), onClick = onDismiss) {
                 Text(stringResource(R.string.common_cancel))
             }
         },
         trailingButton = {
             TextButton(
+                shapes = ButtonDefaults.shapes(),
                 onClick = {
                     var hasError = false
                     if (titleInput.isBlank()) {

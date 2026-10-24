@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.jwxt.timetable.ui
 
@@ -20,13 +20,12 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -237,7 +236,7 @@ fun JwxtTimetableScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -248,7 +247,7 @@ fun JwxtTimetableScreen(
                 actions = {
                     // 未排节次：接口确实下发了未排课程时才出现（实测教师 / 教室课表可能一条都没有）
                     if (uiState.notArrangedCourses.isNotEmpty()) {
-                        IconButton(onClick = { unscheduledVisible = true }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { unscheduledVisible = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.EventBusy,
                                 contentDescription = stringResource(R.string.jwxt_timetable_unscheduled),
@@ -258,7 +257,7 @@ fun JwxtTimetableScreen(
                     }
 
                     // 打开网页版：保留一条回到教务原网页的退路（与其它教务页面顶栏一致）
-                    IconButton(onClick = { nav.navigate(Routes.unifiedWebViewRoute(webUrl, title)) }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.unifiedWebViewRoute(webUrl, title)) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
@@ -368,6 +367,7 @@ private fun NavigatorRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
+            shapes = IconButtonDefaults.shapes(),
             onClick = {
                 if (isWeek) state.prevWeek?.let(onSelectWeek) else state.olderTermCode?.let(onSelectTerm)
             },
@@ -395,6 +395,7 @@ private fun NavigatorRow(
         )
 
         IconButton(
+            shapes = IconButtonDefaults.shapes(),
             onClick = {
                 if (isWeek) state.nextWeek?.let(onSelectWeek) else state.newerTermCode?.let(onSelectTerm)
             },
@@ -406,22 +407,19 @@ private fun NavigatorRow(
             )
         }
 
-        // 「周 / 学期」模式切换
-        SingleChoiceSegmentedButtonRow {
-            TimetableMode.entries.forEachIndexed { index, mode ->
-                SegmentedButton(
-                    selected = state.mode == mode,
-                    onClick = { onModeChange(mode) },
-                    shape = SegmentedButtonDefaults.itemShape(index = index, count = TimetableMode.entries.size),
-                ) {
-                    Text(
-                        text = stringResource(
-                            if (mode == TimetableMode.WEEK) R.string.jwxt_timetable_mode_week
-                            else R.string.jwxt_timetable_mode_term
-                        ),
-                        maxLines = 1,
-                    )
-                }
+        // 「周 / 学期」模式切换（Expressive 分段按钮组，与「界面风格」保持同一套控件）
+        // toggleableItem 的 label 是普通 String 参数，stringResource 必须先在外层求值
+        // 不给 toggleableItem 传 weight：本行有带 weight 的标题文本，分段组必须按内容宽度收紧，
+        // 否则两个 item 会按父约束 maxWidth 平分，把按钮撑满半个屏幕
+        val weekLabel = stringResource(R.string.jwxt_timetable_mode_week)
+        val termLabel = stringResource(R.string.jwxt_timetable_mode_term)
+        ButtonGroup(overflowIndicator = {}) {
+            TimetableMode.entries.forEach { mode ->
+                toggleableItem(
+                    checked = state.mode == mode,
+                    label = if (mode == TimetableMode.WEEK) weekLabel else termLabel,
+                    onCheckedChange = { if (it) onModeChange(mode) },
+                )
             }
         }
     }

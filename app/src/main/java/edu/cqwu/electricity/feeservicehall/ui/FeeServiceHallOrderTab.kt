@@ -1,9 +1,12 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.feeservicehall.ui
 
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
@@ -31,7 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -86,7 +88,7 @@ internal fun FeeServiceHallOrderTab(
         when {
             uiState.isOrdersLoading -> {
                 Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    AppCircularProgressIndicator()
                 }
             }
             uiState.orderErrorMessage != null && uiState.orders.isEmpty() -> {
@@ -181,8 +183,12 @@ internal fun OrderFilterPanel(
         )
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            TextButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_reset)) }
-            Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_apply)) }
+            TextButton(shapes = ButtonDefaults.shapes(), onClick = onReset, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_reset)) }
+            Button(
+                onClick = onApply,
+                shapes = ButtonDefaults.shapes(),
+                modifier = Modifier.weight(1f),
+            ) { Text(stringResource(R.string.bill_filter_apply)) }
         }
     }
 }

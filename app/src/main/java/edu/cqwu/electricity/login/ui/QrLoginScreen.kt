@@ -1,5 +1,10 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.login.ui
 
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
@@ -33,7 +38,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -160,7 +164,7 @@ fun QrLoginScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -169,7 +173,7 @@ fun QrLoginScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onNavigateToQrCodeSettings) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onNavigateToQrCodeSettings) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.qrcode_display_settings),
@@ -281,6 +285,7 @@ fun QrLoginScreen(
                             ) {
                                 // 保存到相册
                                 TextButton(
+                                    shapes = ButtonDefaults.shapes(),
                                     onClick = {
                                         scope.launch {
                                             val success = withContext(Dispatchers.IO) {
@@ -308,6 +313,7 @@ fun QrLoginScreen(
 
                                 // 分享网址
                                 TextButton(
+                                    shapes = ButtonDefaults.shapes(),
                                     onClick = {
                                         try {
                                             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -355,7 +361,7 @@ fun QrLoginScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
                         ) {
-                            CircularProgressIndicator()
+                            AppCircularProgressIndicator()
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = stringResource(R.string.qr_login_completing),

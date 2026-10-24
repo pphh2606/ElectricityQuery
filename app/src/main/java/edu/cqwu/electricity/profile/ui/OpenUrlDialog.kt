@@ -1,4 +1,7 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.profile.ui
+import androidx.compose.material3.ButtonDefaults
 import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.foundation.clickable
@@ -116,6 +119,7 @@ fun OpenUrlDialog(
         icon = Icons.Outlined.OpenInBrowser,
         trailingButton = {
             TextButton(
+                shapes = ButtonDefaults.shapes(),
                 onClick = { doConfirm() },
                 enabled = urlInput.isNotBlank() && isValidUrl(urlInput)
             ) {
@@ -123,7 +127,7 @@ fun OpenUrlDialog(
             }
         },
         leadingButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(shapes = ButtonDefaults.shapes(), onClick = onDismiss) {
                 Text(stringResource(R.string.common_cancel))
             }
         },

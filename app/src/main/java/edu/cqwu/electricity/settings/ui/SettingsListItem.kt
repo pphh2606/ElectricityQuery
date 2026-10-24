@@ -3,9 +3,7 @@ package edu.cqwu.electricity.settings.ui
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,85 +15,38 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
-/** 组首/组尾的外圆角（同 InstallerX 的 CornerRadius），也是按压形变的目标形状。 */
-private val OuterCorner = 16.dp
-
-/** 组内相邻行的连接圆角（同 InstallerX 的 ConnectionRadius）。 */
-private val InnerCorner = 5.dp
-
-/** 行与行之间的缝隙，M3 的 SegmentedGap 同为 2dp。 */
-private val SegmentedGap = 2.dp
-
-/** 行在所属分组里的基础形状，由 [SettingsGroup] 按下标注入。 */
-internal val LocalSettingsItemShape = staticCompositionLocalOf<Shape> { RoundedCornerShape(OuterCorner) }
-
-private fun itemShape(index: Int, count: Int): Shape = when {
-    count <= 1 -> RoundedCornerShape(OuterCorner)
-    index == 0 -> RoundedCornerShape(
-        topStart = OuterCorner, topEnd = OuterCorner, bottomEnd = InnerCorner, bottomStart = InnerCorner,
-    )
-    index == count - 1 -> RoundedCornerShape(
-        topStart = InnerCorner, topEnd = InnerCorner, bottomEnd = OuterCorner, bottomStart = OuterCorner,
-    )
-    else -> RoundedCornerShape(InnerCorner)
-}
-
-/** [SettingsGroup] 的作用域：一行一个 [item]，下标决定这一行在组内的形状。 */
-class SettingsGroupScope internal constructor() {
-    internal val items = mutableListOf<@Composable () -> Unit>()
-
-    fun item(content: @Composable () -> Unit) {
-        items += content
-    }
-}
+import edu.cqwu.electricity.common.ui.LocalSegmentedShape
+import edu.cqwu.electricity.common.ui.SegmentedGroup
+import edu.cqwu.electricity.common.ui.SegmentedGroupScope
+import edu.cqwu.electricity.common.ui.SegmentedOuterCorner
 
 /**
- * 设置分组：一张 16dp 圆角大卡，行间 2dp，组首/组尾行 16dp 外角、中间行 5dp 连接角，
- * 与 InstallerX 的 `CornerRadius` / `ConnectionRadius` 分段观感一致；按压时行变成 16dp
- * 圆角矩形，形变在同色卡面里清晰可见。
- * 取代原先「Surface + Column 堆行」的写法，形状改由分组按下标统一分配。
+ * 设置分组：一张 16dp 圆角大卡，行间 2dp，首尾行 16dp 外角、中间行 5dp 连接角。
+ *
+ * 分段形状由 [SegmentedGroup] 统一注入，底部弹窗的 [SheetItemGroup] 共用同一套计算。
  */
 @Composable
 fun SettingsGroup(
     modifier: Modifier = Modifier,
-    content: @Composable SettingsGroupScope.() -> Unit,
+    content: @Composable SegmentedGroupScope.() -> Unit,
 ) {
-    val scope = remember { SettingsGroupScope() }
-    scope.items.clear()
-    scope.content()
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(OuterCorner),
-        color = MaterialTheme.colorScheme.surfaceContainer,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(SegmentedGap),
-        ) {
-            scope.items.forEachIndexed { index, item ->
-                CompositionLocalProvider(
-                    LocalSettingsItemShape provides itemShape(index, scope.items.size),
-                ) { item() }
-            }
-        }
-    }
+    SegmentedGroup(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        content = content,
+    )
 }
 
 /** 组内的非行内容（分段按钮、展开面板等）：给它组内形状与行底色。 */
@@ -104,7 +55,7 @@ internal fun SettingsGroupBlock(modifier: Modifier = Modifier, content: @Composa
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(LocalSettingsItemShape.current)
+            .clip(LocalSegmentedShape.current)
             .background(MaterialTheme.colorScheme.surfaceBright),
     ) { content() }
 }
@@ -177,7 +128,7 @@ internal fun SettingsListItem(
     trailing: @Composable (() -> Unit)? = null,
 ) {
     val containerColor = MaterialTheme.colorScheme.surfaceBright
-    val baseShape = LocalSettingsItemShape.current
+    val baseShape = LocalSegmentedShape.current
     val headline: @Composable () -> Unit = {
         Text(
             text = title,
@@ -212,7 +163,7 @@ internal fun SettingsListItem(
         .heightIn(min = minHeight)
     val shapes = ListItemDefaults.shapes(
         shape = baseShape,
-        pressedShape = RoundedCornerShape(OuterCorner),
+        pressedShape = RoundedCornerShape(SegmentedOuterCorner),
         selectedShape = baseShape,
         focusedShape = baseShape,
         hoveredShape = baseShape,

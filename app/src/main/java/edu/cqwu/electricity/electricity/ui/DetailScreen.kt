@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.electricity.ui
 
 // 三点菜单
@@ -25,12 +27,12 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -56,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -126,7 +129,7 @@ fun DetailScreen(
             TopAppBar(
                 title = { Text(title, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                         viewModel.clearDetailData()
                         onBack()
                     }) {
@@ -139,7 +142,7 @@ fun DetailScreen(
                 },
                 actions = {
                     Box {
-                        IconButton(onClick = { showMenu = true }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
@@ -150,7 +153,7 @@ fun DetailScreen(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
-                            DropdownMenuItem(
+                            AppScaledMenuItem(
                                 text = { Text(stringResource(R.string.common_copy)) },
                                 leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                 onClick = {
@@ -159,7 +162,7 @@ fun DetailScreen(
                                     copyToClipboard(context, text, title, snackbar)
                                 }
                             )
-                            DropdownMenuItem(
+                            AppScaledMenuItem(
                                 text = { Text(stringResource(R.string.common_export)) },
                                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {
@@ -242,8 +245,8 @@ private fun MeterStatusContent(data: CurrentDataResponse?, topInset: Dp = 0.dp) 
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+                shape = MaterialTheme.shapes.large,
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {

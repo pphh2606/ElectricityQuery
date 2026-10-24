@@ -1,12 +1,11 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.electricity.ui
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,9 +26,11 @@ import androidx.compose.material.icons.outlined.MonetizationOn
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SyncAlt
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,6 +81,7 @@ import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.openUrl
 import edu.cqwu.electricity.common.util.copyToClipboard
 import kotlinx.coroutines.launch
 
@@ -210,6 +212,7 @@ fun ElectricityMainScreen(
                 title = { Text(currentTitle, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = {
                             if (pagerState.currentPage == 0) {
                                 handleQueryTabBack()
@@ -232,7 +235,7 @@ fun ElectricityMainScreen(
                     }
                     // ── Tab 1：充值 Tab 显示提示按钮 ──
                     if (pagerState.currentPage == 1) {
-                        IconButton(onClick = { showRechargeInfoDialog = true }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showRechargeInfoDialog = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.Info,
                                 contentDescription = stringResource(R.string.recharge_hint),
@@ -244,7 +247,7 @@ fun ElectricityMainScreen(
                     if (pagerState.currentPage == 2 && myRoomState.selectedRoom != null) {
                         // 切换寝室按钮（仅多房间时显示）
                         if (myRoomState.myRoomList.size > 1) {
-                            IconButton(onClick = { showRoomSwitchSheet = true }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showRoomSwitchSheet = true }) {
                                 Icon(
                                     imageVector = Icons.Outlined.SyncAlt,
                                     contentDescription = stringResource(R.string.electricity_switch_dorm)
@@ -252,7 +255,7 @@ fun ElectricityMainScreen(
                             }
                         }
                         Box {
-                            IconButton(onClick = { showMyRoomMenu = true }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMyRoomMenu = true }) {
                                 Icon(
                                     imageVector = Icons.Outlined.MoreVert,
                                     contentDescription = stringResource(R.string.common_more_options),
@@ -263,7 +266,7 @@ fun ElectricityMainScreen(
                                 expanded = showMyRoomMenu,
                                 onDismissRequest = { showMyRoomMenu = false }
                             ) {
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = { Text(stringResource(R.string.common_copy)) },
                                     leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                     onClick = {
@@ -272,7 +275,7 @@ fun ElectricityMainScreen(
                                         copyToClipboard(context, text, resources.getString(R.string.dashboard_title), snackbar)
                                     }
                                 )
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = { Text(stringResource(R.string.common_export)) },
                                     leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                     onClick = {
@@ -389,13 +392,7 @@ fun ElectricityMainScreen(
                             )
                         )
                     ) {
-                        try {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                "https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login".toUri()
-                            )
-                            context.startActivity(intent)
-                        } catch (_: ActivityNotFoundException) {
+                        if (!openUrl(context, "https://authserver.cqwu.edu.cn/authserver/login?service=https://electricitypay.cqwu.edu.cn/wechat/wx/auth/login")) {
                             snackbar.show(resources.getString(R.string.common_no_browser))
                         }
                     }
@@ -449,7 +446,7 @@ fun ElectricityMainScreen(
         onDismissRequest = { showRoomSwitchSheet = false },
             title = stringResource(R.string.dashboard_select_dorm),
             leadingButton = {
-                TextButton(onClick = {
+                TextButton(shapes = ButtonDefaults.shapes(), onClick = {
                     showRoomSwitchSheet = false
                     nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
                         resources.getString(R.string.electricity_bind_account)))
@@ -458,7 +455,7 @@ fun ElectricityMainScreen(
                 }
             },
             trailingButton = {
-                TextButton(onClick = {
+                TextButton(shapes = ButtonDefaults.shapes(), onClick = {
                     showRoomSwitchSheet = false
                     nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
                         resources.getString(R.string.electricity_unbind_account)))
@@ -529,7 +526,7 @@ private fun MyRoomDashboardTab(
         // 加载中：显示骨架屏
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator()
+                AppCircularProgressIndicator()
                 Spacer(Modifier.height(12.dp))
                 Text(
                     stringResource(R.string.electricity_myroom_querying),

@@ -1,5 +1,11 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.cardcenter.ui
 
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.BlurScaffold
@@ -189,7 +195,7 @@ fun BillScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -198,7 +204,7 @@ fun BillScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showHintDialog = true }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showHintDialog = true }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                             contentDescription = stringResource(R.string.bill_hint_title),
@@ -206,14 +212,14 @@ fun BillScreen(
                         )
                     }
                     val webTitle = stringResource(R.string.bill_web_title)
-                    IconButton(onClick = { onNavigateToWebView(webBillUrl, webTitle) }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { onNavigateToWebView(webBillUrl, webTitle) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    IconButton(onClick = { viewModel.toggleFilterPanel() }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.toggleFilterPanel() }) {
                         Icon(
                             imageVector = Icons.Outlined.FilterList,
                             contentDescription = stringResource(R.string.common_filter),
@@ -476,8 +482,16 @@ private fun FilterPanel(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedButton(onClick = onReset, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_reset)) }
-            Button(onClick = onApply, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.bill_filter_apply)) }
+            OutlinedButton(
+                onClick = onReset,
+                shapes = ButtonDefaults.shapes(),
+                modifier = Modifier.weight(1f),
+            ) { Text(stringResource(R.string.bill_filter_reset)) }
+            Button(
+                onClick = onApply,
+                shapes = ButtonDefaults.shapes(),
+                modifier = Modifier.weight(1f),
+            ) { Text(stringResource(R.string.bill_filter_apply)) }
         }
         HorizontalDivider(modifier = Modifier.padding(top = 12.dp))
     }
@@ -502,9 +516,9 @@ private fun BillRecordCard(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             // 先裁圆角再挂点击，水波纹才会跟着圆角走（Card 的 shape 只管背景与边框）
-            .clip(RoundedCornerShape(16.dp))
+            .clip(MaterialTheme.shapes.large)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         // 无阴影：containerColor 与背景同为 surface，轮廓由 1dp 描边提供（低版本阴影会退化成方块）
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
@@ -576,7 +590,7 @@ private fun BillStatusBadge(status: String, cssClass: String) {
 @Composable
 private fun BillLoadingContent(loadElapsed: Long) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        CircularProgressIndicator()
+        AppCircularProgressIndicator()
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = stringResource(R.string.bill_fetching, loadElapsed), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -632,6 +646,7 @@ private fun BillFooterContent(
         if (tabNo in uiState.loadingMoreTabs) {
             // 只显示本 Tab 自己的翻页进度，别的 Tab 正在翻页不影响这里
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                // 波浪版 AppCircularProgressIndicator 内部锁死 48dp，行内 16~24dp 小转圈保持普通版
                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = stringResource(R.string.bill_fetching, uiState.moreElapsed[tabNo] ?: 0L), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

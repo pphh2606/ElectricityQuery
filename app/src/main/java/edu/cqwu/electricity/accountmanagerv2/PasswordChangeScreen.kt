@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.accountmanagerv2
 
 import android.graphics.BitmapFactory
@@ -17,16 +19,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Surface
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
@@ -58,6 +59,8 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
+import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.PasswordRecoverySheet
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -67,10 +70,6 @@ import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.restartApp
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.SmallExtendedFloatingActionButton
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material.icons.filled.ExpandMore
 
 /**
@@ -81,7 +80,7 @@ import androidx.compose.material.icons.filled.ExpandMore
  * 点「确定」重启应用；重启后启动 Cookie 验证检测到会话失效并自动跳转登录页。
  * 本地登录态不主动清理，仅引导用户重新登录。
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PasswordChangeScreen(
     onBack: () -> Unit,
@@ -149,7 +148,7 @@ fun PasswordChangeScreen(
             title = { Text(text = stringResource(R.string.password_change_relogin_title)) },
             text = { Text(text = stringResource(R.string.password_change_relogin_message)) },
             confirmButton = {
-                TextButton(onClick = { restartApp(context) }) {
+                TextButton(shapes = ButtonDefaults.shapes(), onClick = { restartApp(context) }) {
                     Text(text = stringResource(R.string.common_confirm))
                 }
             },
@@ -293,9 +292,11 @@ private fun PasswordChangeContent(
         // 用官方 M3 Expressive split button 组合，库负责外角全圆、内侧小角、2dp 间距与按压联动。
         var moreMenuExpanded by remember { mutableStateOf(false) }
         SplitButtonLayout(
+            // 外层 Box 已有 padding(horizontal = 16.dp)，这里再补 end 会变成 16+16=32dp，
+            // 与其余页面的 16dp 不一致，所以只补 bottom。
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 16.dp),
+                .padding(bottom = 16.dp),
             leadingButton = {
                 SplitButtonDefaults.LeadingButton(
                     onClick = { if (!state.isSaving) viewModel.save() },
@@ -331,17 +332,18 @@ private fun PasswordChangeContent(
                             modifier = Modifier.size(18.dp),
                         )
                     }
-                    DropdownMenu(
+                    // 与项目其它菜单共用同一套 M3E 封装（见 common/ui/AppScaledWindows.kt）。
+                    AppScaledDropdownMenu(
                         expanded = moreMenuExpanded,
                         onDismissRequest = { moreMenuExpanded = false },
                     ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.password_change_forgot)) },
-                            leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                        AppScaledMenuItem(
                             onClick = {
                                 moreMenuExpanded = false
                                 if (!state.isSaving) onForgotPassword()
                             },
+                            text = { Text(stringResource(R.string.password_change_forgot)) },
+                            leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
                         )
                     }
                 }

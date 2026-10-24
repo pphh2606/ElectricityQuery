@@ -1,5 +1,11 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.shortcut.ui
 
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
@@ -30,7 +36,6 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -134,7 +139,7 @@ fun AddShortcutScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back)
@@ -153,7 +158,7 @@ fun AddShortcutScreen(
                         .padding(top = topInset),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    AppCircularProgressIndicator()
                 }
             }
             else -> {
@@ -193,10 +198,10 @@ fun AddShortcutScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             // 先裁圆角再挂点击，水波纹才会跟着圆角走
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(MaterialTheme.shapes.large)
                             .clickable { showFunctionSheet = true }
-                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-                        shape = RoundedCornerShape(16.dp),
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+                        shape = MaterialTheme.shapes.large,
                         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
                     ) {
                         Row(
@@ -262,6 +267,7 @@ fun AddShortcutScreen(
 
                     // ── 创建按钮 ──
                     Button(
+                        shapes = ButtonDefaults.shapes(),
                         enabled = selectedApp != null && !isCreating,
                         onClick = {
                             val app = selectedApp
@@ -311,7 +317,6 @@ fun AddShortcutScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),
-                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.shortcut_create),
@@ -331,7 +336,7 @@ fun AddShortcutScreen(
         title = stringResource(R.string.shortcut_select_function),
         skipPartiallyExpanded = false,
         leadingButton = {
-            TextButton(onClick = { showFunctionSheet = false }) {
+            TextButton(shapes = ButtonDefaults.shapes(), onClick = { showFunctionSheet = false }) {
                 Text(stringResource(R.string.common_cancel))
             }
         }
@@ -397,7 +402,7 @@ private fun ShortcutPreview(
                 Box(
                     modifier = Modifier
                         .size(72.dp)
-                        .clip(RoundedCornerShape(18.dp))
+                        .clip(MaterialTheme.shapes.largeIncreased)
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest),
                     contentAlignment = Alignment.Center
                 ) {

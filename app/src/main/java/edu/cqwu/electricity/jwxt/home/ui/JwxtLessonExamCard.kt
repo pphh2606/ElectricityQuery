@@ -94,7 +94,7 @@ internal fun JwxtLessonExamCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
     ) {

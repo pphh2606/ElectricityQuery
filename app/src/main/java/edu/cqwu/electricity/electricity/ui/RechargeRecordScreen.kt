@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.electricity.ui
 
 // 三点菜单
@@ -10,6 +12,7 @@ import android.content.res.Resources
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.IconButtonDefaults
 import androidx.core.net.toUri
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +35,6 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -67,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -153,7 +156,7 @@ fun RechargeRecordScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.recharge_record_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                         viewModel.clearRechargeRecordState()
                         onBack()
                     }) {
@@ -166,7 +169,7 @@ fun RechargeRecordScreen(
                 },
                 actions = {
                     // 提示图标
-                    IconButton(onClick = { showInfoDialog = true }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showInfoDialog = true }) {
                         Icon(
                             imageVector = Icons.Outlined.Info,
                             contentDescription = stringResource(R.string.recharge_hint),
@@ -174,7 +177,7 @@ fun RechargeRecordScreen(
                         )
                     }
                     Box {
-                        IconButton(onClick = { showMenu = true }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
@@ -185,7 +188,7 @@ fun RechargeRecordScreen(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
-                            DropdownMenuItem(
+                            AppScaledMenuItem(
                                 text = { Text(stringResource(R.string.recharge_record_copy)) },
                                 leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                 onClick = {
@@ -194,7 +197,7 @@ fun RechargeRecordScreen(
                                     copyToClipboard(context, text, resources.getString(R.string.recharge_record_export_title), snackbar)
                                 }
                             )
-                            DropdownMenuItem(
+                            AppScaledMenuItem(
                                 text = { Text(stringResource(R.string.recharge_record_export)) },
                                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {

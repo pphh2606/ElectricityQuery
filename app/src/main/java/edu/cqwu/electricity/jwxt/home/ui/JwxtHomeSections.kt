@@ -112,7 +112,7 @@ internal fun JwxtNoticeRow(title: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         // 显式关掉阴影：MD3 Card 默认带 1dp，本页是扁平风格（与 Tab 卡一致）
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(

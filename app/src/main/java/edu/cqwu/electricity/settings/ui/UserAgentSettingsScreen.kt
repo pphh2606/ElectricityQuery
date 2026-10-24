@@ -1,10 +1,10 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -21,6 +20,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,9 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
@@ -65,7 +65,7 @@ fun UserAgentSettingsScreen(
         onBack = onBack,
         actions = {
                     // 编辑模式：行尾箭头切换为删除图标（与账号管理页一致）
-                    IconButton(onClick = { isEditMode = !isEditMode }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { isEditMode = !isEditMode }) {
                         Icon(
                             imageVector = if (isEditMode) Icons.Default.Close else Icons.Outlined.Edit,
                             contentDescription = stringResource(R.string.common_edit),
@@ -118,9 +118,9 @@ fun UserAgentSettingsScreen(
 
             // ── 添加按钮 ──
             FilledTonalButton(
+                shapes = ButtonDefaults.shapes(),
                 onClick = { onNavigateToEdit("new") },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
                 enabled = !isEditMode,
             ) {
                 Icon(
@@ -221,7 +221,7 @@ private fun UaEntryRow(
                         )
                     }
                 } else {
-                    IconButton(onClick = onDelete) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
                             contentDescription = stringResource(R.string.common_delete),
@@ -230,7 +230,7 @@ private fun UaEntryRow(
                     }
                 }
             } else {
-                IconButton(onClick = onEdit) {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = onEdit) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                         contentDescription = stringResource(R.string.common_edit),

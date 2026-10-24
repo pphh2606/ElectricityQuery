@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.common.ui
 
 import android.app.Activity
@@ -6,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +33,7 @@ import edu.cqwu.electricity.common.settings.SettingsPreferences
 fun LanguageSwitchButton() {
     var showSheet by remember { mutableStateOf(false) }
 
-    IconButton(onClick = { showSheet = true }) {
+    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showSheet = true }) {
         Icon(
             imageVector = Icons.Outlined.Translate,
             contentDescription = stringResource(R.string.language_title),

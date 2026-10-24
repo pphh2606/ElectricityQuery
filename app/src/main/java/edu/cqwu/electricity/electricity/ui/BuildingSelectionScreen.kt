@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.electricity.ui
 
@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -326,6 +327,7 @@ private fun FloorRoomGroup(
                                 .height(48.dp),
                             contentAlignment = Alignment.Center
                         ) {
+                            // 波浪版 AppCircularProgressIndicator 内部锁死 48dp，行内 16~24dp 小转圈保持普通版
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
                                 strokeWidth = 2.5.dp,
@@ -343,7 +345,7 @@ private fun FloorRoomGroup(
                     }
                     is FloorRoomLoadState.Error -> {
                         Text(stringResource(R.string.common_load_failed) + ": " + loadState.message.resolve(LocalContext.current.resources), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp))
-                        TextButton(onClick = { onLoadFloor(floor) }) { Text(stringResource(R.string.building_reload)) }
+                        TextButton(shapes = ButtonDefaults.shapes(), onClick = { onLoadFloor(floor) }) { Text(stringResource(R.string.building_reload)) }
                     }
                 }
                 Spacer(Modifier.height(8.dp))

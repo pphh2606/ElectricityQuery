@@ -1,4 +1,8 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.feedback.ui
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.logging.AppLog
 
 import edu.cqwu.electricity.common.ui.SelectableContainer
@@ -45,7 +49,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.content.FileProvider
@@ -276,6 +279,7 @@ fun FeedbackScreen(
         onBack = onBack,
         actions = {
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = { sendByEmail() },
                         enabled = canSend && !isSending,
                     ) {
@@ -320,6 +324,7 @@ fun FeedbackScreen(
                     .padding(bottom = 8.dp),
             ) {
                 TextButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = { loadLogPreview() },
                     enabled = !isPreparingLogs,
                 ) {
@@ -332,6 +337,7 @@ fun FeedbackScreen(
                 }
 
                 TextButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = { shareLogs() },
                     enabled = !isSending,
                 ) {

@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.jwxt.home.ui
 
@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -99,7 +100,7 @@ fun JwxtHomeScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -110,7 +111,7 @@ fun JwxtHomeScreen(
                 actions = {
                     // 打开网页版：用内置浏览器打开教务首页；网页端发现没有 token 时
                     // 会自己请求 /jwmobile/auth/index 完成一次 CAS 登录（抓包第 2 步），无需额外处理
-                    IconButton(onClick = { openWeb(JwxtConstants.INDEX_URL, jwxtTitle) }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { openWeb(JwxtConstants.INDEX_URL, jwxtTitle) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),

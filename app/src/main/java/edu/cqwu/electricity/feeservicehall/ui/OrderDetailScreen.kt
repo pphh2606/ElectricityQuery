@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.feeservicehall.ui
 
 import androidx.compose.foundation.BorderStroke
@@ -16,8 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -72,12 +76,15 @@ fun OrderDetailContent(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 if (onCloseOrder != null) {
-                    TextButton(onClick = onCloseOrder) {
+                    TextButton(shapes = ButtonDefaults.shapes(), onClick = onCloseOrder) {
                         Text(stringResource(R.string.fee_order_close))
                     }
                 }
                 if (onContinuePayment != null) {
-                    Button(onClick = onContinuePayment) {
+                    Button(
+                        onClick = onContinuePayment,
+                        shapes = ButtonDefaults.shapes(),
+                    ) {
                         Text(stringResource(R.string.fee_order_continue_pay))
                     }
                 }
@@ -92,7 +99,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
@@ -171,7 +178,7 @@ private fun OrderSummaryCard(order: OrderRecord) {
 private fun OrderInfoSection(order: OrderRecord) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {

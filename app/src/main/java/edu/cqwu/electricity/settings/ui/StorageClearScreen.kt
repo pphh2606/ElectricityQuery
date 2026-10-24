@@ -1,9 +1,10 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
@@ -42,7 +42,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -315,6 +314,7 @@ fun StorageClearScreen(
                 // ── 清除按钮 ──
                 val hasSelection = items.any { checked[it.key] == true }
                 Button(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         if (!hasSelection) {
                             snackbar.show(
@@ -327,7 +327,6 @@ fun StorageClearScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = hasSelection && !isClearing,
-                    shape = RoundedCornerShape(12.dp),
                     colors = if (hasCautionSelected()) {
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,

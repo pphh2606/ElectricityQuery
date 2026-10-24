@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.payment.ui
 
 
@@ -18,9 +20,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -130,7 +134,7 @@ fun PaymentConfirmScreen(
                 TopAppBar(
                     title = { Text(title, fontWeight = FontWeight.Bold) },
                     navigationIcon = {
-                        IconButton(onClick = onBack) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.common_back),
@@ -303,7 +307,7 @@ private fun PaymentWaitingSection(
 private fun PaymentSuccessSection(onDone: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
@@ -367,6 +371,7 @@ private fun PaymentPrimaryButton(
     onClick: () -> Unit,
 ) {
     Button(
+        shapes = ButtonDefaults.shapes(),
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()

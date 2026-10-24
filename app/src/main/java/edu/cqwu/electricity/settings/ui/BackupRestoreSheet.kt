@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -71,11 +74,11 @@ fun BackupRestoreSheet(
 
         // 取消按钮（对标"我有话说"操作弹窗）
         TextButton(
+            shapes = ButtonDefaults.shapes(shape = RoundedCornerShape(16.dp)),
             onClick = onDismiss,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
-            shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.textButtonColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -98,9 +101,9 @@ private fun BackupActionButton(
     modifier: Modifier = Modifier,
 ) {
     Button(
+        shapes = ButtonDefaults.shapes(),
         onClick = onClick,
         modifier = modifier.height(56.dp),
-        shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,

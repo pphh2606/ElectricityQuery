@@ -25,9 +25,6 @@ fun ColorScheme.animateAsState(enabled: Boolean = true): ColorScheme {
         dampingRatio = Spring.DampingRatioNoBouncy,
     )
 
-    @Suppress("UNUSED_VARIABLE")
-    val animated = this
-
     return copy(
         primary = animateColorAsState(primary, spec, label = "theme_primary").value,
         onPrimary = animateColorAsState(onPrimary, spec, label = "theme_onPrimary").value,

@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.jwxt.schedulequery.ui
 
@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -182,7 +183,7 @@ fun JwxtScheduleTargetScreen(
                             keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
                             trailingIcon = {
                                 if (searchInput.isNotEmpty()) {
-                                    IconButton(onClick = { searchInput = "" }) {
+                                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { searchInput = "" }) {
                                         Icon(
                                             imageVector = Icons.Outlined.Clear,
                                             contentDescription = stringResource(R.string.common_clear_search),
@@ -195,7 +196,7 @@ fun JwxtScheduleTargetScreen(
                     },
                     navigationIcon = {
                         // 取消：不改查询条件，直接退出搜索态
-                        IconButton(onClick = {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                             focusManager.clearFocus()
                             isSearching = false
                         }) {
@@ -208,7 +209,7 @@ fun JwxtScheduleTargetScreen(
                     },
                     actions = {
                         // 软键盘回车或点这里，才真正发起搜索
-                        IconButton(onClick = { submitSearch() }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { submitSearch() }) {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
                                 contentDescription = stringResource(R.string.common_search),
@@ -223,7 +224,7 @@ fun JwxtScheduleTargetScreen(
                 TopAppBar(
                     title = { Text(text = title, fontWeight = FontWeight.Bold) },
                     navigationIcon = {
-                        IconButton(onClick = onBack) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.common_back),
@@ -233,7 +234,7 @@ fun JwxtScheduleTargetScreen(
                     },
                     actions = {
                         if (searchable) {
-                            IconButton(onClick = { isSearching = true }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { isSearching = true }) {
                                 Icon(
                                     imageVector = Icons.Outlined.Search,
                                     contentDescription = stringResource(R.string.common_search),
@@ -241,7 +242,7 @@ fun JwxtScheduleTargetScreen(
                                 )
                             }
                         }
-                        IconButton(onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCHEDULE_QUERY_URL, title)) }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCHEDULE_QUERY_URL, title)) }) {
                             Icon(
                                 imageVector = Icons.Outlined.OpenInBrowser,
                                 contentDescription = stringResource(R.string.common_web_version),

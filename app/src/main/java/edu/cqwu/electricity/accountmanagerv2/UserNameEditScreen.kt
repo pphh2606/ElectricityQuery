@@ -18,9 +18,7 @@ import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -32,10 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppSaveFab
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.LoadingDialog
@@ -165,22 +163,11 @@ fun UserNameEditScreen(
                         )
                     }
 
-                    // 对应网页 form-footer：保存（右下角浮动，同 InstallerX 的 SmallExtendedFloatingActionButton）
-                    SmallExtendedFloatingActionButton(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Save,
-                                contentDescription = null,
-                            )
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(R.string.user_name_edit_save),
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
+                    // 对应网页 form-footer：保存（右下角浮动）
+                    AppSaveFab(
                         onClick = { if (!state.isSaving) viewModel.save() },
-                        // 默认是 16dp 圆角矩形，这里显式给全圆胶囊（与 M3E 参考图的药丸按钮一致）
+                        icon = Icons.Outlined.Save,
+                        text = stringResource(R.string.user_name_edit_save),
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 16.dp),

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
 import androidx.compose.foundation.layout.Spacer
@@ -5,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BlurOn
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -101,6 +105,7 @@ fun SheetBlurAdvancedSheet(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = appSettings::resetSheetBlurAdvanced,
             modifier = Modifier.fillMaxWidth(),
         ) {

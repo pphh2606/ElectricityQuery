@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.notice.ui
 
 import androidx.activity.compose.BackHandler
@@ -31,11 +33,11 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -66,6 +68,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.notice.data.NoticeItem
 import edu.cqwu.electricity.notice.data.formatNoticeTime
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
@@ -199,7 +202,7 @@ fun NoticeScreen(
                             trailingIcon = {
                                 if (searchText.isNotEmpty()) {
                                     // 只清输入框，不立刻改查询条件——提交后才生效
-                                    IconButton(onClick = { searchText = "" }) {
+                                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { searchText = "" }) {
                                         Icon(
                                             imageVector = Icons.Outlined.Close,
                                             contentDescription = stringResource(R.string.common_clear_search),
@@ -212,7 +215,7 @@ fun NoticeScreen(
                     },
                     navigationIcon = {
                         // 取消：不改查询条件，直接退出搜索态
-                        IconButton(onClick = { exitSearch() }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { exitSearch() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.common_exit_search),
@@ -221,7 +224,7 @@ fun NoticeScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { submitSearch() }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { submitSearch() }) {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
                                 contentDescription = stringResource(R.string.common_search),
@@ -244,7 +247,7 @@ fun NoticeScreen(
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = onBack) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.common_back),
@@ -253,7 +256,7 @@ fun NoticeScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { isSearching = true }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { isSearching = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
                                 contentDescription = stringResource(R.string.common_search),
@@ -296,7 +299,7 @@ fun NoticeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator()
+                        AppCircularProgressIndicator()
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = if (viewModel.searchKeyword.isNotBlank()) stringResource(R.string.notice_searching) else stringResource(R.string.notice_loading_list),
@@ -378,9 +381,9 @@ private fun NoticeCard(
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
             // 先裁圆角再挂点击，水波纹才会跟着圆角走（Card 的 shape 只管背景与边框）
-            .clip(RoundedCornerShape(16.dp))
+            .clip(MaterialTheme.shapes.large)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(

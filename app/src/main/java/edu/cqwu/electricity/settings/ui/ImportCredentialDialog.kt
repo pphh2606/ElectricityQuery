@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
 import androidx.compose.foundation.layout.Column
@@ -9,6 +11,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -104,7 +108,7 @@ fun ImportCredentialDialog(
                         imeAction = ImeAction.Done
                     ),
                     trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = if (passwordVisible)
                                     Icons.Outlined.Visibility
@@ -127,6 +131,7 @@ fun ImportCredentialDialog(
         },
         confirmButton = {
             TextButton(
+                shapes = ButtonDefaults.shapes(),
                 onClick = {
                     onConfirm(dataText, password)
                 },
@@ -136,7 +141,7 @@ fun ImportCredentialDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(shapes = ButtonDefaults.shapes(), onClick = onDismiss) {
                 Text(stringResource(R.string.common_cancel))
             }
         }

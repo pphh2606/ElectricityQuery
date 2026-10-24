@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.payment.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +14,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -119,7 +122,7 @@ fun PaymentOverlay(
         skipPartiallyExpanded = false,
         onHideStarted = { webViewState.stopLoading() },
         leadingButton = {
-            IconButton(onClick = onClose) {
+            IconButton(shapes = IconButtonDefaults.shapes(), onClick = onClose) {
                 Icon(
                     Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = stringResource(R.string.common_back),
@@ -128,7 +131,7 @@ fun PaymentOverlay(
             }
         },
         trailingButton = {
-            IconButton(onClick = onClose) {
+            IconButton(shapes = IconButtonDefaults.shapes(), onClick = onClose) {
                 Icon(
                     Icons.Outlined.Close,
                     contentDescription = stringResource(R.string.common_close),

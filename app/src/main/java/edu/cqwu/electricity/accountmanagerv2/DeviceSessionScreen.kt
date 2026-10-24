@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.accountmanagerv2
 
 import androidx.compose.animation.AnimatedVisibility
@@ -23,9 +25,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Devices
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -313,7 +315,7 @@ private fun SessionCard(
                         if (session.isCurrent) {
                             CurrentDeviceBadge()
                         } else {
-                            TextButton(onClick = onKickClick) {
+                            TextButton(shapes = ButtonDefaults.shapes(), onClick = onKickClick) {
                                 Text(
                                     text = stringResource(R.string.device_session_kick),
                                     color = MaterialTheme.colorScheme.error,
@@ -332,7 +334,7 @@ private fun SessionCard(
 @Composable
 private fun CurrentDeviceBadge() {
     Surface(
-        shape = RoundedCornerShape(6.dp),
+        shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
     ) {
         Text(

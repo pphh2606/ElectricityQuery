@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.notice.ui
 
 import android.annotation.SuppressLint
@@ -11,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonDefaults
 import androidx.core.net.toUri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -34,7 +38,6 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.net.SessionExpiredException
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.notice.data.NoticeApi
@@ -204,7 +208,7 @@ fun NoticeDetailScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -214,7 +218,7 @@ fun NoticeDetailScreen(
                 },
                 actions = {
                     if (detail != null) {
-                        IconButton(onClick = { shareNotice() }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { shareNotice() }) {
                             Icon(
                                 imageVector = Icons.Outlined.Share,
                                 contentDescription = stringResource(R.string.common_share),
@@ -222,6 +226,7 @@ fun NoticeDetailScreen(
                             )
                         }
                         IconButton(
+                            shapes = IconButtonDefaults.shapes(),
                             onClick = {
                                 val detailData = detail ?: return@IconButton
                                 val url = "https://ehall.cqwu.edu.cn/publicapp/sys/tzggxt/mobile/index.html#!/detail?noticeId=$wid"
@@ -378,6 +383,7 @@ fun NoticeDetailScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             TextButton(
+                                shapes = ButtonDefaults.shapes(),
                                 onClick = {
                                     if (requiresReLogin) onReLogin() else loadDetail(isRefresh = true)
                                 }
@@ -538,7 +544,7 @@ fun NoticeDetailScreen(
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     // 与通知列表页等页面级加载保持一致（默认 40dp / stroke 4dp），
                                     // 不用分页 footer 那种 16dp 小转圈
-                                    CircularProgressIndicator()
+                                    AppCircularProgressIndicator()
                                     Text(
                                         text = stringResource(R.string.notice_loading_detail),
                                         style = MaterialTheme.typography.bodyMedium,

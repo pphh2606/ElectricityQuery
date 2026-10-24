@@ -1,4 +1,7 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.common.ui
+import androidx.compose.material3.ButtonDefaults
 import edu.cqwu.electricity.logging.AppLog
 
 import androidx.compose.foundation.background
@@ -95,7 +98,7 @@ fun DatePickerField(
             onDismissRequest = { showDialog = false },
             confirmButton = {
                 ProvideAppScaledDensity(appDensity) {
-                    TextButton(onClick = {
+                    TextButton(shapes = ButtonDefaults.shapes(), onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             val formatter =
                                 SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
@@ -109,7 +112,7 @@ fun DatePickerField(
             },
             dismissButton = {
                 ProvideAppScaledDensity(appDensity) {
-                    TextButton(onClick = { showDialog = false }) {
+                    TextButton(shapes = ButtonDefaults.shapes(), onClick = { showDialog = false }) {
                         Text(stringResource(R.string.common_cancel))
                     }
                 }

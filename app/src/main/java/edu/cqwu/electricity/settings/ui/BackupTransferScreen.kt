@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
 import android.content.ClipboardManager
@@ -21,11 +23,11 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppSaveFab
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
@@ -140,7 +143,7 @@ fun BackupTransferScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -188,6 +191,7 @@ fun BackupTransferScreen(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 TextButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         if (isExport) {
                             copyToClipboard(
@@ -213,6 +217,7 @@ fun BackupTransferScreen(
                     )
                 }
                 TextButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         if (isExport) {
                             saveLauncher.launch(payload.fileName)
@@ -239,15 +244,10 @@ fun BackupTransferScreen(
             // ── 右下角"确定"（同修改密码页保存） ──
             }
 
-            SmallExtendedFloatingActionButton(
-                icon = { Icon(Icons.Outlined.Check, contentDescription = null) },
-                text = {
-                    Text(
-                        text = stringResource(R.string.settings_backup_confirm),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
+            AppSaveFab(
                 onClick = { if (isExport) onBack() else doImport() },
+                icon = Icons.Outlined.Check,
+                text = stringResource(R.string.settings_backup_confirm),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),

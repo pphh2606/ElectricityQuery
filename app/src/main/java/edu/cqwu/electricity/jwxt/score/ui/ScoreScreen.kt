@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.jwxt.score.ui
 
@@ -35,6 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
@@ -128,7 +129,7 @@ fun JwxtScoreScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -138,7 +139,7 @@ fun JwxtScoreScreen(
                 },
                 actions = {
                     // 打开网页版：保留一条回到教务原网页的退路（与教务首页、更多服务页顶栏一致）
-                    IconButton(onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCORE_URL, title)) }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCORE_URL, title)) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),

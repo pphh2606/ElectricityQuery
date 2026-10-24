@@ -1,21 +1,19 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.accountmanagerv2
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -32,6 +30,7 @@ import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +47,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.login.data.LogoutApi
@@ -183,7 +181,7 @@ fun AccountManagerScreen(
         title = stringResource(R.string.settings_account_manager),
         onBack = onBack,
         actions = {
-                    IconButton(onClick = { isEditMode = !isEditMode }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { isEditMode = !isEditMode }) {
                         Icon(
                             imageVector = if (isEditMode) Icons.Default.Close else Icons.Outlined.Edit,
                             contentDescription = stringResource(R.string.common_edit),
@@ -408,7 +406,7 @@ private fun AccountRow(
         // 切换编辑模式时行高不变。
         trailing = {
             if (showDelete) {
-                IconButton(onClick = onDelete) {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = onDelete) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = stringResource(R.string.common_delete),

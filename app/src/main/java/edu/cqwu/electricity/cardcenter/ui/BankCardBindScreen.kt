@@ -1,5 +1,9 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.cardcenter.ui
 
+import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.AppSaveFab
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
@@ -32,7 +36,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -121,7 +124,7 @@ fun BankCardBindScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -290,29 +293,19 @@ private fun BankCardBindContent(
 
         }
 
-        SmallExtendedFloatingActionButton(
-            icon = {
-                Icon(
-                    imageVector = if (showUnbind) Icons.Outlined.LinkOff else Icons.Outlined.Link,
-                    contentDescription = null,
-                )
-            },
-            text = {
-                Text(
-                    text = if (showUnbind) {
-                        stringResource(R.string.bank_card_unbind)
-                    } else {
-                        stringResource(R.string.bank_card_bind)
-                    },
-                    fontWeight = FontWeight.Bold,
-                )
-            },
+        AppSaveFab(
             onClick = {
                 val canSubmit = !uiState.isSubmitting &&
                     (showUnbind || uiState.cardNo.isNotBlank())
                 if (canSubmit) {
                     if (showUnbind) onUnbindClick() else onBind()
                 }
+            },
+            icon = if (showUnbind) Icons.Outlined.LinkOff else Icons.Outlined.Link,
+            text = if (showUnbind) {
+                stringResource(R.string.bank_card_unbind)
+            } else {
+                stringResource(R.string.bank_card_bind)
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -332,9 +325,9 @@ private fun BankOptionRow(
         modifier = Modifier
             .fillMaxWidth()
             // 先裁圆角再挂点击，水波纹才会跟着圆角走（Card 的 shape 只管背景与边框）
-            .clip(RoundedCornerShape(16.dp))
+            .clip(MaterialTheme.shapes.large)
             .clickable(enabled = enabled, onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = if (selected) {
                 MaterialTheme.colorScheme.primaryContainer

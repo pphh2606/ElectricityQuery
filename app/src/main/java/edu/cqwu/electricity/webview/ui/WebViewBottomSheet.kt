@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.webview.ui
 
 import android.content.ActivityNotFoundException
@@ -11,6 +13,7 @@ import android.webkit.WebView
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.IconButtonDefaults
 import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +28,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -279,6 +282,7 @@ fun WebViewBottomSheet(
         onHideStarted = { webViewState.stopLoading() },
         leadingButton = {
             IconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = { webViewState.goBack() },
                 enabled = webViewState.canGoBack,
             ) {
@@ -294,7 +298,7 @@ fun WebViewBottomSheet(
             }
         },
         trailingButton = {
-            IconButton(onClick = { showMenu = true }) {
+            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
                 Icon(
                     Icons.Outlined.MoreVert,
                     stringResource(R.string.common_more_options),
@@ -302,17 +306,17 @@ fun WebViewBottomSheet(
                 )
             }
             AppScaledDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                DropdownMenuItem(
+                AppScaledMenuItem(
                     text = { Text(stringResource(R.string.common_close)) },
                     leadingIcon = { Icon(Icons.Outlined.Close, null) },
                     onClick = { showMenu = false; onDismissRequest() },
                 )
-                DropdownMenuItem(
+                AppScaledMenuItem(
                     text = { Text(stringResource(R.string.common_refresh)) },
                     leadingIcon = { Icon(Icons.Outlined.Refresh, null) },
                     onClick = { showMenu = false; webViewState.reload() },
                 )
-                DropdownMenuItem(
+                AppScaledMenuItem(
                     text = { Text(stringResource(R.string.webview_open_in_browser)) },
                     leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, null) },
                     onClick = {

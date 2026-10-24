@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.feeservicehall.ui
 
@@ -41,11 +41,11 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Receipt
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Text
@@ -79,6 +79,7 @@ import coil.compose.AsyncImage
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.ReduceMotion
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppNavigationBarItem
 import edu.cqwu.electricity.common.ui.BlurScaffold
@@ -236,13 +237,13 @@ fun FeeServiceHallScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.fee_hall_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 actions = {
                     if (pagerState.currentPage == 1) {
-                        IconButton(onClick = { viewModel.toggleOrderFilter() }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.toggleOrderFilter() }) {
                             Icon(
                                 imageVector = Icons.Outlined.FilterList,
                                 contentDescription = stringResource(R.string.common_filter),
@@ -251,7 +252,7 @@ fun FeeServiceHallScreen(
                             )
                         }
                     }
-                    IconButton(onClick = {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                         onNavigateToWebView(ORIGINAL_WEB_URL, resources.getString(R.string.fee_hall_title))
                     }) {
                         Icon(Icons.Outlined.OpenInBrowser, contentDescription = stringResource(R.string.common_open_original_page))
@@ -398,7 +399,7 @@ private fun FeeServiceHallHomeTab(
         when {
             uiState.isLoading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    AppCircularProgressIndicator()
                 }
             }
             uiState.errorMessage != null && uiState.categories.isEmpty() -> {

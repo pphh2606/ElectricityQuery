@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.common.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -6,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,6 +66,7 @@ fun ConfirmBottomSheet(
                 )
             }
             Button(
+                shapes = ButtonDefaults.shapes(),
                 onClick = onDismissRequest,
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -73,6 +77,7 @@ fun ConfirmBottomSheet(
                 Text(cancelText ?: stringResource(R.string.common_cancel), fontWeight = FontWeight.SemiBold)
             }
             Button(
+                shapes = ButtonDefaults.shapes(),
                 onClick = onConfirm,
                 modifier = Modifier.fillMaxWidth().height(48.dp),
             ) {

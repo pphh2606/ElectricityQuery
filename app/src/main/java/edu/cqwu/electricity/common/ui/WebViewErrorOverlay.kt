@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.common.ui
 
 import androidx.compose.foundation.background
@@ -23,6 +25,8 @@ import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -111,7 +115,10 @@ fun WebViewErrorOverlay(
             Spacer(modifier = Modifier.height(32.dp))
 
             // 与项目通用的「重试」按钮（ReLoginContent）保持同一种样式：Button = primary 主色
-            Button(onClick = onRetry) {
+            Button(
+                onClick = onRetry,
+                shapes = ButtonDefaults.shapes(),
+            ) {
                 Text(stringResource(R.string.webview_reload))
             }
 
@@ -122,7 +129,7 @@ fun WebViewErrorOverlay(
             ) {
                 // ── 切换内/外网访问按钮（可选） ──
                 if (onToggleVpn != null) {
-                    TextButton(onClick = onToggleVpn) {
+                    TextButton(shapes = ButtonDefaults.shapes(), onClick = onToggleVpn) {
                         Icon(
                             imageVector = Icons.Outlined.SwapHoriz,
                             contentDescription = null,
@@ -135,7 +142,7 @@ fun WebViewErrorOverlay(
 
                 // ── 网络设置按钮（可选） ──
                 if (onNetworkSettings != null) {
-                    TextButton(onClick = onNetworkSettings) {
+                    TextButton(shapes = ButtonDefaults.shapes(), onClick = onNetworkSettings) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = null,

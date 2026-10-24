@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.webview.ui
 
 import android.content.ActivityNotFoundException
@@ -12,6 +14,7 @@ import android.webkit.WebView
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.IconButtonDefaults
 import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,11 +31,9 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHoriz
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -54,6 +55,7 @@ import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.net.WebVpnEncoder
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.WebViewErrorOverlay
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -181,7 +183,7 @@ fun UnifiedWebViewScreen(
                     navigationIcon = {
                         Row {
                             // ← 返回上一页（WebView 历史栈）；无法返回时降级为关闭浏览器，与系统返回键行为一致
-                            IconButton(onClick = {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                                 val webView = state.webViewRef
                                 if (webView != null && webView.canGoBack()) {
                                     webView.goBack()
@@ -196,7 +198,7 @@ fun UnifiedWebViewScreen(
                                 )
                             }
                             // ✕ 关闭内置浏览器
-                            IconButton(onClick = onClose) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = onClose) {
                                 Icon(
                                     imageVector = Icons.Outlined.Close,
                                     contentDescription = stringResource(R.string.common_close),
@@ -207,7 +209,7 @@ fun UnifiedWebViewScreen(
                     },
                     actions = {
                         // ── 刷新按钮 ──
-                        IconButton(onClick = { state.reloadWithLoading() }) {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { state.reloadWithLoading() }) {
                             Icon(
                                 imageVector = Icons.Outlined.Refresh,
                                 contentDescription = stringResource(R.string.common_refresh),
@@ -217,7 +219,7 @@ fun UnifiedWebViewScreen(
 
                         // ── 更多选项（三点菜单） ──
                         Box {
-                            IconButton(onClick = { state.showMenu = true }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { state.showMenu = true }) {
                                 Icon(
                                     imageVector = Icons.Outlined.MoreVert,
                                     contentDescription = stringResource(R.string.common_more_options),
@@ -228,24 +230,24 @@ fun UnifiedWebViewScreen(
                                 expanded = state.showMenu,
                                 onDismissRequest = { state.showMenu = false }
                             ) {
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = { Text(stringResource(R.string.webview_copy_link)) },
                                     leadingIcon = { Icon(Icons.Outlined.Link, contentDescription = null) },
                                     onClick = {
                                         state.showMenu = false
-                                        val currentUrl = state.webViewRef?.url ?: return@DropdownMenuItem
+                                        val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
                                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                         val clip = ClipData.newPlainText(resources.getString(R.string.webview_clip_label), currentUrl)
                                         clipboard.setPrimaryClip(clip)
                                         snackbar.show(resources.getString(R.string.webview_link_copied), ToastUtils.Type.SUCCESS)
                                     }
                                 )
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = { Text(stringResource(R.string.webview_share_link)) },
                                     leadingIcon = { Icon(Icons.Outlined.Share, contentDescription = null) },
                                     onClick = {
                                         state.showMenu = false
-                                        val currentUrl = state.webViewRef?.url ?: return@DropdownMenuItem
+                                        val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
                                         val sendIntent = Intent().apply {
                                             action = Intent.ACTION_SEND
                                             putExtra(Intent.EXTRA_TEXT, currentUrl)
@@ -254,17 +256,17 @@ fun UnifiedWebViewScreen(
                                         context.startActivity(Intent.createChooser(sendIntent, resources.getString(R.string.webview_share_link)))
                                     }
                                 )
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = { Text(stringResource(R.string.webview_open_in_browser)) },
                                     leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, contentDescription = null) },
                                     onClick = {
                                         state.showMenu = false
-                                        val currentUrl = state.webViewRef?.url ?: return@DropdownMenuItem
+                                        val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
                                         val intent = Intent(Intent.ACTION_VIEW, currentUrl.toUri())
                                         context.startActivity(intent)
                                     }
                                 )
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = {
                                         Text(
                                             if (WebVpnEncoder.isWebVpnUrl(state.webViewRef?.url ?: ""))
@@ -356,14 +358,10 @@ fun UnifiedWebViewScreen(
                     }
 
                     // 网页加载进度条（放在 AndroidView 之后，确保 Z 轴在 WebView 上方）
-                    if (state.progress < 100) {
-                        LinearProgressIndicator(
-                            progress = { state.progress / 100f },
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                    }
+                    WebViewProgress(
+                        progress = state.progress,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
                     // ═══ 自定义错误叠加层 ═══
                     state.webErrorState?.let { error ->

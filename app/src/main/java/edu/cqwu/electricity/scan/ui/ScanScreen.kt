@@ -1,6 +1,11 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.scan.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 
@@ -525,7 +530,7 @@ fun ScanScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.scan_title), color = Color.White) },
                 navigationIcon = {
-                    IconButton(onClick = {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                         camera?.cameraControl?.enableTorch(false)
                         onBack()
                     }) {
@@ -587,6 +592,7 @@ fun ScanScreen(
 
                     // 闪光灯位于左下角
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = {
                             val newState = !isTorchOn
                             camera?.cameraControl?.enableTorch(newState)
@@ -608,6 +614,7 @@ fun ScanScreen(
 
                     // 选择图片位于右下角
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = { photoPickerLauncher.launch("image/*") },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -638,6 +645,7 @@ fun ScanScreen(
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         androidx.compose.material3.Button(
+                            shapes = ButtonDefaults.shapes(),
                             onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
                             modifier = Modifier.padding(top = 16.dp),
                         ) {
@@ -657,6 +665,7 @@ fun ScanScreen(
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         androidx.compose.material3.Button(
+                            shapes = ButtonDefaults.shapes(),
                             onClick = {
                                 val intent = Intent(
                                     android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

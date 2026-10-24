@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.speakup.ui
 
 import androidx.compose.foundation.background
@@ -25,9 +27,11 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -101,7 +105,7 @@ fun SpeakUpScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = null)
                     }
                 },
@@ -172,6 +176,7 @@ fun SpeakUpScreen(
         ) {
             // 发布留言按钮
             Button(
+                shapes = ButtonDefaults.shapes(),
                 onClick = {
                     val area = selectedArea
                     showActionDialog = false
@@ -187,7 +192,6 @@ fun SpeakUpScreen(
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -208,6 +212,7 @@ fun SpeakUpScreen(
 
             // 留言浏览按钮
             Button(
+                shapes = ButtonDefaults.shapes(),
                 onClick = {
                     val area = selectedArea
                     showActionDialog = false
@@ -218,7 +223,6 @@ fun SpeakUpScreen(
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -240,11 +244,11 @@ fun SpeakUpScreen(
 
         // 取消按钮
         TextButton(
+            shapes = ButtonDefaults.shapes(shape = RoundedCornerShape(16.dp)),
             onClick = { showActionDialog = false },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
-            shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.textButtonColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant

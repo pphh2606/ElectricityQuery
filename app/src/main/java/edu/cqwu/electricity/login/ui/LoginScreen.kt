@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.login.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -28,8 +29,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -145,7 +148,7 @@ fun LoginScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back)
@@ -158,7 +161,7 @@ fun LoginScreen(
                     LanguageSwitchButton()
 
                     // 安全说明问号按钮
-                    IconButton(onClick = { showSecurityNotice = true }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showSecurityNotice = true }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                             contentDescription = stringResource(R.string.login_security_notice),
@@ -266,7 +269,7 @@ fun LoginScreen(
                     trailingIcon = {
                         // 仅在用户实际输入了密码时显示眼睛按钮（已保存密码占位状态下不显示）
                         if (uiState.password.isNotEmpty() && !uiState.hasSavedPassword) {
-                            IconButton(onClick = { loginViewModel.togglePasswordRevealed() }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { loginViewModel.togglePasswordRevealed() }) {
                                 Icon(
                                     imageVector = if (uiState.passwordRevealed)
                                         Icons.Outlined.VisibilityOff
@@ -318,6 +321,7 @@ fun LoginScreen(
 
                 // 登录按钮（无加载动画，文字固定）
                 Button(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         focusManager.clearFocus()
                         loginViewModel.login()
@@ -326,7 +330,6 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
@@ -338,6 +341,7 @@ fun LoginScreen(
 
                 // 取消按钮（点击相当于返回）
                 TextButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = onBack,
                     enabled = !uiState.isLoading,
                     modifier = Modifier.fillMaxWidth()
@@ -359,6 +363,7 @@ fun LoginScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(
+                        shapes = ButtonDefaults.shapes(),
                         onClick = { showOtherLoginSheet = true },
                         enabled = !uiState.isLoading
                     ) {
@@ -375,6 +380,7 @@ fun LoginScreen(
                     )
 
                     TextButton(
+                        shapes = ButtonDefaults.shapes(),
                         onClick = { showRecoverySheet = true },
                         enabled = !uiState.isLoading
                     ) {

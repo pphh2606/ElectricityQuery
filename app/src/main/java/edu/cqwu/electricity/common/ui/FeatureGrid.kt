@@ -100,9 +100,9 @@ fun FeatureGridItem(
         modifier = modifier
             .fillMaxWidth()
             // 先裁圆角再挂点击，水波纹才会跟着圆角走（Card 的 shape 只管背景与边框）
-            .clip(RoundedCornerShape(16.dp))
+            .clip(MaterialTheme.shapes.large)
             .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         // 无阴影：containerColor 与背景同为 surface，轮廓由 1dp 描边提供（低版本阴影会退化成方块）
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),

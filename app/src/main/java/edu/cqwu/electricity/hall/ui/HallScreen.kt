@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.hall.ui
 
@@ -44,11 +44,11 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
@@ -87,6 +87,7 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.settings.AppLanguage
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.hall.data.HallCategory
 import edu.cqwu.electricity.hall.data.HallI18n
 import edu.cqwu.electricity.hall.data.HallItem
@@ -396,7 +397,7 @@ private fun HallSearchTab(
                 }
                 uiState.isSearchLoading -> {
                     Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                        AppCircularProgressIndicator()
                     }
                 }
                 uiState.searchError != null -> {
@@ -460,7 +461,7 @@ private fun HallSearchInputRow(
             ),
             trailingIcon = {
                 if (query.isNotEmpty()) {
-                    IconButton(onClick = { onQueryChange("") }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { onQueryChange("") }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
                             contentDescription = stringResource(R.string.common_clear_search),
@@ -472,7 +473,7 @@ private fun HallSearchInputRow(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { onSearch() }),
         )
-        IconButton(onClick = onSearch) {
+        IconButton(shapes = IconButtonDefaults.shapes(), onClick = onSearch) {
             Icon(
                 imageVector = Icons.Outlined.Search,
                 contentDescription = stringResource(R.string.common_search),
@@ -659,7 +660,7 @@ private fun FavoriteAppsContent(
                     .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator()
+                AppCircularProgressIndicator()
             }
         }
         requiresReLogin -> {

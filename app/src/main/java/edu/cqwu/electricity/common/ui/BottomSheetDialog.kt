@@ -36,7 +36,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,14 +45,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -61,7 +57,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -382,105 +377,18 @@ private fun BottomSheetHeader(
     }
 }
 
-/** 弹窗列表项组首尾的圆角，与设置页的分段卡片一致。 */
-private val SheetItemCorner = 16.dp
-
-/** 组内相邻项之间的连接角。 */
-private val SheetItemInnerCorner = 5.dp
-
-/** 分组内相邻项的缝隙。 */
-private val SheetItemGap = 2.dp
-
-/** 弹窗列表项按下时的圆角，与设置行按下后的形状一致。 */
-private val SheetItemPressedCorner = 16.dp
-
-/** 列表项的四角圆角。 */
-private data class SheetItemCorners(
-    val topStart: Dp,
-    val topEnd: Dp,
-    val bottomEnd: Dp,
-    val bottomStart: Dp,
-) {
-    fun toShape(): Shape = RoundedCornerShape(topStart, topEnd, bottomEnd, bottomStart)
-
-    /** 按下时四角一起向 [SheetItemPressedCorner] 过渡。 */
-    fun pressed(progress: Float): SheetItemCorners = SheetItemCorners(
-        topStart = lerp(topStart.value, SheetItemPressedCorner.value, progress).dp,
-        topEnd = lerp(topEnd.value, SheetItemPressedCorner.value, progress).dp,
-        bottomEnd = lerp(bottomEnd.value, SheetItemPressedCorner.value, progress).dp,
-        bottomStart = lerp(bottomStart.value, SheetItemPressedCorner.value, progress).dp,
-    )
-}
-
-/** 单个列表项（未分组）的四角圆角。 */
-private val SingleItemCorners = SheetItemCorners(
-    topStart = SheetItemCorner,
-    topEnd = SheetItemCorner,
-    bottomEnd = SheetItemCorner,
-    bottomStart = SheetItemCorner,
-)
-
-/** 当前列表项在分组中的圆角，由 [SheetItemGroup] 注入。 */
-private val LocalSheetItemCorners = staticCompositionLocalOf { SingleItemCorners }
-
-/** 组内第 [index] 项（共 [count] 项）的圆角：首尾大圆角，中间小连接角。 */
-private fun sheetItemCorners(index: Int, count: Int): SheetItemCorners = when {
-    count <= 1 -> SingleItemCorners
-    index == 0 -> SingleItemCorners.copy(
-        bottomEnd = SheetItemInnerCorner,
-        bottomStart = SheetItemInnerCorner,
-    )
-
-    index == count - 1 -> SingleItemCorners.copy(
-        topStart = SheetItemInnerCorner,
-        topEnd = SheetItemInnerCorner,
-    )
-
-    else -> SheetItemCorners(
-        topStart = SheetItemInnerCorner,
-        topEnd = SheetItemInnerCorner,
-        bottomEnd = SheetItemInnerCorner,
-        bottomStart = SheetItemInnerCorner,
-    )
-}
-
-/**
- * [SheetItemGroup] 的作用域，按顺序收集列表项。
- */
-class SheetItemGroupScope internal constructor() {
-    internal val items = mutableListOf<@Composable () -> Unit>()
-
-    fun item(content: @Composable () -> Unit) {
-        items += content
-    }
-}
-
 /**
  * 弹窗内成组排列的列表项。
  *
- * 组首尾使用 16dp 圆角、组内相邻项使用 5dp 连接角、项间留 2dp 缝隙，
- * 与设置页的分段卡片保持一致。
+ * 与设置页的 `SettingsGroup` 共用 [SegmentedGroup] 的分段形状，
+ * 只是不画容器底色（弹窗自身已有背景）。
  */
 @Composable
 fun SheetItemGroup(
     modifier: Modifier = Modifier,
-    content: @Composable SheetItemGroupScope.() -> Unit,
+    content: @Composable SegmentedGroupScope.() -> Unit,
 ) {
-    val scope = remember { SheetItemGroupScope() }
-    scope.items.clear()
-    scope.content()
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(SheetItemGap),
-    ) {
-        scope.items.forEachIndexed { index, item ->
-            CompositionLocalProvider(
-                LocalSheetItemCorners provides sheetItemCorners(index, scope.items.size)
-            ) {
-                item()
-            }
-        }
-    }
+    SegmentedGroup(modifier = modifier, content = content)
 }
 
 /**
@@ -517,7 +425,7 @@ private fun BottomSheetItemIcon(
             contentDescription = null,
             modifier = Modifier
                 .size(24.dp)
-                .clip(RoundedCornerShape(6.dp)),
+                .clip(MaterialTheme.shapes.small),
             contentScale = ContentScale.Fit
         )
 
@@ -573,7 +481,7 @@ fun BottomSheetItem(
         animationSpec = tween(durationMillis = 180),
         label = "sheetItemPress",
     )
-    val animatedShape = LocalSheetItemCorners.current.pressed(pressProgress).toShape()
+    val animatedShape = LocalSegmentedCorners.current.pressed(pressProgress).toShape()
     Box(
         modifier = Modifier
             .fillMaxWidth()

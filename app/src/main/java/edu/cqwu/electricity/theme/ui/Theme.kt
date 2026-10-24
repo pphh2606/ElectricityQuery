@@ -146,6 +146,7 @@ fun 电费查询Theme(
             onSecondary = miuixColors.onSecondary,
             secondaryContainer = miuixColors.secondaryContainer,
             onSecondaryContainer = miuixColors.onSecondaryContainer,
+            // miuix 的 Colors 没有 tertiary 档，用容器色近似
             tertiary = miuixColors.tertiaryContainer,
             onTertiary = miuixColors.onTertiaryContainer,
             tertiaryContainer = miuixColors.tertiaryContainer,

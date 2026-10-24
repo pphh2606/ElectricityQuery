@@ -1,6 +1,10 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
 import android.os.Build
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonDefaults
 import kotlin.math.roundToInt
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -89,6 +93,7 @@ import edu.cqwu.electricity.common.settings.UiStyle
 import edu.cqwu.electricity.common.settings.labelRes
 import edu.cqwu.electricity.common.settings.MAX_FONT_SCALE
 import edu.cqwu.electricity.common.settings.MIN_FONT_SCALE
+import edu.cqwu.electricity.common.ui.LocalSegmentedShape
 import edu.cqwu.electricity.common.ui.isHazeBlurSupported
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.SheetItemGroup
@@ -128,7 +133,7 @@ fun PersonalizationScreen(
             LargeFlexibleTopAppBar(
                 title = { Text(text = stringResource(R.string.personalization_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
@@ -195,7 +200,7 @@ fun PersonalizationScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(LocalSettingsItemShape.current)
+                                .clip(LocalSegmentedShape.current)
                                 .background(MaterialTheme.colorScheme.surfaceBright)
                                 .padding(horizontal = 16.dp)
                                 .padding(bottom = 8.dp),
@@ -235,6 +240,7 @@ fun PersonalizationScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 TextButton(
+                                    shapes = ButtonDefaults.shapes(),
                                     onClick = {
                                         draftFontScale = 1f
                                         appSettings.updateFontScale(1f)
@@ -244,6 +250,7 @@ fun PersonalizationScreen(
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Button(
+                                    shapes = ButtonDefaults.shapes(),
                                     onClick = {
                                         appSettings.updateFontScale(draftFontScale)
                                         showFontSizeSlider = false

@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
 import android.os.Build
@@ -37,6 +39,7 @@ import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -119,7 +122,7 @@ fun SpeedTestScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -564,6 +567,7 @@ private fun RecentRecordsSection(
 @Composable
 private fun PageArrow(icon: ImageVector, enabled: Boolean, onClick: () -> Unit) {
     IconButton(
+        shapes = IconButtonDefaults.shapes(),
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier.size(30.dp),

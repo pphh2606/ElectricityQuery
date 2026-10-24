@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.jwxt.schedulequery.ui
 
@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -63,7 +64,7 @@ fun JwxtScheduleQueryScreen(
             TopAppBar(
                 title = { Text(text = title, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -73,7 +74,7 @@ fun JwxtScheduleQueryScreen(
                 },
                 actions = {
                     // 打开网页版：保留一条回到教务原页面的退路（与其它教务页面顶栏一致）
-                    IconButton(onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCHEDULE_QUERY_URL, title)) }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCHEDULE_QUERY_URL, title)) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),

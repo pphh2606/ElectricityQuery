@@ -45,6 +45,7 @@ fun PagingFooter(
     ) {
         when {
             isLoadingMore -> Row(verticalAlignment = Alignment.CenterVertically) {
+                // 波浪版 AppCircularProgressIndicator 内部锁死 48dp，行内 16~24dp 小转圈保持普通版
                 CircularProgressIndicator(
                     modifier = Modifier.size(16.dp),
                     strokeWidth = 2.dp,

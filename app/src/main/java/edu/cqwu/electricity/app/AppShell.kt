@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.app
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarData
@@ -211,7 +214,7 @@ private fun ShadowlessSnackbar(
             )
 
             data.visuals.actionLabel?.let { label ->
-                TextButton(onClick = data::performAction) {
+                TextButton(shapes = ButtonDefaults.shapes(), onClick = data::performAction) {
                     Text(
                         text = label,
                         color = MaterialTheme.colorScheme.primary,

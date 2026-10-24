@@ -1,7 +1,9 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.profile.ui
 
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.login.domain.SessionCoordinatorV2
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 
 import edu.cqwu.electricity.logging.AppLog
 import androidx.compose.foundation.background
@@ -36,11 +38,9 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -85,7 +85,7 @@ fun ProfileTopBarActions() {
     val modes = NightMode.entries
     val nextMode = modes[(appSettings.nightMode.ordinal + 1) % modes.size]
 
-    IconButton(onClick = { appSettings.updateNightMode(nextMode) }) {
+    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { appSettings.updateNightMode(nextMode) }) {
         Icon(
             imageVector = when (nextMode) {
                 NightMode.SYSTEM -> Icons.Outlined.BrightnessAuto
@@ -96,7 +96,7 @@ fun ProfileTopBarActions() {
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
-    IconButton(onClick = { nav.navigate(Routes.SETTINGS) }) {
+    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.SETTINGS) }) {
         Icon(
             imageVector = Icons.Outlined.Settings,
             contentDescription = stringResource(R.string.common_settings),
@@ -163,7 +163,7 @@ fun ProfilePageContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     // 先裁圆角再挂点击，水波纹才会跟着圆角走
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(MaterialTheme.shapes.large)
                     .clickable {
                         if (isLoggedIn) {
                             nav.navigate(Routes.MY_INFO)
@@ -171,8 +171,8 @@ fun ProfilePageContent(
                             nav.navigate(Routes.loginRoute())
                         }
                     }
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+                shape = MaterialTheme.shapes.large,
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
                 // 与下方 SettingsGroup 用同一档底色，两张卡视觉上连成一套
                 colors = CardDefaults.elevatedCardColors(
@@ -227,6 +227,7 @@ fun ProfilePageContent(
                     // ── 右侧：编辑按钮（仅登录后显示，打开账号管理页）+ > 箭头 ──
                     if (isLoggedIn) {
                         IconButton(
+                            shapes = IconButtonDefaults.shapes(),
                             onClick = { nav.navigate(Routes.ACCOUNT_MANAGER) },
                             modifier = Modifier.size(36.dp),
                         ) {
@@ -240,6 +241,7 @@ fun ProfilePageContent(
                     }
 
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = {
                             if (isLoggedIn) {
                                 nav.navigate(Routes.MY_INFO)

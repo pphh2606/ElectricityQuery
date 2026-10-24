@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.person.ui
 
 import androidx.compose.foundation.background
@@ -29,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -109,7 +112,7 @@ fun PersonSearchScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -133,7 +136,7 @@ fun PersonSearchScreen(
                     placeholder = { Text(stringResource(R.string.person_search_hint)) },
                     trailingIcon = {
                         if (keyword.isNotEmpty()) {
-                            IconButton(onClick = { viewModel.clearKeyword() }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.clearKeyword() }) {
                                 Icon(
                                     imageVector = Icons.Outlined.Close,
                                     contentDescription = stringResource(R.string.common_clear_search),
@@ -153,7 +156,7 @@ fun PersonSearchScreen(
                 )
 
                 // 行尾搜索图标（无背景，点击触发搜索）
-                IconButton(onClick = { viewModel.search() }) {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.search() }) {
                     Icon(
                         imageVector = Icons.Outlined.Search,
                         contentDescription = stringResource(R.string.person_search_button),

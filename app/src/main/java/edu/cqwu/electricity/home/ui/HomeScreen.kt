@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.home.ui
 
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.logging.AppLog
@@ -198,7 +199,7 @@ fun HomeTopBar(
                     ),
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { onSearchQueryChange("") }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { onSearchQueryChange("") }) {
                                 Icon(
                                     imageVector = Icons.Outlined.Clear,
                                     contentDescription = stringResource(R.string.common_clear_search),
@@ -210,7 +211,7 @@ fun HomeTopBar(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                     focusManager.clearFocus()
                     onCloseSearch()
                 }) {
@@ -233,14 +234,14 @@ fun HomeTopBar(
                 )
             },
             actions = {
-                IconButton(onClick = onToggleSearch) {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = onToggleSearch) {
                     Icon(
                         imageVector = Icons.Outlined.Search,
                         contentDescription = stringResource(R.string.common_search),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                IconButton(onClick = { nav.navigate(Routes.SCAN) }) {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.SCAN) }) {
                     Icon(
                         imageVector = Icons.Outlined.CenterFocusWeak,
                         contentDescription = stringResource(R.string.common_scan),
@@ -690,6 +691,7 @@ private fun MyServicesSection(
                 modifier = Modifier.weight(1f)
             )
             IconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = onToggleEditMode,
                 modifier = Modifier.size(32.dp)
             ) {
@@ -719,6 +721,7 @@ private fun MyServicesSection(
                     )
                     if (isEditMode) {
                         IconButton(
+                            shapes = IconButtonDefaults.shapes(),
                             onClick = { onRemoveService(app) },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
@@ -755,6 +758,7 @@ private fun MyServicesSection(
                     )
                     if (isEditMode) {
                         IconButton(
+                            shapes = IconButtonDefaults.shapes(),
                             onClick = { onRemoveCustomService(entry.id) },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
@@ -1035,6 +1039,7 @@ private fun AppIconItem(
                 // 编辑模式下，未收藏的应用显示「+」号
                 if (showAddBadge && !isMyService && onAddClick != null) {
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = onAddClick,
                         modifier = Modifier
                             .align(Alignment.TopEnd)

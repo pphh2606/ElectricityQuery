@@ -1,9 +1,9 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.electricity.ui
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 
-import androidx.core.net.toUri
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,6 +74,7 @@ import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.util.openUrl
 
 /**
  * 充值页面
@@ -222,11 +223,11 @@ fun RechargeScreen(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Button(
+                                shapes = ButtonDefaults.shapes(),
                                 onClick = { viewModel.queryAccountRoomList() },
                                 modifier = Modifier.height(56.dp),
                                 enabled = recharge.studentId.trim().isNotBlank()
                                         && !recharge.isQuerying,
-                                shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
@@ -253,7 +254,7 @@ fun RechargeScreen(
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceBright
                                 ),
-                                shape = RoundedCornerShape(16.dp),
+                                shape = MaterialTheme.shapes.large,
                                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
@@ -313,6 +314,7 @@ fun RechargeScreen(
                                             modifier = Modifier.height(IntrinsicSize.Min)
                                         ) {
                                             if (recharge.balanceLoading) {
+                                                // 波浪版 AppCircularProgressIndicator 内部锁死 48dp，行内 16~24dp 小转圈保持普通版
                                                 CircularProgressIndicator(
                                                     modifier = Modifier.size(20.dp),
                                                     strokeWidth = 2.dp
@@ -372,6 +374,7 @@ fun RechargeScreen(
                         // ── "立即充值"按钮 ──
                         item(key = "pay_button") {
                             Button(
+                                shapes = ButtonDefaults.shapes(),
                                 onClick = { nav.navigate(Routes.PAYMENT_SELECTION) },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -444,10 +447,7 @@ fun RechargeScreen(
                         icon = Icons.Outlined.Store,
                         title = stringResource(R.string.recharge_method_campus),
                         onClick = {
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, "campusnextins://".toUri())
-                                context.startActivity(intent)
-                            } catch (_: ActivityNotFoundException) {
+                            if (!openUrl(context, "campusnextins://")) {
                                 snackbar.show(resources.getString(R.string.recharge_install_campus_app))
                             }
                             showOtherRechargeDialog = false
@@ -471,13 +471,7 @@ fun RechargeScreen(
                         icon = Icons.Outlined.OpenInBrowser,
                         title = stringResource(R.string.recharge_method_browser_h5),
                         onClick = {
-                            try {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Routes.H5_RECHARGE_URL.toUri()
-                                )
-                                context.startActivity(intent)
-                            } catch (_: ActivityNotFoundException) {
+                            if (!openUrl(context, Routes.H5_RECHARGE_URL)) {
                                 snackbar.show(resources.getString(R.string.common_no_browser))
                             }
                             showOtherRechargeDialog = false
@@ -502,7 +496,7 @@ private fun ImportantNotesCard() {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -562,7 +556,7 @@ private fun RoomSelectionDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.recharge_select_room_title),
         leadingButton = {
-            TextButton(onClick = {
+            TextButton(shapes = ButtonDefaults.shapes(), onClick = {
                 onDismiss()
                 onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
                     resources.getString(R.string.electricity_bind_account))
@@ -571,7 +565,7 @@ private fun RoomSelectionDialog(
             }
         },
         trailingButton = {
-            TextButton(onClick = {
+            TextButton(shapes = ButtonDefaults.shapes(), onClick = {
                 onDismiss()
                 onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
                     resources.getString(R.string.electricity_unbind_account))

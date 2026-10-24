@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.campusnetwork.speedtest.ui
 
 import androidx.compose.foundation.background
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -264,6 +267,7 @@ internal fun PillButton(
             )
         }
         Button(
+            shapes = ButtonDefaults.shapes(),
             onClick = onClick,
             enabled = enabled,
             modifier = Modifier.fillMaxSize(),
@@ -273,7 +277,6 @@ internal fun PillButton(
                 disabledContainerColor = Color.Transparent,
                 disabledContentColor = fg.copy(alpha = 0.9f),
             ),
-            shape = shape,
             contentPadding = PaddingValues(0.dp),
         ) {
             Text(

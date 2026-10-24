@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.accountmanagerv2
 
 import androidx.compose.animation.AnimatedVisibility
@@ -22,11 +24,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -47,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
@@ -95,7 +100,7 @@ fun LoginLogScreen(
         onBack = onBack,
         actions = {
                     // 筛选按钮：展开面板时高亮为 primary 色（仿 BillScreen）
-                    IconButton(onClick = viewModel::toggleFilterPanel) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = viewModel::toggleFilterPanel) {
                         Icon(
                             imageVector = Icons.Outlined.FilterList,
                             contentDescription = stringResource(R.string.common_filter),
@@ -178,10 +183,18 @@ fun LoginLogScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        OutlinedButton(onClick = viewModel::resetFilter, modifier = Modifier.weight(1f)) {
+                        OutlinedButton(
+                            onClick = viewModel::resetFilter,
+                            shapes = ButtonDefaults.shapes(),
+                            modifier = Modifier.weight(1f),
+                        ) {
                             Text(stringResource(R.string.login_log_reset))
                         }
-                        Button(onClick = viewModel::applyFilter, modifier = Modifier.weight(1f)) {
+                        Button(
+                            onClick = viewModel::applyFilter,
+                            shapes = ButtonDefaults.shapes(),
+                            modifier = Modifier.weight(1f),
+                        ) {
                             Text(stringResource(R.string.login_log_query))
                         }
                     }
@@ -225,7 +238,7 @@ fun LoginLogScreen(
                         .verticalScroll(rememberScrollState()),
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator()
+                    AppCircularProgressIndicator()
                 }
                 state.records.isEmpty() -> Box(
                     modifier = Modifier

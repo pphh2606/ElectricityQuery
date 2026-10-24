@@ -1,8 +1,12 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.settings.ui
 
 import android.content.Intent
 
 import android.text.format.Formatter
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -165,12 +169,14 @@ fun UpdateFoundSheet(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(stringResource(R.string.common_cancel))
                 }
                 Button(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = { showDownloadSourceSheet = true },
                     modifier = Modifier.weight(1f),
                 ) {
@@ -234,6 +240,7 @@ fun UpdateFoundSheet(
                         Spacer(modifier = Modifier.width(10.dp))
                         when {
                             probe == null -> {
+                                // 波浪版 AppCircularProgressIndicator 内部锁死 48dp，行内 16~24dp 小转圈保持普通版
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(16.dp),
                                     strokeWidth = 2.dp,

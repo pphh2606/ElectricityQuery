@@ -12,8 +12,6 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -24,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.ui.AppLinearProgressIndicator
 import edu.cqwu.electricity.webview.util.applyCommonWebViewSettings
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
@@ -231,11 +230,9 @@ internal fun WebViewProgress(
     modifier: Modifier = Modifier,
 ) {
     if (progress < 100) {
-        LinearProgressIndicator(
+        AppLinearProgressIndicator(
             progress = { progress / 100f },
             modifier = modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
     }
 }

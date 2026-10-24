@@ -1,5 +1,9 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.qrcode.ui
 
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.SelectableContainer
 
@@ -318,7 +322,7 @@ fun QrCodeDisplayScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back)
@@ -327,6 +331,7 @@ fun QrCodeDisplayScreen(
                 },
                 actions = {
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = { fetchQrCode() },
                         enabled = !isLoading
                     ) {
@@ -336,7 +341,7 @@ fun QrCodeDisplayScreen(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    IconButton(onClick = { nav.navigate(Routes.QR_CODE_SETTINGS) }) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.QR_CODE_SETTINGS) }) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.qrcode_display_settings),
@@ -525,7 +530,7 @@ fun QrCodeDisplayScreen(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                TextButton(onClick = { nav.navigate(Routes.CARD_RECHARGE) }) {
+                                TextButton(shapes = ButtonDefaults.shapes(), onClick = { nav.navigate(Routes.CARD_RECHARGE) }) {
                                     Text(
                                         stringResource(R.string.recharge_pay_now),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -538,7 +543,7 @@ fun QrCodeDisplayScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                                 )
 
-                                TextButton(onClick = { nav.navigate(Routes.BILL) }) {
+                                TextButton(shapes = ButtonDefaults.shapes(), onClick = { nav.navigate(Routes.BILL) }) {
                                     Text(
                                         stringResource(R.string.qrcode_display_orders),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,

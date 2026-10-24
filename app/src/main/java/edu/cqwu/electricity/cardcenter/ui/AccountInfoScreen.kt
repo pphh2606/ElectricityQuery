@@ -1,5 +1,9 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.cardcenter.ui
 
+import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
@@ -34,7 +38,6 @@ import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -131,7 +134,7 @@ fun AccountInfoScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
@@ -160,7 +163,7 @@ fun AccountInfoScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularProgressIndicator()
+                            AppCircularProgressIndicator()
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = stringResource(R.string.card_fetching_account),
@@ -214,8 +217,8 @@ private fun AccountInfoContent(
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+                shape = MaterialTheme.shapes.large,
                 // 无阴影：轮廓由 1dp 描边提供（低版本阴影会退化成方块）
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
             ) {
@@ -247,8 +250,8 @@ private fun AccountInfoContent(
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+                shape = MaterialTheme.shapes.large,
                 // 无阴影：轮廓由 1dp 描边提供（低版本阴影会退化成方块）
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
             ) {

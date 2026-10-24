@@ -57,7 +57,7 @@ fun LoadingDialog(
     ) {
         ProvideAppScaledDensity(appDensity) {
             Card(
-                shape = RoundedCornerShape(16.dp),
+                shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceBright,
                 ),

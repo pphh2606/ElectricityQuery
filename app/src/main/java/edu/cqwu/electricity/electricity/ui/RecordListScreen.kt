@@ -1,5 +1,8 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.electricity.ui
 
+import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.transparentTopBarColors
@@ -30,7 +33,7 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.TableChart
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -181,7 +184,7 @@ fun RecordListScreen(
                 TopAppBar(
                     title = { Text(title, fontWeight = FontWeight.Bold) },
                     navigationIcon = {
-                        IconButton(onClick = {
+                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
                             onDispose()
                             onBack()
                         }) {
@@ -195,7 +198,7 @@ fun RecordListScreen(
                     actions = {
                         // 表格 ⇄ 折线图切换按钮（仅在页面提供图表内容时显示）
                         if (chartPages.isNotEmpty() && onToggleViewMode != null) {
-                            IconButton(onClick = onToggleViewMode) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = onToggleViewMode) {
                                 Icon(
                                     imageVector = if (chartMode) Icons.Outlined.TableChart else Icons.AutoMirrored.Outlined.ShowChart,
                                     contentDescription = stringResource(
@@ -206,7 +209,7 @@ fun RecordListScreen(
                             }
                         }
                         Box {
-                            IconButton(onClick = { showMenu = true }) {
+                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
                                 Icon(
                                     imageVector = Icons.Outlined.MoreVert,
                                     contentDescription = stringResource(R.string.common_more_options),
@@ -217,7 +220,7 @@ fun RecordListScreen(
                                 expanded = showMenu,
                                 onDismissRequest = { showMenu = false }
                             ) {
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = { Text(stringResource(R.string.common_copy)) },
                                     leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                     onClick = {
@@ -225,7 +228,7 @@ fun RecordListScreen(
                                         copyToClipboard(context, textContent(), exportTitle, snackbar)
                                     }
                                 )
-                                DropdownMenuItem(
+                                AppScaledMenuItem(
                                     text = { Text(stringResource(R.string.common_export)) },
                                     leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                     onClick = {

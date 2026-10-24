@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.payment.ui
 
 import androidx.compose.foundation.BorderStroke
@@ -6,8 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -51,9 +53,9 @@ fun AmountGrid(
                 row.forEach { amount ->
                     val isSelected = selectedAmount == amount
                     OutlinedButton(
+                        shapes = ButtonDefaults.shapes(),
                         onClick = { onAmountSelected(amount) },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp),
                         border = BorderStroke(
                             width = if (isSelected) 2.dp else 1.dp,

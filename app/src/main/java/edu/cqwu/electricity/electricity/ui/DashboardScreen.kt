@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package edu.cqwu.electricity.electricity.ui
 
 import android.content.res.Resources
@@ -31,12 +33,12 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -63,6 +65,7 @@ import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
+import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -200,7 +203,7 @@ fun DashboardMenuButton(
     }
 
     Box {
-        IconButton(onClick = { showMenu = true }) {
+        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
             Icon(
                 imageVector = Icons.Outlined.MoreVert,
                 contentDescription = stringResource(R.string.common_more_options),
@@ -211,7 +214,7 @@ fun DashboardMenuButton(
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {
-            DropdownMenuItem(
+            AppScaledMenuItem(
                 text = { Text(stringResource(R.string.common_copy)) },
                 leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                 onClick = {
@@ -220,7 +223,7 @@ fun DashboardMenuButton(
                     copyToClipboard(context, text, resources.getString(R.string.dashboard_title), snackbar)
                 }
             )
-            DropdownMenuItem(
+            AppScaledMenuItem(
                 text = { Text(stringResource(R.string.common_export)) },
                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                 onClick = {
@@ -246,8 +249,8 @@ private fun RoomInfoCard(room: BuildingNode?) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+        shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -294,8 +297,8 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+        shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -392,8 +395,8 @@ private fun AccountBalanceCard(balance: BalanceResponse) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+        shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -475,8 +478,8 @@ private fun MoreFunctionsSection(
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large),
+        shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
