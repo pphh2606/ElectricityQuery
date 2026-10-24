@@ -28,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.SplitButtonDefaults
@@ -296,11 +297,16 @@ private fun PasswordChangeContent(
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 16.dp),
             leadingButton = {
-                SplitButtonDefaults.TonalLeadingButton(
+                SplitButtonDefaults.LeadingButton(
                     onClick = { if (!state.isSaving) viewModel.save() },
                     enabled = !state.isSaving,
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
                 ) {
-                    Icon(Icons.Outlined.Save, contentDescription = null)
+                    Icon(
+                        Icons.Outlined.Save,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.password_change_save),
@@ -314,6 +320,7 @@ private fun PasswordChangeContent(
                         checked = moreMenuExpanded,
                         onCheckedChange = { moreMenuExpanded = it },
                         enabled = !state.isSaving,
+                        contentPadding = PaddingValues(20.dp),
                     ) {
                         Icon(Icons.Filled.ExpandMore, contentDescription = null)
                     }
