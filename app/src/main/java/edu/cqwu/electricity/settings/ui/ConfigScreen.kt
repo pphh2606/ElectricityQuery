@@ -76,7 +76,7 @@ fun ConfigScreen(
                 .fillMaxSize()
                 .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
         ) {
             Spacer(modifier = Modifier.height(topInset + 8.dp))
             SettingsGroup {

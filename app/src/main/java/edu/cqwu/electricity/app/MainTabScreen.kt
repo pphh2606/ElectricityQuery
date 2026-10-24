@@ -100,8 +100,6 @@ fun MainTabScreen(
                     CollapsibleScaffold(
                         title = stringResource(R.string.profile_title),
                         actions = { ProfileTopBarActions() },
-                        // 外层 HorizontalPager 已统一让出系统导航栏高度，这里不再重复避让
-                        applyNavigationBarsPadding = false,
                     ) { topInset, scrollModifier ->
                         ProfilePageContent(
                             onOpenHalfScreen = { url, title ->

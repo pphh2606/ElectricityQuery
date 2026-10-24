@@ -39,7 +39,6 @@ fun CollapsibleScaffold(
     onBack: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     expandedTopContent: @Composable () -> Unit = {},
-    applyNavigationBarsPadding: Boolean = true,
     content: @Composable (topInset: Dp, scrollModifier: Modifier) -> Unit,
 ) {
     val topAppBarState = rememberTopAppBarState()
@@ -47,7 +46,6 @@ fun CollapsibleScaffold(
 
     BlurScaffold(
         modifier = modifier,
-        applyNavigationBarsPadding = applyNavigationBarsPadding,
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 LargeFlexibleTopAppBar(

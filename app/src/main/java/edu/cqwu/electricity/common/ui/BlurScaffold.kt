@@ -4,16 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemGestures
-import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarColors
@@ -107,16 +99,12 @@ fun rememberHazeSourceModifier(hazeState: HazeState): Modifier =
  * 低版本没有 RenderEffect 时退回不透明标题栏。
  *
  * @param topBar 标题栏，内部请用 [transparentTopBarColors] 让底色透明
- * @param applyNavigationBarsPadding 是否为内容让出系统导航栏/手势条的高度。
- *        默认 true：`enableEdgeToEdge` 后内容会画到导航栏后面，必须由页面自己避让。
- *        若外层已经统一避让过（比如底部 Tab 的 Pager），传 false 避免叠加。
  * @param content 页面内容，参数为顶部浮层高度
  */
 @Composable
 fun BlurScaffold(
     topBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    applyNavigationBarsPadding: Boolean = true,
     content: @Composable (topInset: Dp) -> Unit,
 ) {
     val hazeState = remember { HazeState() }
@@ -133,33 +121,10 @@ fun BlurScaffold(
                 .background(MaterialTheme.colorScheme.surfaceContainer)
                 .then(rememberHazeSourceModifier(hazeState))
         ) {
-            // 系统导航栏避让：底色层仍然铺满整屏（不会在导航栏处露缝），
-            // 只把内容区抬到导航栏/手势条之上，避免最后一项被系统操作栏压住。
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (applyNavigationBarsPadding) {
-                            // 手势导航下有些 ROM（例如 ColorOS）的 navigationBars 底部 inset 是 0——
-                            // 系统只画一条透明手势条，于是内容直接贴到屏幕底边。这里并上
-                            // systemGestures 兜底（手势模式下它有值、三键模式下通常为 0）。
-                            // 只取 Bottom 边：systemGestures 在屏幕左右两侧也有返回手势区，
-                            // 整边 windowInsetsPadding 会把内容左右一起往里推，造成两侧出现多余留白。
-                            // 最后再补 12dp 呼吸间距，让最后一项不贴着屏幕边缘。
-                            Modifier
-                                .windowInsetsPadding(
-                                    WindowInsets.navigationBars
-                                        .union(WindowInsets.systemGestures)
-                                        .only(WindowInsetsSides.Bottom),
-                                )
-                                .padding(bottom = 12.dp)
-                        } else {
-                            Modifier
-                        },
-                    ),
-            ) {
-                content(topInset)
-            }
+            // 骨架不做任何系统栏避让：底部留白由各页面在自己的滚动内容末尾补
+            // （见 SpeedTestScreen 的写法）。骨架层加 padding 会缩短滚动视口，
+            // 造成屏幕底部常驻一条滚不到的空白。
+            content(topInset)
         }
 
         // 标题栏浮层：压在内容之上，模糊其背后的内容
