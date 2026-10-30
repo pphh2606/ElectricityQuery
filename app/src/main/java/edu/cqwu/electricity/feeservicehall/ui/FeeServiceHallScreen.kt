@@ -2,12 +2,6 @@
 
 package edu.cqwu.electricity.feeservicehall.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.OpenInBrowser
@@ -47,11 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -80,17 +69,22 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.AppNavigationBarItem
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.AppNavigationBar
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.ui.rememberBottomBarScrollState
 import edu.cqwu.electricity.common.ui.trackBottomBarScroll
 import edu.cqwu.electricity.feeservicehall.data.FeeItem
@@ -130,7 +124,6 @@ fun FeeServiceHallScreen(
     val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(initialPage = initialTab, pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
-    val topBarColors = transparentTopBarColors()
     var selectedOrder by remember { mutableStateOf<OrderRecord?>(null) }
     val snackbar = LocalSnackbarController.current
 
@@ -232,16 +225,10 @@ fun FeeServiceHallScreen(
     Box(
         modifier = Modifier.trackBottomBarScroll(barScrollState),
     ) {
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.fee_hall_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.fee_hall_title),
+        onBack = onBack,
+        actions = {
                     if (pagerState.currentPage == 1) {
                         IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.toggleOrderFilter() }) {
                             Icon(
@@ -258,66 +245,63 @@ fun FeeServiceHallScreen(
                         Icon(Icons.Outlined.OpenInBrowser, contentDescription = stringResource(R.string.common_open_original_page))
                     }
                 },
-                colors = topBarColors,
-            )
-
-            // 首页 Tab 的分类索引条：挂进标题栏浮层，和标题栏一起模糊、固定不滚动
-            AnimatedVisibility(
-                visible = pagerState.currentPage == 0 &&
-                    !uiState.isLoading && uiState.errorMessage == null && sections.isNotEmpty(),
-                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
-                exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
-            ) {
-                FeeServiceHallSectionIndex(
-                    sections = sections,
-                    activeIndex = activeSectionIndex,
-                    showDivider = showIndexDivider,
-                    onSectionClick = { index ->
-                        scope.launch {
-                            // +1 跳过列表首项（顶栏留白占位）；负偏移让分组停在标题栏下沿
-                            homeListState.animateScrollToItem(
-                                sectionStartIndices[index] + 1,
-                                -headerInsetPx,
-                            )
-                        }
-                    },
+        // 首页分类索引条、订单筛选面板、订单统计行原样并入标题栏浮层：
+        // 和标题栏一起模糊、固定不滚动，内容列表从它们背后滚过
+        expandedTopContent = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                AnimatedVisibility(
+                    visible = pagerState.currentPage == 0 &&
+                        !uiState.isLoading && uiState.errorMessage == null && sections.isNotEmpty(),
+                    enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                    exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
+                ) {
+                    FeeServiceHallSectionIndex(
+                        sections = sections,
+                        activeIndex = activeSectionIndex,
+                        showDivider = showIndexDivider,
+                        onSectionClick = { index ->
+                            scope.launch {
+                                // +1 跳过列表首项（顶栏留白占位）；负偏移让分组停在标题栏下沿
+                                homeListState.animateScrollToItem(
+                                    sectionStartIndices[index] + 1,
+                                    -headerInsetPx,
+                                )
+                            }
+                        },
+                    )
+                }
+                AnimatedVisibility(
+                    visible = pagerState.currentPage == 1 && uiState.showOrderFilter,
+                    enter = fadeIn(tween(180)) + expandVertically(tween(180)),
+                    exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
+                ) {
+                    OrderFilterPanel(
+                        projectName = uiState.filterProjectName,
+                        onProjectNameChange = { viewModel.setOrderFilterProjectName(it) },
+                        startDate = uiState.filterStartDate,
+                        onStartDateChange = { viewModel.setOrderFilterStartDate(it) },
+                        endDate = uiState.filterEndDate,
+                        onEndDateChange = { viewModel.setOrderFilterEndDate(it) },
+                        onApply = { viewModel.applyOrderFilter() },
+                        onReset = { viewModel.resetOrderFilter() },
+                    )
+                }
+                ListStatsRow(
+                    loadedCount = uiState.orders.size,
+                    currentPage = uiState.orderPageCurrent,
+                    totalPages = uiState.orderTotalPages,
+                    visible = pagerState.currentPage == 1 && uiState.orders.isNotEmpty(),
                 )
             }
-
-            // 订单 Tab 筛选面板：同样挂进浮层，展开时浮层变高、模糊区域跟着长
-            AnimatedVisibility(
-                visible = pagerState.currentPage == 1 && uiState.showOrderFilter,
-                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
-                exit = fadeOut(tween(120)) + shrinkVertically(tween(180)),
-            ) {
-                OrderFilterPanel(
-                    projectName = uiState.filterProjectName,
-                    onProjectNameChange = { viewModel.setOrderFilterProjectName(it) },
-                    startDate = uiState.filterStartDate,
-                    onStartDateChange = { viewModel.setOrderFilterStartDate(it) },
-                    endDate = uiState.filterEndDate,
-                    onEndDateChange = { viewModel.setOrderFilterEndDate(it) },
-                    onApply = { viewModel.applyOrderFilter() },
-                    onReset = { viewModel.resetOrderFilter() },
-                )
-            }
-
-            // 订单 Tab 统计行（有数据时）：出现/收起动画由 ListStatsRow 内部负责，
-            // 切到「我的」页时也不会让标题栏和列表跟着跳一下
-            ListStatsRow(
-                loadedCount = uiState.orders.size,
-                currentPage = uiState.orderPageCurrent,
-                totalPages = uiState.orderTotalPages,
-                visible = pagerState.currentPage == 1 && uiState.orders.isNotEmpty(),
-            )
         },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         // 回传给上方浮层的分类索引跳转：需要知道标题栏（+索引条）实际占了多高
         SideEffect { headerInset = topInset }
 
         HorizontalPager(
             state = pagerState,
             beyondViewportPageCount = 1,
+            // 滚动连接下沉到各 Tab 自己的滚动容器：挂在外层会被 PullToRefreshBox 吃掉下拉位移
             modifier = Modifier.fillMaxSize(),
         ) { page ->
             LaunchedEffect(page) { viewModel.onTabSelected(page) }
@@ -329,6 +313,7 @@ fun FeeServiceHallScreen(
                     onRefresh = { viewModel.refreshAll() },
                     onReLogin = onReLogin,
                     onNavigateToWebView = onNavigateToWebView,
+                    scrollModifier = scrollModifier,
                 )
                 1 -> FeeServiceHallOrderTab(
                     uiState = uiState,
@@ -337,6 +322,7 @@ fun FeeServiceHallScreen(
                     onLoadMore = { viewModel.loadMoreOrders() },
                     onNavigateToOrderDetail = { order -> selectedOrder = order },
                     onReLogin = onReLogin,
+                    scrollModifier = scrollModifier,
                 )
                 2 -> FeeServiceHallProfileTab(
                     uiState = uiState,
@@ -344,6 +330,7 @@ fun FeeServiceHallScreen(
                     onNavigateToWebView = onNavigateToWebView,
                     onReLogin = onReLogin,
                     onRetryProfile = { viewModel.retryProfileLoad() },
+                    scrollModifier = scrollModifier,
                 )
             }
         }
@@ -354,21 +341,13 @@ fun FeeServiceHallScreen(
             state = barScrollState,
             animate = animateBar,
         ) {
-            NavigationBar {
-                tabs.forEachIndexed { index, tab ->
-                    val selected = pagerState.currentPage == index
-                    AppNavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            if (!selected) {
-                                scope.launch { pagerState.animateScrollToPage(index) }
-                            }
-                        },
-                        icon = tab.icon,
-                        label = stringResource(tab.labelRes),
-                    )
-                }
-            }
+            AppNavigationBar(
+                itemCount = tabs.size,
+                selectedIndex = pagerState.currentPage,
+                onSelect = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
+                icon = { tabs[it].icon },
+                label = { stringResource(tabs[it].labelRes) },
+            )
         }
     }
 }
@@ -387,13 +366,12 @@ private fun FeeServiceHallHomeTab(
     onReLogin: () -> Unit,
     onNavigateToWebView: (url: String, title: String) -> Unit,
     modifier: Modifier = Modifier,
+    scrollModifier: Modifier = Modifier,
 ) {
-    val pullState = rememberPullToRefreshState()
-    PullToRefreshBox(
+    AppPullToRefresh(
         isRefreshing = uiState.isRefreshing,
         onRefresh = onRefresh,
-        state = pullState,
-        indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+        topInset = topInset,
         modifier = modifier.fillMaxSize(),
     ) {
         when {
@@ -419,7 +397,7 @@ private fun FeeServiceHallHomeTab(
             else -> {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().then(scrollModifier),
                     contentPadding = PaddingValues(horizontal = 16.dp),
                 ) {
                     item(key = "top_inset") { Spacer(Modifier.height(topInset)) }

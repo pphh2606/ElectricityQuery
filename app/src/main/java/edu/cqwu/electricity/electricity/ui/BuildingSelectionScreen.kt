@@ -33,8 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.electricity.data.BuildingNode
 import edu.cqwu.electricity.electricity.data.SelectionStep
@@ -67,6 +65,7 @@ import edu.cqwu.electricity.common.util.ToastUtils
 fun BuildingSelectionScreen(
     viewModel: ElectricityViewModel,
     topInset: Dp = 0.dp,
+    scrollModifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -91,6 +90,7 @@ fun BuildingSelectionScreen(
         viewModel = viewModel,
         uiState = uiState,
         topInset = topInset,
+        scrollModifier = scrollModifier,
     )
 }
 
@@ -102,6 +102,7 @@ private fun ContentArea(
     viewModel: ElectricityViewModel,
     uiState: ElectricityUiState,
     topInset: Dp = 0.dp,
+    scrollModifier: Modifier = Modifier,
 ) {
     // 仅在校区列表步骤启用下拉刷新（ROOM_GRID 无网络请求，禁用以免用户困惑）
     val pullToRefreshEnabled = uiState.currentStep == SelectionStep.AREA
@@ -115,8 +116,7 @@ private fun ContentArea(
     ) {
         // 可滚动的列表区域 + 下拉刷新
         Box(modifier = Modifier.weight(1f)) {
-            val pullState = rememberPullToRefreshState()
-            PullToRefreshBox(
+            AppPullToRefresh(
                 isRefreshing = uiState.isRefreshing && pullToRefreshEnabled,
                 onRefresh = {
                     when (uiState.currentStep) {
@@ -125,12 +125,13 @@ private fun ContentArea(
                         else -> {}
                     }
                 },
-                state = pullState,
-                indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing && pullToRefreshEnabled, topInset) },
-                modifier = Modifier.fillMaxSize()
+                topInset = topInset,
+                modifier = Modifier.fillMaxSize(),
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(scrollModifier),
                     contentPadding = PaddingValues(vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {

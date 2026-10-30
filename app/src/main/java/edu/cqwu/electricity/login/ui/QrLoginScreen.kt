@@ -5,9 +5,8 @@ package edu.cqwu.electricity.login.ui
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 import edu.cqwu.electricity.common.ui.SelectableContainer
 import edu.cqwu.electricity.logging.AppLog
@@ -36,7 +35,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,9 +42,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -97,7 +92,6 @@ fun QrLoginScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = transparentTopBarColors()
     val snackbar = LocalSnackbarController.current
 
     // 状态与流程统一由 ViewModel 驱动（取码/轮询/提交会话在其内部完成）
@@ -154,57 +148,37 @@ fun QrLoginScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.qr_login_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.qr_login_title),
+        onBack = onBack,
+        actions = {
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = onNavigateToQrCodeSettings) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.qrcode_display_settings),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
-        // PullToRefreshBox 覆盖整个内容区（标题栏以下全部区域）
+    ) { topInset, scrollModifier ->
+        // AppPullToRefresh 覆盖整个内容区（标题栏以下全部区域）
         // 确保在 Initializing / Error 状态下下拉也生效
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = isRefreshing,
             onRefresh = viewModel::startQrLogin,
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .then(scrollModifier)
                     .verticalScroll(rememberScrollState())
                     .padding(top = topInset),
                 contentAlignment = Alignment.Center,
             ) {
                 when (val state = uiState) {
                     is QrLoginUiState.Initializing -> {
-                        // 初始状态不显示额外加载动画（PullToRefreshBox 的指示器已足够）
+                        // 初始状态不显示额外加载动画（AppPullToRefresh 的指示器已足够）
                         // 显示提示文字让用户知道正在加载
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,

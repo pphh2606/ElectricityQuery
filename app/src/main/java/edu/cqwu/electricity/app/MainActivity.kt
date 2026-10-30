@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity() {
                     nightMode = appSettingsState.nightMode,
                     colorSource = appSettingsState.colorSource,
                     uiStyle = appSettingsState.uiStyle,
+                    miuixMonet = appSettingsState.miuixMonet,
                     paletteStyle = appSettingsState.paletteStyle,
                     colorSpec = appSettingsState.colorSpec,
                     pureBlack = appSettingsState.pureBlack,

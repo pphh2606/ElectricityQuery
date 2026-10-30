@@ -19,12 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,11 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,11 +44,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,8 +54,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.AppSearchTopBar
+import edu.cqwu.electricity.common.ui.AppTopBar
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.LoadingDialog
@@ -75,7 +66,6 @@ import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.common.ui.SheetItemGroup
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.schedulequery.data.JwxtDictItem
 import edu.cqwu.electricity.jwxt.core.model.JwxtScheduleTarget
@@ -152,93 +142,40 @@ fun JwxtScheduleTargetScreen(
     BlurScaffold(
         topBar = {
             if (isSearching) {
-                // ── 搜索态：标题栏整体变成搜索条 ──
-                TopAppBar(
-                    title = {
-                        TextField(
-                            value = searchInput,
-                            onValueChange = { searchInput = it },
-                            placeholder = {
-                                Text(
-                                    text = searchHint,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                )
-                            },
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(focusRequester),
-                            textStyle = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                                cursorColor = MaterialTheme.colorScheme.primary,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                            ),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
-                            trailingIcon = {
-                                if (searchInput.isNotEmpty()) {
-                                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { searchInput = "" }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Clear,
-                                            contentDescription = stringResource(R.string.common_clear_search),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                    }
-                                }
-                            },
-                        )
+                // ── 搜索态：标题栏整体变成搜索条（M3 单行输入框 / MIUI InputField） ──
+                AppSearchTopBar(
+                    value = searchInput,
+                    onValueChange = { searchInput = it },
+                    hint = searchHint,
+                    onBack = {
+                        focusManager.clearFocus()
+                        isSearching = false
                     },
-                    navigationIcon = {
-                        // 取消：不改查询条件，直接退出搜索态
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
-                            focusManager.clearFocus()
-                            isSearching = false
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.common_exit_search),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    },
+                    focusRequester = focusRequester,
+                    onSubmit = { submitSearch() },
+                    onClear = { searchInput = "" },
                     actions = {
                         // 软键盘回车或点这里，才真正发起搜索
                         IconButton(shapes = IconButtonDefaults.shapes(), onClick = { submitSearch() }) {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
                                 contentDescription = stringResource(R.string.common_search),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     },
-                    colors = transparentTopBarColors(),
                 )
             } else {
                 // ── 普通态 ──
-                TopAppBar(
-                    title = { Text(text = title, fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.common_back),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    },
+                AppTopBar(
+                    title = title,
+                    onBack = onBack,
+                    transparent = true,
                     actions = {
                         if (searchable) {
                             IconButton(shapes = IconButtonDefaults.shapes(), onClick = { isSearching = true }) {
                                 Icon(
                                     imageVector = Icons.Outlined.Search,
                                     contentDescription = stringResource(R.string.common_search),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
@@ -246,11 +183,9 @@ fun JwxtScheduleTargetScreen(
                             Icon(
                                 imageVector = Icons.Outlined.OpenInBrowser,
                                 contentDescription = stringResource(R.string.common_web_version),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     },
-                    colors = transparentTopBarColors(),
                 )
             }
 
@@ -266,12 +201,10 @@ fun JwxtScheduleTargetScreen(
             )
         },
     ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = state.isRefreshing,
             onRefresh = viewModel::refresh,
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
                 when {

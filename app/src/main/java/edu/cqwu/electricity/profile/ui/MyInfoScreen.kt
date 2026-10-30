@@ -33,8 +33,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,7 +51,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.profile.data.MenuCategory
@@ -79,12 +77,10 @@ fun MyInfoScreen(
         title = stringResource(R.string.my_info_title),
         onBack = onBack,
     ) { topInset, scrollModifier ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = uiState.isRefreshing,
             onRefresh = { viewModel.loadStudentInfo() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
             when {
@@ -114,7 +110,7 @@ fun MyInfoScreen(
                     )
                 }
                 else -> {
-                    // 初次加载无数据：空的可滚动容器，PullToRefreshBox 指示器展示加载动画
+                    // 初次加载无数据：空的可滚动容器，AppPullToRefresh 指示器展示加载动画
                     Box(
                         modifier = Modifier
                             .fillMaxSize()

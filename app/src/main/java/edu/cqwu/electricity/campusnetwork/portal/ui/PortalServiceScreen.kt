@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material.icons.outlined.WarningAmber
@@ -34,13 +33,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
@@ -61,13 +55,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalClient
 import edu.cqwu.electricity.campusnetwork.portal.data.PortalOnlineInfo
 import edu.cqwu.electricity.campusnetwork.ui.KeyValueRows
 import edu.cqwu.electricity.campusnetwork.ui.field
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
@@ -76,8 +71,7 @@ import edu.cqwu.electricity.common.ui.InfoSectionTitle
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.util.ToastUtils
 
@@ -121,7 +115,6 @@ fun PortalServiceScreen(
     val resources = LocalResources.current
     val nav = LocalNavController.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = transparentTopBarColors()
 
     var showServiceSheet by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -162,37 +155,18 @@ fun PortalServiceScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.portal_service_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.portal_service_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         // 与其他页面一致：下拉刷新（不再在标题栏放刷新按钮）
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = state.isRefreshing,
             onRefresh = { viewModel.load() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
+            ScrollLinkedBox(scrollModifier) {
             // 说明：可滚动内容各自包一层 verticalScroll——错误态用的 ReLoginContent
             // 依赖 fillMaxSize 做整页居中，放进可滚动列会导致高度约束无限、居中失效。
             val info = state.info
@@ -227,7 +201,7 @@ fun PortalServiceScreen(
                     NoSessionContent(onOpenAuthPage = openAuthPage)
                 }
 
-                // 加载/刷新中：内容区留空，由 PullToRefreshBox 的顶部指示器呈现
+                // 加载/刷新中：内容区留空，由 AppPullToRefresh 的顶部指示器呈现
                 state.isRefreshing -> Unit
 
                 // 其余情况统一收敛为一种错误态（细节进 AppLog），样式对齐其它页面的通用错误态
@@ -238,6 +212,7 @@ fun PortalServiceScreen(
                     onRetry = { viewModel.load() },
                     modifier = Modifier.padding(top = topInset),
                 )
+            }
             }
         }
     }

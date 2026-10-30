@@ -34,8 +34,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
@@ -212,12 +210,10 @@ fun LoginLogScreen(
             )
         },
     ) { topInset, scrollModifier ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = state.isRefreshing,
             onRefresh = viewModel::refresh,
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
             when {

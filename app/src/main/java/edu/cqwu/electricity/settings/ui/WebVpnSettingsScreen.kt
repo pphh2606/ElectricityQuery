@@ -6,15 +6,13 @@ package edu.cqwu.electricity.settings.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,8 +27,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.net.WebVpnSettings
 import edu.cqwu.electricity.common.settings.SettingsKeys
 import edu.cqwu.electricity.common.settings.SettingsPreferences
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 /**
  * WebVPN 设置页 — 提供 WebVPN 代理开关。
@@ -40,35 +37,19 @@ import edu.cqwu.electricity.common.ui.transparentTopBarColors
 fun WebVpnSettingsScreen(
     onBack: () -> Unit,
 ) {
-    val topBarColors = transparentTopBarColors()
     val context = LocalContext.current
     val settingsPrefs = remember { SettingsPreferences(context) }
     var webVpnEnabled by remember { mutableStateOf(settingsPrefs.get(SettingsKeys.WEBVPN_ENABLED)) }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.webvpn_settings_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.webvpn_settings_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
+                .verticalScroll(rememberScrollState())
                 .padding(top = topInset)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {

@@ -40,6 +40,12 @@ import dev.chrisbanes.haze.HazeInput
 import dev.chrisbanes.haze.blur.HazeBlurStyle
 import dev.chrisbanes.haze.blur.hazeBlur
 import edu.cqwu.electricity.theme.ui.CustomSnackbarVisuals
+import edu.cqwu.electricity.common.settings.LocalUiStyle
+import edu.cqwu.electricity.common.settings.UiStyle
+import top.yukonga.miuix.kmp.basic.Surface as MiuixSurface
+import top.yukonga.miuix.kmp.basic.Text as MiuixText
+import top.yukonga.miuix.kmp.basic.TextButton as MiuixTextButton
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.ui.LocalSheetVisibilityState
@@ -167,11 +173,15 @@ fun AppShell(
                         enableDismissFromEndToStart = true,
                         backgroundContent = {}
                     ) {
-                        ShadowlessSnackbar(
-                            data = data,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            contentColor = contentColor,
-                        )
+                        if (LocalUiStyle.current == UiStyle.MIUI) {
+                            MiuixStyleSnackbar(data = data, contentColor = contentColor)
+                        } else {
+                            ShadowlessSnackbar(
+                                data = data,
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = contentColor,
+                            )
+                        }
                     }
                 }
             )
@@ -220,6 +230,39 @@ private fun ShadowlessSnackbar(
                         color = MaterialTheme.colorScheme.primary,
                     )
                 }
+            }
+        }
+    }
+}
+
+/**
+ * MIUI 风格的 Snackbar 卡片：miuix 的白底大圆角样式，无边框、无阴影。
+ */
+@Composable
+private fun MiuixStyleSnackbar(
+    data: SnackbarData,
+    contentColor: Color,
+) {
+    MiuixSurface(
+        shape = RoundedCornerShape(16.dp),
+        // 提示条要浮在页面上，用卡片那层色（和页面底 surface 拉开），否则会和背景糊在一起
+        color = MiuixTheme.colorScheme.surfaceContainer,
+        shadowElevation = 0.dp,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            MiuixText(
+                text = data.visuals.message,
+                modifier = Modifier.weight(1f),
+                color = contentColor,
+            )
+
+            data.visuals.actionLabel?.let { label ->
+                MiuixTextButton(text = label, onClick = data::performAction)
             }
         }
     }

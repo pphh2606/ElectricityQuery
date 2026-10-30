@@ -21,18 +21,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,13 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 /**
  * 留言列表页面。
@@ -72,7 +66,6 @@ fun MessageListScreen(
         factory = MessageListViewModel.Factory(areaCode, areaName)
     ),
 ) {
-    val topBarColors = transparentTopBarColors()
     val uiState by viewModel.uiState.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val listState = rememberLazyListState()
@@ -90,35 +83,20 @@ fun MessageListScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.speakup_messages_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = null)
-                    }
-                },
-                colors = topBarColors,
-            )
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    CollapsibleScaffold(
+        title = stringResource(R.string.speakup_messages_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = uiState is MessageListViewModel.UiState.Loading,
             onRefresh = { viewModel.refresh() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, uiState is MessageListViewModel.UiState.Loading, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
+            ScrollLinkedBox(scrollModifier) {
             when (val state = uiState) {
                 is MessageListViewModel.UiState.Loading -> {
-                    // PullToRefreshBox 已显示下拉刷新指示器
+                    // AppPullToRefresh 已显示下拉刷新指示器
                 }
 
                 is MessageListViewModel.UiState.Error -> {
@@ -171,6 +149,7 @@ fun MessageListScreen(
                         }
                     }
                 }
+            }
             }
         }
     }

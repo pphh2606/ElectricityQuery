@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +27,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,17 +38,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.AppIconBox
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.core.ui.JwxtChipLabel
 import edu.cqwu.electricity.jwxt.core.ui.JwxtLabelChips
 import edu.cqwu.electricity.common.navigation.LocalNavController
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 /**
  * 「更多服务」二级页（教务首页九宫格里「更多服务」格子的落地页）。
@@ -76,47 +72,19 @@ fun JwxtMoreServiceScreen(
         nav.navigate(Routes.unifiedWebViewRoute(url, name))
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = title,
+        onBack = onBack,
+        actions = {
                     // 打开网页版：保留一条回到教务原网页的退路（与教务首页、缴费大厅顶栏一致）
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { openWeb(JwxtConstants.MORE_SERVICE_URL, title) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
-                colors = transparentTopBarColors(),
-            )
-            // 分组 chip 并入标题栏浮层：和标题栏一起模糊、固定不滚动
-            val chipLabels = remember(uiState.groups) {
-                uiState.groups.map { JwxtChipLabel(it.name, it.count) }
-            }
-            JwxtLabelChips(
-                labels = chipLabels,
-                selectedIndex = uiState.selectedGroupIndex,
-                onSelect = { viewModel.selectGroup(it) },
-            )
-        },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         when {
             uiState.requiresReLogin -> ReLoginContent(
                 requiresReLogin = true,
@@ -133,15 +101,14 @@ fun JwxtMoreServiceScreen(
             )
 
             else -> {
-                val pullState = rememberPullToRefreshState()
-                PullToRefreshBox(
+                AppPullToRefresh(
                     // 首屏也算「正在刷新」，让顶部指示器一进页面就转（页面不再有居中转圈）
                     isRefreshing = uiState.isLoading || uiState.isRefreshing,
                     onRefresh = { viewModel.load(isRefresh = true) },
-                    state = pullState,
-                    indicator = { BlurPullRefreshIndicator(pullState, uiState.isLoading || uiState.isRefreshing, topInset) },
+                    topInset = topInset,
                     modifier = Modifier.fillMaxSize(),
                 ) {
+                    ScrollLinkedBox(scrollModifier) {
                     when {
                         // 数据还没到：留白，否则会先闪一下「暂无可用的教务服务」
                         uiState.isLoading -> Box(
@@ -185,6 +152,7 @@ fun JwxtMoreServiceScreen(
                                 }
                             }
                         }
+                    }
                     }
                 }
             }

@@ -12,7 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.LocalUiStyle
 import edu.cqwu.electricity.common.settings.ReduceMotion
+import edu.cqwu.electricity.common.settings.UiStyle
+import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 /**
  * 线性进度条（determinate），默认走 M3E 波浪版；开启「减少动画」时退回普通版——
@@ -44,17 +48,22 @@ fun AppLinearProgressIndicator(
 }
 
 /**
- * 环形加载指示器（indeterminate），默认走 M3E 波浪版。
+ * 环形加载指示器（indeterminate）。
  *
- * 波浪版内部固定 size(48dp)，标准版这里也锁成 48dp，两者切换时不跳；
+ * MIUI 模式走 miuix 的 [InfiniteProgressIndicator]（圆弧 + 绕行小圆点），采用其默认 20dp；
+ * M3 模式默认走 M3E 波浪版，波浪版内部固定 size(48dp)，标准版这里也锁成 48dp，两者切换时不跳。
  * 行内的小转圈（16dp / 20dp / 24dp）请继续用 [CircularProgressIndicator]。
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppCircularProgressIndicator(modifier: Modifier = Modifier) {
-    if (LocalAppSettingsState.current.reduceMotion == ReduceMotion.ON) {
-        CircularProgressIndicator(modifier = modifier.size(48.dp))
-    } else {
-        CircularWavyProgressIndicator(modifier = modifier)
+    when {
+        LocalUiStyle.current == UiStyle.MIUI -> InfiniteProgressIndicator(
+            modifier = modifier,
+            color = MiuixTheme.colorScheme.primary,
+        )
+        LocalAppSettingsState.current.reduceMotion == ReduceMotion.ON ->
+            CircularProgressIndicator(modifier = modifier.size(48.dp))
+        else -> CircularWavyProgressIndicator(modifier = modifier)
     }
 }

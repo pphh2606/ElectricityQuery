@@ -11,9 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,11 +24,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,8 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.payment.data.PaymentMethod
 import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -104,7 +101,6 @@ fun PaymentConfirmScreen(
     onPaymentComplete: () -> Unit,
     startPolling: (String) -> Unit,
 ) {
-    val topBarColors = transparentTopBarColors()
 
     // 当前阶段：选择 → 等待 → 成功
     var phase by remember { mutableStateOf(PaymentPhase.SELECT_METHOD) }
@@ -129,23 +125,10 @@ fun PaymentConfirmScreen(
     }
 
     Box(Modifier.fillMaxSize()) {
-        BlurScaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(title, fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.common_back),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    colors = topBarColors
-                )
-            }
-        ) { topInset ->
+        CollapsibleScaffold(
+        title = title,
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -154,7 +137,9 @@ fun PaymentConfirmScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .then(scrollModifier)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (isOrderReady) {

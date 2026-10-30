@@ -20,12 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -34,27 +30,21 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -63,12 +53,13 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.person.data.PersonRow
 import edu.cqwu.electricity.person.data.PersonSearchApi
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.AppSearchField
+import edu.cqwu.electricity.common.ui.AppTopBar
 
 /**
  * 查找人员页面。
@@ -87,6 +78,7 @@ fun PersonSearchScreen(
     val uiState by viewModel.uiState.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val keyword by viewModel.keyword.collectAsState()
+    val focusRequester = remember { FocusRequester() }
     val listState = rememberLazyListState()
 
     // 检测滚动到底部，自动加载更多
@@ -104,66 +96,32 @@ fun PersonSearchScreen(
 
     BlurScaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.person_search_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
+            // ── 标题栏：返回 + 页面标题 ──
+            AppTopBar(
+                title = stringResource(R.string.person_search_title),
+                onBack = onBack,
+                // 底色交给 BlurScaffold 的标题栏浮层：它负责毛玻璃，这里必须透明
+                transparent = true,
+            )
+
+            // ── 搜索框：独立一行，排在标题栏下方 ──
+            AppSearchField(
+                value = keyword,
+                onValueChange = { viewModel.onKeywordChange(it) },
+                hint = stringResource(R.string.person_search_hint),
+                focusRequester = focusRequester,
+                onSubmit = { viewModel.search() },
+                onClear = { viewModel.clearKeyword() },
+                actions = {
+                    // 行尾搜索图标（无背景，点击触发搜索）
+                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.search() }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = stringResource(R.string.person_search_button),
                         )
                     }
                 },
-                colors = transparentTopBarColors(),
             )
-
-            // ── 搜索条（下划线样式）+ 行尾搜索图标（点击图标搜索） ──
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                TextField(
-                    value = keyword,
-                    onValueChange = { viewModel.onKeywordChange(it) },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text(stringResource(R.string.person_search_hint)) },
-                    trailingIcon = {
-                        if (keyword.isNotEmpty()) {
-                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.clearKeyword() }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = stringResource(R.string.common_clear_search),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                    ),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = { viewModel.search() }),
-                )
-
-                // 行尾搜索图标（无背景，点击触发搜索）
-                IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.search() }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = stringResource(R.string.person_search_button),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
 
             // ── 统计信息行：左「共搜索到 x 人」右「第 n/总页数 页」（排版参照账单页 BillStatsRow） ──
             val currentState = uiState as? PersonSearchViewModel.UiState.Success
@@ -182,13 +140,11 @@ fun PersonSearchScreen(
             )
         },
     ) { topInset ->
-        val pullState = rememberPullToRefreshState()
         val isRefreshing = uiState is PersonSearchViewModel.UiState.Loading
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = isRefreshing,
             onRefresh = { viewModel.refresh() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
             when (val state = uiState) {

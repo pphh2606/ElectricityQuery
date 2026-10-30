@@ -4,11 +4,9 @@ package edu.cqwu.electricity.shortcut.ui
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,7 +29,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
@@ -39,14 +36,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -97,7 +90,6 @@ fun AddShortcutScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = transparentTopBarColors()
     val scope = rememberCoroutineScope()
 
     var categories by remember { mutableStateOf<List<HomeCategory>>(emptyList()) }
@@ -129,27 +121,10 @@ fun AddShortcutScreen(
         selectedApp?.let { shortcutName = it.name }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.shortcut_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back)
-                        )
-                    }
-                },
-                colors = topBarColors
-            )
-        }
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.shortcut_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         when {
             isLoading -> {
                 Box(
@@ -163,20 +138,19 @@ fun AddShortcutScreen(
             }
             else -> {
                 // 加载失败时不再在内容区显示错误文案（toast 已提示），页面保留下拉重试入口
-                val pullState = rememberPullToRefreshState()
-                PullToRefreshBox(
+                AppPullToRefresh(
                     isRefreshing = isRefreshing,
                     onRefresh = {
                         isRefreshing = true
                         scope.launch { loadCategories() }
                     },
-                    state = pullState,
-                    indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+                    topInset = topInset,
                     modifier = Modifier.fillMaxSize(),
                 ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .then(scrollModifier)
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally

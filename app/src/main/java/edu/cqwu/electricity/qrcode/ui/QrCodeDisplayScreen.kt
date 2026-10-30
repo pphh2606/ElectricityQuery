@@ -4,15 +4,13 @@ package edu.cqwu.electricity.qrcode.ui
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonDefaults
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.SelectableContainer
 
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 import android.app.Activity
 import android.view.WindowManager
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,14 +21,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,9 +34,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -54,7 +46,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -109,7 +100,6 @@ fun QrCodeDisplayScreen(
     var qrCodeContent by rememberSaveable { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     val nav = LocalNavController.current
-    val topBarColors = transparentTopBarColors()
     val appSettings = LocalAppSettingsState.current
     val isDarkTheme = LocalAppDarkTheme.current
     // 深色模式下背景强制白色（确保扫码可读），前景色遵循用户设置
@@ -297,146 +287,45 @@ fun QrCodeDisplayScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = title,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        // Cookie 状态指示器（绿色=有效，红色=过期）
-                        Box(
-                            modifier = Modifier
-                                .size(10.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (!requiresReLogin && !isLoading)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.error
-                                )
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        shapes = IconButtonDefaults.shapes(),
-                        onClick = { fetchQrCode() },
-                        enabled = !isLoading
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Refresh,
-                            contentDescription = stringResource(R.string.common_refresh),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.QR_CODE_SETTINGS) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = stringResource(R.string.qrcode_display_settings),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                colors = topBarColors
-            )
-        }
-    ) { topInset ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
+    CollapsibleScaffold(
+        title = title,
+        onBack = onBack,
+        actions = {
+            IconButton(
+                shapes = IconButtonDefaults.shapes(),
+                onClick = { fetchQrCode() },
+                enabled = !isLoading
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = stringResource(R.string.common_refresh),
+                )
+            }
+            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.QR_CODE_SETTINGS) }) {
+                Icon(
+                    imageVector = Icons.Outlined.Settings,
+                    contentDescription = stringResource(R.string.qrcode_display_settings),
+                )
+            }
+        },
+    ) { topInset, scrollModifier ->
+        // 单一容器贯穿所有状态：加载由它自己的指示器表达（MIUI 走 miuix 的圆环与文案，
+        // M3 走 M3 指示器），不再为「首载中」单独借 PullToRefreshBox，也不再有整页加载态这一支
+        AppPullToRefresh(
+            isRefreshing = isLoading || isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                fetchQrCode()
+            },
+            topInset = topInset,
+            modifier = Modifier.fillMaxSize(),
         ) {
             when {
-                isLoading && qrCodeContent == null -> {
-                    val pullState = rememberPullToRefreshState()
-                    PullToRefreshBox(
-                        isRefreshing = true,
-                        onRefresh = {
-                            isRefreshing = true
-                            errorMessage = null
-                            fetchQrCode()
-                        },
-                        state = pullState,
-                        indicator = { BlurPullRefreshIndicator(pullState, true, topInset) },
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
-                                .padding(top = topInset)
-                        )
-                    }
-                }
-                (errorMessage != null || requiresReLogin) && qrCodeContent == null -> {
-                    // 错误状态：Session 过期显示重新登录，否则显示下拉重试
-                    if (requiresReLogin) {
-                        ReLoginContent(
-                            errorMessage = errorMessage,
-                            requiresReLogin = true,
-                            onReLogin = { nav.navigate(Routes.loginRoute()) },
-                            onRetry = {
-                                requiresReLogin = false
-                                isLoading = true
-                                errorMessage = null
-                                fetchQrCode()
-                            },
-                        )
-                    } else {
-                        val pullState = rememberPullToRefreshState()
-                        PullToRefreshBox(
-                            isRefreshing = isRefreshing,
-                            onRefresh = {
-                                isRefreshing = true
-                                errorMessage = null
-                                isLoading = true
-                                fetchQrCode()
-                            },
-                            state = pullState,
-                            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            ReLoginContent(
-                                errorMessage = errorMessage ?: stringResource(R.string.webview_error_load_failed),
-                                requiresReLogin = false,
-                                onReLogin = {},
-                                onRetry = {
-                                    isRefreshing = true
-                                    errorMessage = null
-                                    isLoading = true
-                                    fetchQrCode()
-                                },
-                                modifier = Modifier.padding(top = topInset),
-                            )
-                        }
-                    }
-                }
                 qrCodeContent != null -> {
-                    val pullState = rememberPullToRefreshState()
-                    PullToRefreshBox(
-                        isRefreshing = isRefreshing,
-                        onRefresh = {
-                            isRefreshing = true
-                            fetchQrCode()
-                        },
-                        state = pullState,
-                        indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
-                        modifier = Modifier.fillMaxSize()
-                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
+                                .then(scrollModifier)
                                 .verticalScroll(rememberScrollState())
                                 .padding(horizontal = 32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -554,8 +443,28 @@ fun QrCodeDisplayScreen(
 
                             Spacer(modifier = Modifier.height(16.dp))
                         }
-                    }
                 }
+                // 会话过期：给「去登录」，重试按钮清掉重登标记再取一次
+                requiresReLogin -> ReLoginContent(
+                    errorMessage = errorMessage,
+                    requiresReLogin = true,
+                    onReLogin = { nav.navigate(Routes.loginRoute()) },
+                    onRetry = { fetchQrCode() },
+                    modifier = Modifier
+                        .padding(top = topInset)
+                        .then(scrollModifier),
+                )
+                // 首次加载失败：下拉或点重试都重新取码
+                errorMessage != null -> ReLoginContent(
+                    errorMessage = errorMessage,
+                    requiresReLogin = false,
+                    onReLogin = {},
+                    onRetry = { fetchQrCode() },
+                    modifier = Modifier
+                        .padding(top = topInset)
+                        .then(scrollModifier),
+                )
+                // else：加载中，内容留空——容器自己的指示器在转，这就是加载态
             }
         }
     }

@@ -2,10 +2,8 @@
 
 package edu.cqwu.electricity.cardcenter.ui
 
-import androidx.compose.material3.IconButtonDefaults
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.CreditCardOff
 import androidx.compose.material.icons.outlined.DirectionsBus
@@ -22,13 +19,7 @@ import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.QrCodeType
@@ -71,32 +61,11 @@ fun CardCenterScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val nav = LocalNavController.current
-    val topBarColors = transparentTopBarColors()
-
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.card_center_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                colors = topBarColors
-            )
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    CollapsibleScaffold(
+        title = stringResource(R.string.card_center_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = isRefreshing,
             onRefresh = {
                 scope.launch {
@@ -106,12 +75,12 @@ fun CardCenterScreen(
                     isRefreshing = false
                 }
             },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                // MIUI 下靠这个连接把大标题收起来，M3 下是空操作
+                modifier = Modifier.fillMaxSize().then(scrollModifier),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {

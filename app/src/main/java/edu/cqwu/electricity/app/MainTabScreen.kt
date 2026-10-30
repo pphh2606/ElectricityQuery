@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.ReduceMotion
-import edu.cqwu.electricity.common.ui.AppNavigationBarItem
+import edu.cqwu.electricity.common.ui.AppNavigationBar
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
@@ -119,27 +118,18 @@ fun MainTabScreen(
             state = barScrollState,
             animate = animateBar,
         ) {
-            NavigationBar {
-                bottomNavTabs.forEachIndexed { index, tab ->
-                    val selected = pagerState.currentPage == index
-                    AppNavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            if (!selected) {
-                                scope.launch {
-                                    if (userScrollEnabled) {
-                                        pagerState.animateScrollToPage(index)
-                                    } else {
-                                        pagerState.scrollToPage(index)
-                                    }
-                                }
-                            }
-                        },
-                        icon = tab.icon,
-                        label = stringResource(tab.labelRes),
-                    )
+            val selectTab: (Int) -> Unit = { index ->
+                scope.launch {
+                    if (userScrollEnabled) pagerState.animateScrollToPage(index) else pagerState.scrollToPage(index)
                 }
             }
+            AppNavigationBar(
+                itemCount = bottomNavTabs.size,
+                selectedIndex = pagerState.currentPage,
+                onSelect = selectTab,
+                icon = { bottomNavTabs[it].icon },
+                label = { stringResource(bottomNavTabs[it].labelRes) },
+            )
         }
     }
 

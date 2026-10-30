@@ -41,8 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -67,7 +65,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.payment.ui.AmountGrid
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
@@ -93,6 +91,7 @@ fun RechargeScreen(
     triggerOtherRecharge: Boolean = false,
     onOtherRechargeTriggered: () -> Unit = {},
     topInset: Dp = 0.dp,
+    scrollModifier: Modifier = Modifier,
 ) {
     val recharge by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -178,16 +177,16 @@ fun RechargeScreen(
             .padding(horizontal = 16.dp)
     ) {
         Box(modifier = Modifier.weight(1f)) {
-            val pullState = rememberPullToRefreshState()
-            PullToRefreshBox(
+            AppPullToRefresh(
                 isRefreshing = recharge.isRefreshing,
                 onRefresh = { viewModel.refreshRechargeData() },
-                state = pullState,
-                indicator = { BlurPullRefreshIndicator(pullState, recharge.isRefreshing, topInset) },
+                topInset = topInset,
                 modifier = Modifier.fillMaxSize()
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(scrollModifier),
                     contentPadding = PaddingValues(vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {

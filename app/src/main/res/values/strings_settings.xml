@@ -152,6 +152,8 @@
     <string name="personalization_dynamic_color_unsupported">此设备不支持动态取色</string>
     <string name="personalization_custom_color">自定义颜色</string>
     <string name="personalization_custom_color_desc">点击进行更改:%1$s</string>
+    <string name="personalization_miuix_monet">MIUIx 取色</string>
+    <string name="personalization_miuix_monet_desc">关闭时使用 MIUI 默认蓝色，开启后按上方主题颜色生成配色</string>
     <string name="personalization_topbar_color">标题栏颜色</string>
     <string name="personalization_qrcode_settings">二维码设置</string>
     <string name="personalization_qrcode_desc">颜色、圆角等自定义样式</string>

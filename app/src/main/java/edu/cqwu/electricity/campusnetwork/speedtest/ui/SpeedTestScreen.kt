@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Send
@@ -68,11 +67,10 @@ import edu.cqwu.electricity.campusnetwork.speedtest.data.SpeedTestRecord
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestPhase
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestStats
 import edu.cqwu.electricity.campusnetwork.speedtest.engine.SpeedTestTick
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.InfoLabelWidth
 import edu.cqwu.electricity.common.ui.InfoRow
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.resolve
 import java.text.SimpleDateFormat
@@ -110,33 +108,15 @@ fun SpeedTestScreen(
     val tick by viewModel.tick.collectAsState()
     val recent by viewModel.recent.collectAsState()
     val palette = speedTestPalette()
-    val topBarColors = transparentTopBarColors()
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.speed_test_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.speed_test_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 // 底部留白 = 屏体 12dp + 尾间 24dp
                 .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 36.dp),

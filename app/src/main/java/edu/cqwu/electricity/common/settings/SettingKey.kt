@@ -184,6 +184,17 @@ object SettingsKeys {
         encode = { it.value },
     )
 
+    /**
+     * MIUI 风格下是否改用 MD3 取色。
+     *
+     * 关闭（默认）时用 miuix 内置的 MIUI 色板（标志性 #3482FF 蓝）；
+     * 开启后改用同一颗种子色 + 调色板风格 + 取色规范生成，与 Material 3 模式一致。
+     */
+    val MIUIX_MONET = booleanSetting(
+        name = "miuix_monet",
+        default = false,
+    )
+
     val LOG_LEVEL = enumSetting(
         name = "log_level",
         default = defaultLogLevel(),

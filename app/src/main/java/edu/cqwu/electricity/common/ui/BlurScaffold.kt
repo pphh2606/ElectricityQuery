@@ -99,27 +99,38 @@ fun rememberHazeSourceModifier(hazeState: HazeState): Modifier =
  * 低版本没有 RenderEffect 时退回不透明标题栏。
  *
  * @param topBar 标题栏，内部请用 [transparentTopBarColors] 让底色透明
+ * @param blur 是否做毛玻璃。正文是 WebView 的页面必须传 false：Haze 的录源走 GraphicsLayer，
+ * 而 WebView 走独立合成管线，录制结果与显示不同步（闪烁，甚至整块不绘制）。
  * @param content 页面内容，参数为顶部浮层高度
+ * @param containerColor 内容层底色（模糊源的地基）。MIUI 风格要传 miuix 的 surface，
+ *   否则深色下卡片会和 M3 的 surfaceContainer 撞成同一个色，卡片边界消失
  */
 @Composable
 fun BlurScaffold(
     topBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    blur: Boolean = true,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     content: @Composable (topInset: Dp) -> Unit,
 ) {
     val hazeState = remember { HazeState() }
     var headerHeightPx by remember { mutableIntStateOf(0) }
     val topInset = with(LocalDensity.current) { headerHeightPx.toDp() }
 
-    val headerModifier = rememberHazeBlurModifier(hazeState)
+    // 不做模糊时标题栏退回不透明底色，否则透明底会直接露出底下的内容
+    val headerModifier = if (blur) {
+        rememberHazeBlurModifier(hazeState)
+    } else {
+        Modifier.background(currentTopBarColors().containerColor)
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         // 内容层：整页作为模糊源，先绘制（开关关闭时不再录源，避免白耗）
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surfaceContainer)
-                .then(rememberHazeSourceModifier(hazeState))
+                .background(containerColor)
+                .then(if (blur) rememberHazeSourceModifier(hazeState) else Modifier)
         ) {
             // 骨架不做任何系统栏避让：底部留白由各页面在自己的滚动内容末尾补
             // （见 SpeedTestScreen 的写法）。骨架层加 padding 会缩短滚动视口，

@@ -3,10 +3,8 @@
 package edu.cqwu.electricity.cardcenter.ui
 
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.IconButtonDefaults
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 
 import androidx.compose.foundation.BorderStroke
@@ -25,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Store
@@ -35,15 +32,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -91,7 +84,6 @@ fun CardRechargeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
-    val topBarColors = transparentTopBarColors()
     val context = LocalContext.current
     val resources = LocalResources.current
     val nav = LocalNavController.current
@@ -123,35 +115,15 @@ fun CardRechargeScreen(
     val hasValidAmount = effectiveAmount != null && effectiveAmount > 0
             && (maxBalance == null || effectiveAmount <= maxBalance)
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.card_center_recharge),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                colors = topBarColors
-            )
-        }
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.card_center_recharge),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(modifier = Modifier.fillMaxSize()) {
-            val pullState = rememberPullToRefreshState()
-            PullToRefreshBox(
+            AppPullToRefresh(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = { viewModel.refreshCardInfo() },
-                state = pullState,
-                indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+                topInset = topInset,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -159,6 +131,7 @@ fun CardRechargeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .then(scrollModifier)
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)

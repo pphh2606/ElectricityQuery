@@ -35,9 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.R
@@ -54,6 +51,7 @@ import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.net.WebVpnEncoder
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.ReLoginContent
@@ -98,7 +96,9 @@ fun UnifiedWebViewScreen(
     val topBarColors = currentTopBarColors()
 
     val displayTitle = initialTitle.ifBlank { stringResource(R.string.webview_loading) }
-    val state = remember { UnifiedWebViewUiState(displayTitle) }
+    // 先从入口 URL 解析出域名：副标题第一帧就在，miuix 小标题栏不会等 WebView 回调后才长高一行
+    val initialDomain = remember(url) { Uri.parse(url).host.orEmpty() }
+    val state = remember { UnifiedWebViewUiState(displayTitle, initialDomain) }
 
     // ═══ 文件上传回调 ═══
     // 文件选择器：使用 GetContent 避免 .png 扩展名崩溃，始终用 */* 匹配所有文件类型
@@ -155,19 +155,19 @@ fun UnifiedWebViewScreen(
         }
     }
 
-    Box(Modifier.fillMaxSize()) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
+    CollapsibleScaffold(
+        title = state.pageTitle,
+        subtitle = state.pageDomain,
+        blurEnabled = false,
+        // 浏览器以内容为主，大标题会挤掉网页可视区：固定小标题，双行内容保留
+        smallTitle = true,
+        // M3 的大标题用双行（标题 + 域名）；MIUI 侧走 subtitle 槽
+        titleContent = {
                         Column {
                             Text(
                                 text = state.pageTitle,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             if (state.pageDomain.isNotBlank()) {
                                 Text(
@@ -180,7 +180,7 @@ fun UnifiedWebViewScreen(
                             }
                         }
                     },
-                    navigationIcon = {
+                    navigationContent = {
                         Row {
                             // ← 返回上一页（WebView 历史栈）；无法返回时降级为关闭浏览器，与系统返回键行为一致
                             IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
@@ -194,7 +194,6 @@ fun UnifiedWebViewScreen(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                     contentDescription = stringResource(R.string.common_back),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             // ✕ 关闭内置浏览器
@@ -202,7 +201,6 @@ fun UnifiedWebViewScreen(
                                 Icon(
                                     imageVector = Icons.Outlined.Close,
                                     contentDescription = stringResource(R.string.common_close),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -213,7 +211,6 @@ fun UnifiedWebViewScreen(
                             Icon(
                                 imageVector = Icons.Outlined.Refresh,
                                 contentDescription = stringResource(R.string.common_refresh),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
@@ -223,7 +220,6 @@ fun UnifiedWebViewScreen(
                                 Icon(
                                     imageVector = Icons.Outlined.MoreVert,
                                     contentDescription = stringResource(R.string.common_more_options),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             AppScaledDropdownMenu(
@@ -282,15 +278,13 @@ fun UnifiedWebViewScreen(
                             }
                         }
                     },
-                    colors = topBarColors
-                )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
+    ) { topInset, _ ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                // WebView 自带滚动、顶部大标题常显，内容直接排在标题栏下方
+                .padding(top = topInset)
+        ) {
                 // WebView 内容区（含进度条和错误叠加层）
                 Box(modifier = Modifier.fillMaxSize()) {
 
@@ -391,6 +385,5 @@ fun UnifiedWebViewScreen(
                     }
                 } // end Box (WebView 内容区)
             } // end Column
-        } // end Scaffold
-    } // end outer Box
+    } // end CollapsibleScaffold
 }

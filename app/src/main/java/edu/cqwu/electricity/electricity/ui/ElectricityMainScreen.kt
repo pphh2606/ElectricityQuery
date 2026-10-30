@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Home
@@ -35,10 +34,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -66,8 +63,8 @@ import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.electricity.data.SelectionStep
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.ReduceMotion
-import edu.cqwu.electricity.common.ui.AppNavigationBarItem
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.AppNavigationBar
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.SheetItemGroup
@@ -206,29 +203,17 @@ fun ElectricityMainScreen(
     Box(
         modifier = Modifier.trackBottomBarScroll(barScrollState),
     ) {
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(currentTitle, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(
-                        shapes = IconButtonDefaults.shapes(),
-                        onClick = {
-                            if (pagerState.currentPage == 0) {
-                                handleQueryTabBack()
-                            } else {
-                                onBack()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = currentTitle,
+        onBack = {
+            if (pagerState.currentPage == 0) {
+                handleQueryTabBack()
+            } else {
+                onBack()
+            }
+        },
+        topBarColors = topBarColors,
+        actions = {
                     // ── Tab 0：查询 Tab 显示余额结果时，显示三点菜单 ──
                     if (pagerState.currentPage == 0 && showQueryResult) {
                         DashboardMenuButton(room = room, balance = balance)
@@ -239,7 +224,6 @@ fun ElectricityMainScreen(
                             Icon(
                                 imageVector = Icons.Outlined.Info,
                                 contentDescription = stringResource(R.string.recharge_hint),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -259,7 +243,6 @@ fun ElectricityMainScreen(
                                 Icon(
                                     imageVector = Icons.Outlined.MoreVert,
                                     contentDescription = stringResource(R.string.common_more_options),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             AppScaledDropdownMenu(
@@ -288,11 +271,8 @@ fun ElectricityMainScreen(
                             }
                         }
                     }
-                },
-                colors = topBarColors
-            )
         },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
@@ -309,11 +289,13 @@ fun ElectricityMainScreen(
                             error = uiState.error,
                             onRefresh = { viewModel.refreshBalance() },
                             topInset = topInset,
+                            scrollModifier = scrollModifier,
                         )
                     } else {
                         BuildingSelectionScreen(
                             viewModel = viewModel,
                             topInset = topInset,
+                            scrollModifier = scrollModifier,
                         )
                     }
                 }
@@ -324,6 +306,7 @@ fun ElectricityMainScreen(
                         triggerOtherRecharge = triggerOtherRecharge,
                         onOtherRechargeTriggered = { triggerOtherRecharge = false },
                         topInset = topInset,
+                        scrollModifier = scrollModifier,
                     )
                 }
                 2 -> {
@@ -332,6 +315,7 @@ fun ElectricityMainScreen(
                         viewModel = myRoomViewModel,
                         onReLogin = { nav.navigate(Routes.loginRoute()) },
                         topInset = topInset,
+                        scrollModifier = scrollModifier,
                     )
                 }
             }
@@ -343,21 +327,13 @@ fun ElectricityMainScreen(
             state = barScrollState,
             animate = animateBar,
         ) {
-            NavigationBar {
-                electricityTabIcons.forEachIndexed { index, icon ->
-                    val selected = pagerState.currentPage == index
-                    AppNavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            if (!selected) {
-                                scope.launch { pagerState.animateScrollToPage(index) }
-                            }
-                        },
-                        icon = icon,
-                        label = stringResource(electricityTabLabelKeys[index]),
-                    )
-                }
-            }
+            AppNavigationBar(
+                itemCount = electricityTabIcons.size,
+                selectedIndex = pagerState.currentPage,
+                onSelect = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
+                icon = { electricityTabIcons[it] },
+                label = { stringResource(electricityTabLabelKeys[it]) },
+            )
         }
     }
 
@@ -498,6 +474,7 @@ private fun MyRoomDashboardTab(
     viewModel: MyRoomViewModel,
     onReLogin: () -> Unit,
     topInset: Dp = 0.dp,
+    scrollModifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbar = LocalSnackbarController.current
@@ -559,6 +536,7 @@ private fun MyRoomDashboardTab(
             error = uiState.error,
             onRefresh = { viewModel.refreshBalance() },
             topInset = topInset,
+            scrollModifier = scrollModifier,
         )
     }
 }

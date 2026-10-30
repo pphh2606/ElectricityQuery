@@ -3,9 +3,16 @@ package edu.cqwu.electricity.settings.ui
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -21,16 +28,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.common.settings.LocalUiStyle
+import edu.cqwu.electricity.common.settings.UiStyle
 import edu.cqwu.electricity.common.ui.LocalSegmentedShape
 import edu.cqwu.electricity.common.ui.SegmentedGroup
 import edu.cqwu.electricity.common.ui.SegmentedGroupScope
 import edu.cqwu.electricity.common.ui.SegmentedOuterCorner
+import top.yukonga.miuix.kmp.basic.BasicComponent as MiuixBasicComponent
+import top.yukonga.miuix.kmp.basic.Card as MiuixCard
+import top.yukonga.miuix.kmp.basic.Text as MiuixText
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 /**
  * 设置分组：一张 16dp 圆角大卡，行间 2dp，首尾行 16dp 外角、中间行 5dp 连接角。
@@ -42,6 +57,17 @@ fun SettingsGroup(
     modifier: Modifier = Modifier,
     content: @Composable SegmentedGroupScope.() -> Unit,
 ) {
+    if (LocalUiStyle.current == UiStyle.MIUI) {
+        // MIUI：一张白色大卡包住所有行，行与行紧贴（没有分段圆角，也没有 2dp 缝隙）
+        MiuixCard(
+            modifier = modifier.fillMaxWidth(),
+            cornerRadius = 16.dp,
+            insideMargin = PaddingValues(0.dp),
+        ) {
+            SegmentedGroup(modifier = Modifier.fillMaxWidth(), gap = 0.dp, content = content)
+        }
+        return
+    }
     SegmentedGroup(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -52,6 +78,11 @@ fun SettingsGroup(
 /** 组内的非行内容（分段按钮、展开面板等）：给它组内形状与行底色。 */
 @Composable
 internal fun SettingsGroupBlock(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    if (LocalUiStyle.current == UiStyle.MIUI) {
+        // MIUI 下底色已经由外层大卡提供，这里只要一块不裁角的容器
+        Box(modifier = modifier.fillMaxWidth()) { content() }
+        return
+    }
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -156,8 +187,30 @@ internal fun SettingsListItem(
         }
     }
     // ListItem 的最小高度固定为 56dp/72dp，不随系统字体缩放；按 fontScale 放大，双行基准取 80dp。
+    // MIUI 的基准更紧（单行 56、双行 72），miuix 自己也是这个量级，不要拿 M3 的 80dp 套过去。
     val twoLine = subtitle != null || supporting != null
-    val minHeight = (if (twoLine) 80.dp else 56.dp) * LocalDensity.current.fontScale
+    val fontScale = LocalDensity.current.fontScale
+    val minHeight = (if (twoLine) 80.dp else 56.dp) * fontScale
+    val miuixMinHeight = (if (twoLine) 72.dp else 56.dp) * fontScale
+
+    if (LocalUiStyle.current == UiStyle.MIUI) {
+        // MIUI 的设置项前面不摆装饰性图标（系统设置和 installerx 都是纯文字），
+        // 所以只放调用方显式传入的 leading——单选圈、色块、头像这类属于功能或信息，不能省。
+        MiuixSettingsRow(
+            title = title,
+            onClick = onClick,
+            subtitle = subtitle,
+            leadingBlock = leading,
+            supportingBlock = supportingBlock,
+            trailing = trailing,
+            enabled = enabled,
+            alpha = alpha,
+            titleColor = titleColor,
+            minHeight = miuixMinHeight,
+        )
+        return
+    }
+
     val rowModifier = Modifier
         .fillMaxWidth()
         .heightIn(min = minHeight)
@@ -204,4 +257,82 @@ internal fun SettingsListItem(
             content = headline,
         )
     }
+}
+
+/**
+ * 设置行的 MIUI 实现。
+ *
+ * 普通行交给 miuix 的 [MiuixBasicComponent]——行高、字体、按压反馈都是 MIUI 调好的；
+ * 带自定义副内容（[supportingBlock]）或自定义标题色的行它表达不出来，退回自绘一行。
+ */
+@Composable
+private fun MiuixSettingsRow(
+    title: String,
+    onClick: (() -> Unit)?,
+    subtitle: String?,
+    leadingBlock: (@Composable () -> Unit)?,
+    supportingBlock: (@Composable () -> Unit)?,
+    trailing: (@Composable () -> Unit)?,
+    enabled: Boolean,
+    alpha: Float,
+    titleColor: Color?,
+    minHeight: Dp,
+) {
+    if (supportingBlock != null || titleColor != null) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = minHeight)
+                .then(
+                    if (onClick != null && enabled) Modifier.clickable(onClick = onClick) else Modifier
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .alpha(alpha),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            leadingBlock?.let {
+                it()
+                Spacer(Modifier.width(16.dp))
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = titleColor ?: MaterialTheme.colorScheme.onSurface,
+                )
+                supportingBlock?.invoke()
+            }
+            trailing?.invoke()
+        }
+        return
+    }
+
+    // 单行项不传 summary：miuix 的 BasicComponent 对空串也会渲染出一行，
+    // 白白把 56dp 的行撑到 68dp；改用只画标题的内容重载，高度交回组件自己的最小值。
+    if (subtitle.isNullOrEmpty()) {
+        MiuixBasicComponent(
+            modifier = Modifier.alpha(alpha),
+            startAction = leadingBlock,
+            endActions = { trailing?.invoke() },
+            onClick = onClick ?: {},
+            enabled = enabled && onClick != null,
+        ) {
+            MiuixText(
+                text = title,
+                style = MiuixTheme.textStyles.headline1,
+            )
+        }
+        return
+    }
+
+    MiuixBasicComponent(
+        modifier = Modifier.alpha(alpha),
+        title = title,
+        summary = subtitle,
+        enabled = enabled && onClick != null,
+        onClick = onClick ?: {},
+        startAction = leadingBlock,
+        endActions = { trailing?.invoke() },
+    )
 }

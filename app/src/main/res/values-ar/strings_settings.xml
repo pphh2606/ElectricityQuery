@@ -152,6 +152,8 @@
     <string name="personalization_dynamic_color_unsupported">اللون الديناميكي غير مدعوم على هذا الجهاز</string>
     <string name="personalization_custom_color">لون مخصص</string>
     <string name="personalization_custom_color_desc">اضغط للتغيير:%1$s</string>
+    <string name="personalization_miuix_monet">ألوان MIUIx المخصصة</string>
+    <string name="personalization_miuix_monet_desc">عند الإيقاف يُستخدم أزرق MIUI الافتراضي، وعند التشغيل يتبع ألوان السمة أعلاه</string>
     <string name="personalization_topbar_color">لون شريط العنوان</string>
     <string name="personalization_qrcode_settings">إعدادات رمز QR</string>
     <string name="personalization_qrcode_desc">اللون، الزوايا المستديرة وأنماط أخرى</string>

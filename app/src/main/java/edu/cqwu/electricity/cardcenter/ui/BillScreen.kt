@@ -6,14 +6,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
-
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import edu.cqwu.electricity.common.ui.AppTabRow
+import edu.cqwu.electricity.common.ui.ListStatsRow
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,10 +33,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.OpenInBrowser
@@ -52,12 +52,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,14 +78,12 @@ import edu.cqwu.electricity.cardcenter.data.BillPageInfo
 import edu.cqwu.electricity.cardcenter.data.CardCenterApi
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
-import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.webview.ui.WebViewBottomSheet
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 /**
  * 账单页面 — 本地化 UI
@@ -185,30 +179,14 @@ fun BillScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.bill_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.bill_title),
+        onBack = onBack,
+        actions = {
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showHintDialog = true }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                             contentDescription = stringResource(R.string.bill_hint_title),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     val webTitle = stringResource(R.string.bill_web_title)
@@ -216,7 +194,6 @@ fun BillScreen(
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { viewModel.toggleFilterPanel() }) {
@@ -230,78 +207,62 @@ fun BillScreen(
                         )
                     }
                 },
-                colors = transparentTopBarColors()
-            )
-            // 标签页切换栏、筛选面板、当前页统计行并入标题栏浮层：和标题栏一起模糊、固定不滚动
-            PrimaryTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                modifier = Modifier.fillMaxWidth(),
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.primary,
-                divider = {},
-            ) {
-                tabLabelKeys.forEachIndexed { index, key ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            scope.launch { pagerState.animateScrollToPage(index) }
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(key),
-                                fontWeight = if (pagerState.currentPage == index)
-                                    FontWeight.Bold else FontWeight.Normal
-                            )
-                        }
+        // 类型切换栏、筛选面板、当前页统计行并入标题栏浮层：和标题栏一起模糊、固定不滚动
+        expandedTopContent = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                AppTabRow(
+                    tabs = tabLabelKeys.map { stringResource(it) },
+                    selectedIndex = pagerState.currentPage,
+                    onTabSelected = { index ->
+                        scope.launch { pagerState.animateScrollToPage(index) }
+                    },
+                )
+                AnimatedVisibility(
+                    visible = uiState.showFilterPanel,
+                    enter = expandVertically(),
+                    exit = shrinkVertically(),
+                ) {
+                    FilterPanel(
+                        searchQuery = uiState.tempSearchQuery,
+                        onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
+                        startDate = uiState.tempStartDate,
+                        onStartDateChange = { viewModel.onStartDateChange(it) },
+                        endDate = uiState.tempEndDate,
+                        onEndDateChange = { viewModel.onEndDateChange(it) },
+                        incomeChecked = uiState.tempIncome,
+                        onIncomeCheckedChange = { viewModel.onIncomeCheckedChange(it) },
+                        expenseChecked = uiState.tempExpense,
+                        onExpenseCheckedChange = { viewModel.onExpenseCheckedChange(it) },
+                        onApply = { viewModel.applyFilter() },
+                        onReset = { viewModel.resetFilter() },
                     )
                 }
-            }
-            AnimatedVisibility(
-                visible = uiState.showFilterPanel,
-                enter = expandVertically(),
-                exit = shrinkVertically()
-            ) {
-                FilterPanel(
-                    searchQuery = uiState.tempSearchQuery,
-                    onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
-                    startDate = uiState.tempStartDate,
-                    onStartDateChange = { viewModel.onStartDateChange(it) },
-                    endDate = uiState.tempEndDate,
-                    onEndDateChange = { viewModel.onEndDateChange(it) },
-                    incomeChecked = uiState.tempIncome,
-                    onIncomeCheckedChange = { viewModel.onIncomeCheckedChange(it) },
-                    expenseChecked = uiState.tempExpense,
-                    onExpenseCheckedChange = { viewModel.onExpenseCheckedChange(it) },
-                    onApply = { viewModel.applyFilter() },
-                    onReset = { viewModel.resetFilter() }
+                val currentTabNo = tabTabNo[pagerState.currentPage]
+                val currentPageInfo = uiState.tabCache[currentTabNo]
+                ListStatsRow(
+                    loadedCount = currentPageInfo?.records?.size ?: 0,
+                    currentPage = currentPageInfo?.currentPage ?: 0,
+                    totalPages = currentPageInfo?.totalPages ?: 0,
+                    visible = currentPageInfo != null && currentPageInfo.records.isNotEmpty(),
                 )
             }
-            val currentTabNo = tabTabNo[pagerState.currentPage]
-            val currentPageInfo = uiState.tabCache[currentTabNo]
-            ListStatsRow(
-                loadedCount = currentPageInfo?.records?.size ?: 0,
-                currentPage = currentPageInfo?.currentPage ?: 0,
-                totalPages = currentPageInfo?.totalPages ?: 0,
-                visible = currentPageInfo != null && currentPageInfo.records.isNotEmpty(),
-            )
-        }
-    ) { topInset ->
+        },
+    ) { topInset, scrollModifier ->
         // ── HorizontalPager 内容区域 ──
             // 每个 page 从 tabCache 读取自己的数据，避免预加载时显示其他 tab 的错误数据。
             // 无缓存时 pageInfo 为 null，由该 Tab 自己的加载态（perTabLoading）决定显示加载还是暂无数据。
             HorizontalPager(
                 state = pagerState,
+                // 滚动连接下沉到每个 page 的列表：挂在外层会被 PullToRefreshBox 吃掉下拉位移
                 modifier = Modifier.fillMaxSize()
             ) { pageIndex ->
                 val pageTabNo = tabTabNo[pageIndex]
                 // 从 tabCache 取该 page 独立的数据，无缓存时返回 null（显示空数据/加载态）
                 val pageInfo = uiState.tabCache[pageTabNo]
-                val pullState = rememberPullToRefreshState()
-                PullToRefreshBox(
+                AppPullToRefresh(
                     isRefreshing = uiState.isRefreshing && pageTabNo == uiState.activeTab,
                     onRefresh = { viewModel.loadBills(isRefresh = true) },
-                    state = pullState,
-                    indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing && pageTabNo == uiState.activeTab, topInset) },
+                    topInset = topInset,
                     modifier = Modifier.fillMaxSize()
                 ) {
                    if (uiState.perTabLoading[pageTabNo] == true) {
@@ -316,7 +277,7 @@ fun BillScreen(
                        Column(modifier = Modifier.fillMaxSize()) {
                            LazyColumn(
                                state = listStates[pageIndex],
-                               modifier = Modifier.fillMaxSize(),
+                               modifier = Modifier.fillMaxSize().then(scrollModifier),
                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                                verticalArrangement = Arrangement.spacedBy(0.dp)
                            ) {

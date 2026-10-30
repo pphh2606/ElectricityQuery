@@ -28,11 +28,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Person
@@ -42,11 +42,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -65,12 +62,13 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.notice.data.NoticeApi
@@ -79,7 +77,6 @@ import edu.cqwu.electricity.notice.data.NoticeItem
 import edu.cqwu.electricity.notice.data.formatNoticeTime
 import edu.cqwu.electricity.common.settings.isDark
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
 import edu.cqwu.electricity.webview.util.applyWebViewDarkMode
 import edu.cqwu.electricity.webview.util.rememberWebViewDarkModeState
 import kotlinx.coroutines.Dispatchers
@@ -100,7 +97,6 @@ fun NoticeDetailScreen(
 ) {
     val scope = rememberCoroutineScope()
     var detail by remember { mutableStateOf<NoticeDetailQp?>(null) }
-    val topBarColors = currentTopBarColors()
     var isRefreshing by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var requiresReLogin by remember { mutableStateOf(false) }
@@ -193,69 +189,46 @@ fun NoticeDetailScreen(
 
     // 本页正文是 WebView：Haze 的模糊源每帧会把内容录进 GraphicsLayer，
     // 而 WebView 走独立合成管线，录制结果与显示不同步（闪烁，甚至整块不绘制）。
-    // 因此本页不做标题栏毛玻璃，保持普通 Scaffold。
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.notice_detail_title),
-                        // 与其他页面一致：用 TopAppBar 默认 titleLarge，不再压成 titleMedium
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+    // 因此本页接统一壳但不启用标题栏毛玻璃（blurEnabled = false）。
+    CollapsibleScaffold(
+        title = stringResource(R.string.notice_detail_title),
+        onBack = onBack,
+        blurEnabled = false,
+        actions = {
+            if (detail != null) {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = { shareNotice() }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = stringResource(R.string.common_share),
                     )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                }
+                IconButton(
+                    shapes = IconButtonDefaults.shapes(),
+                    onClick = {
+                        val detailData = detail ?: return@IconButton
+                        val url = "https://ehall.cqwu.edu.cn/publicapp/sys/tzggxt/mobile/index.html#!/detail?noticeId=$wid"
+                        onOpenInBrowser(url, detailData.noticeTitle)
                     }
-                },
-                actions = {
-                    if (detail != null) {
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { shareNotice() }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Share,
-                                contentDescription = stringResource(R.string.common_share),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        IconButton(
-                            shapes = IconButtonDefaults.shapes(),
-                            onClick = {
-                                val detailData = detail ?: return@IconButton
-                                val url = "https://ehall.cqwu.edu.cn/publicapp/sys/tzggxt/mobile/index.html#!/detail?noticeId=$wid"
-                                onOpenInBrowser(url, detailData.noticeTitle)
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.OpenInBrowser,
-                                contentDescription = stringResource(R.string.common_open_in_browser),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                },
-                colors = topBarColors
-            )
-        }
-    ) { paddingValues ->
-        PullToRefreshBox(
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.OpenInBrowser,
+                        contentDescription = stringResource(R.string.common_open_in_browser),
+                    )
+                }
+            }
+        },
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = isRefreshing,
             onRefresh = { loadDetail(isRefresh = true) },
+            topInset = topInset,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
         ) {
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 val density = LocalDensity.current
-                // 可视高度已由外层 padding 扣掉 TopAppBar，内容区据此占满整屏
-                val availableHeight = maxHeight
+                // 可视高度扣掉标题栏浮层，内容区据此占满整屏
+                val availableHeight = (maxHeight - topInset).coerceAtLeast(0.dp)
                 val detailData = detail
 
                 // 头部四个字段优先取详情接口的值，缺失时回退到列表页预加载值。
@@ -283,12 +256,15 @@ fun NoticeDetailScreen(
                 // 160dp 下限避免标题很长时把内容压成一条缝
                 val contentAreaHeight = (availableHeight - headerHeight).coerceAtLeast(160.dp)
 
-                // 整页统一滚动（PullToRefreshBox 才检测得到下拉）：头部常显，正文/加载/错误同容器切换
+                // 整页统一滚动（AppPullToRefresh 才检测得到下拉）：头部常显，正文/加载/错误同容器切换
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .then(scrollModifier)
                         .verticalScroll(rememberScrollState())
                 ) {
+                    // 标题栏是浮在内容上的：首项留白必须随内容一起滚走，否则内容永远进不到标题栏背后
+                    Spacer(Modifier.height(topInset))
                     // ── 头部（标题 + 元数据行）：有预加载数据或详情数据即显示，不等详情接口 ──
                     if (hasHeader) {
                         Column(

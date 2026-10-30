@@ -4,7 +4,6 @@ package edu.cqwu.electricity.settings.ui
 
 import android.os.Build
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.IconButtonDefaults
 import kotlin.math.roundToInt
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -27,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Animation
 import androidx.compose.material.icons.outlined.AutoAwesome
@@ -49,7 +47,6 @@ import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -57,9 +54,6 @@ import androidx.compose.material3.rememberSliderState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -73,7 +67,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -99,8 +92,7 @@ import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -124,28 +116,15 @@ fun PersonalizationScreen(
     var draftFontScale by remember(appSettings.fontScale) { mutableFloatStateOf(appSettings.fontScale) }
     val displayedFontScale = if (showFontSizeSlider) draftFontScale else appSettings.fontScale
     val customSeedColor = (appSettings.colorSource as? ThemeColorSource.Custom)?.seedColor ?: Color(0xFF6750A4)
-    val topBarColors = transparentTopBarColors()
-    val topAppBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
 
-    BlurScaffold(
-        topBar = {
-            LargeFlexibleTopAppBar(
-                title = { Text(text = stringResource(R.string.personalization_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
-                    }
-                },
-                colors = topBarColors,
-                scrollBehavior = scrollBehavior,
-            )
-        },
-    ) { topInset ->
+    CollapsibleScaffold(
+        title = stringResource(R.string.personalization_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .then(scrollModifier)
                 .verticalScroll(rememberScrollState())
                 .padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
         ) {
@@ -383,6 +362,18 @@ fun PersonalizationScreen(
                         subtitle = stringResource(R.string.miui_showcase_desc),
                         onClick = onNavigateToMiuiShowcase,
                     )
+                }
+                // MIUI 风格专属：关闭用 miuix 内置 MIUI 蓝，开启改用上面的 MD3 取色设置
+                if (appSettings.uiStyle == UiStyle.MIUI) {
+                    item {
+                        SettingsSwitchEntry(
+                            icon = Icons.Outlined.Colorize,
+                            title = stringResource(R.string.personalization_miuix_monet),
+                            subtitle = stringResource(R.string.personalization_miuix_monet_desc),
+                            checked = appSettings.miuixMonet,
+                            onCheckedChange = appSettings::updateMiuixMonet,
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))

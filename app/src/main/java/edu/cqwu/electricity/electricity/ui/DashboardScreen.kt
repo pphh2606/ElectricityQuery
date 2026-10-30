@@ -42,8 +42,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +61,7 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.InfoRow
@@ -101,22 +99,23 @@ fun DashboardScreen(
     error: UiMessage?,
     onRefresh: () -> Unit,
     topInset: Dp = 0.dp,
+    scrollModifier: Modifier = Modifier,
 ) {
     val nav = LocalNavController.current
     val resources = LocalResources.current
 
-    val pullState = rememberPullToRefreshState()
-    PullToRefreshBox(
+    AppPullToRefresh(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        state = pullState,
-        indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+        topInset = topInset,
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .then(scrollModifier),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {

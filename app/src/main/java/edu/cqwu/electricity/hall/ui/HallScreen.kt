@@ -55,8 +55,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -87,6 +85,8 @@ import coil.request.ImageRequest
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.settings.AppLanguage
+import edu.cqwu.electricity.common.settings.LocalUiStyle
+import edu.cqwu.electricity.common.settings.UiStyle
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.hall.data.HallCategory
 import edu.cqwu.electricity.hall.data.HallI18n
@@ -95,13 +95,14 @@ import edu.cqwu.electricity.hall.data.HallServiceLabel
 import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
 import edu.cqwu.electricity.common.ui.rememberHazeSourceModifier
 import kotlinx.coroutines.launch
 import java.util.Locale
+import top.yukonga.miuix.kmp.basic.TabRow as MiuixTabRow
 
 /**
  * 大厅页面内容（不含 Scaffold / TopAppBar / BottomBar）。
@@ -198,12 +199,10 @@ fun HallPageContent(
                 .fillMaxSize()
                 .then(rememberHazeSourceModifier(hallBlurState))
         ) {
-            val pullState = rememberPullToRefreshState()
-            PullToRefreshBox(
+            AppPullToRefresh(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = { hallViewModel.refresh() },
-                state = pullState,
-                indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, hallTopInset) },
+                topInset = hallTopInset,
                 modifier = Modifier.fillMaxSize(),
             ) {
                 HorizontalPager(
@@ -291,31 +290,39 @@ fun HallPageContent(
                 .statusBarsPadding()
         ) {
             // ═══ 顶部 Tab 栏：全部 / 收藏 / 搜索（与标题栏一起模糊）═══
-            PrimaryTabRow(
-                selectedTabIndex = hallPagerState.currentPage,
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.primary,
-                divider = {},
-            ) {
-                val tabs = listOf(
-                    stringResource(R.string.hall_tab_all),
-                    stringResource(R.string.hall_tab_favorites),
-                    stringResource(R.string.common_search),
+            // 大厅刻意不做大标题：根页面直接以 Tab 开头，两套风格只换 Tab 组件
+            val tabTitles = listOf(
+                stringResource(R.string.hall_tab_all),
+                stringResource(R.string.hall_tab_favorites),
+                stringResource(R.string.common_search),
+            )
+            if (LocalUiStyle.current == UiStyle.MIUI) {
+                MiuixTabRow(
+                    tabs = tabTitles,
+                    selectedTabIndex = hallPagerState.currentPage,
+                    onTabSelected = { index ->
+                        scope.launch { hallPagerState.animateScrollToPage(index) }
+                        hallViewModel.selectTab(index)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
                 )
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = hallPagerState.currentPage == index,
-                        onClick = {
-                            scope.launch { hallPagerState.animateScrollToPage(index) }
-                            hallViewModel.selectTab(index)
-                        },
-                        text = {
-                            Text(
-                                text = title,
-                                fontWeight = if (hallPagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal,
-                            )
-                        },
-                    )
+            } else {
+                PrimaryTabRow(
+                    selectedTabIndex = hallPagerState.currentPage,
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    divider = {},
+                ) {
+                    tabTitles.forEachIndexed { index, title ->
+                        Tab(
+                            selected = hallPagerState.currentPage == index,
+                            onClick = {
+                                scope.launch { hallPagerState.animateScrollToPage(index) }
+                                hallViewModel.selectTab(index)
+                            },
+                            text = { Text(text = title) },
+                        )
+                    }
                 }
             }
 

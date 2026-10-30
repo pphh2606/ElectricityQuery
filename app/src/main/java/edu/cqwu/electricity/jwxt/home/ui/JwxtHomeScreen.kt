@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,9 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -35,12 +31,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.common.navigation.LocalNavController
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 /**
  * 教务首页（本地化仿写 jwfw `/jwmobile` 首页）。
@@ -89,40 +84,20 @@ fun JwxtHomeScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    BlurScaffold(
-        // 不传 bottomBar：本页是独立路由，因此不会有底部三 tab
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = jwxtTitle,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = jwxtTitle,
+        onBack = onBack,
+        actions = {
                     // 打开网页版：用内置浏览器打开教务首页；网页端发现没有 token 时
                     // 会自己请求 /jwmobile/auth/index 完成一次 CAS 登录（抓包第 2 步），无需额外处理
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { openWeb(JwxtConstants.INDEX_URL, jwxtTitle) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
-                colors = transparentTopBarColors(),
-            )
-        },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         when {
             uiState.requiresReLogin -> ReLoginContent(
                 requiresReLogin = true,
@@ -139,17 +114,15 @@ fun JwxtHomeScreen(
             )
 
             else -> {
-                val pullState = rememberPullToRefreshState()
-                PullToRefreshBox(
+                AppPullToRefresh(
                     // 首屏也算"正在刷新"：让顶部的下拉指示器一进页面就显示（与项目其它列表页下拉时同一个动画）
                     isRefreshing = uiState.isLoading || uiState.isRefreshing,
                     onRefresh = { viewModel.load(isRefresh = true) },
-                    state = pullState,
-                    indicator = { BlurPullRefreshIndicator(pullState, uiState.isLoading || uiState.isRefreshing, topInset) },
+                    topInset = topInset,
                     modifier = Modifier.fillMaxSize(),
                 ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().then(scrollModifier),
                     // 顶部不留间距：分类 chip 紧贴顶栏，与首页分区索引栏的规格一致
                     contentPadding = PaddingValues(bottom = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),

@@ -2,11 +2,10 @@
 
 package edu.cqwu.electricity.cardcenter.ui
 
-import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.common.ui.AppSaveFab
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material.icons.outlined.RadioButtonChecked
@@ -36,14 +34,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -85,7 +79,6 @@ fun BankCardBindScreen(
     val uiState by viewModel.uiState.collectAsState()
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = transparentTopBarColors()
     var showUnbindConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.loadError) {
@@ -110,40 +103,17 @@ fun BankCardBindScreen(
         }
     }
 
-    BlurScaffold(
-        // 键盘弹出时让出 IME 高度，避免遮挡右下角"绑定"按钮
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.bank_card_bind_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                colors = topBarColors
-            )
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    CollapsibleScaffold(
+        title = stringResource(R.string.bank_card_bind_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = uiState.isRefreshing,
             onRefresh = { viewModel.refresh() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
+            ScrollLinkedBox(scrollModifier) {
             when {
                 uiState.requiresReLogin -> {
                     ReLoginContent(
@@ -184,6 +154,7 @@ fun BankCardBindScreen(
                         topInset = topInset,
                     )
                 }
+            }
             }
         }
     }

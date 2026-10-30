@@ -3,11 +3,10 @@
 package edu.cqwu.electricity.cardcenter.ui
 
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.IconButtonDefaults
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
@@ -30,7 +29,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.CreditCardOff
 import androidx.compose.material3.Button
@@ -42,12 +40,8 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -167,37 +161,17 @@ fun CardLostScreen(
         loadCardInfo()
     }
 
-    val topBarColors = transparentTopBarColors()
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.card_lost_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                colors = topBarColors
-            )
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    CollapsibleScaffold(
+        title = stringResource(R.string.card_lost_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = isRefreshing,
             onRefresh = { loadCardInfo(isRefresh = true) },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
+            ScrollLinkedBox(scrollModifier) {
             when {
                 isLoading -> {
                     Box(
@@ -237,6 +211,7 @@ fun CardLostScreen(
                         topInset = topInset
                     )
                 }
+            }
             }
         }
     }

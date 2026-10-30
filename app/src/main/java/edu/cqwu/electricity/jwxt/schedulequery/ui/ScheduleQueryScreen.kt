@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,9 +29,8 @@ import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.InfoRowDivider
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.core.model.ScheduleTargetType
 
@@ -59,36 +58,24 @@ fun JwxtScheduleQueryScreen(
     val nav = LocalNavController.current
     val title = stringResource(R.string.jwxt_schedule_query_title)
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = title, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = title,
+        onBack = onBack,
+        actions = {
                     // 打开网页版：保留一条回到教务原页面的退路（与其它教务页面顶栏一致）
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCHEDULE_QUERY_URL, title)) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
-                colors = transparentTopBarColors(),
-            )
-        },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .then(scrollModifier)
+                .verticalScroll(rememberScrollState())
                 .padding(top = topInset),
         ) {
             ScheduleTargetType.entries.forEachIndexed { index, type ->

@@ -97,6 +97,7 @@ class SegmentedGroupScope internal constructor() {
 fun SegmentedGroup(
     modifier: Modifier = Modifier,
     containerColor: Color? = null,
+    gap: Dp = SegmentedGap,
     content: @Composable SegmentedGroupScope.() -> Unit,
 ) {
     val scope = remember { SegmentedGroupScope() }
@@ -108,10 +109,10 @@ fun SegmentedGroup(
             shape = RoundedCornerShape(SegmentedOuterCorner),
             color = containerColor,
         ) {
-            SegmentedItems(scope.items)
+            SegmentedItems(scope.items, gap = gap)
         }
     } else {
-        SegmentedItems(scope.items, modifier)
+        SegmentedItems(scope.items, modifier, gap)
     }
 }
 
@@ -119,10 +120,11 @@ fun SegmentedGroup(
 private fun SegmentedItems(
     items: List<@Composable () -> Unit>,
     modifier: Modifier = Modifier,
+    gap: Dp = SegmentedGap,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(SegmentedGap),
+        verticalArrangement = Arrangement.spacedBy(gap),
     ) {
         items.forEachIndexed { index, item ->
             val corners = segmentedCorners(index, items.size)

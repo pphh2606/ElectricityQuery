@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.EventBusy
@@ -27,8 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -57,12 +54,13 @@ import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
 import edu.cqwu.electricity.common.net.HtmlFormParser
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
+import edu.cqwu.electricity.common.ui.AppTopBar
 import edu.cqwu.electricity.common.ui.SheetItemGroup
 import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.core.model.JwxtScheduleTarget
 import edu.cqwu.electricity.jwxt.core.model.JwxtTimetableCourse
@@ -153,7 +151,7 @@ fun JwxtTimetableScreen(
                             .padding(top = topBarInset),
                     ) {
                         navigatorRow()
-                        PullToRefreshBox(
+                        AppPullToRefresh(
                             // 首次加载也算「正在刷新」，让顶部下拉指示器一进页面就出现（与教务首页、成绩页一致）
                             isRefreshing = uiState.isLoading || uiState.isRefreshing,
                             onRefresh = { viewModel.refresh() },
@@ -228,22 +226,10 @@ fun JwxtTimetableScreen(
                 // 标题栏空白区域的点击不要穿透到底下的网格
                 .pointerInput(Unit) { detectTapGestures { } },
         ) {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
+            AppTopBar(
+                title = title,
+                onBack = onBack,
+                transparent = true,
                 actions = {
                     // 未排节次：接口确实下发了未排课程时才出现（实测教师 / 教室课表可能一条都没有）
                     if (uiState.notArrangedCourses.isNotEmpty()) {
@@ -251,7 +237,6 @@ fun JwxtTimetableScreen(
                             Icon(
                                 imageVector = Icons.Outlined.EventBusy,
                                 contentDescription = stringResource(R.string.jwxt_timetable_unscheduled),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -261,11 +246,9 @@ fun JwxtTimetableScreen(
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
-                colors = transparentTopBarColors(),
             )
         }
     }

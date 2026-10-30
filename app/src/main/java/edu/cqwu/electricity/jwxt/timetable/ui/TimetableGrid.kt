@@ -21,8 +21,6 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,7 +46,7 @@ import dev.chrisbanes.haze.HazeState
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
 import edu.cqwu.electricity.common.settings.isDark
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.rememberHazeBlurModifier
 import edu.cqwu.electricity.common.ui.rememberHazeSourceModifier
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
@@ -172,7 +170,6 @@ internal fun TimetableGrid(
     val topChromeHeight = with(density) { topChromeHeightPx.toDp() }
 
     val blurModifier = rememberHazeBlurModifier(hazeState)
-    val pullState = rememberPullToRefreshState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         // ── ① 模糊源：网格本体 ──
@@ -181,11 +178,10 @@ internal fun TimetableGrid(
                 .fillMaxSize()
                 .then(rememberHazeSourceModifier(hazeState))
         ) {
-            PullToRefreshBox(
+            AppPullToRefresh(
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh,
-                state = pullState,
-                indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topBarInset + topChromeHeight) },
+                topInset = topBarInset + topChromeHeight,
                 modifier = Modifier.fillMaxSize(),
             ) {
                 Row(

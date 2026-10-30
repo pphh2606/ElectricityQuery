@@ -13,16 +13,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.campusnetwork.accessor.data.AccessorData
 import edu.cqwu.electricity.campusnetwork.ui.Field
@@ -44,10 +39,9 @@ import edu.cqwu.electricity.campusnetwork.ui.FieldSection
 import edu.cqwu.electricity.campusnetwork.ui.FieldSectionList
 import edu.cqwu.electricity.campusnetwork.ui.field
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.theme.ui.resolve
 
 /**
@@ -68,43 +62,23 @@ fun AccessorScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
     val resources = LocalResources.current
-    val topBarColors = transparentTopBarColors()
 
     // 首次进入自动加载；VM 生命周期随导航栈条目，重新进入会新建并重新拉取
     LaunchedEffect(Unit) {
         viewModel.load(refresh = false)
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.campus_network_accessor_title),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    CollapsibleScaffold(
+        title = stringResource(R.string.campus_network_accessor_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = uiState.isRefreshing,
             onRefresh = { viewModel.load(refresh = true) },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
+            ScrollLinkedBox(scrollModifier) {
             val errorText = uiState.error?.resolve(resources)
             when {
                 uiState.isLoading -> {
@@ -145,6 +119,7 @@ fun AccessorScreen(
                 else -> {
                     AccessorContent(data = uiState.data!!, topInset = topInset)
                 }
+            }
             }
         }
     }

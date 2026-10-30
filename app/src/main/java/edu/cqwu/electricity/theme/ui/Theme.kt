@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowInsetsControllerCompat
 import com.materialkolor.material3.dynamicColorScheme
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.LocalUiStyle
 import edu.cqwu.electricity.common.settings.NightMode
 import edu.cqwu.electricity.common.settings.ReduceMotion
 import edu.cqwu.electricity.common.settings.ThemeColorSource
@@ -33,6 +34,7 @@ import edu.cqwu.electricity.common.settings.TopBarStyle
 import edu.cqwu.electricity.common.settings.UiStyle
 import edu.cqwu.electricity.common.settings.isDark
 import top.yukonga.miuix.kmp.theme.ColorSchemeMode
+import top.yukonga.miuix.kmp.theme.LocalContentColor as LocalMiuixContentColor
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.ThemeController
 
@@ -91,6 +93,7 @@ fun 电费查询Theme(
     nightMode: NightMode = NightMode.SYSTEM,
     colorSource: ThemeColorSource = ThemeColorSource.SystemDynamic,
     uiStyle: UiStyle = UiStyle.MATERIAL3,
+    miuixMonet: Boolean = false,
     paletteStyle: ThemePaletteStyle = ThemePaletteStyle.TONAL_SPOT,
     colorSpec: ThemeColorSpec = ThemeColorSpec.SPEC_2025,
     pureBlack: Boolean = false,
@@ -118,24 +121,65 @@ fun 电费查询Theme(
         )
     }
 
-    // 界面风格为 MIUI 时，用 miuix 的 ThemeController 按同一颗种子色生成 miuix 配色，
-    // 再映射进 Material3 的 ColorScheme，让现有页面也呈现 MIUI 观感；
-    // 同时外层套 MiuixTheme，后续 miuix 组件可直接使用。
-    val miuixController = remember(uiStyle, darkTheme, seedColor, paletteStyle, colorSpec) {
-        if (uiStyle == UiStyle.MIUI) {
+    // 界面风格为 MIUI 时，用 miuix 的 ThemeController 取色板，再映射进 Material3 的
+    // ColorScheme，让现有页面也呈现 MIUI 观感；同时外层套 MiuixTheme 供 miuix 组件使用。
+    //
+    // 这里固定用 Light/Dark 模式：miuix 会直接返回内置 fixed 色板（标志性 #3482FF 蓝），
+    // 此时 keyColor/paletteStyle/colorSpec 不参与计算。
+    //
+    // 不能用 MonetLight/MonetDark：miuix 0.9.x 的 colorsFromSeed 是冲着
+    // material-color-utilities 5.x 编译的，引用 com.materialkolor.scheme.DynamicScheme；
+    // 本项目用 material-kolor 6.0.0，该包已改名为 com.materialkolor.dynamiccolor，
+    // 一调 currentColors() 就 NoClassDefFoundError 闪退。
+    // 「MIUIx 取色」因此改成在固定色板上替换主色系，见下面的 miuixColors。
+    val miuixController = remember(uiStyle, darkTheme) {
+        if (uiStyle != UiStyle.MIUI) {
+            null
+        } else {
             ThemeController(
                 colorSchemeMode = if (darkTheme) ColorSchemeMode.Dark else ColorSchemeMode.Light,
-                keyColor = seedColor,
-                colorSpec = colorSpec.toMiuix(),
-                paletteStyle = paletteStyle.toMiuix(),
                 isDark = darkTheme,
             )
-        } else {
-            null
         }
     }
-    val miuixColors = if (miuixController != null) miuixController.currentColors() else null
 
+    // 开启「MIUIx 取色」时，把 MIUI 固定色板的主色系换成 MD3 引擎（material-kolor 6.0.0）
+    // 算出的颜色：primary/secondary/三级容器与 error 跟着主题色走；
+    // 页面灰底、白卡、分割线这些层级仍保留 MIUI 的值，避免 MIUI 观感被冲淡。
+    val miuixColors = miuixController?.currentColors()?.let { base ->
+        if (!miuixMonet) {
+            base
+        } else {
+            base.copy(
+                primary = colorScheme.primary,
+                onPrimary = colorScheme.onPrimary,
+                primaryContainer = colorScheme.primaryContainer,
+                onPrimaryContainer = colorScheme.onPrimaryContainer,
+                secondary = colorScheme.secondary,
+                onSecondary = colorScheme.onSecondary,
+                secondaryContainer = colorScheme.secondaryContainer,
+                onSecondaryContainer = colorScheme.onSecondaryContainer,
+                tertiaryContainer = colorScheme.tertiaryContainer,
+                onTertiaryContainer = colorScheme.onTertiaryContainer,
+                error = colorScheme.error,
+                onError = colorScheme.onError,
+                errorContainer = colorScheme.errorContainer,
+                onErrorContainer = colorScheme.onErrorContainer,
+                outline = colorScheme.outline,
+                dividerLine = colorScheme.outlineVariant,
+            )
+        }
+    }
+
+    // miuix 的明暗层级是「background 灰底 < surface 亮面 < surfaceContainer* 沉台」，
+    // 而 Material 3 是「surface 亮、surfaceContainer* 逐级变暗」。如果按字段同名直接拷，
+    // 卡片（surfaceContainer 系）会比页面（surface）更暗，出现「灰卡沉在白底上」的反向层次，
+    // 这正是 MIUI 风格发灰、没有 MIUI 味的主因。
+    //
+    // 这里按语义重排：页面底吃 background（MIUI 的 #F7F7F7），卡片/浮层一律吃 surface
+    // （MIUI 的 #FCFCFC 白卡），只有需要「比卡片更沉一档」的控件（chip、输入框、图标圆底）
+    // 才吃 surfaceVariant / surfaceContainer。surfaceTint 置透明，关掉 Material 的 tonal
+    // 染色，否则白卡会被 primary 刷上一层蓝，看着发脏。
     val themedColorScheme = if (miuixColors != null) {
         colorScheme.copy(
             primary = miuixColors.primary,
@@ -151,6 +195,7 @@ fun 电费查询Theme(
             onTertiary = miuixColors.onTertiaryContainer,
             tertiaryContainer = miuixColors.tertiaryContainer,
             onTertiaryContainer = miuixColors.onTertiaryContainer,
+            // 页面：灰底 + 白面
             background = miuixColors.background,
             onBackground = miuixColors.onBackground,
             surface = miuixColors.surface,
@@ -163,15 +208,18 @@ fun 电费查询Theme(
             onErrorContainer = miuixColors.onErrorContainer,
             outline = miuixColors.outline,
             outlineVariant = miuixColors.dividerLine,
-            surfaceTint = miuixColors.primary,
-            surfaceContainer = miuixColors.surfaceContainer,
-            surfaceContainerHigh = miuixColors.surfaceContainerHigh,
-            surfaceContainerHighest = miuixColors.surfaceContainerHighest,
-            // miuix 没有 Low/Lowest 两档，用最接近的层级近似
-            surfaceContainerLow = miuixColors.surfaceContainer,
-            surfaceContainerLowest = miuixColors.background,
-            // 卡片/行取「永远比页面亮」档：miuix 里最接近的是最高容器档
-            surfaceBright = miuixColors.surfaceContainerHighest,
+            // 关掉 Material 的 tonal 叠色，保持 MIUI 的纯白卡
+            surfaceTint = Color.Transparent,
+            // 卡片 / 列表 / 弹窗：一律用 miuix 的亮面，保证「白卡浮在灰底上」
+            surfaceContainerLowest = miuixColors.surface,
+            surfaceContainerLow = miuixColors.surface,
+            surfaceContainer = miuixColors.surface,
+            // chip、日期胶囊这类「卡片里的控件」需要比白卡沉一点才看得出边界
+            surfaceContainerHigh = miuixColors.surfaceVariant,
+            // 图标圆底、输入框这类再沉一档
+            surfaceContainerHighest = miuixColors.surfaceContainer,
+            // 卡片底色：必须比页面亮，MIUI 里就是 surface 那层白
+            surfaceBright = miuixColors.surface,
             surfaceDim = miuixColors.background,
         )
     } else {
@@ -221,6 +269,7 @@ fun 电费查询Theme(
     val baseDensity = LocalDensity.current
     CompositionLocalProvider(
         LocalAppDarkTheme provides darkTheme,
+        LocalUiStyle provides uiStyle,
         LocalDensity provides Density(
             density = baseDensity.density,
             fontScale = baseDensity.fontScale * fontScale,
@@ -238,15 +287,24 @@ fun 电费查询Theme(
                 },
                 typography = Typography,
             ) {
-                preservedContent(content)
+                // MiuixTheme 要待在 M3 主题的里层：M3 会把 ripple 提供给 LocalIndication，
+                // 而 miuix 的按压反馈靠的是 MiuixTheme 提供的 MiuixIndication（整块叠一层
+                // 6% 的遮罩），放在外层时这个 local 会被 M3 覆盖，MIUI 风格就变成水波涟漪了。
+                if (miuixColors != null) {
+                    MiuixTheme(colors = miuixColors) {
+                        // miuix 的 Colors 重载不提供 LocalContentColor，图标默认 tint 会退回
+                        // Color.Black；这里补一层，让没写 tint 的 MiuixIcon 跟主题前景色。
+                        CompositionLocalProvider(
+                            LocalMiuixContentColor provides miuixColors.onBackground,
+                        ) {
+                            preservedContent(content)
+                        }
+                    }
+                } else {
+                    preservedContent(content)
+                }
             }
         }
-        if (miuixColors != null) {
-            MiuixTheme(colors = miuixColors) {
-                themedMaterial()
-            }
-        } else {
-            themedMaterial()
-        }
+        themedMaterial()
     }
 }

@@ -34,8 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.AppScaledAlertDialog
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
@@ -106,12 +104,10 @@ fun PasswordChangeScreen(
         // 键盘弹出时让出 IME 高度，避免遮挡右下角"保存"按钮
         modifier = Modifier.fillMaxSize().imePadding(),
     ) { topInset, scrollModifier ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = state.isRefreshing,
             onRefresh = viewModel::refresh,
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, state.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
             when {

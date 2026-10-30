@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Visibility
@@ -30,14 +29,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,13 +47,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.speakup.data.ConsultationArea
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import kotlinx.coroutines.launch
 
 /**
@@ -87,7 +82,6 @@ fun SpeakUpScreen(
     onReLogin: () -> Unit = {},
     viewModel: SpeakUpViewModel = viewModel(),
 ) {
-    val topBarColors = transparentTopBarColors()
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -95,35 +89,20 @@ fun SpeakUpScreen(
     var showActionDialog by remember { mutableStateOf(false) }
     var selectedArea by remember { mutableStateOf<ConsultationArea?>(null) }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.speakup_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = null)
-                    }
-                },
-                colors = topBarColors,
-            )
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    CollapsibleScaffold(
+        title = stringResource(R.string.speakup_title),
+        onBack = onBack,
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = uiState is SpeakUpViewModel.UiState.Loading,
             onRefresh = { viewModel.refresh() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, uiState is SpeakUpViewModel.UiState.Loading, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
+            ScrollLinkedBox(scrollModifier) {
             when (val state = uiState) {
                 is SpeakUpViewModel.UiState.Loading -> {
-                    // PullToRefreshBox 已显示下拉刷新指示器，内容区留空
+                    // AppPullToRefresh 已显示下拉刷新指示器，内容区留空
                 }
 
                 is SpeakUpViewModel.UiState.Error -> {
@@ -159,6 +138,7 @@ fun SpeakUpScreen(
                         }
                     }
                 }
+            }
             }
         }
     }

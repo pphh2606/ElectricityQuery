@@ -3,10 +3,20 @@
 package edu.cqwu.electricity.home.ui
 
 import androidx.compose.material3.IconButtonDefaults
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.settings.LocalUiStyle
+import edu.cqwu.electricity.common.settings.UiStyle
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.appTopBarColors
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.common.ui.SectionFilterChip
 import edu.cqwu.electricity.logging.AppLog
-import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import top.yukonga.miuix.kmp.basic.Icon as MiuixIcon
+import top.yukonga.miuix.kmp.basic.IconButton as MiuixIconButton
+import top.yukonga.miuix.kmp.basic.InputField as MiuixInputField
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
+import top.yukonga.miuix.kmp.basic.ScrollBehavior
+import top.yukonga.miuix.kmp.basic.TopAppBar as MiuixTopAppBar
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 import androidx.core.net.toUri
 import androidx.compose.ui.res.stringResource
@@ -36,6 +46,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -70,8 +81,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -140,19 +149,8 @@ fun HomeTopBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     val nav = LocalNavController.current
-    val baseColors = currentTopBarColors()
     // 毛玻璃模式下标题栏底色必须透明，否则会盖住 Haze 模糊层
-    val topBarColors = if (containerColor != null) {
-        TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor,
-            scrolledContainerColor = containerColor,
-            navigationIconContentColor = baseColors.navigationIconContentColor,
-            titleContentColor = baseColors.titleContentColor,
-            actionIconContentColor = baseColors.actionIconContentColor,
-        )
-    } else {
-        baseColors
-    }
+    val topBarColors = appTopBarColors(containerColor)
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -230,7 +228,6 @@ fun HomeTopBar(
             title = {
                 Text(
                     text = stringResource(R.string.home_title),
-                    fontWeight = FontWeight.Bold
                 )
             },
             actions = {
@@ -238,14 +235,12 @@ fun HomeTopBar(
                     Icon(
                         imageVector = Icons.Outlined.Search,
                         contentDescription = stringResource(R.string.common_search),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.SCAN) }) {
                     Icon(
                         imageVector = Icons.Outlined.CenterFocusWeak,
                         contentDescription = stringResource(R.string.common_scan),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             },
@@ -253,6 +248,87 @@ fun HomeTopBar(
             scrollBehavior = scrollBehavior,
         )
     }
+}
+
+/**
+ * MIUI 风格的首页顶栏，与 [HomeTopBar] 一一对应，只是组件换成 miuix 的：
+ * 普通态是可折叠的大标题栏，搜索态是一行输入框（miuix 的 TopAppBar 标题只能是字符串）。
+ *
+ * @param backgroundColor 标题栏底色。毛玻璃生效时传透明，让外层的 Haze 模糊层透出来；
+ *   否则传 miuix 的 surface——miuix 顶栏默认不透明，留默认值会把模糊层整个盖住
+ */
+@Composable
+private fun MiuixHomeTopBar(
+    title: String,
+    searchQuery: String,
+    isSearching: Boolean,
+    onSearchQueryChange: (String) -> Unit,
+    onToggleSearch: () -> Unit,
+    onCloseSearch: () -> Unit,
+    scrollBehavior: ScrollBehavior,
+    backgroundColor: Color,
+) {
+    val nav = LocalNavController.current
+    val focusManager = LocalFocusManager.current
+
+    BackHandler(enabled = isSearching) {
+        focusManager.clearFocus()
+        onCloseSearch()
+    }
+
+    if (isSearching) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(backgroundColor)
+                .statusBarsPadding(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                MiuixIconButton(onClick = onCloseSearch) {
+                    MiuixIcon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = stringResource(R.string.common_exit_search),
+                    )
+                }
+                MiuixInputField(
+                    query = searchQuery,
+                    onQueryChange = onSearchQueryChange,
+                    label = stringResource(R.string.home_search_apps),
+                    expanded = false,
+                    onExpandedChange = {},
+                    onSearch = {},
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+        return
+    }
+
+    MiuixTopAppBar(
+        title = title,
+        largeTitle = title,
+        color = backgroundColor,
+        actions = {
+            MiuixIconButton(onClick = onToggleSearch) {
+                MiuixIcon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = stringResource(R.string.common_search),
+                )
+            }
+            MiuixIconButton(onClick = { nav.navigate(Routes.SCAN) }) {
+                MiuixIcon(
+                    imageVector = Icons.Outlined.CenterFocusWeak,
+                    contentDescription = stringResource(R.string.common_scan),
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior,
+    )
 }
 
 /**
@@ -271,10 +347,15 @@ fun HomePage(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val hazeState = remember { HazeState() }
-    // 首页大标题折叠：仅普通模式生效，搜索模式仍是定高 TopAppBar
-    val topAppBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
-    val scrollModifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    // 两套顶栏各有一个折叠行为，只把当前风格的那个连接挂给内容层
+    val materialScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val miuixScrollBehavior = MiuixScrollBehavior()
+    val isMiuix = LocalUiStyle.current == UiStyle.MIUI
+    // 首页大标题折叠：仅普通模式生效，搜索模式仍是定高搜索条
+    val scrollModifier = Modifier.nestedScroll(
+        if (isMiuix) miuixScrollBehavior.nestedScrollConnection
+        else materialScrollBehavior.nestedScrollConnection,
+    )
     val headerBlurOn = isHeaderBlurOn()
 
     // 浮层实测高度（状态栏 + 标题栏 + 分类条），随搜索模式、分类条显隐自动修正，
@@ -285,7 +366,8 @@ fun HomePage(
     // 列表从屏幕顶端铺满（模糊改造后），对齐屏幕顶端会让分组标题藏进标题栏浮层背后
     val contentTopInsetPx = with(LocalDensity.current) { contentTopInset.roundToPx() }
 
-    // 标题栏模糊层：参数统一走 common/ui 的实现（与其它页共用同一套「高级模糊设置」参数）
+    // 标题栏模糊层：参数统一走 common/ui 的实现（与其它页共用同一套「高级模糊设置」参数）。
+    // 两套风格都走同一层 Haze，MIUI 侧的顶栏自己要把底色让出来（见 MiuixHomeTopBar 的 backgroundColor）
     val headerModifier = rememberHazeBlurModifier(hazeState)
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -295,12 +377,16 @@ fun HomePage(
                 .fillMaxSize()
                 .then(rememberHazeSourceModifier(hazeState))
         ) {
-            HomePageContent(
-                homeViewModel = homeViewModel,
-                listState = listState,
-                contentTopInset = contentTopInset,
-                modifier = scrollModifier,
-            )
+            // 滚动连接必须挂在 PullToRefreshBox 内部：M3 的下拉刷新会把
+            // UserInput 的未消费位移全部吃掉，挂在外层时标题栏永远收不到下拉
+            ScrollLinkedBox(scrollModifier) {
+                HomePageContent(
+                    homeViewModel = homeViewModel,
+                    listState = listState,
+                    contentTopInset = contentTopInset,
+                    modifier = Modifier,
+                )
+            }
         }
 
         // ② 顶部浮层：标题栏 + 分类条，压在内容之上并模糊其背后的内容
@@ -313,15 +399,28 @@ fun HomePage(
                 // 标题栏空白区域的点击不要穿透到底下的列表
                 .pointerInput(Unit) { detectTapGestures { } }
         ) {
-            HomeTopBar(
-                searchQuery = uiState.searchQuery,
-                isSearching = uiState.isSearching,
-                onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
-                onToggleSearch = { homeViewModel.enterSearchMode() },
-                onCloseSearch = { homeViewModel.clearSearch() },
-                containerColor = if (headerBlurOn) Color.Transparent else null,
-                scrollBehavior = scrollBehavior,
-            )
+            if (isMiuix) {
+                MiuixHomeTopBar(
+                    title = stringResource(R.string.home_title),
+                    searchQuery = uiState.searchQuery,
+                    isSearching = uiState.isSearching,
+                    onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
+                    onToggleSearch = { homeViewModel.enterSearchMode() },
+                    onCloseSearch = { homeViewModel.clearSearch() },
+                    scrollBehavior = miuixScrollBehavior,
+                    backgroundColor = if (headerBlurOn) Color.Transparent else MiuixTheme.colorScheme.surface,
+                )
+            } else {
+                HomeTopBar(
+                    searchQuery = uiState.searchQuery,
+                    isSearching = uiState.isSearching,
+                    onSearchQueryChange = { homeViewModel.setSearchQuery(it) },
+                    onToggleSearch = { homeViewModel.enterSearchMode() },
+                    onCloseSearch = { homeViewModel.clearSearch() },
+                    containerColor = if (headerBlurOn) Color.Transparent else null,
+                    scrollBehavior = materialScrollBehavior,
+                )
+            }
 
             // 分类索引条不是启动第一时间就有（要等首页数据回来），
             // 用 AnimatedVisibility 淡入展开，避免它突然出现把标题栏和列表内容同时顶一下
@@ -433,13 +532,11 @@ fun HomePageContent(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             // 首次加载与手动下拉共用同一刷新指示器（不再显示页面中央转圈）
             isRefreshing = uiState.isRefreshing || uiState.isLoading,
             onRefresh = { homeViewModel.refresh() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, uiState.isRefreshing || uiState.isLoading, contentTopInset) },
+            topInset = contentTopInset,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)

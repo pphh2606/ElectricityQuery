@@ -8,6 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.AppTopBar
 
 import android.Manifest
 import android.app.Activity
@@ -44,7 +45,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.outlined.PhotoLibrary
@@ -54,8 +54,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -527,24 +525,15 @@ fun ScanScreen(
     // ── UI ──
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.scan_title), color = Color.White) },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
-                        camera?.cameraControl?.enableTorch(false)
-                        onBack()
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = Color.White,
-                        )
-                    }
+            // 顶栏半透明浮在预览上方，两套风格共用同样的黑底白字
+            AppTopBar(
+                title = stringResource(R.string.scan_title),
+                onBack = {
+                    camera?.cameraControl?.enableTorch(false)
+                    onBack()
                 },
-                // TopAppBar 半透明浮在预览上方
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black.copy(alpha = 0.35f),
-                ),
+                containerColor = Color.Black.copy(alpha = 0.35f),
+                contentColor = Color.White,
             )
         },
         // Scaffold 不应用内边距，实现全屏预览

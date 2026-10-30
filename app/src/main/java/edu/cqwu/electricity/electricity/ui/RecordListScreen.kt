@@ -3,9 +3,10 @@
 package edu.cqwu.electricity.electricity.ui
 
 import androidx.compose.material3.IconButtonDefaults
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.AppTabRow
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 // 三点菜单
 // 剪贴板与文件导出
@@ -27,7 +28,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
@@ -41,9 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -179,23 +176,13 @@ fun RecordListScreen(
         if (tabs != null) onTabSelected?.invoke(pagerState.currentPage)
     }
 
-    BlurScaffold(
-        topBar = {
-                TopAppBar(
-                    title = { Text(title, fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
+    CollapsibleScaffold(
+        title = title,
+        onBack = {
                             onDispose()
                             onBack()
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.common_back),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    actions = {
+                        },
+        actions = {
                         // 表格 ⇄ 折线图切换按钮（仅在页面提供图表内容时显示）
                         if (chartPages.isNotEmpty() && onToggleViewMode != null) {
                             IconButton(shapes = IconButtonDefaults.shapes(), onClick = onToggleViewMode) {
@@ -204,7 +191,6 @@ fun RecordListScreen(
                                     contentDescription = stringResource(
                                         if (chartMode) R.string.common_toggle_table else R.string.common_toggle_chart
                                     ),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -213,7 +199,6 @@ fun RecordListScreen(
                                 Icon(
                                     imageVector = Icons.Outlined.MoreVert,
                                     contentDescription = stringResource(R.string.common_more_options),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             AppScaledDropdownMenu(
@@ -241,63 +226,42 @@ fun RecordListScreen(
                             }
                         }
                     },
-                    colors = transparentTopBarColors()
+        // 顶部 Tab、日期筛选行、表格表头并入标题栏浮层：和标题栏一起模糊、固定不滚动，
+        // 行列表从它们背后滚过；表头跟列表行共享同一份列定义，保证列宽对齐
+        expandedTopContent = {
+            if (tabs != null) {
+                AppTabRow(
+                    tabs = tabs,
+                    selectedIndex = pagerState.currentPage,
+                    onTabSelected = { index ->
+                        scope.launch { pagerState.animateScrollToPage(index) }
+                    },
                 )
-                // 标签页切换栏、日期筛选行、表格表头并入标题栏浮层：
-                // 和标题栏一起模糊、固定不滚动，行列表从它们背后滚过
-                if (tabs != null) {
-                    PrimaryTabRow(
-                        selectedTabIndex = pagerState.currentPage,
-                        modifier = Modifier.fillMaxWidth(),
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.primary,
-                        // 与 HallScreen/BillScreen 的 Tab 对齐：去掉 Tab 栏底部分割线
-                        divider = {},
-                    ) {
-                        tabs.forEachIndexed { index, tabText ->
-                            Tab(
-                                selected = pagerState.currentPage == index,
-                                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                                text = {
-                                    Text(
-                                        text = tabText,
-                                        fontWeight = if (pagerState.currentPage == index)
-                                            FontWeight.Bold else FontWeight.Normal,
-                                    )
-                                },
-                            )
-                        }
-                    }
-                }
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    // ========== 日期筛选行（整体的一部分） ==========
-                    DateRangeFilterRow(
-                        beginLabel = beginLabel,
-                        endLabel = endLabel,
-                        beginValue = beginValue,
-                        endValue = endValue,
-                        onBeginChange = onBeginChange,
-                        onEndChange = onEndChange,
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // ========== 表格表头：与滚动区的行共享同一份列定义，保证列宽对齐 ==========
-                    val headerPage = pages.getOrNull(if (tabs == null) 0 else pagerState.currentPage)
-                    if (!chartMode && headerPage != null && headerPage.rows.isNotEmpty()) {
-                        RecordTableHeader(columns = columns)
-                    }
+            }
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                DateRangeFilterRow(
+                    beginLabel = beginLabel,
+                    endLabel = endLabel,
+                    beginValue = beginValue,
+                    endValue = endValue,
+                    onBeginChange = onBeginChange,
+                    onEndChange = onEndChange,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                val headerPage = pages.getOrNull(if (tabs == null) 0 else pagerState.currentPage)
+                if (!chartMode && headerPage != null && headerPage.rows.isNotEmpty()) {
+                    RecordTableHeader(columns = columns)
                 }
             }
-        ) { topInset ->
-            val pullState = rememberPullToRefreshState()
-            PullToRefreshBox(
+        },
+    ) { topInset, scrollModifier ->
+            AppPullToRefresh(
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh,
-                state = pullState,
-                indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+                topInset = topInset,
                 modifier = Modifier.fillMaxSize()
             ) {
+                ScrollLinkedBox(scrollModifier) {
                 // 有 Tab 时分页器始终在场，每页内部按 chartMode 决定渲染该页的表格还是折线图。
                 // 折线图模式下禁左右滑动切 Tab（userScrollEnabled=false 只禁用户手势，
                 // 点击顶部 Tab 的程序化滚动仍有效），把横滑手势让给图表的"按压查看详情"。
@@ -326,6 +290,7 @@ fun RecordListScreen(
                             onRetry = onRefresh,
                         )
                     }
+                }
                 }
             }
     }

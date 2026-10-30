@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
@@ -38,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,8 +70,7 @@ import edu.cqwu.electricity.common.ui.LoadingDialog
 import edu.cqwu.electricity.common.ui.PasswordRecoverySheet
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -109,7 +106,6 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val nav = LocalNavController.current
 
-    val topBarColors = transparentTopBarColors()
 
     // 安全说明弹窗
     var showSecurityNotice by remember { mutableStateOf(false) }
@@ -138,25 +134,10 @@ fun LoginScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.login_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back)
-                        )
-                    }
-                },
-                // 安全说明
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.login_title),
+        onBack = onBack,
+        actions = {
                     // 语言切换图标
                     LanguageSwitchButton()
 
@@ -165,15 +146,11 @@ fun LoginScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                             contentDescription = stringResource(R.string.login_security_notice),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
 
                 },
-                colors = topBarColors
-            )
-        }
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -186,6 +163,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
+                        .then(scrollModifier)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top

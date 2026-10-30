@@ -18,7 +18,16 @@ internal data class UnifiedWebViewError(
 
 /** 主内置浏览器的全部页面状态（原先平铺在 Composable 顶部的十余个 remember）。 */
 @Stable
-internal class UnifiedWebViewUiState(initialTitle: String) {
+internal class UnifiedWebViewUiState(
+    initialTitle: String,
+    /**
+     * 初始域名：从入口 URL 解析出来。
+     *
+     * 页面第一帧就要有副标题，否则 miuix 的小标题栏会先只有一行、等 WebView 回调
+     * `onPageStarted` 拿到 host 后再长出一行，标题栏高度会跳一下。
+     */
+    initialDomain: String = "",
+) {
 
     var isLoading by mutableStateOf(true)
     var webErrorState by mutableStateOf<UnifiedWebViewError?>(null)
@@ -30,7 +39,7 @@ internal class UnifiedWebViewUiState(initialTitle: String) {
     var canGoBack by mutableStateOf(false)
     var progress by mutableIntStateOf(10)
     var pageTitle by mutableStateOf(initialTitle)
-    var pageDomain by mutableStateOf("")
+    var pageDomain by mutableStateOf(initialDomain)
     var showMenu by mutableStateOf(false)
     var fileUploadCallback by mutableStateOf<ValueCallback<Array<Uri>>?>(null)
     var webViewRef by mutableStateOf<WebView?>(null)

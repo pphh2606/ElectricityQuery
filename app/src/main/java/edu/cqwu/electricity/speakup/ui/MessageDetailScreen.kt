@@ -16,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Star
@@ -28,8 +27,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,16 +47,16 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.net.SessionExpiredException
 import edu.cqwu.electricity.speakup.data.ConsultationMessage
 import edu.cqwu.electricity.speakup.data.SpeakUpApi
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SelectableContainer
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.util.ToastUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -141,7 +138,6 @@ fun MessageDetailScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = transparentTopBarColors()
     val snackbar = LocalSnackbarController.current
     val uiState by viewModel.uiState.collectAsState()
 
@@ -150,21 +146,10 @@ fun MessageDetailScreen(
         viewModel.loadDetailDirect()
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.speakup_detail_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = null)
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.speakup_detail_title),
+        onBack = onBack,
+        actions = {
                     // 分享按钮：复制留言链接到剪切板
                     val detailMessage = (uiState as? MessageDetailViewModel.UiState.Success)?.message
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
@@ -178,18 +163,14 @@ fun MessageDetailScreen(
                         Icon(Icons.Outlined.Share, contentDescription = null)
                     }
                 },
-                colors = topBarColors,
-            )
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = uiState is MessageDetailViewModel.UiState.Loading,
             onRefresh = { viewModel.loadDetailDirect() },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, uiState is MessageDetailViewModel.UiState.Loading, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
+            ScrollLinkedBox(scrollModifier) {
             when (val state = uiState) {
                 is MessageDetailViewModel.UiState.Loading -> {}
 
@@ -205,6 +186,7 @@ fun MessageDetailScreen(
                 is MessageDetailViewModel.UiState.Success -> {
                     MessageDetailContent(message = state.message, topInset = topInset)
                 }
+            }
             }
         }
     }

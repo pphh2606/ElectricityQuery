@@ -30,7 +30,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Info
@@ -41,9 +40,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -66,15 +62,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.AppScaledMenuItem
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -151,29 +147,18 @@ fun RechargeRecordScreen(
         stringResource(R.string.recharge_time_4years),
     )
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.recharge_record_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
+    CollapsibleScaffold(
+        title = stringResource(R.string.recharge_record_title),
+        onBack = {
                         viewModel.clearRechargeRecordState()
                         onBack()
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                actions = {
+                    },
+        actions = {
                     // 提示图标
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showInfoDialog = true }) {
                         Icon(
                             imageVector = Icons.Outlined.Info,
                             contentDescription = stringResource(R.string.recharge_hint),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Box {
@@ -181,7 +166,6 @@ fun RechargeRecordScreen(
                             Icon(
                                 imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         AppScaledDropdownMenu(
@@ -210,17 +194,14 @@ fun RechargeRecordScreen(
                         }
                     }
                 },
-                colors = transparentTopBarColors()
-            )
-            // 时间范围选择并入标题栏浮层：和标题栏一起模糊、固定不滚动
+        // 时间范围选择并入标题栏浮层：和标题栏一起模糊、固定不滚动
+        expandedTopContent = {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Text(
                     text = stringResource(R.string.recharge_record_time_range),
                     style = MaterialTheme.typography.bodyMedium
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Row(
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -236,16 +217,15 @@ fun RechargeRecordScreen(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        },
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = recordState.isRefreshing,
             onRefresh = { viewModel.queryRechargeRecords(roomId) },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, recordState.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
+                ScrollLinkedBox(scrollModifier) {
                 // ========== 查询结果区域 ==========
                 when {
                     recordState.error != null -> {
@@ -304,6 +284,7 @@ fun RechargeRecordScreen(
                             )
                         }
                     }
+                }
                 }
             }
         }

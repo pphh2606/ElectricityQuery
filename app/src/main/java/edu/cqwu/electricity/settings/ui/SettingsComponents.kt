@@ -18,6 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.common.settings.LocalUiStyle
+import edu.cqwu.electricity.common.settings.UiStyle
+import top.yukonga.miuix.kmp.basic.Switch as MiuixSwitch
 
 /**
  * 带 Switch 的设置条目，与 [SettingsNavigationRow] 共用同一套行样式（[SettingsListItem]）。
@@ -62,30 +65,50 @@ internal fun SettingsSwitchEntry(
         enabled = rowEnabled,
         alpha = if (enabled) 1f else 0.38f,
         trailing = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // 双操作区的分隔线：左侧「进入细项」、右侧「开/关」，避免用户以为点哪都只是切换开关
-                if (onRowClick != null) {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .width(1.dp)
-                            .height(24.dp)
-                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = if (enabled) 1f else 0.38f)),
+            if (LocalUiStyle.current == UiStyle.MIUI) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // 双操作区的分隔线：左侧「进入细项」、右侧「开/关」，避免用户以为点哪都只是切换开关
+                    if (onRowClick != null) {
+                        Box(
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .width(1.dp)
+                                .height(24.dp)
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = if (enabled) 1f else 0.38f)),
+                        )
+                    }
+                    MiuixSwitch(
+                        checked = checked,
+                        onCheckedChange = onCheckedChange,
+                        enabled = enabled,
                     )
                 }
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange,
-                    enabled = enabled,
-                    // Expressive 开关：thumb 内带 ✓/✕，颜色由 SwitchColors 的 iconColor 提供
-                    thumbContent = {
-                        Icon(
-                            imageVector = if (checked) Icons.Filled.Check else Icons.Filled.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // 双操作区的分隔线：左侧「进入细项」、右侧「开/关」，避免用户以为点哪都只是切换开关
+                    if (onRowClick != null) {
+                        Box(
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .width(1.dp)
+                                .height(24.dp)
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = if (enabled) 1f else 0.38f)),
                         )
-                    },
-                )
+                    }
+                    Switch(
+                        checked = checked,
+                        onCheckedChange = onCheckedChange,
+                        enabled = enabled,
+                        // Expressive 开关：thumb 内带 ✓/✕，颜色由 SwitchColors 的 iconColor 提供
+                        thumbContent = {
+                            Icon(
+                                imageVector = if (checked) Icons.Filled.Check else Icons.Filled.Close,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        },
+                    )
+                }
             }
         },
     )

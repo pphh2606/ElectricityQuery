@@ -6,6 +6,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,7 +16,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.LocalUiStyle
 import edu.cqwu.electricity.common.settings.ReduceMotion
+import edu.cqwu.electricity.common.settings.UiStyle
+import top.yukonga.miuix.kmp.basic.NavigationBar as MiuixNavigationBar
+import top.yukonga.miuix.kmp.basic.NavigationBarItem as MiuixNavigationBarItem
 
 /**
  * 未选中项图标的下移补偿量。
@@ -47,6 +52,19 @@ fun RowScope.AppNavigationBarItem(
 ) {
     val appSettings = LocalAppSettingsState.current
     val selectedOnly = appSettings.tabLabelSelectedOnly
+
+    // MIUI 风格下走 miuix 的底栏条目：它直接收 ImageVector + String，
+    // 没有 label 槽位可做透明度动画，「仅选中项显示文字」用空标签表达
+    if (LocalUiStyle.current == UiStyle.MIUI) {
+        MiuixNavigationBarItem(
+            selected = selected,
+            onClick = onClick,
+            icon = icon,
+            label = if (!selectedOnly || selected) label else "",
+        )
+        return
+    }
+
     val animate = appSettings.reduceMotion != ReduceMotion.ON
 
     // 未选中且开启「仅选中项显示文字」时，把图标往下推回格子中间
@@ -74,4 +92,39 @@ fun RowScope.AppNavigationBarItem(
             )
         },
     )
+}
+
+/**
+ * 底栏容器（三处页面级底栏共用）：MIUI 走 miuix 的 `NavigationBar`，其余走 M3。
+ *
+ * 点击已选中项不回调 [onSelect]（底栏惯例：重复点同一个 tab 无事发生），
+ * 调用方不必再各自写 `if (!selected)`。
+ *
+ * @param icon 第 index 项的图标（非 Composable，标签才需要 stringResource）
+ * @param label 第 index 项的文字
+ */
+@Composable
+fun AppNavigationBar(
+    itemCount: Int,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
+    icon: (Int) -> ImageVector,
+    label: @Composable (Int) -> String,
+) {
+    val content: @Composable RowScope.() -> Unit = {
+        for (index in 0 until itemCount) {
+            val selected = index == selectedIndex
+            AppNavigationBarItem(
+                selected = selected,
+                onClick = { if (!selected) onSelect(index) },
+                icon = icon(index),
+                label = label(index),
+            )
+        }
+    }
+    if (LocalUiStyle.current == UiStyle.MIUI) {
+        MiuixNavigationBar { content() }
+    } else {
+        NavigationBar { content() }
+    }
 }

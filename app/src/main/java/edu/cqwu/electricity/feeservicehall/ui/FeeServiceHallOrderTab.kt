@@ -7,7 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.res.stringResource
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.AppOutlinedTextField
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import androidx.compose.foundation.background
@@ -40,8 +40,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -76,13 +74,12 @@ internal fun FeeServiceHallOrderTab(
     onNavigateToOrderDetail: (OrderRecord) -> Unit,
     onReLogin: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollModifier: Modifier = Modifier,
 ) {
-    val pullState = rememberPullToRefreshState()
-    PullToRefreshBox(
+    AppPullToRefresh(
         isRefreshing = uiState.isOrdersRefreshing,
         onRefresh = onRefresh,
-        state = pullState,
-        indicator = { BlurPullRefreshIndicator(pullState, uiState.isOrdersRefreshing, topInset) },
+        topInset = topInset,
         modifier = modifier.fillMaxSize(),
     ) {
         when {
@@ -122,7 +119,7 @@ internal fun FeeServiceHallOrderTab(
 
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().then(scrollModifier),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                 ) {
                     item(key = "top_inset") { Spacer(Modifier.height(topInset)) }

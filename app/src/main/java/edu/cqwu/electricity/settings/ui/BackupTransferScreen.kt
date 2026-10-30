@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
@@ -26,12 +25,9 @@ import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,10 +41,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.AppSaveFab
-import edu.cqwu.electricity.common.ui.BlurScaffold
 import edu.cqwu.electricity.common.ui.ConfirmBottomSheet
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.settings.data.BackupPayloadV2
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.util.ToastUtils
@@ -75,7 +70,6 @@ fun BackupTransferScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbar = LocalSnackbarController.current
-    val topBarColors = transparentTopBarColors()
     val isExport = mode == BackupTransferModeV2.EXPORT
 
     val exportText = remember(context) { payload.exportText(context) }
@@ -126,34 +120,18 @@ fun BackupTransferScreen(
         }
     }
 
-    BlurScaffold(
+    CollapsibleScaffold(
+        title = stringResource(
+            if (isExport) payload.exportTitleRes
+            else payload.importTitleRes
+        ),
+        onBack = onBack,
         // 键盘弹出时让出 IME 高度，避免遮挡底部操作区与"确定"按钮（仅本页生效）
         modifier = Modifier
             .fillMaxSize()
             .imePadding(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(
-                            if (isExport) payload.exportTitleRes
-                            else payload.importTitleRes
-                        ),
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                        )
-                    }
-                },
-                colors = topBarColors,
-            )
-        },
-    ) { topInset ->
+        smallTitle = true,
+    ) { topInset, _ ->
         // 保存按钮改为右下角浮动：不再单独占一行，背后不会留出一条遮挡横带
         Box(modifier = Modifier.fillMaxSize()) {
             Column(

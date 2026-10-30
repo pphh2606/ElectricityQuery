@@ -65,6 +65,10 @@ class AppSettingsState(
     var uiStyle by mutableStateOf(prefs.get(SettingsKeys.UI_STYLE))
         private set
 
+    /** MIUI 风格下是否改用 MD3 取色（关闭则用 miuix 内置 MIUI 蓝） */
+    var miuixMonet by mutableStateOf(prefs.get(SettingsKeys.MIUIX_MONET))
+        private set
+
     var pageTransition by mutableStateOf(prefs.get(SettingsKeys.PAGE_TRANSITION))
         private set
 
@@ -201,6 +205,11 @@ class AppSettingsState(
     fun updateUiStyle(value: UiStyle) {
         uiStyle = value
         prefs.set(SettingsKeys.UI_STYLE, value)
+    }
+
+    fun updateMiuixMonet(value: Boolean) {
+        miuixMonet = value
+        prefs.set(SettingsKeys.MIUIX_MONET, value)
     }
 
     fun updatePaletteStyle(value: ThemePaletteStyle) {

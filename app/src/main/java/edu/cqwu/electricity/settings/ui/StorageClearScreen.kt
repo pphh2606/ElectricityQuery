@@ -3,7 +3,7 @@
 package edu.cqwu.electricity.settings.ui
 
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,8 +30,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -221,8 +219,7 @@ fun StorageClearScreen(
         title = stringResource(R.string.storage_clear_title),
         onBack = onBack,
     ) { topInset, scrollModifier ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+        AppPullToRefresh(
             isRefreshing = isRefreshing,
             onRefresh = {
                 isRefreshing = true
@@ -234,8 +231,7 @@ fun StorageClearScreen(
                     }
                 }
             },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
         Column(
@@ -345,7 +341,7 @@ fun StorageClearScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-        } // PullToRefreshBox
+        } // AppPullToRefresh
     }
 
     // ── 确认弹窗（Android 2.x 旧式风格，更醒目） ──

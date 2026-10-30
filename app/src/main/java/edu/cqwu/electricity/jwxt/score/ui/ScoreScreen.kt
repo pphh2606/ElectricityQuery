@@ -2,12 +2,6 @@
 
 package edu.cqwu.electricity.jwxt.score.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +23,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -37,12 +30,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -50,10 +39,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,15 +55,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.navigation.Routes
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
+import edu.cqwu.electricity.common.ui.AppTabRow
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.jwxt.core.JwxtConstants
 import edu.cqwu.electricity.jwxt.score.data.JwxtScore
 import edu.cqwu.electricity.jwxt.score.data.JwxtScoreTerm
-import kotlinx.coroutines.launch
 
 /**
  * 成绩查询（本地化 jwfw `/jwmobile` 的 `kwApp/cjcx_v5` 页）。
@@ -119,65 +107,36 @@ fun JwxtScoreScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                actions = {
+    CollapsibleScaffold(
+        title = title,
+        onBack = onBack,
+        actions = {
                     // 打开网页版：保留一条回到教务原网页的退路（与教务首页、更多服务页顶栏一致）
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { nav.navigate(Routes.unifiedWebViewRoute(JwxtConstants.SCORE_URL, title)) }) {
                         Icon(
                             imageVector = Icons.Outlined.OpenInBrowser,
                             contentDescription = stringResource(R.string.common_web_version),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
-                colors = transparentTopBarColors(),
-            )
-            // 学期胶囊与 Tab 行并入标题栏浮层：和标题栏一起模糊、固定不滚动。
-            // 学期列表要等首次请求返回才有，直接 if 会「啪」地弹出来——包一层出现动画，
-            // 高度也随之渐变，浮层下方的内容不会被猛地顶下去
-            AnimatedVisibility(
-                visible = uiState.terms.isNotEmpty(),
-                enter = fadeIn(tween(180)) + expandVertically(tween(180)),
-                exit = fadeOut(tween(120)) + shrinkVertically(tween(120)),
-            ) {
+        // 学期胶囊 + 成绩范围 Tab 并入标题栏浮层：和标题栏一起固定，不随列表滚动
+        expandedTopContent = {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 TermChips(
                     terms = uiState.terms,
                     selectedTermCode = uiState.selectedTermCode,
                     onSelect = { viewModel.selectTerm(it) },
                 )
-            }
-            PrimaryTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                containerColor = Color.Transparent,
-                divider = {},
-            ) {
-                filters.forEachIndexed { index, filter ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                        text = { Text(text = filterLabel(filter)) },
-                    )
-                }
+                AppTabRow(
+                    tabs = filters.map { filterLabel(it) },
+                    selectedIndex = pagerState.currentPage,
+                    onTabSelected = { index ->
+                        scope.launch { pagerState.animateScrollToPage(index) }
+                    },
+                )
             }
         },
-    ) { topInset ->
+    ) { topInset, scrollModifier ->
         when {
             uiState.requiresReLogin -> ReLoginContent(
                 requiresReLogin = true,
@@ -195,6 +154,7 @@ fun JwxtScoreScreen(
 
             else -> HorizontalPager(
                 state = pagerState,
+                // 滚动连接下沉到每个 page 的列表：挂在外层会被 PullToRefreshBox 吃掉下拉位移
                 modifier = Modifier.fillMaxSize(),
             ) { page ->
                 ScorePage(
@@ -215,6 +175,7 @@ fun JwxtScoreScreen(
                         )
                     },
                     topInset = topInset,
+                    scrollModifier = scrollModifier,
                 )
             }
         }
@@ -237,19 +198,18 @@ private fun ScorePage(
     onRefresh: () -> Unit,
     onScoreClick: (JwxtScore) -> Unit,
     topInset: Dp,
+    scrollModifier: Modifier = Modifier,
 ) {
-    val pullState = rememberPullToRefreshState()
-    PullToRefreshBox(
+    AppPullToRefresh(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        state = pullState,
-        indicator = { BlurPullRefreshIndicator(pullState, isRefreshing, topInset) },
+        topInset = topInset,
         modifier = Modifier.fillMaxSize(),
     ) {
         when {
             scores.isNotEmpty() -> LazyColumn(
                 state = listState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().then(scrollModifier),
                 contentPadding = PaddingValues(vertical = 4.dp),
             ) {
                 item(key = "top_inset") { Spacer(Modifier.height(topInset)) }

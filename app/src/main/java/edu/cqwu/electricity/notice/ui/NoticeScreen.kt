@@ -21,13 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.AccessTime
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Visibility
@@ -40,11 +35,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,25 +48,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
 import edu.cqwu.electricity.notice.data.NoticeItem
 import edu.cqwu.electricity.notice.data.formatNoticeTime
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.ListStatsRow
 import edu.cqwu.electricity.common.ui.PagingFooter
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
+import edu.cqwu.electricity.common.ui.AppSearchTopBar
+import edu.cqwu.electricity.common.ui.AppTopBar
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -100,7 +89,6 @@ fun NoticeScreen(
     var isSearching by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    val topBarColors = transparentTopBarColors()
 
     // 只在「本实例首次进入」时加载：本 ViewModel 挂在列表目的地的作用域上，
     // 从首页进入是新实例（needsInitialLoad 为初始值 true），因此必然重新加载；
@@ -170,101 +158,39 @@ fun NoticeScreen(
     BlurScaffold(
         topBar = {
             if (isSearching) {
-                // ── 搜索态：标题栏整体变成搜索条 ──
-                TopAppBar(
-                    title = {
-                        TextField(
-                            value = searchText,
-                            onValueChange = { searchText = it },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.notice_search_hint),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                                )
-                            },
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(focusRequester),
-                            textStyle = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            ),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                                cursorColor = MaterialTheme.colorScheme.primary,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                            ),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
-                            trailingIcon = {
-                                if (searchText.isNotEmpty()) {
-                                    // 只清输入框，不立刻改查询条件——提交后才生效
-                                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { searchText = "" }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Close,
-                                            contentDescription = stringResource(R.string.common_clear_search),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    },
-                    navigationIcon = {
-                        // 取消：不改查询条件，直接退出搜索态
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { exitSearch() }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.common_exit_search),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
+                // ── 搜索态：整条顶栏变成输入框（两套风格形态不同，接口一致） ──
+                AppSearchTopBar(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    hint = stringResource(R.string.notice_search_hint),
+                    onBack = { exitSearch() },
+                    focusRequester = focusRequester,
+                    onSubmit = { submitSearch() },
+                    // 只清输入框，不立刻改查询条件——提交后才生效
+                    onClear = { searchText = "" },
                     actions = {
                         IconButton(shapes = IconButtonDefaults.shapes(), onClick = { submitSearch() }) {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
                                 contentDescription = stringResource(R.string.common_search),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     },
-                    colors = topBarColors
                 )
             } else {
                 // ── 普通态：标题 + 右侧搜索按钮（字号与其他页面统一，总数移到列表统计行） ──
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.notice_title),
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.common_back),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
+                AppTopBar(
+                    title = stringResource(R.string.notice_title),
+                    onBack = onBack,
+                    transparent = true,
                     actions = {
                         IconButton(shapes = IconButtonDefaults.shapes(), onClick = { isSearching = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
                                 contentDescription = stringResource(R.string.common_search),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     },
-                    colors = topBarColors
                 )
             }
             // 统计行属于标题栏浮层：固定在标题栏下方，和标题栏一起模糊
@@ -326,8 +252,7 @@ fun NoticeScreen(
             }
 
             else -> {
-                val pullState = rememberPullToRefreshState()
-                PullToRefreshBox(
+                AppPullToRefresh(
                     isRefreshing = viewModel.isLoading,
                     onRefresh = {
                         scope.launch {
@@ -335,8 +260,7 @@ fun NoticeScreen(
                             viewModel.loadPage(0, isRefresh = true, keyword = keyword)
                         }
                     },
-                    state = pullState,
-                    indicator = { BlurPullRefreshIndicator(pullState, viewModel.isLoading, topInset) },
+                    topInset = topInset,
                     modifier = Modifier.fillMaxSize()
                 ) {
                     LazyColumn(

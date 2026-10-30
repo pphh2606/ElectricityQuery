@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
@@ -35,9 +34,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -55,14 +51,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import edu.cqwu.electricity.common.ui.ScrollLinkedBox
 import edu.cqwu.electricity.R
-import edu.cqwu.electricity.common.ui.BlurPullRefreshIndicator
+import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.AppScaledMenuItem
-import edu.cqwu.electricity.common.ui.BlurScaffold
+import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
@@ -124,29 +120,18 @@ fun DetailScreen(
         }
     }
 
-    BlurScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(title, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
+    CollapsibleScaffold(
+        title = title,
+        onBack = {
                         viewModel.clearDetailData()
                         onBack()
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                actions = {
+                    },
+        actions = {
                     Box {
                         IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
                             Icon(
                                 imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = stringResource(R.string.common_more_options),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         AppScaledDropdownMenu(
@@ -175,20 +160,16 @@ fun DetailScreen(
                         }
                     }
                 },
-                colors = transparentTopBarColors()
-            )
-        }
-    ) { topInset ->
-        val pullState = rememberPullToRefreshState()
-        PullToRefreshBox(
+    ) { topInset, scrollModifier ->
+        AppPullToRefresh(
             isRefreshing = detailState.isRefreshing,
             onRefresh = {
                 viewModel.loadCurrentData()
             },
-            state = pullState,
-            indicator = { BlurPullRefreshIndicator(pullState, detailState.isRefreshing, topInset) },
+            topInset = topInset,
             modifier = Modifier.fillMaxSize()
         ) {
+            ScrollLinkedBox(scrollModifier) {
             when {
                 detailState.error != null -> {
                     ReLoginContent(
@@ -204,6 +185,7 @@ fun DetailScreen(
                 else -> {
                     MeterStatusContent(detailState.currentData, topInset = topInset)
                 }
+            }
             }
         }
     }

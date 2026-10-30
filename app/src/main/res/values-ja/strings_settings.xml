@@ -152,6 +152,8 @@
     <string name="personalization_dynamic_color_unsupported">このデバイスはダイナミックカラーに対応していません</string>
     <string name="personalization_custom_color">カスタムカラー</string>
     <string name="personalization_custom_color_desc">タップして変更:%1$s</string>
+    <string name="personalization_miuix_monet">MIUIx カスタムカラー</string>
+    <string name="personalization_miuix_monet_desc">オフでは MIUI 標準のブルー、オンでは上のテーマカラーに従います</string>
     <string name="personalization_topbar_color">タイトルバーの色</string>
     <string name="personalization_qrcode_settings">QRコード設定</string>
     <string name="personalization_qrcode_desc">色、角丸などのカスタムスタイル</string>
