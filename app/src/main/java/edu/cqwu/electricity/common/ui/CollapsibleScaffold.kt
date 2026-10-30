@@ -18,11 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.common.settings.LocalUiStyle
 import edu.cqwu.electricity.common.settings.UiStyle
-import edu.cqwu.electricity.common.ui.BlurScaffold
-import edu.cqwu.electricity.common.ui.transparentTopBarColors
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.TopAppBar as MiuixTopAppBar
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -32,7 +29,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
  *
  * 两套实现按 [LocalUiStyle] 二选一，页面代码保持不变：
  * - Material 3：标题栏浮在内容之上做模糊，[content] 的首参是浮层实测高度；
- * - MIUI：走 miuix 的 `Scaffold + TopAppBar`，内容排在标题栏下方，首参固定传 0。
+ * - MIUI：同样的 `BlurScaffold` 叠层，只是标题栏换成 miuix 的 `TopAppBar`，首参同样是实测高度。
  *
  * @param onBack 为 null 时不画返回键（底部导航的根页面）。
  * @param subtitle 副标题，只有 MIUI 的顶栏有这一行（比如内置浏览器显示域名）。
@@ -111,8 +108,6 @@ private fun MiuixCollapsibleScaffold(
     BlurScaffold(
         modifier = modifier,
         blur = blurEnabled,
-        // miuix 的页面底是 surface；用 M3 的 surfaceContainer 会和深色卡片撞成同一个颜色
-        containerColor = MiuixTheme.colorScheme.surface,
         topBar = {
             if (smallTitle) {
                 // 小标题：只有一行，不折叠；页面自带的展开区内容仍然挂在它底下

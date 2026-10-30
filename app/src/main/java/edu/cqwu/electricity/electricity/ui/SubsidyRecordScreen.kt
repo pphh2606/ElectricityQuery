@@ -133,7 +133,6 @@ fun SubsidyRecordScreen(
         },
         exportTitle = stringResource(R.string.subsidy_record_export_title),
         exportFileName = "electricity_subsidy_record.txt",
-        onDispose = { viewModel.clearState() },
     )
 }
 

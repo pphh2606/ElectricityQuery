@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.jwxt.score.ui
 
@@ -147,7 +147,6 @@ fun JwxtScoreScreen(
             uiState.errorMessage != null -> ReLoginContent(
                 errorMessage = uiState.errorMessage,
                 requiresReLogin = false,
-                onReLogin = {},
                 onRetry = { viewModel.load() },
                 modifier = Modifier.padding(top = topInset),
             )
@@ -225,10 +224,10 @@ private fun ScorePage(
 
             // 数据还没到：留白即可（顶部下拉指示器在转），此时不能说「暂无成绩」。
             // 用空的可滚动容器而不是普通 Box——下拉手势要靠子容器的滚动事件传上来，普通 Box 拉不动
-            isLoading -> LazyColumn(modifier = Modifier.fillMaxSize()) {}
+            isLoading -> LazyColumn(modifier = Modifier.fillMaxSize().then(scrollModifier)) {}
 
             else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().then(scrollModifier),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {

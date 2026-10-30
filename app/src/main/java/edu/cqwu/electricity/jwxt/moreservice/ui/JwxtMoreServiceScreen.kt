@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.jwxt.moreservice.ui
 
@@ -75,15 +75,26 @@ fun JwxtMoreServiceScreen(
     CollapsibleScaffold(
         title = title,
         onBack = onBack,
+        // 分组 chip 并入标题栏浮层：和标题栏一起模糊、固定不滚动
+        expandedTopContent = {
+            val chipLabels = remember(uiState.groups) {
+                uiState.groups.map { JwxtChipLabel(it.name, it.count) }
+            }
+            JwxtLabelChips(
+                labels = chipLabels,
+                selectedIndex = uiState.selectedGroupIndex,
+                onSelect = { viewModel.selectGroup(it) },
+            )
+        },
         actions = {
-                    // 打开网页版：保留一条回到教务原网页的退路（与教务首页、缴费大厅顶栏一致）
-                    IconButton(shapes = IconButtonDefaults.shapes(), onClick = { openWeb(JwxtConstants.MORE_SERVICE_URL, title) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.OpenInBrowser,
-                            contentDescription = stringResource(R.string.common_web_version),
-                        )
-                    }
-                },
+            // 打开网页版：保留一条回到教务原网页的退路（与教务首页、缴费大厅顶栏一致）
+            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { openWeb(JwxtConstants.MORE_SERVICE_URL, title) }) {
+                Icon(
+                    imageVector = Icons.Outlined.OpenInBrowser,
+                    contentDescription = stringResource(R.string.common_web_version),
+                )
+            }
+        },
     ) { topInset, scrollModifier ->
         when {
             uiState.requiresReLogin -> ReLoginContent(
@@ -95,7 +106,6 @@ fun JwxtMoreServiceScreen(
             uiState.errorMessage != null -> ReLoginContent(
                 errorMessage = uiState.errorMessage,
                 requiresReLogin = false,
-                onReLogin = {},
                 onRetry = { viewModel.load() },
                 modifier = Modifier.padding(top = topInset),
             )

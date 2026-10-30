@@ -207,7 +207,6 @@ fun RecordChartArea(
             ReLoginContent(
                 errorMessage = error,
                 requiresReLogin = false,
-                onReLogin = {},
                 onRetry = onRetry,
             )
         }

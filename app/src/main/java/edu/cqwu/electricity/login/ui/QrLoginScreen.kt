@@ -349,7 +349,6 @@ fun QrLoginScreen(
                         ReLoginContent(
                             errorMessage = state.message,
                             requiresReLogin = false,
-                            onReLogin = {},
                             onRetry = viewModel::startQrLogin,
                         )
                     }

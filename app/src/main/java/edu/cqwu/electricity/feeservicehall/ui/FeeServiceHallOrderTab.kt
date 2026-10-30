@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.feeservicehall.ui
 
@@ -104,7 +104,9 @@ internal fun FeeServiceHallOrderTab(
             }
             else -> {
                 val listState = rememberLazyListState()
-                val shouldLoadMore by remember {
+                // key 里带上 uiState 的两个分页字段：uiState 是函数参数不是 State，
+                // 无 key 的 remember 会捕获首帧实例，导致判断永远用第一页的值
+                val shouldLoadMore by remember(listState, uiState.orderHasMore, uiState.isLoadingMoreOrders) {
                     derivedStateOf {
                         val layoutInfo = listState.layoutInfo
                         val totalItems = layoutInfo.totalItemsCount
@@ -134,14 +136,11 @@ internal fun FeeServiceHallOrderTab(
                         )
                     }
                     item(key = "footer") {
-                        // 列表为空时不显示（加载中除外），与改造前一致
-                        if (uiState.isLoadingMoreOrders || uiState.orders.isNotEmpty()) {
-                            PagingFooter(
-                                isLoadingMore = uiState.isLoadingMoreOrders,
-                                hasMore = uiState.orderHasMore,
-                                onLoadMore = onLoadMore,
-                            )
-                        }
+                        PagingFooter(
+                            isLoadingMore = uiState.isLoadingMoreOrders,
+                            hasMore = uiState.orderHasMore,
+                            onLoadMore = onLoadMore,
+                        )
                     }
                 }
             }

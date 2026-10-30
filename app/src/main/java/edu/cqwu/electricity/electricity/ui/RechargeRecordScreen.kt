@@ -10,8 +10,6 @@ package edu.cqwu.electricity.electricity.ui
 import android.content.Intent
 import android.content.res.Resources
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.IconButtonDefaults
 import androidx.core.net.toUri
 import androidx.compose.foundation.horizontalScroll
@@ -71,9 +69,9 @@ import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.SectionFilterChip
+import edu.cqwu.electricity.common.ui.rememberTextExportLauncher
 import edu.cqwu.electricity.electricity.data.BuyRecord
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.copyToClipboard
 import java.util.Locale
 
@@ -109,24 +107,7 @@ fun RechargeRecordScreen(
     val resources = LocalResources.current
 
     // 文件导出启动器
-    var pendingExportText by remember { mutableStateOf("") }
-    var pendingExportLabel by remember { mutableStateOf("") }
-    val saveFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/plain")
-    ) { uri ->
-        if (uri != null && pendingExportText.isNotEmpty()) {
-            try {
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(pendingExportText.toByteArray(Charsets.UTF_8))
-                }
-                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
-            } catch (e: Exception) {
-                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-            }
-            pendingExportText = ""
-            pendingExportLabel = ""
-        }
-    }
+    val textExport = rememberTextExportLauncher()
 
     // 进入页面自动查询充值记录，切换时间范围或房间时也自动重新查询
     LaunchedEffect(roomId, recordState.timeRange) {
@@ -149,10 +130,7 @@ fun RechargeRecordScreen(
 
     CollapsibleScaffold(
         title = stringResource(R.string.recharge_record_title),
-        onBack = {
-                        viewModel.clearRechargeRecordState()
-                        onBack()
-                    },
+        onBack = onBack,
         actions = {
                     // 提示图标
                     IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showInfoDialog = true }) {
@@ -186,9 +164,11 @@ fun RechargeRecordScreen(
                                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    pendingExportText = getRechargeRecordTextContent(recordState, resources)
-                                    pendingExportLabel = resources.getString(R.string.recharge_record_export_title)
-                                    saveFileLauncher.launch("electricity_recharge_record.txt")
+                                    textExport.launch(
+                                        "electricity_recharge_record.txt",
+                                        getRechargeRecordTextContent(recordState, resources),
+                                        resources.getString(R.string.recharge_record_export_title),
+                                    )
                                 }
                             )
                         }
@@ -233,7 +213,6 @@ fun RechargeRecordScreen(
                             errorMessage = recordState.error
                                 ?: stringResource(R.string.common_unknown_error),
                             requiresReLogin = false,
-                            onReLogin = {},
                             onRetry = { viewModel.queryRechargeRecords(roomId) },
                         )
                     }

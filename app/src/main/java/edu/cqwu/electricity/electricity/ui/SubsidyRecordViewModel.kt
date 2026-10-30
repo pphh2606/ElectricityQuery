@@ -96,11 +96,6 @@ class SubsidyRecordViewModel(
         query()
     }
 
-    /** 页面离开时清理状态 */
-    fun clearState() {
-        _uiState.update { SubsidyRecordUiState() }
-    }
-
     private fun query() {
         if (roomId.isBlank()) {
             _uiState.update { it.copy(isRefreshing = false, error = UiMessage(res = R.string.record_error_no_room)) }

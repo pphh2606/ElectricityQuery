@@ -1,26 +1,18 @@
-## 新增功能
-1. MIUI 风格下可开关 MIUIx 取色，默认用 MIUI 固定的蓝色，开启后跟随主题色；只替换 primary、secondary、error 这类语义色，灰底白卡层级仍取 miuix 原值
-
 ## 界面与交互优化
-1. 全项目标题栏、底栏、搜索栏与页签栏统一成一套组件，MIUI 下自动换成 miuix 实现；组件各自读 LocalUiStyle 二选一，页面只声明标题与动作
-2. 大量二级页面改为直接套页面外壳，不再各写标题栏与模糊层；折叠行为与顶部留白统一由 CollapsibleScaffold 负责
-3. 设置页在 MIUI 下变成整张白卡、行与行紧贴、不再显示装饰图标；SettingsGroup 走 MiuixCard，SettingsListItem 走 BasicComponent
-4. 加载环、开关、提示条与下拉刷新在 MIUI 下换成 miuix 实现；分别对应 InfiniteProgressIndicator、MiuixSwitch、MiuixSurface 与 miuix 的 PullToRefresh，默认英文提示改中文四段
-5. 二维码页把加载中与加载失败收进同一容器，并去掉标题旁的 Cookie 圆点；QrCodeDisplayScreen 不再单独包加载态，会话失效改用整页提示
-6. 扫码页顶栏改黑底白字，内置浏览器页改紧凑单行标题并显示域名；AppTopBar 支持指定底色与前景色，浏览器页首帧就用入口 URL 的 host 做副标题
+1. 教务更多服务页的分类筛选挪进标题栏，随标题栏一起模糊、不跟内容滚动。分组胶囊改由 expandedTopContent 承载，与标题栏同属浮层。
+2. 记录页返回后不再清空重查，再次进入直接看到上次列表；首页在 miuix 风格下点开搜索即自动聚焦。移除 clearState 调用让状态随 ViewModel 存活，MiuixHomeTopBar 补 FocusRequester。
+3. 内置浏览器的域名副标题改由脚手架统一渲染，两种风格都显示双行标题。AppSmallTopBar 增加标题加副标题布局，页面不再自己拼 titleContent。
+4. 设置页开关行的分隔线两种风格共用一套结构。SettingsSwitchEntry 把分隔线与开关合到同一个 Row，只在开关控件处按风格分支。
 
 ## Bug 修复
-1. 修复 MIUI 风格夜间标题栏图标几乎看不见；新增 MiuixTopBarForeground 提供 LocalContentColor，未写 tint 的图标跟随顶栏前景色
-2. 修复 MIUI 风格卡片比页面暗、整体发灰；背景与容器层级按语义重排成灰底加白卡，surfaceTint 置透明关掉色调染色
-3. 修复 MIUI 风格按压反馈变成水波纹；MiuixTheme 移到 M3 内层，避免 LocalIndication 被 ripple 覆盖
-4. 修复下拉刷新时大标题召不回来；新增 ScrollLinkedBox 把滚动连接挂进下拉刷新内部，位移先到标题栏
-5. 修复网页页面开启毛玻璃后闪烁甚至不绘制；BlurScaffold 新增 blur 开关，WebView 页关掉录源并回退不透明底色
-6. 修复标题栏字重与图标颜色不统一；去掉手写的 FontWeight.Bold 与 actions 里写死的 tint，交回主题样式
+1. 二维码页登录过期后不再停在旧二维码上，能立刻看到重登入口；首载与下拉刷新也合成一个状态。重登分支提前于已有二维码判断，isLoading 与 isRefreshing 合并为 isFetching。
+2. 缴费大厅订单列表的加载更多不再一直沿用第一页的数据。derivedStateOf 的 remember 补上分页字段作为键，字段变化时重建判断。
+3. 教务课表筛选弹窗能正常播放关闭动画，打开课表失败也不会卡在打开中。弹窗 visible 由 picker 驱动而非恒为 true，取值协程用 try 与 finally 复位。
+4. 成绩页加载中也能下拉刷新，公告详情页销毁 WebView 时不再做多余的清空操作。加载与空态分支补上 scrollModifier，onRelease 只保留 stopLoading 与 destroy。
 
 ## 架构改进
-1. 界面风格收成唯一入口；新增 LocalUiStyle 这个 CompositionLocal，由主题层统一 provide，组件层不再各自判断
-2. 页面外壳与下拉刷新抽成公共容器；CollapsibleScaffold 支持大小标题与副标题，AppPullToRefresh 统一两种刷新实现
-3. BlurScaffold 与 SegmentedGroup 新增可选参数；分别支持指定容器底色与行间距
-
-## 删除的文件
-1. 删掉 BlurPullRefresh.kt；只剩几行指示器偏移逻辑，已并入 AppPullToRefresh
+1. 导出文本到文件收成一个公共入口，仪表盘、详情页与几个记录页共用。新增 TextExportLauncher.kt 与 rememberTextExportLauncher，统一 CreateDocument、UTF-8 写入与提示。
+2. 房间选择弹窗抽成公共组件，我的寝室与充值页共用。新增 RoomSwitchSheet.kt，把标题、提示、绑定解绑入口与房间列表收成一处。
+3. 页面返回清理改由生命周期回调触发，手势返回也能清干净。详情页与充值记录页把清理从 onBack 移到 DisposableEffect。
+4. 毛玻璃底色改由组件按风格自动取，页面不再逐个传参。BlurScaffold 默认值按 LocalUiStyle 在 miuix surface 与 M3 surfaceContainer 之间切换。
+5. 重复 UI 抽成私有组件，并清掉多余的空回调与调试残留。仪表盘合并 UsageColumn、公告合并 MetaItem、首页合并 GridItemLabel 与 RemoveBadge，ReLoginContent 的 onReLogin 给默认实现后删掉 23 处空 lambda，同时移除 TabPerf 计时与重复 OptIn。

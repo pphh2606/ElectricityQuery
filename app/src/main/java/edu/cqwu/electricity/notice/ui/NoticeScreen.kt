@@ -95,8 +95,6 @@ fun NoticeScreen(
     // 从详情返回时是同一个实例、其值已被置为 false，直接复用已有列表，
     // 滚动位置也由 navigation-compose 的 saveable state 自动恢复。
     LaunchedEffect(Unit) {
-        searchText = ""
-        isSearching = false
         if (viewModel.needsInitialLoad || viewModel.items.isEmpty()) {
             viewModel.clearSearch()
             viewModel.loadPage(0, isRefresh = true)

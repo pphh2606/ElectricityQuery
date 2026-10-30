@@ -55,9 +55,7 @@ internal class UnifiedWebViewUiState(
     fun reloadWithLoading() {
         webErrorState = null
         webErrorUrl = null
-        webViewRef?.let {
-            isLoading = true
-            it.reload()
-        }
+        isLoading = true
+        webViewRef?.reload()
     }
 }

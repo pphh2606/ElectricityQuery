@@ -78,7 +78,6 @@ fun PersonSearchScreen(
     val uiState by viewModel.uiState.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val keyword by viewModel.keyword.collectAsState()
-    val focusRequester = remember { FocusRequester() }
     val listState = rememberLazyListState()
 
     // 检测滚动到底部，自动加载更多
@@ -109,7 +108,6 @@ fun PersonSearchScreen(
                 value = keyword,
                 onValueChange = { viewModel.onKeywordChange(it) },
                 hint = stringResource(R.string.person_search_hint),
-                focusRequester = focusRequester,
                 onSubmit = { viewModel.search() },
                 onClear = { viewModel.clearKeyword() },
                 actions = {
@@ -125,19 +123,19 @@ fun PersonSearchScreen(
 
             // ── 统计信息行：左「共搜索到 x 人」右「第 n/总页数 页」（排版参照账单页 BillStatsRow） ──
             val currentState = uiState as? PersonSearchViewModel.UiState.Success
-            ListStatsRow(
-                loadedCount = currentState?.totalSize ?: 0,
-                currentPage = currentState?.currentPage ?: 0,
-                totalPages = currentState?.totalPages ?: 0,
-                loadedText = currentState?.let {
-                    pluralStringResource(
+            if (currentState != null) {
+                ListStatsRow(
+                    loadedCount = currentState.totalSize,
+                    currentPage = currentState.currentPage,
+                    totalPages = currentState.totalPages,
+                    loadedText = pluralStringResource(
                         R.plurals.person_search_total_count,
-                        it.totalSize,
-                        it.totalSize,
-                    )
-                },
-                visible = currentState != null && currentState.rows.isNotEmpty(),
-            )
+                        currentState.totalSize,
+                        currentState.totalSize,
+                    ),
+                    visible = currentState.rows.isNotEmpty(),
+                )
+            }
         },
     ) { topInset ->
         val isRefreshing = uiState is PersonSearchViewModel.UiState.Loading

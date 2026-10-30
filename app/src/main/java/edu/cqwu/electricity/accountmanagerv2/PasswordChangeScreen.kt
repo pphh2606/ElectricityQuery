@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.VerifiedUser
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -118,7 +117,6 @@ fun PasswordChangeScreen(
                 state.loadError != null && state.salt.isEmpty() -> ReLoginContent(
                     errorMessage = state.loadError,
                     requiresReLogin = false,
-                    onReLogin = {},
                     onRetry = viewModel::refresh,
                 )
                 else -> PasswordChangeContent(

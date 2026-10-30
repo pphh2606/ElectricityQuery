@@ -10,14 +10,11 @@ import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 
 // 三点菜单
 // 剪贴板与文件导出
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,11 +35,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,18 +46,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.ui.DateRangeFilterRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.rememberTextExportLauncher
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
-import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.copyToClipboard
 import kotlinx.coroutines.launch
 
@@ -104,7 +96,6 @@ import kotlinx.coroutines.launch
  * @param textContent 生成纯文本（复制/导出用）
  * @param exportTitle 导出标题（用于文件名提示与 Snackbar）
  * @param exportFileName 导出文件名（如 "electricity_usage_record.txt"）
- * @param onDispose 页面离开时的清理回调（清空 ViewModel 状态）
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,39 +121,15 @@ fun RecordListScreen(
     textContent: () -> String,
     exportTitle: String,
     exportFileName: String,
-    onDispose: () -> Unit = {},
 ) {
     val snackbar = LocalSnackbarController.current
     val context = LocalContext.current
-    val resources = LocalResources.current
 
     // 三点菜单状态
     var showMenu by remember { mutableStateOf(false) }
 
     // 文件导出启动器
-    var pendingExportText by remember { mutableStateOf("") }
-    var pendingExportLabel by remember { mutableStateOf("") }
-    val saveFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/plain")
-    ) { uri ->
-        if (uri != null && pendingExportText.isNotEmpty()) {
-            try {
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(pendingExportText.toByteArray(Charsets.UTF_8))
-                }
-                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
-            } catch (e: Exception) {
-                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-            }
-            pendingExportText = ""
-            pendingExportLabel = ""
-        }
-    }
-
-    // 页面离开时清理状态
-    DisposableEffect(Unit) {
-        onDispose(onDispose)
-    }
+    val textExport = rememberTextExportLauncher()
 
     // 顶部 Tab 分页状态（tabs 为 null 时仅占位 1 页，不渲染）
     val scope = rememberCoroutineScope()
@@ -178,14 +145,11 @@ fun RecordListScreen(
 
     CollapsibleScaffold(
         title = title,
-        onBack = {
-                            onDispose()
-                            onBack()
-                        },
+        onBack = onBack,
         actions = {
-                        // 表格 ⇄ 折线图切换按钮（仅在页面提供图表内容时显示）
-                        if (chartPages.isNotEmpty() && onToggleViewMode != null) {
-                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = onToggleViewMode) {
+            // 表格 ⇄ 折线图切换按钮（仅在页面提供图表内容时显示）
+            if (chartPages.isNotEmpty() && onToggleViewMode != null) {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = onToggleViewMode) {
                                 Icon(
                                     imageVector = if (chartMode) Icons.Outlined.TableChart else Icons.AutoMirrored.Outlined.ShowChart,
                                     contentDescription = stringResource(
@@ -218,9 +182,7 @@ fun RecordListScreen(
                                     leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                     onClick = {
                                         showMenu = false
-                                        pendingExportText = textContent()
-                                        pendingExportLabel = exportTitle
-                                        saveFileLauncher.launch(exportFileName)
+                                        textExport.launch(exportFileName, textContent(), exportTitle)
                                     }
                                 )
                             }
@@ -317,7 +279,6 @@ private fun RecordPageScroll(
             ReLoginContent(
                 errorMessage = error,
                 requiresReLogin = false,
-                onReLogin = {},
                 onRetry = onRetry,
                 modifier = Modifier.padding(top = topInset),
             )
@@ -333,10 +294,8 @@ private fun RecordPageScroll(
             }
         }
 
-        page == null -> Box(modifier = Modifier.fillMaxSize())
-
-        page.isLoading && page.rows.isEmpty() -> {
-            // 查询中且无数据：留白，避免闪"暂无数据"；进度由顶部下拉刷新指示提示
+        page == null || (page.isLoading && page.rows.isEmpty()) -> {
+            // 无数据时留白，避免闪"暂无数据"；进度由顶部下拉刷新指示提示
             Box(modifier = Modifier.fillMaxSize())
         }
 

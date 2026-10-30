@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.campusnetwork.portal.ui
 
@@ -208,7 +208,6 @@ fun PortalServiceScreen(
                 else -> ReLoginContent(
                     errorMessage = errorText ?: stringResource(R.string.portal_error_unreachable),
                     requiresReLogin = false,
-                    onReLogin = {},
                     onRetry = { viewModel.load() },
                     modifier = Modifier.padding(top = topInset),
                 )

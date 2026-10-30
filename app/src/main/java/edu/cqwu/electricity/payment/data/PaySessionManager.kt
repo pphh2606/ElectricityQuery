@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlin.text.iterator
 
 /**
  * pay.cqwu.edu.cn 域 JWT 凭证管理器（对齐 [edu.cqwu.electricity.login.domain.CasAuthFlow]）。

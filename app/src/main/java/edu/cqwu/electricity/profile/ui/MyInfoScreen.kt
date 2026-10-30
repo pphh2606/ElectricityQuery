@@ -96,7 +96,6 @@ fun MyInfoScreen(
                     ReLoginContent(
                         errorMessage = uiState.error,
                         requiresReLogin = false,
-                        onReLogin = {},
                         onRetry = { viewModel.loadStudentInfo() },
                     )
                 }

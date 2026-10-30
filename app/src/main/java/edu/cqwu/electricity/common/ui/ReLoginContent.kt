@@ -41,7 +41,7 @@ import edu.cqwu.electricity.R
 @Composable
 fun ReLoginContent(
     requiresReLogin: Boolean,
-    onReLogin: () -> Unit,
+    onReLogin: () -> Unit = {},
     modifier: Modifier = Modifier,
     errorMessage: String? = null,
     onRetry: () -> Unit = {},

@@ -4,8 +4,6 @@ package edu.cqwu.electricity.electricity.ui
 
 
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,29 +11,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MonetizationOn
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SyncAlt
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonDefaults
 import edu.cqwu.electricity.common.ui.AppCircularProgressIndicator
-import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
-import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,7 +43,6 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
@@ -67,8 +56,6 @@ import edu.cqwu.electricity.common.ui.AppNavigationBar
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.BottomBarOverlay
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
-import edu.cqwu.electricity.common.ui.SheetItemGroup
-import edu.cqwu.electricity.common.ui.BottomSheetItem
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.common.ui.ReLoginContent
 import edu.cqwu.electricity.common.ui.ShowBottomBarOnChange
@@ -79,7 +66,6 @@ import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
 import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.openUrl
-import edu.cqwu.electricity.common.util.copyToClipboard
 import kotlinx.coroutines.launch
 
 /** 底部导航栏的三个 Tab（标签在 Composable 内通过 stringResource 获取） */
@@ -146,27 +132,6 @@ fun ElectricityMainScreen(
     }
 
     // ── 我的寝室三点菜单状态 ──
-    var showMyRoomMenu by remember { mutableStateOf(false) }
-
-    // ── 文件导出启动器 ──
-    var pendingExportText by remember { mutableStateOf("") }
-    var pendingExportLabel by remember { mutableStateOf("") }
-    val saveFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/plain")
-    ) { uri ->
-        if (uri != null && pendingExportText.isNotEmpty()) {
-            try {
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(pendingExportText.toByteArray(Charsets.UTF_8))
-                }
-                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
-            } catch (e: Exception) {
-                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-            }
-            pendingExportText = ""
-            pendingExportLabel = ""
-        }
-    }
 
     // 查询 Tab 的统一返回处理：房间选择 → 校区/楼栋列表 → 退出
     val handleQueryTabBack = {
@@ -238,38 +203,11 @@ fun ElectricityMainScreen(
                                 )
                             }
                         }
-                        Box {
-                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMyRoomMenu = true }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.MoreVert,
-                                    contentDescription = stringResource(R.string.common_more_options),
-                                )
-                            }
-                            AppScaledDropdownMenu(
-                                expanded = showMyRoomMenu,
-                                onDismissRequest = { showMyRoomMenu = false }
-                            ) {
-                                AppScaledMenuItem(
-                                    text = { Text(stringResource(R.string.common_copy)) },
-                                    leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
-                                    onClick = {
-                                        showMyRoomMenu = false
-                                        val text = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance, resources)
-                                        copyToClipboard(context, text, resources.getString(R.string.dashboard_title), snackbar)
-                                    }
-                                )
-                                AppScaledMenuItem(
-                                    text = { Text(stringResource(R.string.common_export)) },
-                                    leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
-                                    onClick = {
-                                        showMyRoomMenu = false
-                                        pendingExportText = getDashboardTextContent(myRoomState.selectedRoom, myRoomState.balance, resources)
-                                        pendingExportLabel = resources.getString(R.string.dashboard_title)
-                                        saveFileLauncher.launch("electricity_dashboard.txt")
-                                    }
-                                )
-                            }
-                        }
+                        // 与查询 Tab 的三点菜单同源，直接复用（复制/导出的都是仪表盘内容）
+                        DashboardMenuButton(
+                            room = myRoomState.selectedRoom,
+                            balance = myRoomState.balance,
+                        )
                     }
         },
     ) { topInset, scrollModifier ->
@@ -417,51 +355,18 @@ fun ElectricityMainScreen(
     }
 
     // ── 我的寝室房间切换 BottomSheet ──
-    BottomSheetDialogV2(
+    RoomSwitchSheet(
         visible = showRoomSwitchSheet && myRoomState.myRoomList.isNotEmpty(),
-        onDismissRequest = { showRoomSwitchSheet = false },
-            title = stringResource(R.string.dashboard_select_dorm),
-            leadingButton = {
-                TextButton(shapes = ButtonDefaults.shapes(), onClick = {
-                    showRoomSwitchSheet = false
-                    nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
-                        resources.getString(R.string.electricity_bind_account)))
-                }) {
-                    Text(stringResource(R.string.electricity_bind_account))
-                }
-            },
-            trailingButton = {
-                TextButton(shapes = ButtonDefaults.shapes(), onClick = {
-                    showRoomSwitchSheet = false
-                    nav.navigate(Routes.unifiedWebViewRoute("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
-                        resources.getString(R.string.electricity_unbind_account)))
-                }) {
-                    Text(stringResource(R.string.electricity_unbind_account))
-                }
-            }
-        ) {
-            Text(
-                text = stringResource(R.string.dashboard_select_room),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            SheetItemGroup {
-                myRoomState.myRoomList.forEach { room ->
-                    item {
-                        BottomSheetItem(
-                            icon = Icons.Outlined.Home,
-                            title = room.fullName.ifBlank { room.roomName },
-                            onClick = {
-                                myRoomViewModel.switchToMyRoom(room)
-                                showRoomSwitchSheet = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
+        title = stringResource(R.string.dashboard_select_dorm),
+        hint = stringResource(R.string.dashboard_select_room),
+        rooms = myRoomState.myRoomList,
+        onSelect = { room ->
+            myRoomViewModel.switchToMyRoom(room)
+            showRoomSwitchSheet = false
+        },
+        onDismiss = { showRoomSwitchSheet = false },
+    )
+}
 
 /**
  * "我的" Tab 内容

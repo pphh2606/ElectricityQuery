@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.jwxt.schedulequery.ui
 
@@ -216,7 +216,6 @@ fun JwxtScheduleTargetScreen(
                     state.loadError != null && state.rows.isEmpty() -> ReLoginContent(
                         errorMessage = state.loadError,
                         requiresReLogin = false,
-                        onReLogin = {},
                         onRetry = viewModel::refresh,
                     )
 
@@ -246,8 +245,11 @@ fun JwxtScheduleTargetScreen(
                             if (!opening) {
                                 opening = true
                                 scope.launch {
-                                    viewModel.fetchTargetWithCampus(row)?.let(onOpenTable)
-                                    opening = false
+                                    try {
+                                        viewModel.fetchTargetWithCampus(row)?.let(onOpenTable)
+                                    } finally {
+                                        opening = false
+                                    }
                                 }
                             }
                         },
@@ -262,13 +264,14 @@ fun JwxtScheduleTargetScreen(
         LoadingDialog(message = stringResource(R.string.jwxt_schedule_opening))
     }
 
-    // 筛选弹窗：同一个弹窗按当前点的胶囊列不同的项
-    picker?.let { entry ->
-        BottomSheetDialogV2(
-            visible = true,
-            onDismissRequest = { picker = null },
-            title = entry.title,
-        ) {
+    // 筛选弹窗：同一个弹窗按当前点的胶囊列不同的项。
+    // visible 由 picker 驱动而不是恒 true，否则 onDismiss 直接把组合摘掉、退场动画播不出来
+    BottomSheetDialogV2(
+        visible = picker != null,
+        onDismissRequest = { picker = null },
+        title = picker?.title.orEmpty(),
+    ) {
+        picker?.let { entry ->
             SheetItemGroup {
                 if (entry.allowAll) {
                     item {

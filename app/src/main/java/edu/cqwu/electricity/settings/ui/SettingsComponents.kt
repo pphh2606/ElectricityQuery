@@ -65,36 +65,24 @@ internal fun SettingsSwitchEntry(
         enabled = rowEnabled,
         alpha = if (enabled) 1f else 0.38f,
         trailing = {
-            if (LocalUiStyle.current == UiStyle.MIUI) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // 双操作区的分隔线：左侧「进入细项」、右侧「开/关」，避免用户以为点哪都只是切换开关
-                    if (onRowClick != null) {
-                        Box(
-                            modifier = Modifier
-                                .padding(end = 16.dp)
-                                .width(1.dp)
-                                .height(24.dp)
-                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = if (enabled) 1f else 0.38f)),
-                        )
-                    }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // 双操作区的分隔线：左侧「进入细项」、右侧「开/关」，避免用户以为点哪都只是切换开关
+                if (onRowClick != null) {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .width(1.dp)
+                            .height(24.dp)
+                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = if (enabled) 1f else 0.38f)),
+                    )
+                }
+                if (LocalUiStyle.current == UiStyle.MIUI) {
                     MiuixSwitch(
                         checked = checked,
                         onCheckedChange = onCheckedChange,
                         enabled = enabled,
                     )
-                }
-            } else {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // 双操作区的分隔线：左侧「进入细项」、右侧「开/关」，避免用户以为点哪都只是切换开关
-                    if (onRowClick != null) {
-                        Box(
-                            modifier = Modifier
-                                .padding(end = 16.dp)
-                                .width(1.dp)
-                                .height(24.dp)
-                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = if (enabled) 1f else 0.38f)),
-                        )
-                    }
+                } else {
                     Switch(
                         checked = checked,
                         onCheckedChange = onCheckedChange,

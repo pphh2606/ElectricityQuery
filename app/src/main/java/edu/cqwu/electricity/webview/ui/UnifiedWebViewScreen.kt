@@ -93,7 +93,6 @@ fun UnifiedWebViewScreen(
     val snackbar = LocalSnackbarController.current
     val context = LocalContext.current
     val resources = LocalResources.current
-    val topBarColors = currentTopBarColors()
 
     val displayTitle = initialTitle.ifBlank { stringResource(R.string.webview_loading) }
     // 先从入口 URL 解析出域名：副标题第一帧就在，miuix 小标题栏不会等 WebView 回调后才长高一行
@@ -161,123 +160,104 @@ fun UnifiedWebViewScreen(
         blurEnabled = false,
         // 浏览器以内容为主，大标题会挤掉网页可视区：固定小标题，双行内容保留
         smallTitle = true,
-        // M3 的大标题用双行（标题 + 域名）；MIUI 侧走 subtitle 槽
-        titleContent = {
-                        Column {
-                            Text(
-                                text = state.pageTitle,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            if (state.pageDomain.isNotBlank()) {
-                                Text(
-                                    text = state.pageDomain,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                )
-                            }
-                        }
-                    },
-                    navigationContent = {
-                        Row {
-                            // ← 返回上一页（WebView 历史栈）；无法返回时降级为关闭浏览器，与系统返回键行为一致
-                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
-                                val webView = state.webViewRef
-                                if (webView != null && webView.canGoBack()) {
-                                    webView.goBack()
-                                } else {
-                                    onClose()
-                                }
-                            }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                    contentDescription = stringResource(R.string.common_back),
-                                )
-                            }
-                            // ✕ 关闭内置浏览器
-                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = onClose) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = stringResource(R.string.common_close),
-                                )
-                            }
-                        }
-                    },
-                    actions = {
-                        // ── 刷新按钮 ──
-                        IconButton(shapes = IconButtonDefaults.shapes(), onClick = { state.reloadWithLoading() }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Refresh,
-                                contentDescription = stringResource(R.string.common_refresh),
-                            )
-                        }
+        navigationContent = {
+            Row {
+                // ← 返回上一页（WebView 历史栈）；无法返回时降级为关闭浏览器，与系统返回键行为一致
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = {
+                    val webView = state.webViewRef
+                    if (webView != null && webView.canGoBack()) {
+                        webView.goBack()
+                    } else {
+                        onClose()
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = stringResource(R.string.common_back),
+                    )
+                }
+                // ✕ 关闭内置浏览器
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = onClose) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = stringResource(R.string.common_close),
+                    )
+                }
+            }
+        },
+        actions = {
+            // ── 刷新按钮 ──
+            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { state.reloadWithLoading() }) {
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = stringResource(R.string.common_refresh),
+                )
+            }
 
-                        // ── 更多选项（三点菜单） ──
-                        Box {
-                            IconButton(shapes = IconButtonDefaults.shapes(), onClick = { state.showMenu = true }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.MoreVert,
-                                    contentDescription = stringResource(R.string.common_more_options),
-                                )
-                            }
-                            AppScaledDropdownMenu(
-                                expanded = state.showMenu,
-                                onDismissRequest = { state.showMenu = false }
-                            ) {
-                                AppScaledMenuItem(
-                                    text = { Text(stringResource(R.string.webview_copy_link)) },
-                                    leadingIcon = { Icon(Icons.Outlined.Link, contentDescription = null) },
-                                    onClick = {
-                                        state.showMenu = false
-                                        val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
-                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                        val clip = ClipData.newPlainText(resources.getString(R.string.webview_clip_label), currentUrl)
-                                        clipboard.setPrimaryClip(clip)
-                                        snackbar.show(resources.getString(R.string.webview_link_copied), ToastUtils.Type.SUCCESS)
-                                    }
-                                )
-                                AppScaledMenuItem(
-                                    text = { Text(stringResource(R.string.webview_share_link)) },
-                                    leadingIcon = { Icon(Icons.Outlined.Share, contentDescription = null) },
-                                    onClick = {
-                                        state.showMenu = false
-                                        val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
-                                        val sendIntent = Intent().apply {
-                                            action = Intent.ACTION_SEND
-                                            putExtra(Intent.EXTRA_TEXT, currentUrl)
-                                            type = "text/plain"
-                                        }
-                                        context.startActivity(Intent.createChooser(sendIntent, resources.getString(R.string.webview_share_link)))
-                                    }
-                                )
-                                AppScaledMenuItem(
-                                    text = { Text(stringResource(R.string.webview_open_in_browser)) },
-                                    leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, contentDescription = null) },
-                                    onClick = {
-                                        state.showMenu = false
-                                        val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
-                                        val intent = Intent(Intent.ACTION_VIEW, currentUrl.toUri())
-                                        context.startActivity(intent)
-                                    }
-                                )
-                                AppScaledMenuItem(
-                                    text = {
-                                        Text(
-                                            if (WebVpnEncoder.isWebVpnUrl(state.webViewRef?.url ?: ""))
-                                                stringResource(R.string.webview_switch_to_external) else stringResource(R.string.webview_switch_to_internal)
-                                        )
-                                    },
-                                    leadingIcon = { Icon(Icons.Outlined.SwapHoriz, contentDescription = null) },
-                                    onClick = {
-                                        state.showMenu = false
-                                        toggleNetwork()
-                                    }
-                                )
-                            }
+            // ── 更多选项（三点菜单） ──
+            Box {
+                IconButton(shapes = IconButtonDefaults.shapes(), onClick = { state.showMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.MoreVert,
+                        contentDescription = stringResource(R.string.common_more_options),
+                    )
+                }
+                AppScaledDropdownMenu(
+                    expanded = state.showMenu,
+                    onDismissRequest = { state.showMenu = false }
+                ) {
+                    AppScaledMenuItem(
+                        text = { Text(stringResource(R.string.webview_copy_link)) },
+                        leadingIcon = { Icon(Icons.Outlined.Link, contentDescription = null) },
+                        onClick = {
+                            state.showMenu = false
+                            val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip = ClipData.newPlainText(resources.getString(R.string.webview_clip_label), currentUrl)
+                            clipboard.setPrimaryClip(clip)
+                            snackbar.show(resources.getString(R.string.webview_link_copied), ToastUtils.Type.SUCCESS)
                         }
-                    },
+                    )
+                    AppScaledMenuItem(
+                        text = { Text(stringResource(R.string.webview_share_link)) },
+                        leadingIcon = { Icon(Icons.Outlined.Share, contentDescription = null) },
+                        onClick = {
+                            state.showMenu = false
+                            val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, currentUrl)
+                                type = "text/plain"
+                            }
+                            context.startActivity(Intent.createChooser(sendIntent, resources.getString(R.string.webview_share_link)))
+                        }
+                    )
+                    AppScaledMenuItem(
+                        text = { Text(stringResource(R.string.webview_open_in_browser)) },
+                        leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, contentDescription = null) },
+                        onClick = {
+                            state.showMenu = false
+                            val currentUrl = state.webViewRef?.url ?: return@AppScaledMenuItem
+                            val intent = Intent(Intent.ACTION_VIEW, currentUrl.toUri())
+                            context.startActivity(intent)
+                        }
+                    )
+                    AppScaledMenuItem(
+                        text = {
+                            Text(
+                                if (WebVpnEncoder.isWebVpnUrl(state.webViewRef?.url ?: ""))
+                                    stringResource(R.string.webview_switch_to_external) else stringResource(R.string.webview_switch_to_internal)
+                            )
+                        },
+                        leadingIcon = { Icon(Icons.Outlined.SwapHoriz, contentDescription = null) },
+                        onClick = {
+                            state.showMenu = false
+                            toggleNetwork()
+                        }
+                    )
+                }
+            }
+        },
     ) { topInset, _ ->
         Column(
             modifier = Modifier
@@ -285,105 +265,101 @@ fun UnifiedWebViewScreen(
                 // WebView 自带滚动、顶部大标题常显，内容直接排在标题栏下方
                 .padding(top = topInset)
         ) {
-                // WebView 内容区（含进度条和错误叠加层）
-                Box(modifier = Modifier.fillMaxSize()) {
+            // WebView 内容区（含进度条和错误叠加层）
+            Box(modifier = Modifier.fillMaxSize()) {
 
-                    // ═══ M3 加载指示器（完整复用其他页面的实现） ═══
-                    // PullToRefreshBox 在这里只承担一件事：把 M3 指示器画出来。
-                    // 指示器的位置/形变来自 state 内部的 Animatable（distanceFraction），
-                    // 而推进它的是 pullToRefresh 节点（bytecode 已核实：仅实现
-                    // NestedScrollConnection、没有 pointerInput），裸用 Indicator 时
-                    // distanceFraction 恒为 0，指示器就不会出现。
-                    // 原生 WebView 不是 NestedScrollingChild、不产生嵌套滚动事件，
-                    // 所以这里既不抢 WebView 的触摸，也不存在「下拉触发刷新」的路径；
-                    // onRefresh 保持空实现 —— 本页没有刷新功能，它永远不会被调用。
-                    PullToRefreshBox(
-                        isRefreshing = state.isLoading,
-                        onRefresh = {},
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        // WebView（立即渲染，无延迟）
-                        AndroidView(
-                            modifier = Modifier.fillMaxSize(),
-                            factory = { ctx ->
-                                WebView(ctx).apply {
-                                    layoutParams = ViewGroup.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.MATCH_PARENT
-                                    )
+                // ═══ M3 加载指示器（完整复用其他页面的实现） ═══
+                // PullToRefreshBox 在这里只承担一件事：把 M3 指示器画出来。
+                // 指示器的位置/形变来自 state 内部的 Animatable（distanceFraction），
+                // 而推进它的是 pullToRefresh 节点（bytecode 已核实：仅实现
+                // NestedScrollConnection、没有 pointerInput），裸用 Indicator 时
+                // distanceFraction 恒为 0，指示器就不会出现。
+                // 原生 WebView 不是 NestedScrollingChild、不产生嵌套滚动事件，
+                // 所以这里既不抢 WebView 的触摸，也不存在「下拉触发刷新」的路径；
+                // onRefresh 保持空实现 —— 本页没有刷新功能，它永远不会被调用。
+                PullToRefreshBox(
+                    isRefreshing = state.isLoading,
+                    onRefresh = {},
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // WebView（立即渲染，无延迟）
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = { ctx ->
+                            WebView(ctx).apply {
+                                layoutParams = ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT
+                                )
 
-                                    applyCommonWebViewSettings(enableZoom = true, showZoomControls = true)
-                                    webViewClient = createUnifiedWebViewClient(state, deps)
+                                applyCommonWebViewSettings(enableZoom = true, showZoomControls = true)
+                                webViewClient = createUnifiedWebViewClient(state, deps)
 
-                                    // ═══ 文件下载支持 ═══
-                                    applyUnifiedDownloadListener {
-                                        snackbar.show(resources.getString(R.string.webview_no_download_tool), ToastUtils.Type.ERROR)
-                                    }
-
-                                    webChromeClient = createUnifiedWebChromeClient(state, deps)
-
-                                    state.webViewRef = this
-
-                                    // 根据 URL 域名动态设置 Referer，避免跨域被拒绝
-                                    val headers = buildRefererHeaders(url)
-                                    // Android 6 系统 WebView 会尝试修改 headers Map，
-                                    // 必须使用可变 HashMap 避免 UnsupportedOperationException
-                                    loadUrl(url, HashMap(headers))
+                                // ═══ 文件下载支持 ═══
+                                applyUnifiedDownloadListener {
+                                    snackbar.show(resources.getString(R.string.webview_no_download_tool), ToastUtils.Type.ERROR)
                                 }
-                            },
-                            update = { webView ->
-                                // 同步 canGoBack 状态（兜底，防止回调未及时触发）
-                                state.canGoBack = webView.canGoBack()
 
-                                // WebView 是原生 View，读不到 Compose 的 Density，字体要自己同步
-                                webView.settings.textZoom = (fontScale * 100).toInt()
+                                webChromeClient = createUnifiedWebChromeClient(state, deps)
 
-                                // 从本地登录返回后自动刷新
-                                if (state.needsReloadAfterReturn) {
-                                    state.needsReloadAfterReturn = false
-                                    onReloadConsumed()
-                                    // 同刷新按钮：立刻进入加载态，覆盖服务器响应等待期
-                                    state.isLoading = true
-                                    webView.reload()
-                                }
-                                webView.applyWebViewDarkMode(webDarkModeEnabled.value)
+                                state.webViewRef = this
+
+                                // 根据 URL 域名动态设置 Referer，避免跨域被拒绝
+                                val headers = buildRefererHeaders(url)
+                                // Android 6 系统 WebView 会尝试修改 headers Map，
+                                // 必须使用可变 HashMap 避免 UnsupportedOperationException
+                                loadUrl(url, HashMap(headers))
                             }
-                        )
-                    }
+                        },
+                        update = { webView ->
+                            // 同步 canGoBack 状态（兜底，防止回调未及时触发）
+                            state.canGoBack = webView.canGoBack()
 
-                    // 网页加载进度条（放在 AndroidView 之后，确保 Z 轴在 WebView 上方）
-                    WebViewProgress(
-                        progress = state.progress,
-                        modifier = Modifier.fillMaxWidth(),
+                            // WebView 是原生 View，读不到 Compose 的 Density，字体要自己同步
+                            webView.settings.textZoom = (fontScale * 100).toInt()
+
+                            // 从本地登录返回后自动刷新
+                            if (state.needsReloadAfterReturn) {
+                                state.needsReloadAfterReturn = false
+                                onReloadConsumed()
+                                // 同刷新按钮：立刻进入加载态，覆盖服务器响应等待期
+                                state.isLoading = true
+                                webView.reload()
+                            }
+                            webView.applyWebViewDarkMode(webDarkModeEnabled.value)
+                        }
                     )
+                }
 
-                    // ═══ 自定义错误叠加层 ═══
-                    state.webErrorState?.let { error ->
-                        WebViewErrorOverlay(
-                            errorCode = error.errorCode,
-                            description = error.description,
-                            isHttpError = error.isHttpError,
-                            onRetry = { state.reloadWithLoading() },
-                            onToggleVpn = { toggleNetwork() },
-                            onNetworkSettings = {
-                                try {
-                                    context.startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
-                                } catch (_: ActivityNotFoundException) {
-                                    snackbar.show(resources.getString(R.string.webview_cannot_open_network_settings), ToastUtils.Type.ERROR)
-                                }
-                            }
-                        )
-                    }
+                // 网页加载进度条（放在 AndroidView 之后，确保 Z 轴在 WebView 上方）
+                WebViewProgress(
+                    progress = state.progress,
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
-                    // ═══ 登录已过期遮罩 ═══
-                    if (state.loginRequiredOverlayVisible) {
-                        ReLoginContent(
-                            requiresReLogin = true,
-                            onReLogin = { nav.navigate(Routes.WEBVIEW_LOGIN) },
-                            consumeTouches = true,
-                        )
-                    }
-                } // end Box (WebView 内容区)
-            } // end Column
+                // ═══ 自定义错误叠加层 ═══
+                state.webErrorState?.let { error ->
+                    WebViewErrorOverlay(
+                        errorCode = error.errorCode,
+                        description = error.description,
+                        isHttpError = error.isHttpError,
+                        onRetry = { state.reloadWithLoading() },
+                        onToggleVpn = { toggleNetwork() },
+                        onNetworkSettings = {
+                            context.startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
+                        }
+                    )
+                }
+
+                // ═══ 登录已过期遮罩 ═══
+                if (state.loginRequiredOverlayVisible) {
+                    ReLoginContent(
+                        requiresReLogin = true,
+                        onReLogin = { nav.navigate(Routes.WEBVIEW_LOGIN) },
+                        consumeTouches = true,
+                    )
+                }
+            } // end Box (WebView 内容区)
+        } // end Column
     } // end CollapsibleScaffold
 }

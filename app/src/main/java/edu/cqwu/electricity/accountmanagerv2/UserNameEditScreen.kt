@@ -82,7 +82,6 @@ fun UserNameEditScreen(
                 state.loadError != null && state.alias.isEmpty() -> ReLoginContent(
                     errorMessage = state.loadError,
                     requiresReLogin = false,
-                    onReLogin = {},
                     onRetry = viewModel::refresh,
                 )
                 // 保存按钮不再占一整行：改成 Box 覆盖层里的浮动按钮（同 InstallerX 的做法），

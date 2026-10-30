@@ -4,7 +4,6 @@ package edu.cqwu.electricity.common.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -133,7 +132,7 @@ fun AppSearchField(
     value: String,
     onValueChange: (String) -> Unit,
     hint: String,
-    focusRequester: FocusRequester,
+    focusRequester: FocusRequester? = null,
     onSubmit: (() -> Unit)? = null,
     onClear: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
@@ -153,7 +152,7 @@ fun AppSearchField(
                 expanded = false,
                 onExpandedChange = {},
                 onSearch = { onSubmit?.invoke() },
-                modifier = Modifier.weight(1f).focusRequester(focusRequester),
+                modifier = Modifier.weight(1f).then(focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier),
             )
         } else {
             SearchTextField(
@@ -180,7 +179,7 @@ private fun SearchTextField(
     value: String,
     onValueChange: (String) -> Unit,
     hint: String,
-    focusRequester: FocusRequester,
+    focusRequester: FocusRequester? = null,
     onSubmit: () -> Unit,
     onClear: (() -> Unit)?,
     modifier: Modifier = Modifier,
@@ -197,7 +196,7 @@ private fun SearchTextField(
             )
         },
         singleLine = true,
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = modifier.then(focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier),
         textStyle = MaterialTheme.typography.bodyMedium.copy(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         ),

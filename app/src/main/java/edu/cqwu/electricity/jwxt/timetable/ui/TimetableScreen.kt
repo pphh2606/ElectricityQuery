@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.jwxt.timetable.ui
 
@@ -171,7 +171,6 @@ fun JwxtTimetableScreen(
                                 uiState.errorMessage != null -> ReLoginContent(
                                     errorMessage = uiState.errorMessage,
                                     requiresReLogin = false,
-                                    onReLogin = {},
                                     // 重试「当前选中的学期」；load() 会重新落到默认学期，等于把用户的选择丢掉
                                     onRetry = { viewModel.refresh() },
                                 )

@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.payment.ui
 
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -337,7 +336,6 @@ private fun PaymentOrderErrorContent(
     ReLoginContent(
         errorMessage = stringResource(R.string.payment_order_failed) + "\n" + errorMessage,
         requiresReLogin = false,
-        onReLogin = {},
         onRetry = onRetry,
         modifier = Modifier
             .fillMaxWidth()

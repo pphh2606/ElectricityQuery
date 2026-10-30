@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.electricity.ui
 
@@ -20,11 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Refresh
@@ -38,7 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -63,7 +60,6 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import edu.cqwu.electricity.R
 import edu.cqwu.electricity.common.navigation.Routes
-import edu.cqwu.electricity.electricity.data.UserRoomInfo
 import edu.cqwu.electricity.payment.ui.AmountGrid
 import edu.cqwu.electricity.common.ui.AppPullToRefresh
 import edu.cqwu.electricity.common.ui.BottomSheetDialogV2
@@ -160,11 +156,10 @@ fun RechargeScreen(
     val effectiveRechargeAmount = recharge.selectedAmount
         ?: recharge.customAmount.trim().toDoubleOrNull()
     val hasValidAmount = effectiveRechargeAmount != null && effectiveRechargeAmount > 0
-            && effectiveRechargeAmount <= 1000
+            && effectiveRechargeAmount <= MAX_RECHARGE_AMOUNT
 
     // 账户名称显示
-    val accountName: String = recharge.fullName.takeIf { it.isNotBlank() }
-        ?: ""
+    val accountName = recharge.fullName
 
     // 是否可以切换账户（仅账号模式有多房间时允许切换）
     val canSwitchAccount = recharge.roomList.size > 1
@@ -418,17 +413,16 @@ fun RechargeScreen(
     // ================================================================
     //  房间切换弹窗（仅账号模式有多房间时显示）
     // ================================================================
-    RoomSelectionDialog(
+    RoomSwitchSheet(
         visible = showRoomSwitchDialog && recharge.roomList.isNotEmpty(),
+        title = stringResource(R.string.recharge_select_room_title),
+        hint = stringResource(R.string.recharge_select_room_hint),
         rooms = recharge.roomList,
-        onNavigateToWebView = { url, title -> nav.navigate(Routes.unifiedWebViewRoute(url, title)) },
-        onRoomSelected = { room ->
+        onSelect = { room ->
             viewModel.switchAccountRoom(room)
             showRoomSwitchDialog = false
         },
-        onDismiss = {
-            showRoomSwitchDialog = false
-        }
+        onDismiss = { showRoomSwitchDialog = false },
     )
 
     // ================================================================
@@ -533,65 +527,5 @@ private fun ImportantNotesCard() {
     }
 }
 
-// ================================================================
-//  房间选择对话框 - Bottom Sheet
-// ================================================================
-
-/**
- * 房间选择对话框
- * 当学号绑定多个房间时，弹出让用户选择一个
- */
-@Composable
-private fun RoomSelectionDialog(
-    visible: Boolean = true,
-    rooms: List<UserRoomInfo>,
-    onRoomSelected: (UserRoomInfo) -> Unit,
-    onDismiss: () -> Unit,
-    onNavigateToWebView: (String, String) -> Unit = { _, _ -> }
-) {
-    val resources = LocalResources.current
-    BottomSheetDialogV2(
-        visible = visible,
-        onDismissRequest = onDismiss,
-        title = stringResource(R.string.recharge_select_room_title),
-        leadingButton = {
-            TextButton(shapes = ButtonDefaults.shapes(), onClick = {
-                onDismiss()
-                onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-add",
-                    resources.getString(R.string.electricity_bind_account))
-            }) {
-                Text(stringResource(R.string.electricity_bind_account))
-            }
-        },
-        trailingButton = {
-            TextButton(shapes = ButtonDefaults.shapes(), onClick = {
-                onDismiss()
-                onNavigateToWebView("https://electricitypay.cqwu.edu.cn/wxms/pages/user/user-del",
-                    resources.getString(R.string.electricity_unbind_account))
-            }) {
-                Text(stringResource(R.string.electricity_unbind_account))
-            }
-        }
-    ) {
-        Text(
-            text = stringResource(R.string.recharge_select_room_hint),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        SheetItemGroup {
-            rooms.forEach { room ->
-                item {
-                    BottomSheetItem(
-                        icon = Icons.Outlined.Home,
-                        title = room.fullName.ifBlank { room.roomName },
-                        onClick = {
-                            onRoomSelected(room)
-                            onDismiss()
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
+/** 单次充值金额上限，超过后按钮置灰。 */
+private const val MAX_RECHARGE_AMOUNT = 1000

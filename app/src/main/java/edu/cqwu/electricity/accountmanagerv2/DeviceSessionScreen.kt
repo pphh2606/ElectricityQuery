@@ -109,7 +109,6 @@ fun DeviceSessionScreen(
                 state.loadError != null && state.sessions.isEmpty() -> ReLoginContent(
                     errorMessage = state.loadError,
                     requiresReLogin = false,
-                    onReLogin = {},
                     onRetry = viewModel::refresh,
                 )
                 state.sessions.isEmpty() -> EmptySessions(

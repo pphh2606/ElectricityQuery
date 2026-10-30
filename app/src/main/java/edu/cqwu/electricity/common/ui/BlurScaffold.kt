@@ -29,7 +29,10 @@ import dev.chrisbanes.haze.blur.HazeBlurStyle
 import dev.chrisbanes.haze.blur.hazeBlur
 import dev.chrisbanes.haze.hazeSource
 import edu.cqwu.electricity.common.settings.LocalAppSettingsState
+import edu.cqwu.electricity.common.settings.LocalUiStyle
+import edu.cqwu.electricity.common.settings.UiStyle
 import edu.cqwu.electricity.theme.ui.currentTopBarColors
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 /**
  * 标题栏毛玻璃当前是否生效：系统支持模糊 **且** 用户在「个性化」里开着开关。
@@ -102,15 +105,20 @@ fun rememberHazeSourceModifier(hazeState: HazeState): Modifier =
  * @param blur 是否做毛玻璃。正文是 WebView 的页面必须传 false：Haze 的录源走 GraphicsLayer，
  * 而 WebView 走独立合成管线，录制结果与显示不同步（闪烁，甚至整块不绘制）。
  * @param content 页面内容，参数为顶部浮层高度
- * @param containerColor 内容层底色（模糊源的地基）。MIUI 风格要传 miuix 的 surface，
- *   否则深色下卡片会和 M3 的 surfaceContainer 撞成同一个色，卡片边界消失
+ * @param containerColor 内容层底色（模糊源的地基）。默认按当前 UI 风格取：MIUI 用 miuix 的
+ *   surface，否则深色下卡片会和 M3 的 surfaceContainer 撞成同一个色，卡片边界消失；
+ *   M3 用 surfaceContainer。页面一般不用传
  */
 @Composable
 fun BlurScaffold(
     topBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     blur: Boolean = true,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    containerColor: Color = if (LocalUiStyle.current == UiStyle.MIUI) {
+        MiuixTheme.colorScheme.surface
+    } else {
+        MaterialTheme.colorScheme.surfaceContainer
+    },
     content: @Composable (topInset: Dp) -> Unit,
 ) {
     val hazeState = remember { HazeState() }

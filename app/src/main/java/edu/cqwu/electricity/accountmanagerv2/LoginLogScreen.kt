@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
 package edu.cqwu.electricity.accountmanagerv2
 
@@ -224,7 +224,6 @@ fun LoginLogScreen(
                 state.loadError != null && state.records.isEmpty() -> ReLoginContent(
                     errorMessage = state.loadError,
                     requiresReLogin = false,
-                    onReLogin = {},
                     onRetry = viewModel::refresh,
                 )
                 // 首屏加载中：显示加载指示，避免误显"暂无日志记录"

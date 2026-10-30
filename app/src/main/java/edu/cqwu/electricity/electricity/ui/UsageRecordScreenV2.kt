@@ -145,7 +145,6 @@ fun UsageRecordScreenV2(
         textContent = { buildUsageReportTextV2(state, textLabels) },
         exportTitle = stringResource(R.string.usage_record_v2_export_title),
         exportFileName = "electricity_usage_record.txt",
-        onDispose = { viewModel.clearState() },
     )
 }
 

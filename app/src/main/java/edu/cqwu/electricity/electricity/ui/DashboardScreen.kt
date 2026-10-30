@@ -3,8 +3,6 @@
 package edu.cqwu.electricity.electricity.ui
 
 import android.content.res.Resources
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -66,7 +64,7 @@ import edu.cqwu.electricity.common.ui.AppScaledDropdownMenu
 import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
-import edu.cqwu.electricity.common.util.ToastUtils
+import edu.cqwu.electricity.common.ui.rememberTextExportLauncher
 import edu.cqwu.electricity.common.util.copyToClipboard
 import edu.cqwu.electricity.electricity.data.BalanceResponse
 import edu.cqwu.electricity.electricity.data.BuildingNode
@@ -134,10 +132,7 @@ fun DashboardScreen(
                 item(key = "account_balance") {
                     AccountBalanceCard(balance = balance)
                 }
-            } else if (isLoading || isRefreshing) {
-                // 加载中：仅显示顶部房间信息卡，不渲染额外骨架屏
-            } else {
-                // 查询失败/空状态
+            } else if (!isLoading && !isRefreshing) {
                 item(key = "error_state") {
                     ErrorStateCard(
                         message = error?.resolve(resources) ?: stringResource(R.string.common_load_failed),
@@ -182,24 +177,7 @@ fun DashboardMenuButton(
     val resources = LocalResources.current
 
     var showMenu by remember { mutableStateOf(false) }
-    var pendingExportText by remember { mutableStateOf("") }
-    var pendingExportLabel by remember { mutableStateOf("") }
-    val saveFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/plain")
-    ) { uri ->
-        if (uri != null && pendingExportText.isNotEmpty()) {
-            try {
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(pendingExportText.toByteArray(Charsets.UTF_8))
-                }
-                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
-            } catch (e: Exception) {
-                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-            }
-            pendingExportText = ""
-            pendingExportLabel = ""
-        }
-    }
+    val textExport = rememberTextExportLauncher()
 
     Box {
         IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
@@ -227,9 +205,11 @@ fun DashboardMenuButton(
                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                 onClick = {
                     showMenu = false
-                    pendingExportText = getDashboardTextContent(room, balance, resources)
-                    pendingExportLabel = resources.getString(R.string.dashboard_title)
-                    saveFileLauncher.launch("electricity_dashboard.txt")
+                    textExport.launch(
+                        "electricity_dashboard.txt",
+                        getDashboardTextContent(room, balance, resources),
+                        resources.getString(R.string.dashboard_title),
+                    )
                 }
             )
         }
@@ -279,7 +259,6 @@ private fun ErrorStateCard(
     ReLoginContent(
         errorMessage = message,
         requiresReLogin = false,
-        onReLogin = {},
         onRetry = onRetry,
         modifier = Modifier
             .fillMaxWidth()
@@ -309,37 +288,12 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 左半：剩余电量（保持原大号数字样式，内容靠右贴向中线）
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = String.format(Locale.US, "%.2f", balance.remainEletricCapacity),
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = stringResource(R.string.dashboard_unit_degree),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(R.string.dashboard_remaining_power),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                UsageColumn(
+                    amount = String.format(Locale.US, "%.2f", balance.remainEletricCapacity),
+                    unit = stringResource(R.string.dashboard_unit_degree),
+                    label = stringResource(R.string.dashboard_remaining_power),
+                    horizontalAlignment = Alignment.End,
+                )
 
                 // 中间竖线
                 VerticalDivider(
@@ -350,39 +304,56 @@ private fun ElectricityUsageCard(balance: BalanceResponse) {
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
                 )
 
-                // 右半：现金余额（与剩余电量同款大号显示，内容靠左贴向中线）
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = String.format(Locale.US, "%.2f", balance.userBalance),
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = stringResource(R.string.common_unit_yuan),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(R.string.dashboard_cash_balance),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                UsageColumn(
+                    amount = String.format(Locale.US, "%.2f", balance.userBalance),
+                    unit = stringResource(R.string.common_unit_yuan),
+                    label = stringResource(R.string.dashboard_cash_balance),
+                    horizontalAlignment = Alignment.Start,
+                )
             }
         }
+    }
+}
+
+/**
+ * 用电信息卡片里的一栏：大号数字 + 单位 + 说明，左右两栏共用（靠中线对齐）。
+ */
+@Composable
+private fun RowScope.UsageColumn(
+    amount: String,
+    unit: String,
+    label: String,
+    horizontalAlignment: Alignment.Horizontal,
+) {
+    Column(
+        modifier = Modifier.weight(1f),
+        horizontalAlignment = horizontalAlignment
+    ) {
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = amount,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = unit,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -534,8 +505,7 @@ private fun MoreFunctionsSection(
 private fun NavItem(
     text: String,
     leadingIcon: ImageVector?,
-    onClick: () -> Unit,
-    isAccent: Boolean = false
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -550,8 +520,7 @@ private fun NavItem(
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    tint = if (isAccent) MaterialTheme.colorScheme.tertiary
-                           else MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -559,10 +528,7 @@ private fun NavItem(
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (isAccent)
-                    MaterialTheme.colorScheme.tertiary
-                else
-                    MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         Icon(

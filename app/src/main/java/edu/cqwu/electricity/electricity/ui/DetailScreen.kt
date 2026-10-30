@@ -6,8 +6,6 @@ package edu.cqwu.electricity.electricity.ui
 
 // 剪贴板与文件导出
 import android.content.res.Resources
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -41,14 +38,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.cqwu.electricity.common.ui.ScrollLinkedBox
@@ -59,11 +54,11 @@ import edu.cqwu.electricity.common.ui.AppScaledMenuItem
 import edu.cqwu.electricity.common.ui.CollapsibleScaffold
 import edu.cqwu.electricity.common.ui.InfoRow
 import edu.cqwu.electricity.common.ui.ReLoginContent
+import edu.cqwu.electricity.common.ui.rememberTextExportLauncher
 import edu.cqwu.electricity.electricity.data.CurrentDataResponse
 import edu.cqwu.electricity.common.navigation.DetailType
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.theme.ui.resolve
-import edu.cqwu.electricity.common.util.ToastUtils
 import edu.cqwu.electricity.common.util.copyToClipboard
 import java.util.Locale
 
@@ -100,32 +95,11 @@ fun DetailScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
 
-    // 2.3: 使用 rememberSaveable 持久化配置变更
-    var pendingExportText by rememberSaveable { mutableStateOf("") }
-    var pendingExportLabel by rememberSaveable { mutableStateOf("") }
-    val saveFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/plain")
-    ) { uri ->
-        if (uri != null && pendingExportText.isNotEmpty()) {
-            try {
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(pendingExportText.toByteArray(Charsets.UTF_8))
-                }
-                snackbar.show(resources.getString(R.string.common_export_success, pendingExportLabel), ToastUtils.Type.SUCCESS)
-            } catch (e: Exception) {
-                snackbar.show(resources.getString(R.string.common_export_failed, e.message ?: ""), ToastUtils.Type.ERROR)
-            }
-            pendingExportText = ""
-            pendingExportLabel = ""
-        }
-    }
+    val textExport = rememberTextExportLauncher()
 
     CollapsibleScaffold(
         title = title,
-        onBack = {
-                        viewModel.clearDetailData()
-                        onBack()
-                    },
+        onBack = onBack,
         actions = {
                     Box {
                         IconButton(shapes = IconButtonDefaults.shapes(), onClick = { showMenu = true }) {
@@ -143,7 +117,7 @@ fun DetailScreen(
                                 leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    val text = getDetailTextContent(detailType, detailState, resources)
+                                    val text = getDetailTextContent(detailState, resources)
                                     copyToClipboard(context, text, title, snackbar)
                                 }
                             )
@@ -152,9 +126,11 @@ fun DetailScreen(
                                 leadingIcon = { Icon(Icons.Outlined.FileDownload, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
-                                    pendingExportText = getDetailTextContent(detailType, detailState, resources)
-                                    pendingExportLabel = title
-                                    saveFileLauncher.launch("electricity_detail.txt")
+                                    textExport.launch(
+                                        "electricity_detail.txt",
+                                        getDetailTextContent(detailState, resources),
+                                        title,
+                                    )
                                 }
                             )
                         }
@@ -176,7 +152,6 @@ fun DetailScreen(
                         errorMessage = detailState.error?.resolve(resources)
                             ?: stringResource(R.string.common_unknown_error),
                         requiresReLogin = false,
-                        onReLogin = {},
                         onRetry = { viewModel.loadCurrentData() },
                         modifier = Modifier.padding(top = topInset),
                     )
@@ -277,19 +252,13 @@ private fun EmptyPlaceholder(message: String, topInset: Dp = 0.dp) {
  * 2.2: 根据详情类型和详情状态，生成格式化的纯文本内容（用于复制和导出）。
  * 提取通用表格生成逻辑，减少冗余。
  */
-private fun getDetailTextContent(detailType: DetailType, detailState: DetailState, resources: Resources): String {
+private fun getDetailTextContent(detailState: DetailState, resources: Resources): String {
     return buildString {
-        appendLine(getDetailTitle(detailType, resources))
+        appendLine(resources.getString(R.string.detail_title_meter))
         appendLine("=".repeat(40))
         appendMeterStatusText(detailState, resources)
     }
 }
-
-/**
- * 获取详情标题。
- */
-private fun getDetailTitle(detailType: DetailType, resources: Resources): String =
-    resources.getString(R.string.detail_title_meter)
 
 /**
  * 生成电表状态的纯文本内容。

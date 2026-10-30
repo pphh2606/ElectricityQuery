@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -177,8 +178,22 @@ fun AppSmallTopBar(
     Column {
         TopAppBar(
             title = {
-                if (titleContent != null) titleContent()
-                else Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                if (titleContent != null) {
+                    titleContent()
+                } else if (subtitle.isNotEmpty()) {
+                    Column {
+                        Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                } else {
+                    Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
             },
             navigationIcon = navigationIcon,
             actions = actions,

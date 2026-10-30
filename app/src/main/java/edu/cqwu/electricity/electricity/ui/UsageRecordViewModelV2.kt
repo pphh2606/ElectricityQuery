@@ -131,11 +131,6 @@ class UsageRecordViewModelV2(
         queryCurrent()
     }
 
-    /** 页面离开时清理状态 */
-    fun clearState() {
-        _uiState.update { UsageRecordV2UiState() }
-    }
-
     private fun queryCurrent() {
         if (roomId.isBlank()) {
             _uiState.update { st ->

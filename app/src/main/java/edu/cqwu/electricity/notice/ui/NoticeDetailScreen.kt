@@ -62,6 +62,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import edu.cqwu.electricity.R
@@ -298,45 +299,21 @@ fun NoticeDetailScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Person,
-                                        contentDescription = stringResource(R.string.notice_publisher),
-                                        modifier = Modifier.padding(end = 3.dp).size(14.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = displayDepartment.ifBlank { stringResource(R.string.dashboard_unknown) },
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.AccessTime,
-                                        contentDescription = stringResource(R.string.notice_publish_time),
-                                        modifier = Modifier.padding(end = 3.dp).size(14.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = displayTime,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Visibility,
-                                        contentDescription = stringResource(R.string.notice_view_count),
-                                        modifier = Modifier.padding(end = 3.dp).size(14.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = displayViewCount,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                                MetaItem(
+                                    icon = Icons.Outlined.Person,
+                                    description = stringResource(R.string.notice_publisher),
+                                    text = displayDepartment.ifBlank { stringResource(R.string.dashboard_unknown) }
+                                )
+                                MetaItem(
+                                    icon = Icons.Outlined.AccessTime,
+                                    description = stringResource(R.string.notice_publish_time),
+                                    text = displayTime
+                                )
+                                MetaItem(
+                                    icon = Icons.Outlined.Visibility,
+                                    description = stringResource(R.string.notice_view_count),
+                                    text = displayViewCount
+                                )
                             }
                         }
                     }
@@ -474,9 +451,6 @@ fun NoticeDetailScreen(
                                 },
                                 onRelease = { webView ->
                                     webView.stopLoading()
-                                    webView.loadUrl("about:blank")
-                                    webView.clearHistory()
-                                    webView.removeAllViews()
                                     webView.destroy()
                                 }
                             )
@@ -595,4 +569,24 @@ table {
 $noticeContent
 </body>
 </html>""".trimIndent()
+}
+
+/**
+ * 元数据行里的一项：小图标 + 说明文字，三组（发布人 / 时间 / 浏览量）共用。
+ */
+@Composable
+private fun MetaItem(icon: ImageVector, description: String, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            imageVector = icon,
+            contentDescription = description,
+            modifier = Modifier.padding(end = 3.dp).size(14.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }

@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.home.ui
 
@@ -36,6 +36,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -270,6 +271,14 @@ private fun MiuixHomeTopBar(
 ) {
     val nav = LocalNavController.current
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    // 进入搜索模式时自动聚焦输入框（与 M3 的 [HomeTopBar] 一致）
+    LaunchedEffect(isSearching) {
+        if (isSearching) {
+            focusRequester.requestFocus()
+        }
+    }
 
     BackHandler(enabled = isSearching) {
         focusManager.clearFocus()
@@ -302,7 +311,7 @@ private fun MiuixHomeTopBar(
                     expanded = false,
                     onExpandedChange = {},
                     onSearch = {},
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).focusRequester(focusRequester),
                 )
             }
         }
@@ -508,9 +517,7 @@ fun HomePageContent(
         }
     }
     // 搜索结果按行分块（每行4个），用于 LazyColumn 逐行懒加载
-    val searchRows by remember(filteredApps) {
-        derivedStateOf { filteredApps.chunked(4) }
-    }
+    val searchRows = remember(filteredApps) { filteredApps.chunked(4) }
 
     // 我的服务应用列表
     val myServiceApps by remember(uiState.categories, uiState.myServiceIds) {
@@ -555,7 +562,6 @@ fun HomePageContent(
                     ReLoginContent(
                         errorMessage = uiState.error,
                         requiresReLogin = false,
-                        onReLogin = {},
                         onRetry = { homeViewModel.refresh() },
                     )
                 }
@@ -817,28 +823,7 @@ private fun MyServicesSection(
                         onClick = { onServiceClick(app) }
                     )
                     if (isEditMode) {
-                        IconButton(
-                            shapes = IconButtonDefaults.shapes(),
-                            onClick = { onRemoveService(app) },
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .size(20.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(18.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.error),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = stringResource(R.string.common_remove),
-                                    tint = MaterialTheme.colorScheme.onError,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                            }
-                        }
+                        RemoveBadge(onClick = { onRemoveService(app) })
                     }
                 }
             }
@@ -854,28 +839,7 @@ private fun MyServicesSection(
                         onClick = { onCustomServiceClick(entry) }
                     )
                     if (isEditMode) {
-                        IconButton(
-                            shapes = IconButtonDefaults.shapes(),
-                            onClick = { onRemoveCustomService(entry.id) },
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .size(20.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(18.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.error),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = stringResource(R.string.common_remove),
-                                    tint = MaterialTheme.colorScheme.onError,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                            }
-                        }
+                        RemoveBadge(onClick = { onRemoveCustomService(entry.id) })
                     }
                 }
             }
@@ -884,9 +848,6 @@ private fun MyServicesSection(
             item(key = "add_custom_service") {
                 if (isEditMode) {
                     AddCustomServiceButton(onClick = onAddCustomService)
-                } else if (myServiceApps.isEmpty() && customServices.isEmpty()) {
-                    // 无服务退出编辑时保持等高占位，避免高度塌缩导致收起动画不可见
-                    Box(modifier = Modifier.size(60.dp, 80.dp))
                 }
             }
             }
@@ -920,16 +881,53 @@ private fun AddCustomServiceButton(onClick: () -> Unit) {
             )
         }
 
-        Text(
-            text = stringResource(R.string.home_custom_website),
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        GridItemLabel(stringResource(R.string.home_custom_website))
+    }
+}
+
+/**
+ * 网格项下方的单行标签：统一 11sp、居中、超长省略、宽度 52dp。
+ */
+@Composable
+private fun GridItemLabel(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .width(52.dp)
+            .padding(top = 4.dp)
+    )
+}
+
+/**
+ * 编辑模式下叠在图标右上角的删除角标。
+ */
+@Composable
+private fun BoxScope.RemoveBadge(onClick: () -> Unit) {
+    IconButton(
+        shapes = IconButtonDefaults.shapes(),
+        onClick = onClick,
+        modifier = Modifier
+            .align(Alignment.TopEnd)
+            .size(20.dp)
+    ) {
+        Box(
             modifier = Modifier
-                .width(52.dp)
-                .padding(top = 4.dp)
-        )
+                .size(18.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.error),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Close,
+                contentDescription = stringResource(R.string.common_remove),
+                tint = MaterialTheme.colorScheme.onError,
+                modifier = Modifier.size(12.dp)
+            )
+        }
     }
 }
 
@@ -1000,16 +998,7 @@ private fun CustomServiceIconItem(
             }
         }
 
-        Text(
-            text = entry.title,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .width(52.dp)
-                .padding(top = 4.dp)
-        )
+        GridItemLabel(entry.title)
     }
 }
 
@@ -1034,16 +1023,7 @@ private fun MyServiceIconItem(
             contentDescription = app.name
         )
 
-        Text(
-            text = app.name,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .width(52.dp)
-                .padding(top = 4.dp)
-        )
+        GridItemLabel(app.name)
     }
 }
 

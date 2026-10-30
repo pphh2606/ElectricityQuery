@@ -98,7 +98,6 @@ fun QrCodeDisplayScreen(
     onBack: () -> Unit,
 ) {
     var qrCodeContent by rememberSaveable { mutableStateOf<String?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
     val nav = LocalNavController.current
     val appSettings = LocalAppSettingsState.current
     val isDarkTheme = LocalAppDarkTheme.current
@@ -122,7 +121,7 @@ fun QrCodeDisplayScreen(
     val qrCornerFraction = appSettings.effectiveQrCodeCornerRadius / 100f
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var requiresReLogin by rememberSaveable { mutableStateOf(false) }
-    var isRefreshing by remember { mutableStateOf(false) }
+    var isFetching by remember { mutableStateOf(true) }
     // 倒计时秒数
     var countdownSeconds by rememberSaveable { mutableIntStateOf(30) }
     // 余额
@@ -183,10 +182,7 @@ fun QrCodeDisplayScreen(
     fun fetchQrCode() {
         fetchJob?.cancel()  // 取消上一个未完成的请求，避免并发
         fetchJob = scope.launch {
-            val isInitialLoad = qrCodeContent == null
-            if (isInitialLoad) {
-                isLoading = true
-            }
+            if (qrCodeContent == null) isFetching = true
             errorMessage = null
             requiresReLogin = false
 
@@ -196,10 +192,8 @@ fun QrCodeDisplayScreen(
                 CookieParser.getValue(CookieStore.getCookie(CasAuthApi.LOGIN_URL), "CASTGC")
             }
             if (castgc == null) {
-                isLoading = false
-                isRefreshing = false
+                isFetching = false
                 requiresReLogin = true
-                errorMessage = null
                 return@launch
             }
 
@@ -209,14 +203,12 @@ fun QrCodeDisplayScreen(
 
             result.onSuccess { content ->
                 qrCodeContent = content
-                isLoading = false
-                isRefreshing = false
+                isFetching = false
                 countdownSeconds = 30
                 // 二维码获取成功后同步获取余额
                 fetchBalance()
             }.onFailure { error ->
-                isLoading = false
-                isRefreshing = false
+                isFetching = false
                 if (error is SessionExpiredException) {
                     requiresReLogin = true
                     errorMessage = null
@@ -294,7 +286,7 @@ fun QrCodeDisplayScreen(
             IconButton(
                 shapes = IconButtonDefaults.shapes(),
                 onClick = { fetchQrCode() },
-                enabled = !isLoading
+                enabled = !isFetching
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Refresh,
@@ -312,15 +304,36 @@ fun QrCodeDisplayScreen(
         // 单一容器贯穿所有状态：加载由它自己的指示器表达（MIUI 走 miuix 的圆环与文案，
         // M3 走 M3 指示器），不再为「首载中」单独借 PullToRefreshBox，也不再有整页加载态这一支
         AppPullToRefresh(
-            isRefreshing = isLoading || isRefreshing,
+            isRefreshing = isFetching,
             onRefresh = {
-                isRefreshing = true
+                isFetching = true
                 fetchQrCode()
             },
             topInset = topInset,
             modifier = Modifier.fillMaxSize(),
         ) {
             when {
+                // 必须先于 qrCodeContent：过期处置只置 requiresReLogin、不清 content，
+                // 排在后面会被「已有二维码」拦掉，用户看到定格的旧码且没有重登入口
+                // 会话过期：给「去登录」，重试按钮清掉重登标记再取一次
+                requiresReLogin -> ReLoginContent(
+                    errorMessage = errorMessage,
+                    requiresReLogin = true,
+                    onReLogin = { nav.navigate(Routes.loginRoute()) },
+                    onRetry = { fetchQrCode() },
+                    modifier = Modifier
+                        .padding(top = topInset)
+                        .then(scrollModifier),
+                )
+                // 首次加载失败：下拉或点重试都重新取码
+                errorMessage != null -> ReLoginContent(
+                    errorMessage = errorMessage,
+                    requiresReLogin = false,
+                    onRetry = { fetchQrCode() },
+                    modifier = Modifier
+                        .padding(top = topInset)
+                        .then(scrollModifier),
+                )
                 qrCodeContent != null -> {
                         Column(
                             modifier = Modifier
@@ -444,26 +457,6 @@ fun QrCodeDisplayScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                         }
                 }
-                // 会话过期：给「去登录」，重试按钮清掉重登标记再取一次
-                requiresReLogin -> ReLoginContent(
-                    errorMessage = errorMessage,
-                    requiresReLogin = true,
-                    onReLogin = { nav.navigate(Routes.loginRoute()) },
-                    onRetry = { fetchQrCode() },
-                    modifier = Modifier
-                        .padding(top = topInset)
-                        .then(scrollModifier),
-                )
-                // 首次加载失败：下拉或点重试都重新取码
-                errorMessage != null -> ReLoginContent(
-                    errorMessage = errorMessage,
-                    requiresReLogin = false,
-                    onReLogin = {},
-                    onRetry = { fetchQrCode() },
-                    modifier = Modifier
-                        .padding(top = topInset)
-                        .then(scrollModifier),
-                )
                 // else：加载中，内容留空——容器自己的指示器在转，这就是加载态
             }
         }

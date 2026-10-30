@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package edu.cqwu.electricity.hall.ui
 
@@ -92,7 +92,6 @@ import edu.cqwu.electricity.hall.data.HallCategory
 import edu.cqwu.electricity.hall.data.HallI18n
 import edu.cqwu.electricity.hall.data.HallItem
 import edu.cqwu.electricity.hall.data.HallServiceLabel
-import edu.cqwu.electricity.logging.AppLog
 import edu.cqwu.electricity.common.navigation.LocalNavController
 import edu.cqwu.electricity.theme.ui.LocalSnackbarController
 import edu.cqwu.electricity.common.ui.AppPullToRefresh
@@ -116,10 +115,6 @@ import top.yukonga.miuix.kmp.basic.TabRow as MiuixTabRow
 fun HallPageContent(
     hallViewModel: HallViewModel = viewModel(),
 ) {
-    val _hallPerfStart = System.currentTimeMillis()
-    androidx.compose.runtime.SideEffect {
-        AppLog.d("TabPerf", "HallPageContent composition done, elapsed=${System.currentTimeMillis() - _hallPerfStart}ms")
-    }
     val uiState by hallViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     val hallPagerState = rememberPagerState(pageCount = { 3 })
